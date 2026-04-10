@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { navMenus } from "../data/siteData";
+import logo from "../assets/logo/FETC_FINAL LOGO-01_11 Version_Edit TM_PNG.png";
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -10,8 +11,9 @@ function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
-        <Link to="/" className="text-lg font-bold text-brand-700 md:text-xl">
-          FETC <span className="text-slate-500 text-sm"></span>
+        <Link to="/" className="flex items-center gap-2 text-lg font-bold text-brand-700 md:text-xl">
+          {/* <span>FETC<span className="text-slate-500 text-sm"></span></span> */}
+          <img src={logo} alt="FETC Logo" className="h-16 w-auto" />
         </Link>
 
         <button

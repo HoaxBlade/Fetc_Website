@@ -13,9 +13,30 @@ function Footer() {
         </div>
         <div>
           <h4 className="font-semibold">Contact</h4>
-          <ul className="mt-2 space-y-2 text-sm text-slate-200">
-            <li>Address: Surat, Gujarat</li>
-            <li className="flex items-center gap-2">
+          <ul className="mt-2 space-y-4 text-sm text-slate-200">
+            <li className="flex flex-col gap-1">
+              <span className="font-medium text-white">Vesu Branch:</span>
+              <a
+                href="https://maps.app.goo.gl/jBgo56XBAkux5twC6?g_st=iw"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-slate-50 transition-colors"
+              >
+                Second Floor, Roongta Signature, 238 – 239, VIP Rd, opp. Shyam Mandir, Anand Park, Vesu, Surat, Gujarat 395007
+              </a>
+            </li>
+            <li className="flex flex-col gap-1">
+              <span className="font-medium text-white">Varachha Branch:</span>
+              <a
+                href="https://maps.app.goo.gl/se2DsLDEUgS7W8EM6?g_st=iw"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-slate-50 transition-colors"
+              >
+                Radhika Optima, 328-329, opp. YAMUNA CHOWK, River Heaven, Mota Varachha, Surat, Gujarat 394101
+              </a>
+            </li>
+            <li className="flex items-center gap-2 pt-2">
               <Phone size={14} /> Phone: +91-XXXXXXXXXX
             </li>
             <li>Email: info@fetc.example</li>
