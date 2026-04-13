@@ -22,10 +22,10 @@ function Footer() {
                 rel="noopener noreferrer"
                 className="hover:text-slate-50 transition-colors"
               >
-                Second Floor, Roongta Signature, 238 – 239, VIP Rd, opp. Shyam Mandir, Anand Park, Vesu, Surat, Gujarat 395007
+                2nd floor, 239, Roongta Signature, Nr. Shyam Mandir Vesu, Surat - 395007
               </a>
             </li>
-            <li className="flex flex-col gap-1">
+            {/* <li className="flex flex-col gap-1">
               <span className="font-medium text-white">Varachha Branch:</span>
               <a
                 href="https://maps.app.goo.gl/se2DsLDEUgS7W8EM6?g_st=iw"
@@ -35,11 +35,11 @@ function Footer() {
               >
                 Radhika Optima, 328-329, opp. YAMUNA CHOWK, River Heaven, Mota Varachha, Surat, Gujarat 394101
               </a>
-            </li>
+            </li> */}
             <li className="flex items-center gap-2 pt-2">
-              <Phone size={14} /> Phone: +91-XXXXXXXXXX
+              <Phone size={14} /> Phone: +91-9033347201
             </li>
-            <li>Email: info@fetc.example</li>
+            <li>Email: info@fetc.in</li>
           </ul>
         </div>
         <div>
