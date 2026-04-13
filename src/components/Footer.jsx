@@ -1,3 +1,4 @@
+import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { Phone } from "lucide-react";
 import IASBadge from "./IASBadge";
 
@@ -46,15 +47,32 @@ function Footer() {
         <div>
           <h4 className="font-semibold">Follow Us</h4>
           <div className="mt-3 flex gap-2">
-            {["FB", "IG", "LI"].map((item) => (
+            {[
+              {
+                id: "FB",
+                Icon: FaFacebook,
+                url: "https://www.facebook.com/profile.php?id=61561283426412",
+              },
+              {
+                id: "IG",
+                Icon: FaInstagram,
+                url: "https://www.instagram.com/fetc_trainingcentre?igsh=MXNlc3JweDg2M215dg==",
+              },
+              {
+                id: "LI",
+                Icon: FaLinkedin,
+                url: "https://www.linkedin.com/company/96215379/admin/dashboard/",
+              },
+            ].map(({ id, Icon, url }) => (
               <a
-                key={item}
-                href="/"
-                onClick={(e) => e.preventDefault()}
-                className="rounded-full bg-white/10 px-3 py-2 text-xs font-semibold text-slate-100 transition hover:bg-white/20"
-                aria-label={`${item} social link`}
+                key={id}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-slate-100 transition hover:bg-white/20"
+                aria-label={`${id} social link`}
               >
-                {item}
+                <Icon size={18} />
               </a>
             ))}
           </div>
