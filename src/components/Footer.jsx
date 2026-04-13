@@ -1,9 +1,10 @@
 import { Phone } from "lucide-react";
+import IASBadge from "./IASBadge";
 
 function Footer() {
   return (
     <footer className="mt-16 bg-brand-800 text-white">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-3 md:px-6">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-4 md:px-6">
         <div>
           <h3 className="text-lg font-semibold">FETC</h3>
           <p className="mt-2 text-sm text-slate-200">
@@ -56,6 +57,12 @@ function Footer() {
                 {item}
               </a>
             ))}
+          </div>
+        </div>
+        <div>
+          <h4 className="font-semibold">Accreditations</h4>
+          <div className="mt-3">
+            <IASBadge />
           </div>
         </div>
       </div>
