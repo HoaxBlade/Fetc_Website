@@ -5,6 +5,7 @@ import CareerAssessmentPage from "./pages/CareerAssessmentPage";
 import CompanyProfilePage from "./pages/CompanyProfilePage";
 import ExamDetailPage from "./pages/ExamDetailPage";
 import ExamTrainingPage from "./pages/ExamTrainingPage";
+import GalleryPage from "./pages/GalleryPage";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import StudyAbroadPage from "./pages/StudyAbroadPage";
@@ -24,6 +25,7 @@ function App() {
           />
           <Route path="/exam-training" element={<ExamTrainingPage />} />
           <Route path="/exam-training/:exam" element={<ExamDetailPage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/about" element={<Navigate to="/about/company-profile" replace />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

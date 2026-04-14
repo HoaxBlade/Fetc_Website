@@ -113,4 +113,8 @@ export const navMenus = [
       { label: "PTE", path: "/exam-training/pte" },
     ],
   },
+  {
+    label: "Gallery",
+    path: "/gallery",
+  },
 ];
