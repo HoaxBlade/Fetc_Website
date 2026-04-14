@@ -87,19 +87,19 @@ function GalleryPage() {
           </p>
         </div>
 
-        {/* Masonry Layout Grid */}
-        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
+        {/* Uniform Grid Layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {images.map((img, idx) => (
             <div 
               key={idx} 
-              className="break-inside-avoid relative overflow-hidden rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-slate-200/60 bg-white"
+              className="relative overflow-hidden rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-slate-200/60 bg-white aspect-[4/3]"
               onClick={() => setSelectedImage(img)}
             >
-              <div className="w-full relative overflow-hidden">
+              <div className="w-full h-full relative overflow-hidden bg-slate-100">
                 <img 
                   src={img.src} 
                   alt={img.alt} 
-                  className="w-full h-auto object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out"
+                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out"
                   loading="lazy"
                 />
               </div>
