@@ -61,7 +61,7 @@ function Footer() {
               {
                 id: "LI",
                 Icon: FaLinkedin,
-                url: "https://www.linkedin.com/company/96215379/admin/dashboard/",
+                url: "https://www.linkedin.com/company/foreign-english-testing-capital/",
               },
             ].map(({ id, Icon, url }) => (
               <a
