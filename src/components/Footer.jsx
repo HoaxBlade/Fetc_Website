@@ -5,7 +5,7 @@ import IASBadge from "./IASBadge";
 function Footer() {
   return (
     <footer className="mt-16 bg-brand-800 text-white">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-4 md:px-6">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-3 lg:grid-cols-6 md:px-6">
         <div>
           <h3 className="text-lg font-semibold">FETC</h3>
           <p className="mt-2 text-sm text-slate-200">
@@ -42,6 +42,34 @@ function Footer() {
               <Phone size={14} /> Phone: +91-9033347201
             </li>
             <li>Email: info@fetc.in</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="font-semibold">Quick Links</h4>
+          <ul className="mt-2 space-y-2 text-sm text-slate-200">
+            <li>
+              <a href="/contact" className="hover:text-slate-50 transition-colors">Contact Us</a>
+            </li>
+            <li>
+              <a href="/about" className="hover:text-slate-50 transition-colors">About Us</a>
+            </li>
+            <li>
+              <a href="/faq" className="hover:text-slate-50 transition-colors">FAQs</a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="font-semibold">Policies</h4>
+          <ul className="mt-2 space-y-2 text-sm text-slate-200">
+            <li>
+              <a href="/terms" className="hover:text-slate-50 transition-colors">Terms &amp; Conditions</a>
+            </li>
+            <li>
+              <a href="/privacy" className="hover:text-slate-50 transition-colors">Privacy Policy</a>
+            </li>
+            <li>
+              <a href="/refund" className="hover:text-slate-50 transition-colors">Refund Policy</a>
+            </li>
           </ul>
         </div>
         <div>

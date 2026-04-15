@@ -117,4 +117,8 @@ export const navMenus = [
     label: "Gallery",
     path: "/gallery",
   },
+  {
+    label: "My Account",
+    path: "/my-account",
+  },
 ];
