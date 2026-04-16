@@ -3,25 +3,27 @@ import ukImg from "../assets/countries/uk.png";
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-r from-brand-800 via-brand-700 to-brand-600 text-white">
-      <div className="absolute inset-0 opacity-20">
-        <img src={ukImg} alt="Study Abroad" className="h-full w-full object-cover" />
+    <section className="relative overflow-hidden bg-[#F5F5F7] text-slate-900">
+      <div className="absolute inset-0">
+        <img src={ukImg} alt="Study Abroad" className="h-full w-full object-cover opacity-50 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#F5F5F7] via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#F5F5F7] via-[#F5F5F7]/70 to-transparent"></div>
       </div>
-      <div className="relative mx-auto flex max-w-7xl flex-col px-4 py-20 md:px-6">
-        <p className="mb-3 inline-block w-fit rounded-full bg-white/15 px-4 py-1 text-sm">
-          IELTS | Study Abroad | Career Guidance
+      <div className="relative mx-auto flex max-w-7xl flex-col px-4 py-16 md:py-24 md:px-8">
+        <p className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500 shadow-sm backdrop-blur-md">
+          IELTS • Study Abroad • Career Guidance
         </p>
-        <h1 className="max-w-3xl text-4xl font-bold leading-tight md:text-5xl">
-          Your Gateway to Global Education
+        <h1 className="max-w-4xl text-4xl font-bold leading-[1.1] tracking-tight text-slate-900 md:text-6xl">
+          Your Gateway to <br/> <span className="bg-gradient-to-r from-brand-600 to-teal-500 bg-clip-text text-transparent">Global Education</span>
         </h1>
-        <p className="mt-4 max-w-2xl text-slate-100">
+        <p className="mt-6 max-w-2xl text-base font-medium leading-relaxed text-slate-600 md:text-lg">
           Build your international future with trusted experts for exam
           preparation, admissions, and career direction.
         </p>
-        <div className="mt-8">
+        <div className="mt-8 flex">
           <Link
             to="/about/company-profile"
-            className="inline-block rounded-xl bg-white px-6 py-3 font-semibold text-brand-700 shadow-soft transition hover:bg-slate-100"
+            className="inline-flex items-center justify-center rounded-full bg-slate-900 px-7 py-3.5 text-sm font-bold text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:bg-slate-800 active:scale-95"
           >
             Get Free Consultation
           </Link>

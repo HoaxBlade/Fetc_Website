@@ -12,29 +12,33 @@ import GalleryPage from "./pages/GalleryPage";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import StudyAbroadPage from "./pages/StudyAbroadPage";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-slate-50">
+      <ScrollToTop />
+      <div className="min-h-screen bg-slate-50 flex flex-col">
         <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/about/company-profile" element={<CompanyProfilePage />} />
-          <Route path="/study-abroad/:country" element={<StudyAbroadPage />} />
-          <Route
-            path="/career-assessment/behaviour-and-career-analysis"
-            element={<CareerAssessmentPage />}
-          />
-          <Route path="/exam-training" element={<ExamTrainingPage />} />
-          <Route path="/exam-training/:exam" element={<ExamDetailPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
-          <Route path="/my-account" element={<MyAccountPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/about" element={<Navigate to="/about/company-profile" replace />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/about/company-profile" element={<CompanyProfilePage />} />
+            <Route path="/study-abroad/:country" element={<StudyAbroadPage />} />
+            <Route
+              path="/career-assessment/behaviour-and-career-analysis"
+              element={<CareerAssessmentPage />}
+            />
+            <Route path="/exam-training" element={<ExamTrainingPage />} />
+            <Route path="/exam-training/:exam" element={<ExamDetailPage />} />
+            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/my-account" element={<MyAccountPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/about" element={<Navigate to="/about/company-profile" replace />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </main>
         <Footer />
       </div>
     </BrowserRouter>

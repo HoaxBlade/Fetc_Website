@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 
-import img1 from "../assets/officeImages/Biggest Centre.jpeg";
-import img2 from "../assets/officeImages/Exterior Roongta Vesu .jpeg";
+import img1 from "../assets/officeImages/biggest-centre.jpeg";
+import img2 from "../assets/officeImages/exterior-roongta-vesu.jpeg";
 import img3 from "../assets/officeImages/IMG_2426.JPG";
-import img4 from "../assets/officeImages/Testing Lab.JPG";
-import img5 from "../assets/officeImages/VIP Conference.JPG";
-import img6 from "../assets/officeImages/VIP Exam Centre.JPG";
+import img4 from "../assets/officeImages/testing-lab.jpg";
+import img5 from "../assets/officeImages/vip-conference.jpg";
+import img6 from "../assets/officeImages/vip-exam-centre.jpg";
 import img7 from "../assets/officeImages/_DSC1619.JPG";
 import img8 from "../assets/officeImages/_DSC1638.JPG";
-import img9 from "../assets/officeImages/admin PC.jpeg";
-import img10 from "../assets/officeImages/director's cabin.jpeg";
+import img9 from "../assets/officeImages/admin-pc.jpeg";
+import img10 from "../assets/officeImages/directors-cabin.jpeg";
 import img11 from "../assets/officeImages/ext.2.jpeg";
-import img12 from "../assets/officeImages/exterior varachha-prime.jpeg";
+import img12 from "../assets/officeImages/exterior-varachha-prime.jpeg";
 import img13 from "../assets/officeImages/signage.jpeg";
-import img14 from "../assets/officeImages/waiting area & washroom.jpeg";
+import img14 from "../assets/officeImages/waiting-area-washroom.jpeg";
 import img15 from "../assets/officeImages/p1.jpeg";
 import img16 from "../assets/officeImages/p2.jpeg";
 import img17 from "../assets/officeImages/p3.jpeg";

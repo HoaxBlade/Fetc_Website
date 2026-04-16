@@ -15,6 +15,30 @@ module.exports = {
       boxShadow: {
         soft: "0 8px 30px rgba(0, 0, 0, 0.08)",
       },
+      keyframes: {
+        'marquee-vertical': {
+          '0%': { transform: 'translateY(0%)' },
+          '100%': { transform: 'translateY(-50%)' },
+        },
+        'marquee-horizontal': {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        'pulse-slow': {
+          '0%, 100%': { opacity: 0.3, transform: 'scale(1)' },
+          '50%': { opacity: 0.6, transform: 'scale(1.1)' },
+        },
+      },
+      animation: {
+        'marquee-vertical': 'marquee-vertical 35s linear infinite',
+        'marquee-horizontal': 'marquee-horizontal 45s linear infinite',
+        float: 'float 4s ease-in-out infinite',
+        'pulse-slow': 'pulse-slow 6s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

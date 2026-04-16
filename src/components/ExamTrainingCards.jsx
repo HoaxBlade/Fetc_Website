@@ -6,11 +6,11 @@ function ExamTrainingCards() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-14 md:px-6">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-800 md:text-3xl">
+      <div className="mb-12">
+        <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
           Exam & Training
         </h2>
-        <p className="mt-2 text-slate-600">
+        <p className="mt-4 text-lg font-medium text-slate-500">
           Specialized coaching to prepare you for top English proficiency exams.
         </p>
       </div>
@@ -18,16 +18,20 @@ function ExamTrainingCards() {
         {exams.map(([slug, exam]) => (
           <div
             key={slug}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft transition hover:-translate-y-1"
+            className="flex flex-col justify-between rounded-3xl bg-white p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgb(0,0,0,0.08)]"
           >
-            <h3 className="text-lg font-semibold text-slate-800">{exam.shortLabel}</h3>
-            <p className="mt-2 text-sm text-slate-600">{exam.description}</p>
-            <Link
-              to={`/exam-training/${slug}`}
-              className="mt-4 inline-block rounded-lg bg-brand-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-800"
-            >
-              Learn More
-            </Link>
+            <div>
+              <h3 className="text-xl font-bold tracking-tight text-slate-900">{exam.shortLabel}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-slate-600">{exam.description}</p>
+            </div>
+            <div className="mt-8 flex">
+              <Link
+                to={`/exam-training/${slug}`}
+                className="inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:scale-105 hover:bg-brand-600 hover:shadow-lg active:scale-95"
+              >
+                Learn More
+              </Link>
+            </div>
           </div>
         ))}
       </div>

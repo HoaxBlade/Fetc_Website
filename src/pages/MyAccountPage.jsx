@@ -51,18 +51,20 @@ const MyAccountPage = () => {
   };
 
   return (
-    <div className="min-h-[85vh] bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900 tracking-tight">
-          My Account
-        </h2>
-        <p className="mt-2 text-center text-sm text-slate-600">
-          {activeTab === "login" ? "Welcome back! Please login to your account." : "Create a new account to get started."}
-        </p>
-      </div>
+    <div className="min-h-[85vh] bg-[#F5F5F7] flex flex-col justify-center py-12">
+      <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
+        <div className="w-full max-w-md mr-auto">
+          
+          <div className="mb-8">
+            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
+              My Account
+            </h2>
+            <p className="mt-3 text-base text-slate-600 font-medium">
+              {activeTab === "login" ? "Welcome back! Please login to your account." : "Create a new account to get started."}
+            </p>
+          </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-soft sm:rounded-2xl sm:px-10 border border-slate-100">
+          <div className="bg-white py-10 px-6 shadow-xl sm:rounded-[2rem] sm:px-10 border border-slate-100">
           
           {/* Tabs */}
           <div className="flex p-1 bg-slate-100 rounded-xl mb-8 relative">
@@ -222,6 +224,7 @@ const MyAccountPage = () => {
             </div>
           </form>
 
+        </div>
         </div>
       </div>
     </div>
