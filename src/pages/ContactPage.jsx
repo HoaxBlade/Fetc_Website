@@ -30,7 +30,7 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-16 px-4 md:px-8 lg:px-16 flex items-center justify-center">
+    <div className="min-h-screen bg-slate-50 py-16 px-4 md:px-8 lg:px-16 flex flex-col items-center justify-center">
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-10">
         
         {/* Left Column - Contact Info */}
@@ -219,6 +219,27 @@ const ContactPage = () => {
               )}
             </button>
           </form>
+        </div>
+      </div>
+
+      {/* Map Section */}
+      <div className="w-full max-w-6xl mt-12 bg-white p-4 rounded-3xl shadow-soft border border-slate-100">
+        <h3 className="text-xl font-bold text-slate-800 mb-4 px-2">Our Location</h3>
+        <div className="w-full h-[400px] sm:h-[500px] rounded-2xl overflow-hidden">
+          <iframe
+            title="FETC Location Map"
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            scrolling="no"
+            marginHeight="0"
+            marginWidth="0"
+            src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=Second%20Floor,%20Foreign%20English%20Tests%20Capital%20-%20FETC,%20Roongta%20Signature,%20238%20%E2%80%93%20239,%20VIP%20Rd,%20opp.%20Shyam%20Mandir,%20Anand%20Park,%20Vesu,%20Surat,%20Gujarat%20395007&amp;t=&amp;z=15&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
+            style={{ border: 0 }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
         </div>
       </div>
     </div>
