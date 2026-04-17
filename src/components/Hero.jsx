@@ -3,11 +3,13 @@ import ukImg from "../assets/countries/uk.png";
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-[#F5F5F7] text-slate-900">
+    <section className="relative overflow-hidden bg-[#F8F9FA] text-slate-900">
       <div className="absolute inset-0">
-        <img src={ukImg} alt="Study Abroad" className="h-full w-full object-cover opacity-50 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#F5F5F7] via-transparent to-transparent"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#F5F5F7] via-[#F5F5F7]/70 to-transparent"></div>
+        <img src={ukImg} alt="Study Abroad" className="h-full w-full object-cover opacity-30 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#F8F9FA] via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#F8F9FA] via-[#F8F9FA]/70 to-transparent"></div>
+        {/* Lava Lamp Blob Start */}
+        <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-brand-500/10 blur-[120px]"></div>
       </div>
       <div className="relative mx-auto flex max-w-7xl flex-col px-4 py-16 md:py-24 md:px-8">
         <p className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500 shadow-sm backdrop-blur-md">

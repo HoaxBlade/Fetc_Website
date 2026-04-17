@@ -36,8 +36,16 @@ function HomePage() {
         linkText="Start Your Journey"
         linkTarget="/study-abroad/united-kingdom"
         items={studyAbroadCards}
-        bgColor="bg-white"
-        cardBg="bg-[#F5F5F7]"
+        bgColor="bg-[#F8F9FA]"
+        cardBg="bg-white"
+        layout="split-overlapping"
+        badgeText="Global Opportunities"
+        stats={[
+          { value: "500+", label: "Universities" },
+          { value: "10+", label: "Destinations" },
+          { value: "98%", label: "Visa Success" }
+        ]}
+        floatingTags={["🎓 Elite Admissions", "📑 Seamless Visa", "💰 Scholarships"]}
       />
       
       <ServiceMarqueeRow 
@@ -46,8 +54,17 @@ function HomePage() {
         linkText="View All Exams"
         linkTarget="/exam-training/idp-for-ielts"
         items={examCards}
-        bgColor="bg-[#F5F5F7]"
+        bgColor="bg-[#F8F9FA]"
         cardBg="bg-white"
+        layout="split-overlapping"
+        reverse={true}
+        badgeText="Elite Coaching"
+        stats={[
+          { value: "100%", label: "Result Boost" },
+          { value: "5000+", label: "Mock Tests" },
+          { value: "Expert", label: "1-on-1 Mentors" }
+        ]}
+        floatingTags={["✍️ IELTS Mastery", "💻 PTE Masterclass", "📚 TOEFL Success"]}
       />
 
       <ServiceMarqueeRow 
@@ -56,8 +73,8 @@ function HomePage() {
         linkText="Get Assessed"
         linkTarget="/career-assessment/behaviour-and-career-analysis"
         items={careerCards}
-        bgColor="bg-white"
-        cardBg="bg-[#F5F5F7]"
+        bgColor="bg-[#F8F9FA]"
+        cardBg="bg-white"
         isStatic={true}
       />
 

@@ -20,7 +20,9 @@ const WelcomeSection = () => {
   }, [images.length]);
 
   return (
-    <section className="py-20 bg-[#F5F5F7]/30">
+    <section className="py-24 bg-transparent relative overflow-hidden">
+      {/* Decorative Blob for Section Linker */}
+      <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-slate-200/20 blur-[120px]"></div>
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         
         {/* Section Header (Minimal) */}
