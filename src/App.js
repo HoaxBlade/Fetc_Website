@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import CareerAssessmentPage from "./pages/CareerAssessmentPage";
 import CompanyProfilePage from "./pages/CompanyProfilePage";
 import ContactPage from "./pages/ContactPage";
+import FAQPage from "./pages/FAQPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import MyAccountPage from "./pages/MyAccountPage";
 import ExamDetailPage from "./pages/ExamDetailPage";
@@ -12,6 +13,9 @@ import GalleryPage from "./pages/GalleryPage";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import StudyAbroadPage from "./pages/StudyAbroadPage";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
+import RefundPage from "./pages/RefundPage";
 import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
@@ -24,6 +28,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/faq" element={<FAQPage />} />
             <Route path="/about/company-profile" element={<CompanyProfilePage />} />
             <Route path="/study-abroad/:country" element={<StudyAbroadPage />} />
             <Route
@@ -35,6 +40,9 @@ function App() {
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/my-account" element={<MyAccountPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/refund" element={<RefundPage />} />
             <Route path="/about" element={<Navigate to="/about/company-profile" replace />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
