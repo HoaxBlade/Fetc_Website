@@ -31,35 +31,35 @@ import img28 from "../assets/officeImages/p14.jpeg";
 import img29 from "../assets/officeImages/p15.jpeg";
 
 const images = [
-  { src: img1, alt: "Biggest Centre" },
-  { src: img2, alt: "Exterior Roongta Vesu" },
-  { src: img3, alt: "Office Interior" },
-  { src: img4, alt: "Testing Lab" },
-  { src: img5, alt: "VIP Conference" },
-  { src: img6, alt: "VIP Exam Centre" },
-  { src: img7, alt: "Office Space" },
-  { src: img8, alt: "Office View" },
-  { src: img9, alt: "Admin PC" },
-  { src: img10, alt: "Director's Cabin" },
-  { src: img11, alt: "Exterior 2" },
-  { src: img12, alt: "Exterior Varachha Prime" },
-  { src: img13, alt: "Signage" },
-  { src: img14, alt: "Waiting Area & Washroom" },
-  { src: img15, alt: "Gallery Moment 1" },
-  { src: img16, alt: "Gallery Moment 2" },
-  { src: img17, alt: "Gallery Moment 3" },
-  { src: img18, alt: "Gallery Moment 4" },
-  { src: img19, alt: "Gallery Moment 5" },
-  { src: img20, alt: "Gallery Moment 6" },
-  { src: img21, alt: "Gallery Moment 7" },
-  { src: img22, alt: "Gallery Moment 8" },
-  { src: img23, alt: "Gallery Moment 9" },
-  { src: img24, alt: "Gallery Moment 10" },
-  { src: img25, alt: "Gallery Moment 11" },
-  { src: img26, alt: "Gallery Moment 12" },
-  { src: img27, alt: "Gallery Moment 13" },
-  { src: img28, alt: "Gallery Moment 14" },
-  { src: img29, alt: "Gallery Moment 15" },
+  { src: img1 },
+  { src: img2 },
+  { src: img3 },
+  { src: img4 },
+  { src: img5 },
+  { src: img6 },
+  { src: img7 },
+  { src: img8 },
+  { src: img9 },
+  { src: img10 },
+  { src: img11 },
+  { src: img12 },
+  { src: img13 },
+  { src: img14 },
+  { src: img15 },
+  { src: img16 },
+  { src: img17 },
+  { src: img18 },
+  { src: img19 },
+  { src: img20 },
+  { src: img21 },
+  { src: img22 },
+  { src: img23 },
+  { src: img24 },
+  { src: img25 },
+  { src: img26 },
+  { src: img27 },
+  { src: img28 },
+  { src: img29 },
 ];
 
 function GalleryPage() {
@@ -98,16 +98,10 @@ function GalleryPage() {
               <div className="w-full h-full relative overflow-hidden bg-slate-100">
                 <img 
                   src={img.src} 
-                  alt={img.alt} 
+                  alt="Gallery Thumbnail" 
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out"
                   loading="lazy"
                 />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
-                 <p className="text-white font-semibold text-lg translate-y-4 group-hover:translate-y-0 transition-transform duration-300 ease-out">
-                    {img.alt}
-                 </p>
-                 <div className="w-8 h-1 bg-blue-400 mt-2 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 delay-100"></div>
               </div>
             </div>
           ))}
@@ -134,12 +128,9 @@ function GalleryPage() {
           <div className="relative max-w-5xl w-full flex flex-col items-center animate-in fade-in zoom-in-95 duration-300" onClick={(e) => e.stopPropagation()}>
             <img 
               src={selectedImage.src} 
-              alt={selectedImage.alt} 
+              alt="Gallery" 
               className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl ring-1 ring-white/10"
             />
-            <div className="mt-4 text-center">
-              <p className="text-white/90 text-lg font-medium">{selectedImage.alt}</p>
-            </div>
           </div>
         )}
       </div>
