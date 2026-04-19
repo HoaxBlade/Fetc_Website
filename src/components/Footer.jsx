@@ -39,9 +39,9 @@ function Footer() {
               </a>
             </li> */}
             <li className="flex items-center gap-2 pt-2">
-              <Phone size={14} /> Phone: +91-9033347201
+              <Phone size={14} /> Phone: +91-8854347201
             </li>
-            <li>Email: info@fetc.in</li>
+            <li>Email: consult@fetc.in</li>
           </ul>
         </div>
         <div>

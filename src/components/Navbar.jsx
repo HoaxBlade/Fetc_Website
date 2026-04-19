@@ -1,15 +1,61 @@
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { ChevronDown, Menu, X, User } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { ChevronDown, Menu, X, User, LayoutDashboard, LogOut, Settings } from "lucide-react";
+import { motion } from "framer-motion";
 import { navMenus } from "../data/siteData";
 import logo from "../assets/logo/FETC_FINAL LOGO-01_11 Version_Edit TM_PNG.png";
 
 function Navbar() {
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeMobileMenu, setActiveMobileMenu] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const checkUser = () => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      // Force update if old name is detected (cached in user's browser)
+      if (parsedUser.name === "Bhumika" || parsedUser.name === "AdminFetc1") {
+        parsedUser.name = "Admin";
+        localStorage.setItem("user", JSON.stringify(parsedUser));
+      }
+      setCurrentUser(parsedUser);
+    } else {
+      setCurrentUser(null);
+    }
+  };
+
+  const location = useLocation();
+
+  useEffect(() => {
+    checkUser();
+    
+    // Listen for custom login/logout events to sync components
+    window.addEventListener("user-login", checkUser);
+    window.addEventListener("user-logout", checkUser);
+    
+    return () => {
+      window.removeEventListener("user-login", checkUser);
+      window.removeEventListener("user-logout", checkUser);
+    };
+  }, [location.pathname]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    // Notify other components
+    window.dispatchEvent(new Event("user-logout"));
+    setCurrentUser(null);
+    navigate("/my-account");
+  };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <motion.header 
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur"
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
         <Link to="/" className="flex items-center gap-2 text-lg font-bold text-brand-700 md:text-xl">
           {/* <span>FETC<span className="text-slate-500 text-sm"></span></span> */}
@@ -77,14 +123,37 @@ function Navbar() {
               >
                 <User size={22} className="stroke-[2.5px]" />
               </NavLink>
-              <div className="pointer-events-none absolute right-0 top-full pt-2 w-44 opacity-0 transition-all duration-300 group-hover:pointer-events-auto group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 z-50">
-                <div className="rounded-xl border border-slate-200 bg-white shadow-soft overflow-hidden flex flex-col">
-                  <Link to="/my-account" state={{ tab: 'login' }} className="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-brand-50 hover:text-brand-700 transition">
-                    Login
-                  </Link>
-                  <Link to="/my-account" state={{ tab: 'signup' }} className="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-brand-50 hover:text-brand-700 transition border-t border-slate-100">
-                    Sign Up
-                  </Link>
+              <div className="pointer-events-none absolute right-0 top-full pt-2 w-56 opacity-0 transition-all duration-300 group-hover:pointer-events-auto group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 z-50">
+                <div className="rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden flex flex-col p-1.5">
+                  {currentUser ? (
+                    <>
+                      <div className="px-4 py-3 border-b border-slate-50 mb-1">
+                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Signed in as</p>
+                        <p className="text-sm font-bold text-slate-900 truncate">{currentUser.name}</p>
+                      </div>
+                      <Link to="/admin/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-700 rounded-xl transition">
+                        <LayoutDashboard size={16} /> Admin Dashboard
+                      </Link>
+                      <Link to="/dashboard/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-700 rounded-xl transition">
+                        <Settings size={16} /> My Profile
+                      </Link>
+                      <button 
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-xl transition mt-1 border-t border-slate-50 pt-3"
+                      >
+                        <LogOut size={16} /> Logout
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/my-account" state={{ tab: 'login' }} className="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-brand-50 hover:text-brand-700 transition rounded-xl">
+                        Login
+                      </Link>
+                      <Link to="/my-account" state={{ tab: 'signup' }} className="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-brand-50 hover:text-brand-700 transition border-t border-slate-100 rounded-xl">
+                        Sign Up
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -127,22 +196,49 @@ function Navbar() {
                         {menu.label}
                       </NavLink>
                       <div className="pl-10 space-y-1">
-                        <Link 
-                          to="/my-account" 
-                          state={{ tab: 'login' }}
-                          onClick={() => setMobileOpen(false)} 
-                          className="block w-full rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
-                        >
-                          Login
-                        </Link>
-                        <Link 
-                          to="/my-account" 
-                          state={{ tab: 'signup' }}
-                          onClick={() => setMobileOpen(false)} 
-                          className="block w-full rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
-                        >
-                          Sign Up
-                        </Link>
+                        {currentUser ? (
+                          <>
+                            <Link 
+                              to="/admin/dashboard" 
+                              onClick={() => setMobileOpen(false)} 
+                              className="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                            >
+                              <LayoutDashboard size={14} /> Admin Dashboard
+                            </Link>
+                            <Link 
+                              to="/dashboard/profile" 
+                              onClick={() => setMobileOpen(false)} 
+                              className="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                            >
+                              <Settings size={14} /> My Profile
+                            </Link>
+                            <button 
+                              onClick={() => { handleLogout(); setMobileOpen(false); }} 
+                              className="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                            >
+                              <LogOut size={14} /> Logout
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <Link 
+                              to="/my-account" 
+                              state={{ tab: 'login' }}
+                              onClick={() => setMobileOpen(false)} 
+                              className="block w-full rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                            >
+                              Login
+                            </Link>
+                            <Link 
+                              to="/my-account" 
+                              state={{ tab: 'signup' }}
+                              onClick={() => setMobileOpen(false)} 
+                              className="block w-full rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                            >
+                              Sign Up
+                            </Link>
+                          </>
+                        )}
                       </div>
                     </div>
                   ) : (
@@ -210,7 +306,7 @@ function Navbar() {
           })}
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 }
 

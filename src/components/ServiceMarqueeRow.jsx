@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 function ServiceMarqueeRow({ 
   title, 
@@ -71,7 +72,13 @@ function ServiceMarqueeRow({
 
   if (layout === "split-overlapping") {
     return (
-      <section className={`relative overflow-hidden py-20 md:py-32 ${bgColor}`}>
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className={`relative overflow-hidden py-12 md:py-20 ${bgColor}`}
+      >
         {/* Subtle Textural Grain Overaly */}
         <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1e293b 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }}></div>
         
@@ -150,14 +157,25 @@ function ServiceMarqueeRow({
                     "top-1/3 right-4 lg:right-8 hidden lg:block",
                     "bottom-6 right-6"
                   ];
-                  const animationDurations = ['6s', '8s', '5s', '7s'];
                   
                   return (
-                    <div key={idx} className={`absolute ${positions[idx % positions.length]} animate-bounce group`} style={{ animationDuration: animationDurations[idx % animationDurations.length] }}>
+                    <motion.div 
+                      key={idx} 
+                      animate={{ 
+                        y: [-10, 10, -10],
+                        rotate: idx % 2 === 0 ? [-1, 1, -1] : [1, -1, 1]
+                      }}
+                      transition={{ 
+                        duration: 4 + (idx * 0.5), 
+                        repeat: Infinity, 
+                        ease: "easeInOut" 
+                      }}
+                      className={`absolute ${positions[idx % positions.length]} group`}
+                    >
                       <div className="rounded-full bg-white/80 px-4 py-2 text-[10px] font-bold text-slate-600 shadow-sm backdrop-blur-md ring-1 ring-slate-100 transition-all hover:scale-110">
                         {tag}
                       </div>
-                    </div>
+                    </motion.div>
                   );
               })}
               <div className="relative h-[400px] w-[320px] md:h-[450px] md:w-[380px]">
@@ -240,12 +258,18 @@ function ServiceMarqueeRow({
 
           </div>
         </div>
-      </section>
+      </motion.section>
     );
   }
 
   return (
-    <section className={`relative overflow-hidden py-16 md:py-20 ${bgColor}`}>
+    <motion.section 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className={`relative overflow-hidden py-12 md:py-16 ${bgColor}`}
+    >
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         
         {/* iOS Style Centered Header */}
@@ -279,7 +303,7 @@ function ServiceMarqueeRow({
           </div>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 }
 

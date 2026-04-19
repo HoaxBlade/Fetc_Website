@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, Award, Globe, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 // Import the 4 new carousel images
 import welcome1 from "../assets/fetc-about-us/welcome-1.jpeg";
@@ -19,8 +20,34 @@ const WelcomeSection = () => {
     return () => clearInterval(timer);
   }, [images.length]);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 30, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
   return (
-    <section className="py-24 bg-transparent relative overflow-hidden">
+    <motion.section 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
+      variants={containerVariants}
+      className="py-24 bg-transparent relative overflow-hidden"
+    >
       {/* Decorative Blob for Section Linker */}
       <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-slate-200/20 blur-[120px]"></div>
       <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -36,7 +63,10 @@ const WelcomeSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6">
           
           {/* 1. Large Main Welcome Card (2x2) */}
-          <div className="md:col-span-2 md:row-span-2 bg-white rounded-[2.5rem] p-8 lg:p-12 border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 group flex flex-col justify-between overflow-hidden relative">
+          <motion.div 
+            variants={itemVariants}
+            className="md:col-span-2 md:row-span-2 bg-white rounded-[2.5rem] p-8 lg:p-12 border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 group flex flex-col justify-between overflow-hidden relative"
+          >
             <div>
               <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight leading-tight mb-6">
                 Welcome to <br/> <span className="text-brand-600 font-black">FETC</span>
@@ -86,15 +116,18 @@ const WelcomeSection = () => {
                {/* Floating Stat integrated inside image area */}
                <div className="absolute top-6 right-6 bg-white/40 backdrop-blur-2xl border border-white/30 p-5 rounded-2xl shadow-xl animate-float z-20">
                   <div className="flex flex-col items-center">
-                    <span className="text-2xl font-black text-slate-900 tracking-tight">2.98K</span>
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mt-1">Finished Sessions</span>
+                    <span className="text-2xl font-black text-slate-900 tracking-tight">5000+</span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mt-1">Mock Tests</span>
                   </div>
                </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* 2. English Language Training (Wide 2x1) */}
-          <div className="md:col-span-2 bg-white rounded-[2.5rem] p-8 lg:p-10 border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 group flex flex-col justify-center">
+          <motion.div 
+            variants={itemVariants}
+            className="md:col-span-2 bg-white rounded-[2.5rem] p-8 lg:p-10 border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 group flex flex-col justify-center"
+          >
             <div className="flex items-start gap-6">
               <div className="shrink-0 w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-300 shadow-sm">
                 <BookOpen className="w-6 h-6 text-blue-600" />
@@ -106,10 +139,13 @@ const WelcomeSection = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* 3. Authorized Exam Centre (1x1) */}
-          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 group flex flex-col">
+          <motion.div 
+            variants={itemVariants}
+            className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 group flex flex-col"
+          >
             <div className="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center mb-6">
               <Award className="w-5 h-5 text-sky-500" />
             </div>
@@ -120,10 +156,13 @@ const WelcomeSection = () => {
               </p>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Official Partner</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* 4. Study Abroad (1x1) */}
-          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 group flex flex-col">
+          <motion.div 
+            variants={itemVariants}
+            className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 group flex flex-col"
+          >
             <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center mb-6">
               <Globe className="w-5 h-5 text-teal-500" />
             </div>
@@ -134,11 +173,11 @@ const WelcomeSection = () => {
               </p>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Expert Guidance</p>
             </div>
-          </div>
+          </motion.div>
 
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

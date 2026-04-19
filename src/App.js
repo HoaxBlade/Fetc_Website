@@ -17,10 +17,29 @@ import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import RefundPage from "./pages/RefundPage";
 import ScrollToTop from "./components/ScrollToTop";
+import ScrollProgressBar from "./components/ScrollProgressBar";
+// User Imports
+import UserLayout from "./components/user/UserLayout";
+import ProfilePage from "./pages/ProfilePage";
+
+// Admin Imports
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminCourses from "./pages/admin/AdminCourses";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminPages from "./pages/admin/AdminPages";
+import AdminPosts from "./pages/admin/AdminPosts";
+import AdminMockTest from "./pages/admin/AdminMockTest";
+import AdminNewsFlash from "./pages/admin/AdminNewsFlash";
+import AdminSupportTickets from "./pages/admin/AdminSupportTickets";
+import AdminInvoice from "./pages/admin/AdminInvoice";
+import AdminLeads from "./pages/admin/AdminLeads";
+import AdminPartners from "./pages/admin/AdminPartners";
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollProgressBar />
       <ScrollToTop />
       <div className="min-h-screen bg-slate-50 flex flex-col">
         <Navbar />
@@ -43,6 +62,33 @@ function App() {
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/refund" element={<RefundPage />} />
+            
+            {/* Admin Nested Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="courses" element={<AdminCourses />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="pages" element={<AdminPages />} />
+              <Route path="posts" element={<AdminPosts />} />
+              <Route path="mock-test" element={<AdminMockTest />} />
+              <Route path="news-flash" element={<AdminNewsFlash />} />
+              <Route path="support-tickets" element={<AdminSupportTickets />} />
+              <Route path="invoice" element={<AdminInvoice />} />
+              <Route path="leads" element={<AdminLeads />} />
+              <Route path="partners" element={<AdminPartners />} />
+            </Route>
+
+            {/* User Dashboard Nested Routes */}
+            <Route path="/dashboard" element={<UserLayout />}>
+              <Route index element={<Navigate to="profile" replace />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="courses" element={<div className="p-8 text-slate-400 italic">My Courses component coming soon...</div>} />
+              <Route path="orders" element={<div className="p-8 text-slate-400 italic">My Orders component coming soon...</div>} />
+              <Route path="payments" element={<div className="p-8 text-slate-400 italic">Payments component coming soon...</div>} />
+              <Route path="support" element={<div className="p-8 text-slate-400 italic">Support component coming soon...</div>} />
+            </Route>
+
             <Route path="/about" element={<Navigate to="/about/company-profile" replace />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

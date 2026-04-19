@@ -62,7 +62,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">Call Us</h4>
-                  <p className="text-sm text-brand-100 mt-1">+91-9033347201</p>
+                  <p className="text-sm text-brand-100 mt-1">+91-8854347201</p>
                 </div>
               </div>
               
@@ -72,7 +72,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">Email Us</h4>
-                  <p className="text-sm text-brand-100 mt-1">info@fetc.in</p>
+                  <p className="text-sm text-brand-100 mt-1">consult@fetc.in</p>
                 </div>
               </div>
             </div>
