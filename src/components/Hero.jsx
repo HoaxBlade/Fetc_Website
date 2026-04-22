@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import ukImg from "../assets/countries/uk.png";
+import bannerImg from "../assets/logo/fetc banner.png";
 
 function Hero() {
   const containerVariants = {
@@ -28,14 +28,14 @@ function Hero() {
       <div className="absolute inset-0">
         <motion.img 
           initial={{ scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.45 }}
+          animate={{ scale: 1, opacity: 0.8 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
-          src={ukImg} 
-          alt="Study Abroad" 
-          className="h-full w-full object-cover mix-blend-multiply" 
+          src={bannerImg} 
+          alt="FETC Banner" 
+          className="h-full w-full object-cover" 
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#F8F9FA] via-transparent to-transparent"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#F8F9FA] via-[#F8F9FA]/70 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#F8F9FA] via-[#F8F9FA]/40 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#F8F9FA] via-[#F8F9FA]/20 to-transparent"></div>
         {/* Lava Lamp Blob Start */}
         <motion.div 
           animate={{ 
@@ -54,7 +54,7 @@ function Hero() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative mx-auto flex max-w-7xl flex-col px-4 py-16 md:py-24 md:px-6"
+        className="relative mx-auto flex max-w-7xl flex-col px-4 py-20 md:py-32 md:px-6"
       >
         <motion.p 
           variants={itemVariants}
