@@ -93,14 +93,38 @@ db.query('SELECT NOW()', (err, res) => {
 // Admin Stats Route
 app.get('/api/admin/stats', async (req, res) => {
   try {
-    const userCount = await db.query('SELECT COUNT(*) FROM users');
+    // Total Users
+    const totalUsersResult = await db.query('SELECT COUNT(*) FROM users');
+    const totalUsers = parseInt(totalUsersResult.rows[0].count);
+
+    // Growth Calculation: Today vs Yesterday (last 24h vs previous 24h)
+    const recentUsersResult = await db.query(
+      "SELECT COUNT(*) FROM users WHERE created_at > NOW() - INTERVAL '24 hours'"
+    );
+    const previousUsersResult = await db.query(
+      "SELECT COUNT(*) FROM users WHERE created_at BETWEEN NOW() - INTERVAL '48 hours' AND NOW() - INTERVAL '24 hours'"
+    );
+
+    const recentCount = parseInt(recentUsersResult.rows[0].count);
+    const previousCount = parseInt(previousUsersResult.rows[0].count);
+
+    // Calculate growth percentage
+    let growth = 0;
+    if (previousCount === 0) {
+      growth = recentCount > 0 ? 100 : 0; // If yesterday was 0 and today is > 0, it's 100% growth
+    } else {
+      growth = Math.round(((recentCount - previousCount) / previousCount) * 100);
+    }
     
     res.json({
       success: true,
       stats: {
-        totalUsers: parseInt(userCount.rows[0].count),
+        totalUsers,
+        userGrowth: (growth >= 0 ? "+" : "") + growth + "%",
         todaySales: "₹0.00",
-        todayOrders: 0
+        salesGrowth: "0%",
+        todayOrders: 0,
+        ordersGrowth: "0%"
       }
     });
   } catch (err) {

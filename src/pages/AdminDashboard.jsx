@@ -5,8 +5,10 @@ import {
   UserPlus, Search, RotateCcw, Download, 
   BookOpen, Users
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [liveStats, setLiveStats] = useState({
     totalUsers: 0,
     todaySales: "₹0.00",
@@ -29,14 +31,34 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleExportData = async () => {
+    try {
+      const response = await fetch('/api/admin/users');
+      const data = await response.json();
+      if (data.success) {
+        // Simple JSON export for now
+        const blob = new Blob([JSON.stringify(data.users, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `fetc_users_export_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err) {
+      console.error('Export failed:', err);
+    }
+  };
+
   useEffect(() => {
     fetchStats();
   }, []);
 
   const stats = [
-    { label: "Today's Sales", value: liveStats.todaySales, icon: IndianRupee, color: "text-emerald-500", bg: "bg-emerald-50" },
-    { label: "Today's Orders", value: liveStats.todayOrders, icon: ShoppingBag, color: "text-blue-500", bg: "bg-blue-50" },
-    { label: "Customers", value: isLoading ? "..." : liveStats.totalUsers, icon: UserPlus, color: "text-purple-500", bg: "bg-purple-50" },
+    { label: "Today's Sales", value: liveStats.todaySales, growth: liveStats.salesGrowth, icon: IndianRupee, color: "text-emerald-500", bg: "bg-emerald-50" },
+    { label: "Today's Orders", value: liveStats.todayOrders, growth: liveStats.ordersGrowth, icon: ShoppingBag, color: "text-blue-500", bg: "bg-blue-50" },
+    { label: "Customers", value: isLoading ? "..." : liveStats.totalUsers, growth: liveStats.userGrowth, icon: UserPlus, color: "text-purple-500", bg: "bg-purple-50" },
   ];
 
   return (
@@ -80,7 +102,13 @@ const AdminDashboard = () => {
                   <stat.icon size={20} />
                </div>
                <div className="flex flex-col items-end">
-                  <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-full">+12%</span>
+                  <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${
+                    stat.growth?.includes('-') 
+                      ? "bg-red-50 text-red-500" 
+                      : (stat.growth === "0%" || !stat.growth) ? "bg-slate-50 text-slate-400" : "bg-emerald-50 text-emerald-500"
+                  }`}>
+                    {stat.growth || "0%"}
+                  </span>
                </div>
             </div>
             <p className="text-slate-400 text-xs font-bold mb-1 tracking-tight">{stat.label}</p>
@@ -122,12 +150,16 @@ const AdminDashboard = () => {
             <h4 className="text-lg font-bold text-slate-900 tracking-tight mb-6">Quick Actions</h4>
             <div className="grid grid-cols-2 gap-3 h-fit">
                {[
-                 { label: "New Order", icon: ShoppingBag, color: "bg-blue-500" },
-                 { label: "Add Course", icon: BookOpen, color: "bg-brand-600" },
-                 { label: "User Audit", icon: Users, color: "bg-purple-500" },
-                 { label: "Export Data", icon: Download, color: "bg-emerald-500" }
+                 { label: "New Lead", icon: ShoppingBag, color: "bg-blue-500", action: () => navigate('/admin/leads') },
+                 { label: "Add Course", icon: BookOpen, color: "bg-brand-600", action: () => navigate('/admin/courses') },
+                 { label: "User Audit", icon: Users, color: "bg-purple-500", action: () => navigate('/admin/users') },
+                 { label: "Export Data", icon: Download, color: "bg-emerald-500", action: handleExportData }
                ].map((action, i) => (
-                  <button key={i} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50/50 border border-slate-100 hover:bg-white hover:shadow-md transition-all group">
+                  <button 
+                    key={i} 
+                    onClick={action.action}
+                    className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50/50 border border-slate-100 hover:bg-white hover:shadow-md transition-all group"
+                  >
                      <div className={`p-3 ${action.color} text-white rounded-xl mb-3 shadow-md group-hover:scale-105 transition-transform`}>
                         <action.icon size={18} />
                      </div>
