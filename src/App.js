@@ -21,6 +21,7 @@ import ScrollProgressBar from "./components/ScrollProgressBar";
 // User Imports
 import UserLayout from "./components/user/UserLayout";
 import ProfilePage from "./pages/ProfilePage";
+import StartJourneyPage from "./pages/StartJourneyPage";
 
 // Admin Imports
 import AdminLayout from "./components/admin/AdminLayout";
@@ -50,6 +51,7 @@ function App() {
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/about/company-profile" element={<CompanyProfilePage />} />
             <Route path="/study-abroad/:country" element={<StudyAbroadPage />} />
+            <Route path="/start-journey" element={<StartJourneyPage />} />
             <Route
               path="/career-assessment/behaviour-and-career-analysis"
               element={<CareerAssessmentPage />}

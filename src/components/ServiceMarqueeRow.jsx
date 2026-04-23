@@ -2,13 +2,13 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-function ServiceMarqueeRow({ 
-  title, 
-  description, 
-  linkText, 
-  linkTarget, 
-  items = [], 
-  bgColor = "bg-white", 
+function ServiceMarqueeRow({
+  title,
+  description,
+  linkText,
+  linkTarget,
+  items = [],
+  bgColor = "bg-white",
   cardBg = "bg-[#F5F5F7]",
   isStatic = false,
   layout = "centered",
@@ -33,7 +33,7 @@ function ServiceMarqueeRow({
   if (!isStatic) {
     let baseArray = [...items];
     while (baseArray.length < 8) {
-        baseArray = [...baseArray, ...items];
+      baseArray = [...baseArray, ...items];
     }
     scrollingItems = [...baseArray, ...baseArray];
   }
@@ -57,22 +57,22 @@ function ServiceMarqueeRow({
         </p>
       </div>
       <div className="mt-8">
-         <Link
-           to={service.path}
-           className="group-hover:text-brand-600 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-900 transition-colors hover:text-brand-600"
-         >
-           Explore Details
-           <svg className="h-3 w-3 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-           </svg>
-         </Link>
+        <Link
+          to={service.path}
+          className="group-hover:text-brand-600 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-900 transition-colors hover:text-brand-600"
+        >
+          Explore Details
+          <svg className="h-3 w-3 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </Link>
       </div>
     </div>
   );
 
   if (layout === "split-overlapping") {
     return (
-      <motion.section 
+      <motion.section
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.1 }}
@@ -81,23 +81,23 @@ function ServiceMarqueeRow({
       >
         {/* Subtle Textural Grain Overaly */}
         <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1e293b 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }}></div>
-        
+
         {/* Decorative Background Elements (Lava Lamp) */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           {/* Top Linker Blob (for blending with previous section) */}
           <div className="absolute -top-48 left-1/3 h-96 w-[600px] rounded-full bg-brand-200/20 blur-[150px]"></div>
-          
+
           {/* Main Decorative Blobs */}
           <div className="absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-brand-200/40 blur-[120px]"></div>
           <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-teal-200/30 blur-[120px]"></div>
-          
+
           {/* Bottom Linker Blob (for blending with next section) */}
           <div className="absolute -bottom-48 right-1/3 h-96 w-[600px] rounded-full bg-blue-100/20 blur-[150px]"></div>
         </div>
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 md:px-6">
           <div className={`grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-12 items-center ${reverse ? 'flex-row-reverse lg:flex-row-reverse' : ''}`}>
-            
+
             {/* Text column (Order 2 on mobile if reversed, Order 1 on desktop if not) */}
             <div className={`flex flex-col items-start lg:col-span-5 ${reverse ? 'lg:order-2' : ''}`}>
               <div className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-600 mb-6 ring-1 ring-brand-100">
@@ -123,17 +123,17 @@ function ServiceMarqueeRow({
               )}
 
               <div className="mt-10">
-                 <Link
-                   to={items[activeIndex]?.path || linkTarget}
-                   className="inline-flex items-center justify-center rounded-full bg-slate-900 px-10 py-4 text-base font-bold text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 active:scale-95"
-                 >
-                   {linkText}
-                 </Link>
+                <Link
+                  to={items[activeIndex]?.path || linkTarget}
+                  className="inline-flex items-center justify-center rounded-full bg-slate-900 px-10 py-4 text-base font-bold text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 active:scale-95"
+                >
+                  {linkText}
+                </Link>
               </div>
             </div>
 
             {/* Cards column (Order 1 on mobile if reversed, Order 2 on desktop if not) */}
-            <div 
+            <div
               className={`relative flex w-full items-center justify-center lg:col-span-7 min-h-[550px] ${reverse ? 'lg:justify-start lg:order-1' : 'lg:justify-end lg:order-2'}`}
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
@@ -151,49 +151,49 @@ function ServiceMarqueeRow({
 
               {/* Floating Service Tags */}
               {floatingTags && floatingTags.map((tag, idx) => {
-                  const positions = [
-                    "top-6 left-6 md:top-12 md:left-12",
-                    "bottom-12 left-4 md:bottom-24 md:left-8",
-                    "top-1/3 right-4 lg:right-8 hidden lg:block",
-                    "bottom-6 right-6"
-                  ];
-                  
-                  return (
-                    <motion.div 
-                      key={idx} 
-                      animate={{ 
-                        y: [-10, 10, -10],
-                        rotate: idx % 2 === 0 ? [-1, 1, -1] : [1, -1, 1]
-                      }}
-                      transition={{ 
-                        duration: 4 + (idx * 0.5), 
-                        repeat: Infinity, 
-                        ease: "easeInOut" 
-                      }}
-                      className={`absolute ${positions[idx % positions.length]} group`}
-                    >
-                      <div className="rounded-full bg-white/80 px-4 py-2 text-[10px] font-bold text-slate-600 shadow-sm backdrop-blur-md ring-1 ring-slate-100 transition-all hover:scale-110">
-                        {tag}
-                      </div>
-                    </motion.div>
-                  );
+                const positions = [
+                  "top-6 left-6 md:top-12 md:left-12",
+                  "bottom-12 left-4 md:bottom-24 md:left-8",
+                  "top-1/3 right-4 lg:right-8 hidden lg:block",
+                  "bottom-6 right-6"
+                ];
+
+                return (
+                  <motion.div
+                    key={idx}
+                    animate={{
+                      y: [-10, 10, -10],
+                      rotate: idx % 2 === 0 ? [-1, 1, -1] : [1, -1, 1]
+                    }}
+                    transition={{
+                      duration: 4 + (idx * 0.5),
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    className={`absolute ${positions[idx % positions.length]} group`}
+                  >
+                    <div className="rounded-full bg-white/80 px-4 py-2 text-[10px] font-bold text-slate-600 shadow-sm backdrop-blur-md ring-1 ring-slate-100 transition-all hover:scale-110">
+                      {tag}
+                    </div>
+                  </motion.div>
+                );
               })}
               <div className="relative h-[400px] w-[320px] md:h-[450px] md:w-[380px]">
                 {items.map((service, i) => {
                   const offsetIndex = (i - activeIndex + items.length) % items.length;
-                  
+
                   // Display top 4 visually for more depth
                   const isVisible = offsetIndex < 4;
                   const isTop = offsetIndex === 0;
-                  
+
                   // Styling based on depth
-                  const scale = isVisible ? 1 - (offsetIndex * 0.05) : 0.8; 
+                  const scale = isVisible ? 1 - (offsetIndex * 0.05) : 0.8;
                   const translateY = isVisible ? offsetIndex * 20 : 60;
                   const translateX = isVisible ? offsetIndex * 8 : 20;
-                  
+
                   const zIndex = items.length - offsetIndex;
                   const opacity = isVisible ? 1 - (offsetIndex * 0.2) : 0;
-                  
+
                   // Consistent stack rotation per depth level
                   const rotate = isVisible ? (offsetIndex === 1 ? -3 : offsetIndex === 2 ? 3 : offsetIndex === 3 ? -1.5 : 0) : 0;
 
@@ -201,13 +201,13 @@ function ServiceMarqueeRow({
                     <div
                       key={i}
                       className={`absolute top-0 left-0 flex h-full w-full flex-col justify-between rounded-[2.5rem] p-8 ring-1 ring-slate-200/60 transition-all duration-1000 ease-[cubic-bezier(0.2,0.8,0.2,1)] origin-center ${cardBg}`}
-                      style={{ 
-                        zIndex, 
+                      style={{
+                        zIndex,
                         transform: `translate(${translateX}px, ${translateY}px) scale(${scale}) rotate(${rotate}deg)`,
                         opacity,
                         boxShadow: isTop ? '0 40px 80px -15px rgba(0,0,0,0.12)' : '0 10px 30px -5px rgba(0,0,0,0.03)',
                         cursor: isTop ? 'default' : 'pointer'
-                      }} 
+                      }}
                       onClick={() => {
                         if (!isTop) setActiveIndex(i);
                       }}
@@ -215,9 +215,9 @@ function ServiceMarqueeRow({
                       <div>
                         {/* Status chip for top card */}
                         {isTop && (
-                           <div className="mb-4 inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-600 ring-1 ring-brand-100">
-                             Featured Destination
-                           </div>
+                          <div className="mb-4 inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-600 ring-1 ring-brand-100">
+                            Featured Destination
+                          </div>
                         )}
                         <h3 className={`bg-gradient-to-br ${gradientColors[i % gradientColors.length]} bg-clip-text mb-4 text-3xl font-extrabold tracking-tight text-transparent transition-opacity duration-500`}>
                           {service.title}
@@ -226,17 +226,17 @@ function ServiceMarqueeRow({
                           {service.description}
                         </p>
                       </div>
-                      
+
                       <div className={`mt-6 transition-all duration-500 ${isTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-                         <Link
-                           to={service.path}
-                           className="group/link inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-900 transition-colors hover:text-brand-600"
-                         >
-                           Explore Details
-                           <svg className="h-4 w-4 transition-transform group-hover/link:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                           </svg>
-                         </Link>
+                        <Link
+                          to={service.path}
+                          className="group/link inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-900 transition-colors hover:text-brand-600"
+                        >
+                          Explore Details
+                          <svg className="h-4 w-4 transition-transform group-hover/link:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                        </Link>
                       </div>
                     </div>
                   );
@@ -263,7 +263,7 @@ function ServiceMarqueeRow({
   }
 
   return (
-    <motion.section 
+    <motion.section
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.1 }}
@@ -271,7 +271,7 @@ function ServiceMarqueeRow({
       className={`relative overflow-hidden py-12 md:py-16 ${bgColor}`}
     >
       <div className="mx-auto max-w-7xl px-4 md:px-6">
-        
+
         {/* iOS Style Centered Header */}
         <div className="mb-10 flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl lg:text-5xl">
@@ -281,24 +281,24 @@ function ServiceMarqueeRow({
             {description}
           </p>
           <div className="mt-8">
-             <Link
-               to={linkTarget}
-               className="inline-flex items-center justify-center rounded-full bg-slate-900 px-7 py-3 text-sm font-bold text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 active:scale-95"
-             >
-               {linkText}
-             </Link>
+            <Link
+              to={linkTarget}
+              className="inline-flex items-center justify-center rounded-full bg-slate-900 px-7 py-3 text-sm font-bold text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 active:scale-95"
+            >
+              {linkText}
+            </Link>
           </div>
         </div>
         {isStatic ? (
           <div className="flex w-full justify-center">
-             <div className="flex flex-wrap justify-center gap-8">
-                {items.map((service, idx) => renderCard(service, idx))}
-             </div>
+            <div className="flex flex-wrap justify-center gap-8">
+              {items.map((service, idx) => renderCard(service, idx))}
+            </div>
           </div>
         ) : (
           <div className={`relative flex w-full overflow-hidden rounded-[2rem] shadow-inner ring-1 ring-slate-100/50 before:absolute before:inset-y-0 before:left-0 before:z-10 before:w-24 before:bg-gradient-to-r ${beforeMaskString(bgColor)} after:absolute after:inset-y-0 after:right-0 after:z-10 after:w-24 after:bg-gradient-to-l ${afterMaskString(bgColor)}`}>
             <div className="group flex w-max gap-8 px-4 py-8 animate-marquee-horizontal hover:[animation-play-state:paused] md:px-6">
-               {scrollingItems.map((service, idx) => renderCard(service, idx))}
+              {scrollingItems.map((service, idx) => renderCard(service, idx))}
             </div>
           </div>
         )}
@@ -309,17 +309,17 @@ function ServiceMarqueeRow({
 
 // Helpers for the Tailwind dynamic edge masks
 function beforeMaskString(bg) {
-    if (bg === "bg-white") return "before:from-white before:to-transparent";
-    if (bg === "bg-[#F5F5F7]") return "before:from-[#F5F5F7] before:to-transparent";
-    if (bg === "bg-slate-50") return "before:from-slate-50 before:to-transparent";
-    return "";
+  if (bg === "bg-white") return "before:from-white before:to-transparent";
+  if (bg === "bg-[#F5F5F7]") return "before:from-[#F5F5F7] before:to-transparent";
+  if (bg === "bg-slate-50") return "before:from-slate-50 before:to-transparent";
+  return "";
 }
 
 function afterMaskString(bg) {
-    if (bg === "bg-white") return "after:from-white after:to-transparent";
-    if (bg === "bg-[#F5F5F7]") return "after:from-[#F5F5F7] after:to-transparent";
-    if (bg === "bg-slate-50") return "after:from-slate-50 after:to-transparent";
-    return "";
+  if (bg === "bg-white") return "after:from-white after:to-transparent";
+  if (bg === "bg-[#F5F5F7]") return "after:from-[#F5F5F7] after:to-transparent";
+  if (bg === "bg-slate-50") return "after:from-slate-50 after:to-transparent";
+  return "";
 }
 
 export default ServiceMarqueeRow;

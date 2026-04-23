@@ -144,21 +144,6 @@ app.get('/api/admin/users', async (req, res) => {
   }
 });
 
-// Lead Capture Route (Public)
-app.post('/api/leads', async (req, res) => {
-  const { name, email, phone, subject, message } = req.body;
-  try {
-    const result = await db.query(
-      'INSERT INTO leads (name, email, phone, subject, message) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [name, email, phone, subject, message]
-    );
-    res.json({ success: true, lead: result.rows[0] });
-  } catch (err) {
-    console.error('Lead capture error:', err);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
 // Admin Leads List Route
 app.get('/api/admin/leads', async (req, res) => {
   try {
@@ -182,6 +167,56 @@ app.patch('/api/admin/leads/:id', async (req, res) => {
     res.json({ success: true, lead: result.rows[0] });
   } catch (err) {
     console.error('Update lead error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Lead Capture Route (Public)
+app.post('/api/leads', async (req, res) => {
+  const { name, email, phone, subject, message, userId } = req.body;
+  try {
+    // 1. Create Lead
+    const leadResult = await db.query(
+      'INSERT INTO leads (name, email, phone, subject, message) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [name, email, phone, subject, message]
+    );
+
+    // 2. Create Ticket (Dual entry as requested)
+    await db.query(
+      'INSERT INTO tickets (user_id, name, email, subject, message, priority) VALUES ($1, $2, $3, $4, $5, $6)',
+      [userId || null, name, email, subject, message, 'HIGH']
+    );
+
+    res.json({ success: true, lead: leadResult.rows[0] });
+  } catch (err) {
+    console.error('Inquiry error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Admin Tickets List Route
+app.get('/api/admin/tickets', async (req, res) => {
+  try {
+    const tickets = await db.query('SELECT * FROM tickets ORDER BY created_at DESC');
+    res.json({ success: true, tickets: tickets.rows });
+  } catch (err) {
+    console.error('Fetch tickets error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Admin Update Ticket Status
+app.patch('/api/admin/tickets/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    const result = await db.query(
+      'UPDATE tickets SET status = $1 WHERE id = $2 RETURNING *',
+      [status, id]
+    );
+    res.json({ success: true, ticket: result.rows[0] });
+  } catch (err) {
+    console.error('Update ticket error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

@@ -40,7 +40,7 @@ function StudyAbroadPage() {
           <p className="mt-5 text-lg leading-relaxed text-slate-600">{details.description}</p>
           <div>
             <Link
-              to="/about/company-profile"
+              to={`/start-journey?country=${details.name}`}
               className="mt-8 inline-flex items-center justify-center rounded-full bg-slate-900 px-8 py-3.5 text-base font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 hover:shadow-lg active:scale-95"
             >
               Start Your Journey

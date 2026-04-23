@@ -12,26 +12,26 @@ const Hero = () => {
   useEffect(() => {
     // Reset counts to 0 when component mounts
     setCounts({ universities: 0, success: 0, destinations: 0, students: 0 });
-    
+
     const duration = 2000;
     const steps = 60;
     const interval = duration / steps;
-    
+
     let currentStep = 0;
     const timer = setInterval(() => {
       currentStep++;
       const progress = currentStep / steps;
-      
+
       setCounts({
         universities: Math.floor(targets.universities * progress),
         success: Math.floor(targets.success * progress),
         destinations: Math.floor(targets.destinations * progress),
         students: Math.floor(targets.students * progress)
       });
-      
+
       if (currentStep >= steps) clearInterval(timer);
     }, interval);
-    
+
     return () => clearInterval(timer);
   }, []); // Run only once on mount
 
@@ -40,26 +40,26 @@ const Hero = () => {
       {/* Cinematic Background Elements */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand-100/40 rounded-full blur-[120px] -translate-y-1/2 pointer-events-none z-0" />
       <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-teal-100/30 rounded-full blur-[150px] translate-y-1/2 pointer-events-none z-0" />
-      
+
       {/* Subtle Grid Pattern */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none z-0"
-        style={{ 
-          backgroundImage: 'radial-gradient(#1e293b 0.5px, transparent 0.5px)', 
-          backgroundSize: '24px 24px' 
-        }} 
+        style={{
+          backgroundImage: 'radial-gradient(#1e293b 0.5px, transparent 0.5px)',
+          backgroundSize: '24px 24px'
+        }}
       />
 
       {/* Banner & Content Container */}
       <div className="relative w-full min-h-[650px] lg:h-[800px] flex items-center justify-center overflow-hidden">
         {/* Banner Image Background */}
         <div className="absolute inset-0 z-0">
-          <motion.img 
+          <motion.img
             initial={{ scale: 1.1, opacity: 0 }}
             animate={{ scale: 1, opacity: 0.8 }}
             transition={{ duration: 1.2 }}
-            src={banner} 
-            alt="UK Education Banner" 
+            src={banner}
+            alt="UK Education Banner"
             className="w-full h-full object-cover object-center lg:object-[center_25%]"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-white" />
@@ -71,15 +71,15 @@ const Hero = () => {
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-[15%] right-[10%] bg-white/80 backdrop-blur-xl border border-white/60 p-3 rounded-2xl shadow-xl hidden lg:block z-20"
         >
-           <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-white">
-                <GraduationCap className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Success Rate</p>
-                <p className="text-base font-bold text-slate-900 leading-none">98% <span className="text-brand-600 text-[10px] font-bold">Visa</span></p>
-              </div>
-           </div>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-white">
+              <GraduationCap className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Success Rate</p>
+              <p className="text-base font-bold text-slate-900 leading-none">98% <span className="text-brand-600 text-[10px] font-bold">Visa</span></p>
+            </div>
+          </div>
         </motion.div>
 
         {/* Content Box - Positioned DIRECTLY on Top */}
@@ -87,7 +87,7 @@ const Hero = () => {
           <div className="max-w-2xl space-y-6 text-center lg:text-left bg-white/70 backdrop-blur-3xl p-6 md:p-10 rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-white/60 mx-auto lg:mx-0 relative overflow-hidden group">
             {/* Subtle light leak effect */}
             <div className="absolute -top-24 -left-24 w-48 h-48 bg-brand-200/20 rounded-full blur-[60px] pointer-events-none group-hover:bg-brand-300/30 transition-colors duration-700" />
-            
+
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -112,7 +112,7 @@ const Hero = () => {
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-500 to-teal-500">Global Journey</span>
               </h1>
               <p className="text-base md:text-lg text-slate-500 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
-                From elite exam training to seamless visa processing, we provide the 
+                From elite exam training to seamless visa processing, we provide the
                 strategic guidance you need to conquer international education.
               </p>
             </motion.div>
@@ -140,7 +140,7 @@ const Hero = () => {
             </motion.div>
 
             {/* Counter Stats Section - More Compact */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
