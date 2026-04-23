@@ -24,6 +24,7 @@ const UserLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     window.dispatchEvent(new Event("user-logout"));
     navigate('/my-account');
   };

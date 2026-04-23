@@ -14,20 +14,22 @@ const AdminDashboard = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await fetch('/api/admin/stats');
-        const data = await response.json();
-        if (data.success) {
-          setLiveStats(data.stats);
-        }
-      } catch (err) {
-        console.error('Failed to fetch admin stats:', err);
-      } finally {
-        setIsLoading(false);
+  const fetchStats = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/admin/stats');
+      const data = await response.json();
+      if (data.success) {
+        setLiveStats(data.stats);
       }
-    };
+    } catch (err) {
+      console.error('Failed to fetch admin stats:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchStats();
   }, []);
 
@@ -53,8 +55,12 @@ const AdminDashboard = () => {
           <button className="p-3 bg-white/60 backdrop-blur-md border border-white/60 rounded-xl text-slate-400 hover:text-slate-600 transition-all shadow-sm">
             <Search size={18} />
           </button>
-          <button className="p-3 bg-white/60 backdrop-blur-md border border-white/60 rounded-xl text-slate-400 hover:text-slate-600 transition-all shadow-sm">
-            <RotateCcw size={18} />
+          <button 
+            onClick={fetchStats}
+            disabled={isLoading}
+            className={`p-3 bg-white/60 backdrop-blur-md border border-white/60 rounded-xl text-slate-400 hover:text-slate-600 transition-all shadow-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <RotateCcw size={18} className={isLoading ? "animate-spin" : ""} />
           </button>
         </div>
       </div>

@@ -43,6 +43,7 @@ function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     // Notify other components
     window.dispatchEvent(new Event("user-logout"));
     setCurrentUser(null);

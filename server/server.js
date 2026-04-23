@@ -112,7 +112,7 @@ app.get('/api/admin/stats', async (req, res) => {
 // Admin Users List Route
 app.get('/api/admin/users', async (req, res) => {
   try {
-    const users = await db.query('SELECT id, name, email, role, phone, created_at FROM users ORDER BY created_at DESC');
+    const users = await db.query('SELECT id, name, email, role, phone, status, created_at FROM users ORDER BY created_at DESC');
     res.json({ success: true, users: users.rows });
   } catch (err) {
     console.error('Fetch users error:', err);
