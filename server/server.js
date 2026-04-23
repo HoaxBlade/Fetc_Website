@@ -20,6 +20,33 @@ app.get('/api/status', (req, res) => {
   });
 });
 
+// Real Signup Route
+app.post('/api/auth/signup', async (req, res) => {
+  const { name, email, password, phone } = req.body;
+
+  try {
+    // Check if user already exists
+    const userCheck = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (userCheck.rows.length > 0) {
+      return res.status(400).json({ success: false, message: 'Email already registered' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert user
+    await db.query(
+      'INSERT INTO users (name, email, password, role, phone) VALUES ($1, $2, $3, $4, $5)',
+      [name, email, hashedPassword, 'USER', phone]
+    );
+
+    res.status(201).json({ success: true, message: 'Account created successfully!' });
+  } catch (err) {
+    console.error('Signup error:', err);
+    res.status(500).json({ success: false, message: 'Error creating account' });
+  }
+});
+
 // Real Auth Route with PostgreSQL
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;

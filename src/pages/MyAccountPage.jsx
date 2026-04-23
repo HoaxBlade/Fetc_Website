@@ -84,22 +84,31 @@ const MyAccountPage = () => {
           setMessage({ type: "error", text: data.message || "Invalid credentials. Please try again." });
         }
       } else {
-        // Signup still simulated for now until we have database models
-        setTimeout(() => {
-          if (formData.password.length < 6) {
-            setMessage({ type: "error", text: "Password must be at least 6 characters." });
-          } else {
-            setMessage({ type: "success", text: "Account created successfully! Please sign in." });
+        // Real Signup Logic
+        const response = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          setMessage({ type: "success", text: "Account created successfully! Please sign in." });
+          // Switch to login tab after brief delay
+          setTimeout(() => {
             setActiveTab("login");
-          }
-          setIsSubmitting(false);
-        }, 1500);
-        return; // Skip the final setIsSubmitting(false) as it's handled in the timeout
+            setMessage({ type: "", text: "" });
+            setFormData({ ...formData, password: "" }); // Clear password for safety
+          }, 2000);
+        } else {
+          setMessage({ type: "error", text: data.message || "Registration failed." });
+        }
       }
     } catch (err) {
       setMessage({ type: "error", text: "Server connection failed. Is the backend running?" });
     } finally {
-      if (activeTab === "login") setIsSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
