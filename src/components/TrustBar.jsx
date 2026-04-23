@@ -1,55 +1,65 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Landmark, GraduationCap, School, Building2, Building, Library } from 'lucide-react';
+import { Landmark, GraduationCap, School, Building2, Building, Library, Award, BookOpen } from 'lucide-react';
 
 const TrustBar = () => {
   const partners = [
-    { name: "Oxford Style", icon: Landmark },
-    { name: "Global Edu", icon: GraduationCap },
-    { name: "Uni West", icon: School },
+    { name: "Oxford Brookes", icon: Landmark },
+    { name: "QA Universities", icon: GraduationCap },
+    { name: "Global Education", icon: School },
     { name: "Scholar Hub", icon: Building2 },
     { name: "Elite Academy", icon: Building },
-    { name: "Legacy Lib", icon: Library },
-    { name: "Future Uni", icon: GraduationCap },
+    { name: "IDP Education", icon: Award },
+    { name: "Future Studies", icon: GraduationCap },
     { name: "Pioneer Inst", icon: Building2 },
+    { name: "Learning Hub", icon: BookOpen },
+    { name: "Legacy Institute", icon: Library },
   ];
 
-  // Double the partners for seamless marquee
-  const scrollingPartners = [...partners, ...partners];
+  // Triple for seamless loop
+  const scrollingPartners = [...partners, ...partners, ...partners];
 
   return (
-    <div className="py-10 bg-white/50 backdrop-blur-sm border-y border-slate-100 overflow-hidden relative">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-6 text-center">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-          Trusted by 100+ Global Universities & Partners
-        </p>
+    <div className="py-14 bg-white/80 backdrop-blur-sm border-y border-slate-100/60 overflow-hidden relative">
+      {/* Subtle glow */}
+      <div className="absolute inset-0 bg-gradient-to-r from-brand-50/20 via-transparent to-teal-50/20 pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-8 text-center relative z-10">
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400"
+        >
+          Trusted by <span className="text-brand-600">100+</span> Global Universities & Education Partners
+        </motion.p>
       </div>
-      
+
       <div className="relative flex">
-        <motion.div 
-          className="flex gap-12 md:gap-24 items-center whitespace-nowrap px-4 md:px-6"
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ 
-            duration: 30, 
-            repeat: Infinity, 
-            ease: "linear" 
+        <motion.div
+          className="flex gap-10 md:gap-16 items-center whitespace-nowrap px-4 md:px-6"
+          animate={{ x: ["0%", "-33.33%"] }}
+          transition={{
+            duration: 40,
+            repeat: Infinity,
+            ease: "linear"
           }}
         >
           {scrollingPartners.map((partner, idx) => (
             <div key={idx} className="flex items-center gap-3 group">
-              <div className="p-2 rounded-xl bg-slate-50 group-hover:bg-brand-50 transition-colors duration-300">
-                <partner.icon className="w-6 h-6 text-slate-400 group-hover:text-brand-600 transition-colors" />
+              <div className="p-2.5 rounded-xl bg-slate-50/80 group-hover:bg-brand-50 transition-all duration-300 group-hover:shadow-sm">
+                <partner.icon className="w-5 h-5 text-slate-300 group-hover:text-brand-600 transition-colors duration-300" />
               </div>
-              <span className="text-sm font-bold text-slate-400 group-hover:text-slate-600 transition-colors">
+              <span className="text-sm font-bold text-slate-300 group-hover:text-slate-600 transition-colors duration-300 tracking-tight">
                 {partner.name}
               </span>
             </div>
           ))}
         </motion.div>
 
-        {/* Gradient Masks */}
-        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#fcfdfe] to-transparent z-10"></div>
-        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#fcfdfe] to-transparent z-10"></div>
+        {/* Gradient Masks — wider for premium feel */}
+        <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-white to-transparent z-10"></div>
+        <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-white to-transparent z-10"></div>
       </div>
     </div>
   );

@@ -62,6 +62,10 @@ const MyAccountPage = () => {
     // Dummy Credentials
     const DUMMY_EMAIL = "fetc2026@gmail.com";
     const DUMMY_PASS = "admin@12345";
+    
+    // New User Credentials
+    const TEST_USER_EMAIL = "user2026@gmail.com";
+    const TEST_USER_PASS = "user@12345..";
 
     setTimeout(() => {
       setIsSubmitting(false);
@@ -76,6 +80,22 @@ const MyAccountPage = () => {
             email: DUMMY_EMAIL,
             role: "ADMIN",
             phone: "9033347209"
+          }));
+
+          setTimeout(() => {
+            // Notify other components (Navbar)
+            window.dispatchEvent(new Event("user-login"));
+            navigate("/");
+          }, 1500);
+        } else if (formData.email === TEST_USER_EMAIL && formData.password === TEST_USER_PASS) {
+          setMessage({ type: "success", text: "Successfully logged in! Redirecting..." });
+
+          // Save session
+          localStorage.setItem("user", JSON.stringify({
+            name: "User 2026",
+            email: TEST_USER_EMAIL,
+            role: "USER",
+            phone: "9876543210"
           }));
 
           setTimeout(() => {

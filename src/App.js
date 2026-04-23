@@ -87,6 +87,8 @@ function App() {
               <Route path="orders" element={<div className="p-8 text-slate-400 italic">My Orders component coming soon...</div>} />
               <Route path="payments" element={<div className="p-8 text-slate-400 italic">Payments component coming soon...</div>} />
               <Route path="support" element={<div className="p-8 text-slate-400 italic">Support component coming soon...</div>} />
+              <Route path="doubts" element={<div className="p-8 text-slate-400 italic text-sm font-medium tracking-wide">Doubts portal coming soon...</div>} />
+              <Route path="mock-tests" element={<div className="p-8 text-slate-400 italic text-sm font-medium tracking-wide">Mock Test dashboard coming soon...</div>} />
             </Route>
 
             <Route path="/about" element={<Navigate to="/about/company-profile" replace />} />

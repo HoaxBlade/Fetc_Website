@@ -7,9 +7,14 @@ module.exports = {
         brand: {
           50: "#f1f8ff",
           100: "#dcedff",
+          200: "#b9dcff",
+          300: "#82c4ff",
+          400: "#4da8ff",
+          500: "#1a8cff",
           600: "#0d5eb7",
           700: "#0a4a90",
           800: "#083a71",
+          900: "#062a52",
         },
       },
       boxShadow: {

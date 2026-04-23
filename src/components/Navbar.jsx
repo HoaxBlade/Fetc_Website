@@ -131,9 +131,11 @@ function Navbar() {
                         <p className="text-xs font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Signed in as</p>
                         <p className="text-sm font-bold text-slate-900 truncate">{currentUser.name}</p>
                       </div>
-                      <Link to="/admin/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-700 rounded-xl transition">
-                        <LayoutDashboard size={16} /> Admin Dashboard
-                      </Link>
+                      {currentUser.role === "ADMIN" && (
+                        <Link to="/admin/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-700 rounded-xl transition">
+                          <LayoutDashboard size={16} /> Admin Dashboard
+                        </Link>
+                      )}
                       <Link to="/dashboard/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-700 rounded-xl transition">
                         <Settings size={16} /> My Profile
                       </Link>
@@ -198,13 +200,15 @@ function Navbar() {
                       <div className="pl-10 space-y-1">
                         {currentUser ? (
                           <>
-                            <Link 
-                              to="/admin/dashboard" 
-                              onClick={() => setMobileOpen(false)} 
-                              className="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
-                            >
-                              <LayoutDashboard size={14} /> Admin Dashboard
-                            </Link>
+                            {currentUser.role === "ADMIN" && (
+                              <Link 
+                                to="/admin/dashboard" 
+                                onClick={() => setMobileOpen(false)} 
+                                className="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                              >
+                                <LayoutDashboard size={14} /> Admin Dashboard
+                              </Link>
+                            )}
                             <Link 
                               to="/dashboard/profile" 
                               onClick={() => setMobileOpen(false)} 

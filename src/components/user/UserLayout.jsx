@@ -3,7 +3,8 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, BookOpen, ShoppingBag, CreditCard, 
-  HelpCircle, Settings, LogOut, Menu, X, Zap
+  HelpCircle, Settings, LogOut, Menu, X, Zap,
+  MessageCircle, ClipboardCheck
 } from 'lucide-react';
 
 const UserLayout = () => {
@@ -17,6 +18,8 @@ const UserLayout = () => {
     { icon: ShoppingBag, label: "My Orders", path: "/dashboard/orders" },
     { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
     { icon: HelpCircle, label: "Support", path: "/dashboard/support" },
+    { icon: MessageCircle, label: "Doubts", path: "/dashboard/doubts" },
+    { icon: ClipboardCheck, label: "Mock Test Remaining", path: "/dashboard/mock-tests" },
   ];
 
   const handleLogout = () => {
