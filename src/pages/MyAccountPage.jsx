@@ -54,68 +54,53 @@ const MyAccountPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setMessage({ type: "", text: "" });
 
-    // Dummy Credentials
-    const DUMMY_EMAIL = "fetc2026@gmail.com";
-    const DUMMY_PASS = "admin@12345";
-    
-    // New User Credentials
-    const TEST_USER_EMAIL = "user2026@gmail.com";
-    const TEST_USER_PASS = "user@12345..";
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-
+    try {
       if (activeTab === "login") {
-        if (formData.email === DUMMY_EMAIL && formData.password === DUMMY_PASS) {
-          setMessage({ type: "success", text: "Successfully logged in! Redirecting..." });
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: formData.email, password: formData.password })
+        });
 
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          setMessage({ type: "success", text: "Successfully logged in! Redirecting..." });
+          
           // Save session
-          localStorage.setItem("user", JSON.stringify({
-            name: "Admin",
-            email: DUMMY_EMAIL,
-            role: "ADMIN",
-            phone: "9033347209"
-          }));
+          localStorage.setItem("user", JSON.stringify(data.user));
+          if (data.token) localStorage.setItem("token", data.token);
 
           setTimeout(() => {
-            // Notify other components (Navbar)
-            window.dispatchEvent(new Event("user-login"));
-            navigate("/");
-          }, 1500);
-        } else if (formData.email === TEST_USER_EMAIL && formData.password === TEST_USER_PASS) {
-          setMessage({ type: "success", text: "Successfully logged in! Redirecting..." });
-
-          // Save session
-          localStorage.setItem("user", JSON.stringify({
-            name: "User 2026",
-            email: TEST_USER_EMAIL,
-            role: "USER",
-            phone: "9876543210"
-          }));
-
-          setTimeout(() => {
-            // Notify other components (Navbar)
             window.dispatchEvent(new Event("user-login"));
             navigate("/");
           }, 1500);
         } else {
-          setMessage({ type: "error", text: "Invalid email or password. Please try again." });
+          setMessage({ type: "error", text: data.message || "Invalid credentials. Please try again." });
         }
       } else {
-        // Signup Simulation
-        if (formData.password.length < 6) {
-          setMessage({ type: "error", text: "Password must be at least 6 characters." });
-        } else {
-          setMessage({ type: "success", text: "Account created successfully! Please sign in." });
-          setActiveTab("login");
-        }
+        // Signup still simulated for now until we have database models
+        setTimeout(() => {
+          if (formData.password.length < 6) {
+            setMessage({ type: "error", text: "Password must be at least 6 characters." });
+          } else {
+            setMessage({ type: "success", text: "Account created successfully! Please sign in." });
+            setActiveTab("login");
+          }
+          setIsSubmitting(false);
+        }, 1500);
+        return; // Skip the final setIsSubmitting(false) as it's handled in the timeout
       }
-    }, 1500);
+    } catch (err) {
+      setMessage({ type: "error", text: "Server connection failed. Is the backend running?" });
+    } finally {
+      if (activeTab === "login") setIsSubmitting(false);
+    }
   };
 
   return (

@@ -25,3 +25,7 @@ yarn-error.log*
 # local scratch scripts
 /scratch/
 
+# server local files
+/server/node_modules/
+/server/.env
+
