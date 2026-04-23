@@ -144,6 +144,48 @@ app.get('/api/admin/users', async (req, res) => {
   }
 });
 
+// Lead Capture Route (Public)
+app.post('/api/leads', async (req, res) => {
+  const { name, email, phone, subject, message } = req.body;
+  try {
+    const result = await db.query(
+      'INSERT INTO leads (name, email, phone, subject, message) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [name, email, phone, subject, message]
+    );
+    res.json({ success: true, lead: result.rows[0] });
+  } catch (err) {
+    console.error('Lead capture error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Admin Leads List Route
+app.get('/api/admin/leads', async (req, res) => {
+  try {
+    const leads = await db.query('SELECT * FROM leads ORDER BY created_at DESC');
+    res.json({ success: true, leads: leads.rows });
+  } catch (err) {
+    console.error('Fetch leads error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Admin Update Lead Status
+app.patch('/api/admin/leads/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    const result = await db.query(
+      'UPDATE leads SET status = $1 WHERE id = $2 RETURNING *',
+      [status, id]
+    );
+    res.json({ success: true, lead: result.rows[0] });
+  } catch (err) {
+    console.error('Update lead error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // Error handling for the pool
 db.query('SELECT NOW()', (err, res) => {
   if (err) {

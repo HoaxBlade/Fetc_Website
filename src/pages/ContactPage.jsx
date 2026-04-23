@@ -15,18 +15,28 @@ const ContactPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API submission call
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setIsSubmitted(true);
+        setFormData({ name: "", email: "", subject: "Course Related", message: "" });
+        // Remove success message after 5 seconds
+        setTimeout(() => setIsSubmitted(false), 5000);
+      }
+    } catch (err) {
+      console.error('Submission failed:', err);
+      alert('Failed to send message. Please try again later.');
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({ name: "", email: "", subject: "Course Related", message: "" });
-      
-      // Remove success message after 5 seconds
-      setTimeout(() => setIsSubmitted(false), 5000);
-    }, 1500);
+    }
   };
 
   return (
