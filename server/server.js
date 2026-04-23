@@ -90,6 +90,45 @@ db.query('SELECT NOW()', (err, res) => {
   }
 });
 
+// Admin Stats Route
+app.get('/api/admin/stats', async (req, res) => {
+  try {
+    const userCount = await db.query('SELECT COUNT(*) FROM users');
+    
+    res.json({
+      success: true,
+      stats: {
+        totalUsers: parseInt(userCount.rows[0].count),
+        todaySales: "₹0.00",
+        todayOrders: 0
+      }
+    });
+  } catch (err) {
+    console.error('Stats error:', err);
+    res.status(500).json({ success: false, message: 'Error fetching stats' });
+  }
+});
+
+// Admin Users List Route
+app.get('/api/admin/users', async (req, res) => {
+  try {
+    const users = await db.query('SELECT id, name, email, role, phone, created_at FROM users ORDER BY created_at DESC');
+    res.json({ success: true, users: users.rows });
+  } catch (err) {
+    console.error('Fetch users error:', err);
+    res.status(500).json({ success: false, message: 'Error fetching users' });
+  }
+});
+
+// Error handling for the pool
+db.query('SELECT NOW()', (err, res) => {
+  if (err) {
+    console.error('❌ Database connection error:', err.message);
+  } else {
+    console.log('✅ Database connected at:', res.rows[0].now);
+  }
+});
+
 const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 }).on('error', (err) => {

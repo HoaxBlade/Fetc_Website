@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   IndianRupee, ShoppingBag, 
@@ -7,10 +7,34 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
+  const [liveStats, setLiveStats] = useState({
+    totalUsers: 0,
+    todaySales: "₹0.00",
+    todayOrders: 0
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/admin/stats');
+        const data = await response.json();
+        if (data.success) {
+          setLiveStats(data.stats);
+        }
+      } catch (err) {
+        console.error('Failed to fetch admin stats:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
   const stats = [
-    { label: "Today's Sales", value: "₹0.00", icon: IndianRupee, color: "text-emerald-500", bg: "bg-emerald-50" },
-    { label: "Today's Orders", value: "0", icon: ShoppingBag, color: "text-blue-500", bg: "bg-blue-50" },
-    { label: "Customers", value: "0", icon: UserPlus, color: "text-purple-500", bg: "bg-purple-50" },
+    { label: "Today's Sales", value: liveStats.todaySales, icon: IndianRupee, color: "text-emerald-500", bg: "bg-emerald-50" },
+    { label: "Today's Orders", value: liveStats.todayOrders, icon: ShoppingBag, color: "text-blue-500", bg: "bg-blue-50" },
+    { label: "Customers", value: isLoading ? "..." : liveStats.totalUsers, icon: UserPlus, color: "text-purple-500", bg: "bg-purple-50" },
   ];
 
   return (
