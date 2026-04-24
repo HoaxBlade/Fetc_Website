@@ -131,7 +131,10 @@ app.post('/api/auth/login', async (req, res) => {
           id: user.id,
           name: user.name,
           email: user.email,
-          role: user.role
+          role: user.role,
+          phone: user.phone,
+          bio: user.bio,
+          created_at: user.created_at
         },
         token: "mock-jwt-token-fetc-" + user.id // We will add real JWT later
       });
@@ -141,6 +144,44 @@ app.post('/api/auth/login', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server database error' });
+  }
+});
+
+// User Profile Update Route
+app.patch('/api/users/profile/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, phone, bio } = req.body;
+  
+  try {
+    const result = await db.query(
+      'UPDATE users SET name = COALESCE($1, name), phone = COALESCE($2, phone), bio = COALESCE($3, bio) WHERE id = $4 RETURNING id, name, email, role, phone, bio, created_at',
+      [name, phone, bio, id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    
+    res.json({ success: true, user: result.rows[0] });
+  } catch (err) {
+    console.error('Update profile error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// GET User Profile Route
+app.get('/api/users/profile/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await db.query(
+      'SELECT id, name, email, role, phone, bio, created_at FROM users WHERE id = $1',
+      [id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'User not found' });
+    res.json({ success: true, user: result.rows[0] });
+  } catch (err) {
+    console.error('Fetch profile error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 

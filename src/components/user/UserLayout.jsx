@@ -14,12 +14,12 @@ const UserLayout = () => {
 
   const sidebarItems = [
     { icon: User, label: "Profile", path: "/dashboard/profile" },
-    { icon: BookOpen, label: "My Courses", path: "/dashboard/courses" },
-    { icon: ShoppingBag, label: "My Orders", path: "/dashboard/orders" },
-    { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
+    // { icon: BookOpen, label: "My Courses", path: "/dashboard/courses" },
+    // { icon: ShoppingBag, label: "My Orders", path: "/dashboard/orders" },
+    // { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
     { icon: HelpCircle, label: "Support", path: "/dashboard/support" },
     { icon: MessageCircle, label: "Doubts", path: "/dashboard/doubts" },
-    { icon: ClipboardCheck, label: "Mock Test Remaining", path: "/dashboard/mock-tests" },
+    // { icon: ClipboardCheck, label: "Mock Test Remaining", path: "/dashboard/mock-tests" },
   ];
 
   const handleLogout = () => {
@@ -30,7 +30,7 @@ const UserLayout = () => {
   };
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-fit overflow-hidden">
       <div className="p-8 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-xl shadow-slate-200">
@@ -103,8 +103,8 @@ const UserLayout = () => {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="w-72 mt-2 sticky top-24 hidden lg:flex flex-col h-[calc(100vh-140px)] z-20 m-6">
-        <div className="h-full bg-white/40 backdrop-blur-3xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2.5rem] overflow-hidden relative group">
+      <aside className="w-72 mt-2 sticky top-24 hidden lg:flex flex-col h-fit max-h-[calc(100vh-140px)] z-20 m-6">
+        <div className="bg-white/40 backdrop-blur-3xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2.5rem] overflow-hidden relative group">
            {/* Liquid Blobs */}
            <motion.div 
             animate={{ scale: [1, 1.15, 1], x: [0, 30, 0], y: [0, -20, 0] }}
