@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  LayoutDashboard, BookOpen, Users, FileText, Share2, 
-  CheckSquare, Zap, Ticket, IndianRupee, ShoppingBag, 
-  UserPlus, Search, RotateCcw, Download, X, Menu
+  LayoutDashboard, Users, FileText, Share2, 
+  Zap, Ticket, Menu, X
 } from 'lucide-react';
 
 const AdminLayout = () => {

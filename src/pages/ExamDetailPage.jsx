@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { examData } from "../data/siteData";
 
 function ExamDetailPage() {

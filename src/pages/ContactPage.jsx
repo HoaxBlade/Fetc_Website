@@ -1,7 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { User, Mail, FileText, MessageSquare, Send, MapPin, Phone, Mail as MailIcon } from "lucide-react";
 
 const ContactPage = () => {
+  const [pageData, setPageData] = useState(null);
+
+  const fetchPageContent = async () => {
+    try {
+      const response = await fetch('/api/admin/pages/slug?slug=/contact');
+      const data = await response.json();
+      if (data.success && data.page) {
+        setPageData(data.page.content);
+      }
+    } catch (err) {
+      console.error('Failed to fetch contact page content:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPageContent();
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -46,9 +64,11 @@ const ContactPage = () => {
         {/* Left Column - Contact Info */}
         <div className="col-span-1 bg-brand-800 text-white rounded-2xl p-8 shadow-soft flex flex-col justify-between transition-transform duration-500 hover:-translate-y-1">
           <div>
-            <h2 className="text-3xl font-bold mb-3 tracking-tight">Get In Touch With Us</h2>
+            <h2 className="text-3xl font-bold mb-3 tracking-tight">
+              {pageData?.infoSection?.title || "Get In Touch With Us"}
+            </h2>
             <p className="text-brand-100 mb-10 leading-relaxed opacity-90">
-              Have questions about our courses, study abroad programs, or anything else? We'd love to hear from you.
+              {pageData?.infoSection?.description || "Have questions about our courses, study abroad programs, or anything else? We'd love to hear from you."}
             </p>
             
             <div className="space-y-8">
@@ -58,11 +78,19 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">Visit Us</h4>
-                  <p className="text-sm text-brand-100 mt-1 leading-relaxed">
-                    2nd floor, 239, Roongta Signature<br/>
-                    Nr. Shyam Mandir Vesu<br/>
-                    Surat - 395007
-                  </p>
+                  <div className="text-sm text-brand-100 mt-1 leading-relaxed">
+                    {pageData?.contactDetails?.address?.lines?.map((line, i) => (
+                      <React.Fragment key={i}>
+                        {line}<br/>
+                      </React.Fragment>
+                    )) || (
+                      <>
+                        2nd floor, 239, Roongta Signature<br/>
+                        Nr. Shyam Mandir Vesu<br/>
+                        Surat - 395007
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               
@@ -72,7 +100,9 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">Call Us</h4>
-                  <p className="text-sm text-brand-100 mt-1">+91-8854347201</p>
+                  <p className="text-sm text-brand-100 mt-1">
+                    {pageData?.contactDetails?.phone?.number || "+91-8854347201"}
+                  </p>
                 </div>
               </div>
               
@@ -82,7 +112,9 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">Email Us</h4>
-                  <p className="text-sm text-brand-100 mt-1">consult@fetc.in</p>
+                  <p className="text-sm text-brand-100 mt-1">
+                    {pageData?.contactDetails?.email?.address || "consult@fetc.in"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -93,8 +125,12 @@ const ContactPage = () => {
               <span className="w-2 h-2 rounded-full bg-green-400"></span>
               Working Hours
             </h4>
-            <p className="text-sm text-brand-100 mb-1">Mon - Sat: 9:00 AM - 7:00 PM</p>
-            <p className="text-sm text-brand-100">Sunday: Closed</p>
+            <p className="text-sm text-brand-100 mb-1">
+              {pageData?.workingHours?.weekdays || "Mon - Sat: 9:00 AM - 7:00 PM"}
+            </p>
+            <p className="text-sm text-brand-100">
+              {pageData?.workingHours?.sunday || "Sunday: Closed"}
+            </p>
           </div>
         </div>
 
@@ -119,7 +155,6 @@ const ContactPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Name field */}
               <div className="space-y-2 group">
                 <label htmlFor="name" className="text-sm font-semibold text-slate-700">Full Name <span className="text-red-500">*</span></label>
                 <div className="relative">
@@ -139,7 +174,6 @@ const ContactPage = () => {
                 </div>
               </div>
 
-              {/* Email field */}
               <div className="space-y-2 group">
                 <label htmlFor="email" className="text-sm font-semibold text-slate-700">Email Address <span className="text-red-500">*</span></label>
                 <div className="relative">
@@ -160,7 +194,6 @@ const ContactPage = () => {
               </div>
             </div>
 
-            {/* Subject Dropdown */}
             <div className="space-y-2 group">
               <label htmlFor="subject" className="text-sm font-semibold text-slate-700">Subject <span className="text-red-500">*</span></label>
               <div className="relative">
@@ -185,7 +218,6 @@ const ContactPage = () => {
               </div>
             </div>
 
-            {/* Message field */}
             <div className="space-y-2 group">
               <label htmlFor="message" className="text-sm font-semibold text-slate-700">Your Message <span className="text-red-500">*</span></label>
               <div className="relative">
@@ -205,7 +237,6 @@ const ContactPage = () => {
               </div>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -244,7 +275,7 @@ const ContactPage = () => {
             scrolling="no"
             marginHeight="0"
             marginWidth="0"
-            src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=Second%20Floor,%20Foreign%20English%20Tests%20Capital%20-%20FETC,%20Roongta%20Signature,%20238%20%E2%80%93%20239,%20VIP%20Rd,%20opp.%20Shyam%20Mandir,%20Anand%20Park,%20Vesu,%20Surat,%20Gujarat%20395007&amp;t=&amp;z=15&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
+            src={pageData?.mapSection?.mapUrl || "https://maps.google.com/maps?width=100%25&height=600&hl=en&q=Second%20Floor,%20Foreign%20English%20Tests%20Capital%20-%20FETC,%20Roongta%20Signature,%20238%20%E2%80%93%20239,%20VIP%20Rd,%20opp.%20Shyam%20Mandir,%20Anand%20Park,%20Vesu,%20Surat,%20Gujarat%20395007&t=&z=15&ie=UTF8&iwloc=B&output=embed"}
             style={{ border: 0 }}
             allowFullScreen=""
             loading="lazy"

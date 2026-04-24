@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, ShieldCheck, Users, ImageIcon } from 'lucide-react';
+import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin } from 'lucide-react';
 
 const AdminPages = () => {
   const handleFileUpload = async (section, field, file, customSectionId = null) => {
@@ -293,6 +293,7 @@ const AdminPages = () => {
                     </div>
                   ) : (
                     <div className="space-y-8">
+                      {/* 1. HOME PAGE EDITOR */}
                       {selectedPage.slug === '/' && (
                         <div className="space-y-6 pb-20">
                           {/* 1. Hero Section */}
@@ -400,12 +401,6 @@ const AdminPages = () => {
                                   onChange={(e) => handleContentChange('studyAbroad', 'description', e.target.value)}
                                 />
                               </div>
-                              <div className="grid grid-cols-3 gap-2">
-                                {/* Stats row can be expanded later, for now simple value editing */}
-                                <div className="p-3 bg-white rounded-xl border border-slate-100 italic text-[10px] text-slate-400 text-center">
-                                  Static Stats Management coming soon
-                                </div>
-                              </div>
                             </div>
                           </div>
 
@@ -442,70 +437,6 @@ const AdminPages = () => {
                                 />
                               </div>
                             </div>
-                          </div>
-
-                          {/* 5. Features Section */}
-                          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
-                              <ShieldCheck size={18} className="text-brand-600" /> 5. Features Grid
-                            </h3>
-                            <div className="space-y-4">
-                              <div>
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Section Headline</label>
-                                <input
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.features?.sectionTitle || ""}
-                                  onChange={(e) => handleContentChange('features', 'sectionTitle', e.target.value)}
-                                />
-                              </div>
-                              <div>
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Section Subtitle</label>
-                                <textarea
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-16 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.features?.sectionSubtitle || ""}
-                                  onChange={(e) => handleContentChange('features', 'sectionSubtitle', e.target.value)}
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* 6. Career Assessment Section */}
-                          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
-                              <Users size={18} className="text-brand-600" /> 6. Career Assessment
-                            </h3>
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Section Title</label>
-                                  <input
-                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.careerAssessment?.title || ""}
-                                    onChange={(e) => handleContentChange('careerAssessment', 'title', e.target.value)}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
-                                  <input
-                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.careerAssessment?.badgeText || ""}
-                                    onChange={(e) => handleContentChange('careerAssessment', 'badgeText', e.target.value)}
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
-                                <textarea
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.careerAssessment?.description || ""}
-                                  onChange={(e) => handleContentChange('careerAssessment', 'description', e.target.value)}
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="p-8 bg-brand-50/50 rounded-3xl border border-brand-100 border-dashed text-center">
-                            <p className="text-xs font-bold text-brand-600 opacity-60">All Core Sections Now Editable ✨</p>
                           </div>
 
                           {/* 7. Custom Sections Builder */}
@@ -579,7 +510,203 @@ const AdminPages = () => {
                         </div>
                       )}
 
-                      {selectedPage.slug !== '/' && (
+                      {/* 2. COMPANY PROFILE EDITOR */}
+                      {selectedPage.slug === '/about/company-profile' && (
+                        <div className="space-y-6 pb-20">
+                          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <Globe size={18} className="text-brand-600" /> 1. Hero / Our Story
+                            </h3>
+                            <div className="space-y-4">
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Main Title (e.g. Our)</label>
+                                 <input 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.hero?.title || ""}
+                                   onChange={(e) => handleContentChange('hero', 'title', e.target.value)}
+                                 />
+                               </div>
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Title Highlight (e.g. Story)</label>
+                                 <input 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.hero?.titleHighlight || ""}
+                                   onChange={(e) => handleContentChange('hero', 'titleHighlight', e.target.value)}
+                                 />
+                               </div>
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
+                                 <textarea 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.hero?.description || ""}
+                                   onChange={(e) => handleContentChange('hero', 'description', e.target.value)}
+                                 />
+                               </div>
+                            </div>
+                          </div>
+
+                          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <Users size={18} className="text-brand-600" /> 2. Director's Note
+                            </h3>
+                            <div className="space-y-4">
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Main Quote</label>
+                                 <textarea 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 h-24 resize-none focus:border-brand-300 outline-none transition-all italic"
+                                   value={selectedPage.content?.directorsNote?.quote || ""}
+                                   onChange={(e) => handleContentChange('directorsNote', 'quote', e.target.value)}
+                                 />
+                               </div>
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Detailed Message</label>
+                                 <textarea 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-40 resize-none focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.directorsNote?.content || ""}
+                                   onChange={(e) => handleContentChange('directorsNote', 'content', e.target.value)}
+                                 />
+                               </div>
+                            </div>
+                          </div>
+
+                          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <ImageIcon size={18} className="text-brand-600" /> 3. Office Showcase
+                            </h3>
+                            <div className="space-y-4">
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Main Headline</label>
+                                 <input 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.officeShowcase?.title || ""}
+                                   onChange={(e) => handleContentChange('officeShowcase', 'title', e.target.value)}
+                                 />
+                               </div>
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
+                                 <textarea 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.officeShowcase?.description || ""}
+                                   onChange={(e) => handleContentChange('officeShowcase', 'description', e.target.value)}
+                                 />
+                               </div>
+                            </div>
+                          </div>
+
+                          <div className="p-8 bg-brand-50/50 rounded-3xl border border-brand-100 border-dashed text-center">
+                             <p className="text-xs font-bold text-brand-600 opacity-60">Company Profile Editor Active ✨</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 3. CONTACT US EDITOR */}
+                      {selectedPage.slug.toLowerCase() === '/contact' && (
+                        <div className="space-y-6 pb-20">
+                          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <Info size={18} className="text-brand-600" /> 1. Intro Section
+                            </h3>
+                            <div className="space-y-4">
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Title</label>
+                                 <input 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.infoSection?.title || ""}
+                                   onChange={(e) => handleContentChange('infoSection', 'title', e.target.value)}
+                                 />
+                               </div>
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
+                                 <textarea 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.infoSection?.description || ""}
+                                   onChange={(e) => handleContentChange('infoSection', 'description', e.target.value)}
+                                 />
+                               </div>
+                            </div>
+                          </div>
+
+                          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <MapPin size={18} className="text-brand-600" /> 2. Contact Details
+                            </h3>
+                            <div className="space-y-6">
+                               <div className="p-4 bg-white rounded-2xl border border-slate-100 italic space-y-3">
+                                  <label className="text-[10px] font-bold text-slate-300 uppercase tracking-tight block">Address Lines (One per line)</label>
+                                  <textarea 
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-medium text-slate-600 h-24 resize-none focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.contactDetails?.address?.lines?.join('\n') || ""}
+                                    onChange={(e) => handleContentChange('contactDetails', 'address', { ...selectedPage.content.contactDetails.address, lines: e.target.value.split('\n') })}
+                                  />
+                               </div>
+                               <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Phone Number</label>
+                                    <input 
+                                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                      value={selectedPage.content?.contactDetails?.phone?.number || ""}
+                                      onChange={(e) => handleContentChange('contactDetails', 'phone', { ...selectedPage.content.contactDetails.phone, number: e.target.value })}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Email Address</label>
+                                    <input 
+                                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                      value={selectedPage.content?.contactDetails?.email?.address || ""}
+                                      onChange={(e) => handleContentChange('contactDetails', 'email', { ...selectedPage.content.contactDetails.email, address: e.target.value })}
+                                    />
+                                  </div>
+                               </div>
+                            </div>
+                          </div>
+
+                          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <Clock size={18} className="text-brand-600" /> 3. Working Hours
+                            </h3>
+                            <div className="space-y-4">
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Weekday Hours</label>
+                                 <input 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.workingHours?.weekdays || ""}
+                                   onChange={(e) => handleContentChange('workingHours', 'weekdays', e.target.value)}
+                                   placeholder="Mon - Sat: 9:00 AM - 7:00 PM"
+                                 />
+                               </div>
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Sunday Status</label>
+                                 <input 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.workingHours?.sunday || ""}
+                                   onChange={(e) => handleContentChange('workingHours', 'sunday', e.target.value)}
+                                   placeholder="Sunday: Closed"
+                                 />
+                               </div>
+                            </div>
+                          </div>
+
+                          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <Globe size={18} className="text-brand-600" /> 4. Location Map
+                            </h3>
+                            <div className="space-y-4">
+                               <div>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Google Maps Embed URL</label>
+                                 <textarea 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-medium text-slate-500 h-32 resize-none focus:border-brand-300 outline-none transition-all font-mono"
+                                   value={selectedPage.content?.mapSection?.mapUrl || ""}
+                                   onChange={(e) => handleContentChange('mapSection', 'mapUrl', e.target.value)}
+                                   placeholder="Paste the src URL from the Google Maps iframe..."
+                                 />
+                               </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* FALLBACK MESSAGE */}
+                      {selectedPage.slug !== '/' && selectedPage.slug !== '/about/company-profile' && selectedPage.slug.toLowerCase() !== '/contact' && (
                         <div className="py-20 text-center opacity-40">
                           <Edit size={32} className="mx-auto mb-4 text-slate-300" />
                           <p className="text-sm font-bold italic text-slate-400 tracking-tight">Content editor for this page is under development.</p>

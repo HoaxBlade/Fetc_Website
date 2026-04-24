@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   IndianRupee, ShoppingBag, 
   UserPlus, Search, RotateCcw, Download, 
-  BookOpen, Users
+  Users
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
