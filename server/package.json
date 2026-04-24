@@ -7,7 +7,8 @@
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed-home": "node seed-home.js",
-    "seed-all": "node seed-all-data.js"
+    "seed-all": "node seed-all-data.js",
+    "seed:gallery": "node seed-gallery.js"
   },
   "keywords": [],
   "author": "",

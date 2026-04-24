@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, X, Plus, Loader2, ImageIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Plus, Loader2, ImageIcon, Sparkles } from 'lucide-react';
 
 const ImageWrapper = ({ src, alt }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -156,19 +156,33 @@ function GalleryPage() {
           </div>
         )}
 
-        {/* Load More Button */}
+        {/* Banner Style Load More / Show More Image Card */}
         {hasMore && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-20 flex justify-center pb-20"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-20 flex justify-center pb-20 px-4"
           >
             <button
               onClick={handleLoadMore}
-              className="group flex items-center gap-4 bg-slate-900 hover:bg-brand-600 text-white font-bold px-12 py-5 rounded-3xl transition-all duration-300 shadow-2xl hover:-translate-y-1 hover:shadow-brand-100"
+              className="group relative w-full max-w-4xl h-48 overflow-hidden rounded-[3rem] shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:shadow-brand-100"
             >
-              <span className="text-xs uppercase tracking-[0.2em]">Discover More</span>
-              <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
+              {/* Using the FETC Banner as background */}
+              <div className="absolute inset-0 bg-slate-900">
+                <img 
+                  src="/assets/logo/fetc banner.png" 
+                  className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000"
+                  alt="Show More Banner"
+                />
+              </div>
+              
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mb-2 group-hover:bg-brand-600 transition-all">
+                  <Plus className="w-6 h-6 text-white transition-transform group-hover:rotate-90" />
+                </div>
+                <span className="text-white text-xs font-black uppercase tracking-[0.4em]">Discover More</span>
+                <span className="text-white/60 text-[9px] font-bold uppercase tracking-widest italic">Experience the FETC Difference</span>
+              </div>
             </button>
           </motion.div>
         )}
