@@ -126,6 +126,7 @@ function HomePage() {
           key={section.id} 
           title={section.title} 
           content={section.content} 
+          image={section.image}
           index={idx} 
         />
       ))}

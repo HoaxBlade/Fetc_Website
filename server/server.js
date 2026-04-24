@@ -6,10 +6,56 @@ const bcrypt = require('bcrypt');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const path = require('path');
+const multer = require('multer');
+const fs = require('fs');
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Create uploads folder if it doesn't exist
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
+// Static folder for uploaded images
+app.use('/uploads', express.static(uploadDir));
+
+// Multer Storage Configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'fetc-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpeg|jpg|png|webp|gif/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if (mimetype && extname) return cb(null, true);
+    cb(new Error("Only images are allowed!"));
+  }
+});
+
+// Photo Upload Route
+app.post('/api/admin/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'No file uploaded' });
+  }
+  
+  // Return the URL to the uploaded file
+  const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+  res.json({ success: true, url: fileUrl });
+});
 
 // Health Check
 app.get('/api/status', (req, res) => {

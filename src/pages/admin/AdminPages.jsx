@@ -1,9 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, ShieldCheck, Users } from 'lucide-react';
+import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, ShieldCheck, Users, ImageIcon } from 'lucide-react';
 
 const AdminPages = () => {
+  const handleFileUpload = async (section, field, file, customSectionId = null) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        if (customSectionId) {
+          updateCustomSection(customSectionId, field, data.url);
+        } else {
+          handleContentChange(section, field, data.url);
+        }
+      }
+    } catch (err) {
+      console.error('Upload failed:', err);
+      alert('Failed to upload image. Please try again.');
+    }
+  };
+
+  const ImageUploader = ({ section, field, value, customSectionId = null, label = "Section Image" }) => (
+    <div className="space-y-2">
+      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">{label}</label>
+      <div className="flex items-center gap-4">
+        {value && (
+          <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 relative group">
+            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+            <button 
+              onClick={() => customSectionId ? updateCustomSection(customSectionId, field, "") : handleContentChange(section, field, "")}
+              className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+        <label className={`flex-1 ${!value ? 'w-full' : ''}`}>
+          <div className="w-full px-4 py-3 bg-white border border-slate-200 border-dashed rounded-xl text-xs font-bold text-slate-400 hover:border-brand-300 hover:text-brand-600 cursor-pointer transition-all flex items-center justify-center gap-2">
+             <Plus size={14} /> {value ? "Change Photo" : "Upload Photo"}
+          </div>
+          <input 
+            type="file" 
+            className="hidden" 
+            accept="image/*"
+            onChange={(e) => {
+              if (e.target.files?.[0]) {
+                handleFileUpload(section, field, e.target.files[0], customSectionId);
+              }
+            }}
+          />
+        </label>
+      </div>
+    </div>
+  );
   const [pages, setPages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -244,6 +301,12 @@ const AdminPages = () => {
                               <Globe size={18} className="text-brand-600" /> 1. Hero Section
                             </h3>
                             <div className="space-y-4">
+                               <ImageUploader 
+                                 section="hero" 
+                                 field="bgImage" 
+                                 value={selectedPage.content?.hero?.bgImage}
+                                 label="Hero Background Image"
+                               />
                                <div>
                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Floating Badge</label>
                                  <input 
@@ -476,6 +539,13 @@ const AdminPages = () => {
                                       </button>
 
                                       <div className="space-y-4">
+                                         <ImageUploader 
+                                           section="customSections" 
+                                           field="image" 
+                                           value={section.image}
+                                           customSectionId={section.id}
+                                           label="Section Image"
+                                         />
                                          <div>
                                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Section {idx + 1} Title</label>
                                             <input 

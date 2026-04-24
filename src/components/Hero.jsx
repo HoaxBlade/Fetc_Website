@@ -81,7 +81,7 @@ const Hero = ({ content: propsContent }) => {
             initial={{ scale: 1.1, opacity: 0 }}
             animate={{ scale: 1, opacity: 0.8 }}
             transition={{ duration: 1.2 }}
-            src={banner}
+            src={content.bgImage || banner}
             alt="UK Education Banner"
             className="w-full h-full object-cover object-center lg:object-[center_25%]"
           />
