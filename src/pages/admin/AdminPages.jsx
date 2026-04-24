@@ -53,6 +53,17 @@ const AdminPages = () => {
   const [activeTab, setActiveTab] = useState("settings"); // "settings" or "content"
   const [isSaving, setIsSaving] = useState(false);
 
+  const categories = ["Main Pages", "Study Abroad", "Exams & Training", "Assessment"];
+  const [groupSelectedPageIds, setGroupSelectedPageIds] = useState({});
+
+  const getCategory = (slug) => {
+    if (slug === '/' || slug === '/contact' || slug === '/gallery' || slug.startsWith('/about/') || slug === '/forgot-password' || slug === '/my-account' || slug === '/terms' || slug === '/privacy' || slug === '/refund') return 'Main Pages';
+    if (slug.startsWith('/study-abroad/')) return 'Study Abroad';
+    if (slug.startsWith('/exam-training/')) return 'Exams & Training';
+    if (slug.includes('career-assessment')) return 'Assessment';
+    return 'Other';
+  };
+
   const fetchPages = async () => {
     setIsLoading(true);
     try {
@@ -154,12 +165,13 @@ const AdminPages = () => {
     fetchPages();
   }, []);
 
-  const filteredPages = pages.filter(page =>
-    page.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    page.slug.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPages = pages.filter(page => {
+    return page.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           page.slug.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'Never';
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
@@ -168,6 +180,44 @@ const AdminPages = () => {
     if (diffInHours < 24) return `${diffInHours}h ago`;
     return date.toLocaleDateString();
   };
+
+  const PageCard = ({ page }) => (
+    <motion.div
+      key={page.id}
+      whileHover={{ y: -5 }}
+      onClick={() => setSelectedPage(page)}
+      className="bg-slate-50/50 border border-slate-100 rounded-[2rem] p-6 shadow-sm hover:shadow-xl hover:bg-white transition-all cursor-pointer group"
+    >
+      <div className="flex justify-between items-start mb-5">
+        <div className="p-3 bg-brand-50 text-brand-600 rounded-2xl shadow-sm group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
+          <FileText size={22} />
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full ${page.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100' : 'bg-amber-50 text-amber-600 ring-1 ring-amber-100'
+            }`}>
+            {page.status}
+          </span>
+          <span className="text-[8px] font-bold uppercase tracking-tight text-slate-300 px-2 py-0.5 bg-slate-50 rounded-lg group-hover:bg-slate-100 transition-colors">
+            {getCategory(page.slug)}
+          </span>
+        </div>
+      </div>
+
+      <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-brand-600 transition-colors">{page.title}</h3>
+      <p className="text-xs text-slate-400 font-bold mb-6 flex items-center gap-1.5">
+        <Globe size={12} className="opacity-40" /> {page.slug}
+      </p>
+
+      <div className="flex items-center justify-between pt-5 border-t border-slate-100/50 mt-auto">
+        <div className="flex items-center gap-1.5 text-slate-400 uppercase text-[9px] font-black tracking-tight">
+          <Clock size={10} /> {formatDate(page.updated_at)}
+        </div>
+        <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
+          <ChevronRight size={16} />
+        </div>
+      </div>
+    </motion.div>
+  );
 
 
   const ImageUploader = ({ section, field, value, label, customSectionId = null }) => (
@@ -233,7 +283,9 @@ const AdminPages = () => {
                       </div>
                       <div>
                         <h2 className="text-2xl font-bold text-slate-900">Page Editor</h2>
-                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{selectedPage.slug}</p>
+                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest flex items-center gap-2">
+                          < Globe size={10} /> {selectedPage.slug}
+                        </p>
                       </div>
                     </div>
                     <button onClick={() => { setSelectedPage(null); setActiveTab("settings"); }} className="p-2 hover:bg-slate-50 rounded-full text-slate-400 transition-colors">
@@ -1273,52 +1325,96 @@ const AdminPages = () => {
 
       <div className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] border border-white shadow-soft overflow-hidden mb-12">
         <div className="p-8 border-b border-slate-50 flex flex-wrap items-center justify-between gap-4">
-          <div className="relative flex-1 max-w-sm text-slate-400 focus-within:text-brand-600 transition-colors">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" />
-            <input
-              className="w-full pl-12 pr-6 py-3.5 bg-slate-50/50 border border-slate-100 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium text-slate-600"
-              placeholder="Search by title or URL..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          <div className="flex gap-4 items-center flex-1 max-w-sm">
+            <div className="relative flex-1 text-slate-400 focus-within:text-brand-600 transition-colors">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" />
+              <input
+                className="w-full pl-12 pr-6 py-3.5 bg-slate-50/50 border border-slate-100 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium text-slate-600"
+                placeholder="Search by title or URL..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
           {isLoading && <Loader2 className="animate-spin text-brand-600" size={18} />}
         </div>
 
         <div className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPages.map((page) => (
-              <motion.div
-                key={page.id}
-                whileHover={{ y: -5 }}
-                onClick={() => setSelectedPage(page)}
-                className="bg-slate-50/50 border border-slate-100 rounded-[2rem] p-6 shadow-sm hover:shadow-xl hover:bg-white transition-all cursor-pointer group"
-              >
-                <div className="flex justify-between items-start mb-5">
-                  <div className="p-3 bg-brand-50 text-brand-600 rounded-2xl shadow-sm group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
-                    <FileText size={22} />
-                  </div>
-                  <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full ${page.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100' : 'bg-amber-50 text-amber-600 ring-1 ring-amber-100'
-                    }`}>
-                    {page.status}
-                  </span>
-                </div>
+            {searchTerm ? (
+              filteredPages.map((page) => (
+                <PageCard key={page.id} page={page} />
+              ))
+            ) : (
+              // Grouped Implementation
+              categories.map(cat => {
+                const pagesInCategory = pages.filter(p => getCategory(p.slug) === cat);
+                if (pagesInCategory.length === 0) return null;
 
-                <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-brand-600 transition-colors">{page.title}</h3>
-                <p className="text-xs text-slate-400 font-bold mb-6 flex items-center gap-1.5">
-                  <Globe size={12} className="opacity-40" /> {page.slug}
-                </p>
+                // For "Main Pages", always show individual cards
+                if (cat === "Main Pages") {
+                   return pagesInCategory.map(page => <PageCard key={page.id} page={page} />);
+                }
 
-                <div className="flex items-center justify-between pt-5 border-t border-slate-100/50 mt-auto">
-                  <div className="flex items-center gap-1.5 text-slate-400 uppercase text-[9px] font-black tracking-tight">
-                    <Clock size={10} /> {formatDate(page.updated_at)}
-                  </div>
-                  <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
-                    <ChevronRight size={16} />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                // For groupable categories, show ONE card
+                const selectedId = groupSelectedPageIds[cat] || pagesInCategory[0].id;
+                const activePage = pagesInCategory.find(p => p.id === selectedId) || pagesInCategory[0];
+
+                return (
+                  <motion.div
+                    key={cat}
+                    whileHover={{ y: -5 }}
+                    className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-soft hover:shadow-2xl transition-all cursor-pointer group relative overflow-hidden"
+                  >
+                    {/* Background Accent */}
+                    <div className="absolute -right-10 -top-10 w-40 h-40 bg-brand-50/50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                    <div className="flex justify-between items-start mb-8 relative z-10">
+                      <div className="p-3 bg-brand-50 text-brand-600 rounded-2xl shadow-sm group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
+                        <FileText size={22} />
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                         <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full border ${activePage.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
+                           {activePage.status}
+                         </span>
+                         <span className="text-[8px] font-black uppercase tracking-widest text-slate-300">GROUP CARD</span>
+                      </div>
+                    </div>
+
+                    <div className="mb-8 relative z-10">
+                      <h3 className="text-2xl font-black text-slate-900 mb-2 truncate">{cat}</h3>
+                      <div className="relative inline-block w-full">
+                        <select 
+                          value={activePage.id}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            setGroupSelectedPageIds(prev => ({ ...prev, [cat]: parseInt(e.target.value) }));
+                          }}
+                          className="w-full bg-slate-50/80 backdrop-blur-sm border border-slate-100 pl-4 pr-10 py-3 rounded-xl text-xs font-bold text-slate-500 focus:outline-none focus:border-brand-300 appearance-none cursor-pointer transition-all hover:bg-slate-100"
+                        >
+                          {pagesInCategory.map(p => (
+                            <option key={p.id} value={p.id}>{p.title}</option>
+                          ))}
+                        </select>
+                        <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-slate-300 pointer-events-none" size={14} />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-6 border-t border-slate-50 relative z-10">
+                       <button 
+                         onClick={() => setSelectedPage(activePage)}
+                         className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 transition-colors"
+                       >
+                         Edit {activePage.title} <ChevronRight size={12} className="mt-0.5" />
+                       </button>
+                       <div className="text-[9px] font-bold text-slate-300 italic">
+                         {pagesInCategory.length} Pages Available
+                       </div>
+                    </div>
+                  </motion.div>
+                );
+              })
+            )}
 
             {!isLoading && filteredPages.length === 0 && (
               <div className="col-span-full py-20 text-center">

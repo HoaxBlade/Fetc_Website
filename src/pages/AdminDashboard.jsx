@@ -56,8 +56,8 @@ const AdminDashboard = () => {
   }, []);
 
   const stats = [
-    { label: "Today's Sales", value: liveStats.todaySales, growth: liveStats.salesGrowth, icon: IndianRupee, color: "text-emerald-500", bg: "bg-emerald-50" },
-    { label: "Today's Orders", value: liveStats.todayOrders, growth: liveStats.ordersGrowth, icon: ShoppingBag, color: "text-blue-500", bg: "bg-blue-50" },
+    // { label: "Today's Sales", value: liveStats.todaySales, growth: liveStats.salesGrowth, icon: IndianRupee, color: "text-emerald-500", bg: "bg-emerald-50" },
+    // { label: "Today's Orders", value: liveStats.todayOrders, growth: liveStats.ordersGrowth, icon: ShoppingBag, color: "text-blue-500", bg: "bg-blue-50" },
     { label: "Customers", value: isLoading ? "..." : liveStats.totalUsers, growth: liveStats.userGrowth, icon: UserPlus, color: "text-purple-500", bg: "bg-purple-50" },
   ];
 
@@ -89,7 +89,7 @@ const AdminDashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {stats.map((stat, idx) => (
+        {stats.filter(s => s.label === "Customers").map((stat, idx) => (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -170,60 +170,12 @@ const AdminDashboard = () => {
          </motion.div>
       </div>
 
-      {/* Sales Report Table */}
+      {/* Sales Report Table - Hidden for now */}
+      {/* 
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] border border-white/100 shadow-soft overflow-hidden"
-      >
-        <div className="p-8 border-b border-white/40 flex flex-wrap items-center justify-between gap-4">
-           <div>
-             <h4 className="text-xl font-bold text-slate-900 mb-1 tracking-tight">Sales Report</h4>
-             <p className="text-slate-500 text-xs font-medium italic">Global performance metrics.</p>
-           </div>
-           <button className="flex items-center gap-2 bg-brand-600 text-white px-6 py-3 rounded-xl font-bold text-xs hover:bg-brand-700 transition-all shadow-md shadow-brand-100">
-             <Download size={16} /> Export Data
-           </button>
-        </div>
-
-        <div className="p-8">
-           <div className="flex gap-4 mb-8">
-             <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-                <input 
-                  className="w-full pl-12 pr-6 py-3 bg-slate-50/50 border border-slate-100 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium" 
-                  placeholder="Search transactions..." 
-                />
-             </div>
-           </div>
-
-           <div className="overflow-x-auto">
-             <table className="w-full text-left">
-               <thead>
-                 <tr className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] border-b border-slate-50">
-                   <th className="pb-4">Date</th>
-                   <th className="pb-4">Customer</th>
-                   <th className="pb-4">Status</th>
-                   <th className="pb-4">Price</th>
-                   <th className="pb-4 text-right">Actions</th>
-                 </tr>
-               </thead>
-               <tbody>
-                 <tr className="text-slate-400">
-                   <td colSpan={5} className="py-20 text-center">
-                      <div className="flex flex-col items-center opacity-40">
-                         <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                           <ShoppingBag size={24} />
-                         </div>
-                         <p className="font-bold italic text-xs">No recent transaction data available</p>
-                      </div>
-                   </td>
-                 </tr>
-               </tbody>
-             </table>
-           </div>
-        </div>
-      </motion.div>
+        ... 
+      </motion.div> 
+      */}
     </div>
   );
 };
