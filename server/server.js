@@ -1,4 +1,5 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const db = require('./db');
@@ -6,13 +7,26 @@ const bcrypt = require('bcrypt');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+const nodemailer = require('nodemailer');
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Transporter for Email (Configure as needed)
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: process.env.EMAIL_PORT || 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.EMAIL_USER, // Your email
+    pass: process.env.EMAIL_PASS, // Your app password
+  },
+});
+
+console.log('Email configured:', process.env.EMAIL_USER ? 'YES' : 'NO');
 
 // Create uploads folder if it doesn't exist
 const uploadDir = path.join(__dirname, 'uploads');
@@ -190,6 +204,81 @@ app.get('/api/admin/users', async (req, res) => {
   } catch (err) {
     console.error('Fetch users error:', err);
     res.status(500).json({ success: false, message: 'Error fetching users' });
+  }
+});
+
+// Admin Invite User Route
+app.post('/api/admin/users/invite', async (req, res) => {
+  const { name, email, role, phone } = req.body;
+
+  try {
+    // 1. Check if user already exists
+    const userCheck = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (userCheck.rows.length > 0) {
+      return res.status(400).json({ success: false, message: 'Email already registered' });
+    }
+
+    // 2. Generate a temporary password
+    const tempPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+    // 3. Insert user into database
+    await db.query(
+      'INSERT INTO users (name, email, password, role, phone, status) VALUES ($1, $2, $3, $4, $5, $6)',
+      [name, email, hashedPassword, role, phone, 'ACTIVE']
+    );
+
+    // 4. Send Email
+    const mailOptions = {
+      from: `"FETC Admin" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Welcome to FETC - Your Admin Invitation',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded: 24px;">
+          <h2 style="color: #0f172a;">Welcome to FETC, ${name}!</h2>
+          <p style="color: #64748b;">You have been invited to join the FETC administration panel as a <strong>${role}</strong>.</p>
+          <div style="background-color: #f8fafc; padding: 20px; border-radius: 12px; margin: 20px 0;">
+            <p style="margin: 0; color: #64748b; font-size: 14px;">Your temporary credentials:</p>
+            <p style="margin: 10px 0 0 0; font-size: 18px; font-weight: bold; color: #0f172a;">Password: <span style="background: #ffffff; padding: 4px 10px; border: 1px solid #e2e8f0; border-radius: 6px;">${tempPassword}</span></p>
+          </div>
+          <p style="color: #64748b;">Please log in using your email and this temporary password, then change it immediately from your profile settings.</p>
+          <a href="${req.protocol}://${req.get('host')}/login" style="display: inline-block; background-color: #0f172a; color: white; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: bold; margin-top: 20px;">Log In Now</a>
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
+          <p style="color: #94a3b8; font-size: 12px;">This is an automated invitation from Foreign English Test Capital (FETC).</p>
+        </div>
+      `,
+    };
+
+    // Attempt to send email but don't fail the whole request if it fails (unless user has configured it)
+    try {
+      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        await transporter.sendMail(mailOptions);
+        console.log(`✅ Invitation email sent successfully to ${email}`);
+      } else {
+        console.warn(`⚠️ EMAIL_USER/PASS not set. Invitation created, but email not sent. Temp Pass: ${tempPassword}`);
+      }
+    } catch (mailErr) {
+      console.error('❌ Failed to send invitation email:', mailErr.message);
+      // We still return success:true because the user was created in the DB
+    }
+
+    res.status(201).json({ success: true, message: 'User invited and account created!' });
+  } catch (err) {
+    console.error('Invite error:', err);
+    res.status(500).json({ success: false, message: 'Error inviting user' });
+  }
+});
+
+// Admin Delete User Route
+app.delete('/api/admin/users/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Optional: Add check to prevent deleting yourself if auth is set up
+    await db.query('DELETE FROM users WHERE id = $1', [id]);
+    res.json({ success: true, message: 'User deleted successfully' });
+  } catch (err) {
+    console.error('Delete user error:', err);
+    res.status(500).json({ success: false, message: 'Error deleting user' });
   }
 });
 
