@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles } from 'lucide-react';
 
 const AdminPages = () => {
-  const handleFileUpload = async (section, field, file, customSectionId = null) => {
+  const handleFileUpload = async (section, field, file, customSectionId = null, arrayIndex = null) => {
     const formData = new FormData();
     formData.append('image', file);
 
@@ -18,6 +18,13 @@ const AdminPages = () => {
       if (data.success) {
         if (customSectionId) {
           updateCustomSection(customSectionId, field, data.url);
+        } else if (arrayIndex !== null) {
+          // Special case for items IN an array (like universities)
+          const currentArray = [...(selectedPage.content?.[field] || [])];
+          if (currentArray[arrayIndex]) {
+            currentArray[arrayIndex] = { ...currentArray[arrayIndex], image: data.url };
+            handleContentChange(null, field, currentArray);
+          }
         } else {
           // Check if the field should be an array (like office showcase images or gallery)
           const currentVal = selectedPage.content?.[section]?.[field] || selectedPage.content?.[field];
@@ -63,11 +70,21 @@ const AdminPages = () => {
 
   const updatePage = async (id, updatedData) => {
     setIsSaving(true);
+    
+    // Auto-sort arrays if they exist in content (e.g. universities)
+    const processedData = { ...updatedData };
+    if (processedData.content?.universities) {
+      processedData.content.universities.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    if (processedData.content?.metadata) {
+      // Maybe not sort metadata to keep custom order
+    }
+
     try {
       const response = await fetch(`/api/admin/pages/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedData),
+        body: JSON.stringify(processedData),
       });
       const data = await response.json();
       if (data.success) {
@@ -84,8 +101,14 @@ const AdminPages = () => {
   const handleContentChange = (section, field, value) => {
     let updatedContent;
 
-    if (field === null) {
-      // Direct update of the section (e.g. for arrays)
+    if (!section) {
+      // Top-level field update (e.g. universities array)
+      updatedContent = {
+        ...selectedPage.content,
+        [field]: value
+      };
+    } else if (field === null) {
+      // Direct update of a complex section
       updatedContent = {
         ...selectedPage.content,
         [section]: value
@@ -862,7 +885,8 @@ const AdminPages = () => {
                                <button 
                                  onClick={() => {
                                    const current = selectedPage.content.universities || [];
-                                   handleContentChange(null, 'universities', [...current, { name: "New University", link: "", ranking: "Top Ranked", exclusive: false, location: selectedPage.content.name }]);
+                                   // Prepend new university to show it first in the editor
+                                   handleContentChange(null, 'universities', [{ name: "New University", link: "", ranking: "Top Ranked", exclusive: false, location: selectedPage.content.name }, ...current]);
                                  }}
                                  className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-brand-600 transition-all shadow-lg active:scale-95"
                                >
@@ -885,8 +909,23 @@ const AdminPages = () => {
                                      
                                      <div className="space-y-4">
                                         <div className="flex items-center gap-3">
-                                          <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
-                                            {uni.image ? <img src={uni.image} className="w-full h-full object-contain" alt="Logo" /> : <Building size={20} className="text-slate-200" />}
+                                          <div className="relative group w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
+                                            {uni.image ? (
+                                              <>
+                                                <img src={uni.image} className="w-full h-full object-contain" alt="Logo" />
+                                                <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+                                                   <label className="p-1.5 bg-white text-slate-900 rounded-lg cursor-pointer shadow-xl">
+                                                      <Plus size={12} />
+                                                      <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(null, 'universities', e.target.files[0], null, idx)} />
+                                                   </label>
+                                                </div>
+                                              </>
+                                            ) : (
+                                              <label className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-all">
+                                                <Building size={20} className="text-slate-200" />
+                                                <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(null, 'universities', e.target.files[0], null, idx)} />
+                                              </label>
+                                            )}
                                           </div>
                                           <div className="flex-1">
                                              <input 
