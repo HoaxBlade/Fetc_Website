@@ -17,7 +17,7 @@ const AdminLayout = () => {
     { icon: Share2, label: "Posts", path: "/admin/posts" },
     // { icon: CheckSquare, label: "Mock Test", path: "/admin/mock-test" },
     { icon: Zap, label: "News Flash", path: "/admin/news-flash" },
-    { icon: Ticket, label: "Support Tickets", path: "/admin/support-tickets" },
+    { icon: Ticket, label: "Student Queries", path: "/admin/support-tickets" },
     // { icon: FileText, label: "Invoice", path: "/admin/invoice" },
     { icon: LayoutDashboard, label: "Leads Dashboard", path: "/admin/leads" },
     { icon: Users, label: "Partner List", path: "/admin/partners" },

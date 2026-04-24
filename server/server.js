@@ -150,12 +150,12 @@ app.post('/api/auth/login', async (req, res) => {
 // User Profile Update Route
 app.patch('/api/users/profile/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, phone, bio } = req.body;
+  const { name, phone, bio, profile_image } = req.body;
   
   try {
     const result = await db.query(
-      'UPDATE users SET name = COALESCE($1, name), phone = COALESCE($2, phone), bio = COALESCE($3, bio) WHERE id = $4 RETURNING id, name, email, role, phone, bio, created_at',
-      [name, phone, bio, id]
+      'UPDATE users SET name = COALESCE($1, name), phone = COALESCE($2, phone), bio = COALESCE($3, bio), profile_image = COALESCE($4, profile_image) WHERE id = $5 RETURNING id, name, email, role, phone, bio, created_at, profile_image',
+      [name, phone, bio, profile_image, id]
     );
     
     if (result.rows.length === 0) {
@@ -174,7 +174,7 @@ app.get('/api/users/profile/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const result = await db.query(
-      'SELECT id, name, email, role, phone, bio, created_at FROM users WHERE id = $1',
+      'SELECT id, name, email, role, phone, bio, created_at, profile_image FROM users WHERE id = $1',
       [id]
     );
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'User not found' });

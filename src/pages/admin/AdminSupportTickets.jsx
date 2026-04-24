@@ -162,7 +162,7 @@ const AdminSupportTickets = () => {
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">Support Tickets</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">Student Queries</h1>
           <p className="text-slate-500 font-medium text-sm italic">Resolve student queries and technical issues.</p>
         </div>
       </div>
@@ -173,7 +173,7 @@ const AdminSupportTickets = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <input 
               className="w-full pl-12 pr-6 py-3 bg-slate-50/50 border border-slate-100 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium" 
-              placeholder="Search tickets..." 
+              placeholder="Search queries..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -246,7 +246,7 @@ const AdminSupportTickets = () => {
                 <Ticket className="text-blue-600" size={24} />
               </div>
               <h3 className="text-lg font-bold text-slate-800 mb-1">All clear!</h3>
-              <p className="text-slate-400 text-sm italic">There are no matching tickets.</p>
+              <p className="text-slate-400 text-sm italic">There are no matching queries.</p>
             </div>
           )}
         </div>

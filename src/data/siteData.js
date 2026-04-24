@@ -203,7 +203,7 @@ export const navMenus = [
     ],
   },
   {
-    label: "Career",
+    label: "Career Assessment",
     path: "/career-assessment/behaviour-and-career-analysis",
   },
   {

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  User, Edit2, Mail, Phone, Save, Loader2, X
+  User, Edit2, Mail, Phone, Save, Loader2, X, Camera, Trash2
 } from 'lucide-react';
 
 const ProfilePage = () => {
@@ -12,13 +12,15 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
   const [formData, setFormData] = useState({
     name: userData.name,
     phone: userData.phone || userData.phoneNumber || "",
     bio: userData.bio || ""
   });
 
-  // Fetch fresh profile data on mount to ensure created_at and other fields are up to date
   useEffect(() => {
     const fetchProfile = async () => {
       if (!userData.id) return;
@@ -30,7 +32,6 @@ const ProfilePage = () => {
           const updatedUser = { ...userData, ...data.user };
           setUserData(updatedUser);
           localStorage.setItem('user', JSON.stringify(updatedUser));
-          // Update formData too if not in editing mode
           if (!isEditing) {
             setFormData({
               name: data.user.name,
@@ -69,7 +70,6 @@ const ProfilePage = () => {
         setUserData(updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setIsEditing(false);
-        // We don't really need alert here since the UI updates instantly and looks premium
       } else {
         alert(data.message || 'Failed to update profile');
       }
@@ -81,8 +81,90 @@ const ProfilePage = () => {
     }
   };
 
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image is too large. Max 5MB allowed.");
+      return;
+    }
+
+    setIsUploading(true);
+    const uploadData = new FormData();
+    uploadData.append('image', file);
+
+    try {
+      const uploadRes = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: uploadData
+      });
+      const uploadResult = await uploadRes.json();
+
+      if (uploadResult.success) {
+        const profileRes = await fetch(`/api/users/profile/${userData.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profile_image: uploadResult.url })
+        });
+        const profileResult = await profileRes.json();
+
+        if (profileResult.success) {
+          const updatedUser = { ...userData, ...profileResult.user };
+          setUserData(updatedUser);
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+      } else {
+        alert("Failed to upload image.");
+      }
+    } catch (err) {
+      console.error('Image upload error:', err);
+      alert("Error uploading image.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveImage = async () => {
+    if (!window.confirm("Are you sure you want to remove your profile picture?")) return;
+
+    setIsUploading(true);
+    try {
+      const response = await fetch(`/api/users/profile/${userData.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        // Use empty string or null to reset the column in DB
+        body: JSON.stringify({ profile_image: "" }) 
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        const updatedUser = { ...userData, profile_image: null };
+        setUserData(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+    } catch (err) {
+      console.error('Remove image error:', err);
+      alert("Error removing image.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
+      <input 
+        type="file"
+        ref={fileInputRef}
+        onChange={handleImageChange}
+        className="hidden"
+        accept="image/*"
+      />
+
       <div className="flex items-center justify-between mb-12">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -229,12 +311,43 @@ const ProfilePage = () => {
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Identity</p>
                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-lg shadow-emerald-200" title="Profile Active" />
              </div>
-             <div className="w-36 h-36 rounded-full bg-slate-100 border-4 border-white shadow-2xl flex items-center justify-center group relative overflow-hidden transition-transform hover:scale-105 duration-500">
-                <User size={72} className="text-slate-200" />
-                <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer backdrop-blur-[2px]">
-                  <Edit2 size={24} className="text-white" />
-                </div>
+             
+             <div className="flex flex-col items-center gap-4">
+               <div 
+                 onClick={handleImageClick}
+                 className="w-36 h-36 rounded-full bg-slate-100 border-4 border-white shadow-2xl flex items-center justify-center group relative overflow-hidden transition-all hover:scale-105 duration-500 cursor-pointer"
+               >
+                  {isUploading ? (
+                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-20">
+                      <Loader2 size={32} className="animate-spin text-brand-600" />
+                    </div>
+                  ) : null}
+
+                  {userData.profile_image ? (
+                    <img 
+                      src={userData.profile_image} 
+                      alt={userData.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User size={72} className="text-slate-200" />
+                  )}
+                  
+                  <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                     <Camera size={24} className="text-white" />
+                  </div>
+               </div>
+
+               {userData.profile_image && (
+                 <button 
+                  onClick={handleRemoveImage}
+                  className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-red-500 transition-colors"
+                 >
+                   <Trash2 size={12} /> Remove Photo
+                 </button>
+               )}
              </div>
+
              <p className="mt-8 text-sm font-bold text-slate-900 tracking-tight">{userData.name}</p>
              <p className="text-[10px] font-bold text-slate-400 italic">
                Member since {userData.created_at ? new Date(userData.created_at).getFullYear() : '2024'}
