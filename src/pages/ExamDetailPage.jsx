@@ -23,12 +23,12 @@ function ExamDetailPage() {
           <h1 className="text-4xl font-bold tracking-tight text-slate-900 md:text-5xl lg:text-6xl">
             {details.name}
           </h1>
-          <Link
+          {/* <Link
             to="/about/company-profile"
             className="inline-flex shrink-0 items-center justify-center rounded-full bg-slate-900 px-10 py-4 text-base font-semibold text-white shadow-[0_8px_30px_rgb(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 hover:shadow-[0_15px_40px_rgb(2,132,199,0.3)] active:scale-95"
           >
             Apply Now
-          </Link>
+          </Link> */}
         </div>
 
         {details.metadata && details.metadata.length > 0 && (

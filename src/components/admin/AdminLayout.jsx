@@ -12,14 +12,14 @@ const AdminLayout = () => {
 
   const sidebarItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
-    { icon: BookOpen, label: "Courses", path: "/admin/courses" },
+    // { icon: BookOpen, label: "Courses", path: "/admin/courses" },
     { icon: Users, label: "Users", path: "/admin/users" },
     { icon: FileText, label: "Pages", path: "/admin/pages" },
     { icon: Share2, label: "Posts", path: "/admin/posts" },
-    { icon: CheckSquare, label: "Mock Test", path: "/admin/mock-test" },
+    // { icon: CheckSquare, label: "Mock Test", path: "/admin/mock-test" },
     { icon: Zap, label: "News Flash", path: "/admin/news-flash" },
     { icon: Ticket, label: "Support Tickets", path: "/admin/support-tickets" },
-    { icon: FileText, label: "Invoice", path: "/admin/invoice" },
+    // { icon: FileText, label: "Invoice", path: "/admin/invoice" },
     { icon: LayoutDashboard, label: "Leads Dashboard", path: "/admin/leads" },
     { icon: Users, label: "Partner List", path: "/admin/partners" },
   ];
@@ -79,7 +79,7 @@ const AdminLayout = () => {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="w-72 mt-2 sticky top-24 hidden lg:flex flex-col h-[calc(100vh-140px)] z-20 m-6">
+      <aside className="w-72 mt-2 sticky top-24 hidden lg:flex flex-col h-fit z-20 m-6">
         <div className="h-full bg-white/40 backdrop-blur-3xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2.5rem] overflow-hidden relative group">
           {/* Liquid Background Blobs */}
           <motion.div 

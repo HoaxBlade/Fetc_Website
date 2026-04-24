@@ -151,14 +151,14 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-2 gap-3 h-fit">
                {[
                  { label: "New Lead", icon: ShoppingBag, color: "bg-blue-500", action: () => navigate('/admin/leads') },
-                 { label: "Add Course", icon: BookOpen, color: "bg-brand-600", action: () => navigate('/admin/courses') },
+                 // { label: "Add Course", icon: BookOpen, color: "bg-brand-600", action: () => navigate('/admin/courses') },
                  { label: "User Audit", icon: Users, color: "bg-purple-500", action: () => navigate('/admin/users') },
                  { label: "Export Data", icon: Download, color: "bg-emerald-500", action: handleExportData }
                ].map((action, i) => (
                   <button 
                     key={i} 
                     onClick={action.action}
-                    className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50/50 border border-slate-100 hover:bg-white hover:shadow-md transition-all group"
+                    className={`flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50/50 border border-slate-100 hover:bg-white hover:shadow-md transition-all group ${!action.label ? 'hidden' : ''}`}
                   >
                      <div className={`p-3 ${action.color} text-white rounded-xl mb-3 shadow-md group-hover:scale-105 transition-transform`}>
                         <action.icon size={18} />

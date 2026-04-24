@@ -185,8 +185,8 @@ export const navMenus = [
     path: "/",
   },
   {
-    label: "About",
-    items: [{ label: "Company Profile", path: "/about/company-profile" }],
+    label: "About Us",
+    path: "/about/company-profile",
   },
   {
     label: "Study Abroad",
@@ -203,13 +203,8 @@ export const navMenus = [
     ],
   },
   {
-    label: "Career Assessment",
-    items: [
-      {
-        label: "Behaviour and Career Analysis",
-        path: "/career-assessment/behaviour-and-career-analysis",
-      },
-    ],
+    label: "Career",
+    path: "/career-assessment/behaviour-and-career-analysis",
   },
   {
     label: "Exam & Training",
