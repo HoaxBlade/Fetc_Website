@@ -259,6 +259,28 @@ app.patch('/api/admin/pages/:id', async (req, res) => {
   }
 });
 
+// --- Public Pages API ---
+
+// GET /api/pages/* - Fetch public page content by slug
+// Using a direct Regex to avoid path-to-regexp version conflicts
+app.get(/^\/api\/pages\/(.*)/, async (req, res) => {
+  // Capture the full slug from the first regex group
+  let fullSlug = '/' + (req.params[0] || '');
+  if (fullSlug === '/home' || fullSlug === '/') fullSlug = '/';
+  
+  try {
+    const result = await db.query(
+      'SELECT id, title, slug, content, seo_title, seo_description FROM pages WHERE slug = $1 AND status = $2',
+      [fullSlug, 'PUBLISHED']
+    );
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Page not found or not published' });
+    res.json({ success: true, page: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
 // Error handling for the pool
 db.query('SELECT NOW()', (err, res) => {
   if (err) {

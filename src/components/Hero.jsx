@@ -1,39 +1,62 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Globe, Award, ShieldCheck, GraduationCap, Play } from "lucide-react";
+import { ArrowRight, ShieldCheck, GraduationCap, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import banner from "../assets/logo/fetc banner.png";
 
-const Hero = () => {
+const Hero = ({ content: propsContent }) => {
+  // Dynamic Content State
+  const [content, setContent] = useState({
+    badge: "Trusted Global Guidance",
+    titleMain: "Empower Your",
+    titleHighlight: "Global Journey",
+    subtitle: "From elite exam training to seamless visa processing, we provide the strategic guidance you need to conquer international education.",
+    buttonText: "Start Your Journey"
+  });
+
   // Animated counters
   const [counts, setCounts] = useState({ universities: 0, success: 0, destinations: 0, students: 0 });
-  const targets = { universities: 100, success: 98, destinations: 10, students: 5000 };
+  const targets = useMemo(() => ({ universities: 100, success: 98, destinations: 10, students: 5000 }), []);
 
   useEffect(() => {
-    // Reset counts to 0 when component mounts
-    setCounts({ universities: 0, success: 0, destinations: 0, students: 0 });
+    // 1. Handle dynamic content (Prop first, then fetch)
+    if (propsContent) {
+      setContent(prev => ({ ...prev, ...propsContent }));
+    } else {
+      const fetchContent = async () => {
+        try {
+          const response = await fetch('/api/pages/home');
+          const data = await response.json();
+          if (data.success && data.page.content?.hero) {
+            setContent(prev => ({ ...prev, ...data.page.content.hero }));
+          }
+        } catch (err) {
+          console.warn("Using fallback hero content:", err);
+        }
+      };
+      fetchContent();
+    }
 
+    // 2. Handle animated counters
+    setCounts({ universities: 0, success: 0, destinations: 0, students: 0 });
     const duration = 2000;
     const steps = 60;
     const interval = duration / steps;
-
     let currentStep = 0;
     const timer = setInterval(() => {
       currentStep++;
       const progress = currentStep / steps;
-
       setCounts({
         universities: Math.floor(targets.universities * progress),
         success: Math.floor(targets.success * progress),
         destinations: Math.floor(targets.destinations * progress),
         students: Math.floor(targets.students * progress)
       });
-
       if (currentStep >= steps) clearInterval(timer);
     }, interval);
 
     return () => clearInterval(timer);
-  }, []); // Run only once on mount
+  }, [propsContent, targets]); // Re-run if props or targets change
 
   return (
     <section className="relative overflow-hidden bg-white">
@@ -96,7 +119,7 @@ const Hero = () => {
             >
               <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-brand-50/50 border border-brand-100/50 text-brand-600 text-[10px] font-bold uppercase tracking-[0.25em] shadow-sm">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                Trusted Global Guidance
+                {content.badge}
               </span>
             </motion.div>
 
@@ -108,12 +131,11 @@ const Hero = () => {
               className="space-y-3"
             >
               <h1 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-[1.15]">
-                Empower Your <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-500 to-teal-500">Global Journey</span>
+                {content.titleMain} <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-500 to-teal-500">{content.titleHighlight}</span>
               </h1>
               <p className="text-base md:text-lg text-slate-500 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
-                From elite exam training to seamless visa processing, we provide the
-                strategic guidance you need to conquer international education.
+                {content.subtitle}
               </p>
             </motion.div>
 
@@ -128,7 +150,7 @@ const Hero = () => {
                 to="/contact"
                 className="group inline-flex items-center gap-3 bg-slate-900 text-white font-bold px-10 py-4.5 rounded-2xl transition-all duration-500 hover:bg-brand-600 hover:shadow-[0_20px_50px_rgba(13,94,183,0.3)] hover:-translate-y-1.5"
               >
-                <span>Start Your Journey</span>
+                <span>{content.buttonText}</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
               </Link>
               <button className="group inline-flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-600 font-bold hover:text-slate-900 transition-all">

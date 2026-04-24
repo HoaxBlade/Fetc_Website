@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Landmark, GraduationCap, School, Building2, Building, Library, Award, BookOpen } from 'lucide-react';
 
-const TrustBar = () => {
+const TrustBar = ({ message }) => {
   const partners = [
     { name: "Oxford Brookes", icon: Landmark },
     { name: "QA Universities", icon: GraduationCap },
@@ -31,7 +31,9 @@ const TrustBar = () => {
           viewport={{ once: true }}
           className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400"
         >
-          Trusted by <span className="text-brand-600">100+</span> Global Universities & Education Partners
+          {message || (
+            <>Trusted by <span className="text-brand-600">100+</span> Global Universities & Education Partners</>
+          )}
         </motion.p>
       </div>
 

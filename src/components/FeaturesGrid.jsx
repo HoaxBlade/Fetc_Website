@@ -2,8 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheck, Zap, Users, Trophy, ArrowUpRight } from 'lucide-react';
 
-const FeaturesGrid = () => {
-  const features = [
+const FeaturesGrid = ({ title, subtitle, items }) => {
+  const defaultFeatures = [
     {
       title: "Expert 1-on-1 Mentors",
       desc: "Learn from industry elites with decades of experience guiding students to global success.",
@@ -42,6 +42,15 @@ const FeaturesGrid = () => {
     }
   ];
 
+  // Map incoming items to the structure needed for display
+  const features = items ? items.map((item, idx) => ({
+    ...defaultFeatures[idx % defaultFeatures.length], // Keep icons and styles
+    title: item.title,
+    desc: item.desc || defaultFeatures[idx % defaultFeatures.length].desc,
+    metric: item.metric,
+    metricLabel: item.label
+  })) : defaultFeatures;
+
   return (
     <section className="py-24 bg-transparent relative z-10 overflow-hidden">
       {/* Section background accent */}
@@ -60,10 +69,16 @@ const FeaturesGrid = () => {
             Why Choose FETC
           </span>
           <h2 className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight">
-            Built for <span className="bg-gradient-to-r from-brand-600 to-teal-500 bg-clip-text text-transparent">Excellence</span>
+            {title ? (
+              <>
+                 {title.split(' ').slice(0, -1).join(' ')} <span className="bg-gradient-to-r from-brand-600 to-teal-500 bg-clip-text text-transparent">{title.split(' ').slice(-1)}</span>
+              </>
+            ) : (
+              <>Built for <span className="bg-gradient-to-r from-brand-600 to-teal-500 bg-clip-text text-transparent">Excellence</span></>
+            )}
           </h2>
           <p className="mt-4 text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-            Every metric is a promise we deliver on. Here's what sets us apart from every other consultancy.
+            {subtitle || "Every metric is a promise we deliver on. Here's what sets us apart from every other consultancy."}
           </p>
         </motion.div>
 
