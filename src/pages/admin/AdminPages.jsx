@@ -186,7 +186,7 @@ const AdminPages = () => {
       key={page.id}
       whileHover={{ y: -5 }}
       onClick={() => setSelectedPage(page)}
-      className="bg-slate-50/50 border border-slate-100 rounded-[2rem] p-6 shadow-sm hover:shadow-xl hover:bg-white transition-all cursor-pointer group"
+      className="bg-slate-50/50 border border-slate-200 rounded-[2rem] p-6 shadow-sm hover:shadow-xl hover:bg-white transition-all cursor-pointer group"
     >
       <div className="flex justify-between items-start mb-5">
         <div className="p-3 bg-brand-50 text-brand-600 rounded-2xl shadow-sm group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
@@ -1373,7 +1373,7 @@ const AdminPages = () => {
                   <motion.div
                     key={cat}
                     whileHover={{ y: -5 }}
-                    className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-soft hover:shadow-2xl transition-all cursor-pointer group relative overflow-hidden"
+                    className="bg-slate-50/50 border border-slate-200 rounded-[2.5rem] p-8 transition-all cursor-pointer group relative overflow-hidden"
                   >
                     {/* Background Accent */}
                     <div className="absolute -right-10 -top-10 w-40 h-40 bg-brand-50/50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
