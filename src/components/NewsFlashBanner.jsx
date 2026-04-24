@@ -46,11 +46,11 @@ const NewsFlashBanner = () => {
             }}
             className="whitespace-nowrap inline-block"
           >
-            <span className="text-[13px] font-black tracking-tighter text-amber-950 uppercase py-1">
+            <span className="text-[13px] font-semibold tracking-tight text-amber-950 py-1">
               {tickerText}
             </span>
             <span className="inline-block w-[100vw]" />
-            <span className="text-[13px] font-black tracking-tighter text-amber-950 uppercase py-1">
+            <span className="text-[13px] font-semibold tracking-tight text-amber-950 py-1">
               {tickerText}
             </span>
             <span className="inline-block w-[100vw]" />
