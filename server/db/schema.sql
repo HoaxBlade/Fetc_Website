@@ -47,3 +47,15 @@ CREATE TABLE IF NOT EXISTS tickets (
     status VARCHAR(20) DEFAULT 'OPEN',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 5. Pages Table (CMS)
+CREATE TABLE IF NOT EXISTS pages (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,      -- e.g., 'about-us'
+    status VARCHAR(20) DEFAULT 'DRAFT',     -- 'PUBLISHED' or 'DRAFT'
+    seo_title VARCHAR(255),
+    seo_description TEXT,
+    content JSONB DEFAULT '{}',             -- Flexible storage for page sections
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

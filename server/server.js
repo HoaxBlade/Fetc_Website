@@ -205,7 +205,7 @@ app.get('/api/admin/tickets', async (req, res) => {
   }
 });
 
-// Admin Update Ticket Status
+// PATCH /api/admin/tickets/:id - Update ticket status
 app.patch('/api/admin/tickets/:id', async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -214,10 +214,48 @@ app.patch('/api/admin/tickets/:id', async (req, res) => {
       'UPDATE tickets SET status = $1 WHERE id = $2 RETURNING *',
       [status, id]
     );
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Ticket not found' });
     res.json({ success: true, ticket: result.rows[0] });
   } catch (err) {
-    console.error('Update ticket error:', err);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+// --- Pages Management API ---
+
+// GET /api/admin/pages - List all pages
+app.get('/api/admin/pages', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM pages ORDER BY title ASC');
+    res.json({ success: true, pages: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+// PATCH /api/admin/pages/:id - Update page metadata/status
+app.patch('/api/admin/pages/:id', async (req, res) => {
+  const { id } = req.params;
+  const { title, status, seo_title, seo_description, content } = req.body;
+  try {
+    const result = await db.query(
+      `UPDATE pages 
+       SET title = COALESCE($1, title), 
+           status = COALESCE($2, status), 
+           seo_title = COALESCE($3, seo_title), 
+           seo_description = COALESCE($4, seo_description), 
+           content = COALESCE($5, content),
+           updated_at = CURRENT_TIMESTAMP 
+       WHERE id = $6 RETURNING *`,
+      [title, status, seo_title, seo_description, content ? JSON.stringify(content) : null, id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Page not found' });
+    res.json({ success: true, page: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error' });
   }
 });
 
