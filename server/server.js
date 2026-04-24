@@ -23,6 +23,9 @@ if (!fs.existsSync(uploadDir)) {
 // Static folder for uploaded images
 app.use('/uploads', express.static(uploadDir));
 
+// Static folder for project assets (fallback)
+app.use('/assets', express.static(path.join(__dirname, '../public/assets')));
+
 // Multer Storage Configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
