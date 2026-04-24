@@ -1,47 +1,99 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
-import { countryData } from "../data/siteData";
+import { Loader2, Search, MapPin, Sparkles } from "lucide-react";
+import { countryData as STATIC_FALLBACKS } from "../data/siteData";
 
 function StudyAbroadPage() {
   const { country } = useParams();
-  const details = countryData[country];
+  const [pageData, setPageData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  if (!details) {
+  const fetchCountryData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/pages/study-abroad/${country}`);
+      const data = await response.json();
+      if (data.success && data.page) {
+        setPageData(data.page.content);
+      } else {
+        // Use siteData fallback if DB is missing data
+        setPageData(STATIC_FALLBACKS[country] || null);
+      }
+    } catch (err) {
+      console.error('Failed to fetch study abroad data:', err);
+      setPageData(STATIC_FALLBACKS[country] || null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [country]);
+
+  useEffect(() => {
+    fetchCountryData();
+  }, [fetchCountryData]);
+
+  if (isLoading) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold text-slate-800">Country Not Found</h1>
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <Loader2 className="w-12 h-12 text-brand-600 animate-spin mb-4" />
+        <p className="text-slate-500 font-bold tracking-tight italic">Exploring {country.replace('-', ' ')}...</p>
+      </div>
+    );
+  }
+
+  if (!pageData) {
+    return (
+      <main className="mx-auto max-w-3xl px-4 py-20 text-center">
+        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
+          <Search size={32} />
+        </div>
+        <h1 className="text-3xl font-extrabold text-slate-800 mb-4 tracking-tight">Oops! Country Info Missing</h1>
+        <p className="text-slate-500 mb-8 font-medium">We haven't added the details for this destination to our CMS yet.</p>
+        <Link to="/" className="inline-flex items-center gap-2 text-brand-600 font-bold hover:underline">
+          Go back home
+        </Link>
       </main>
     );
   }
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-12 md:px-6">
-      <div className="mb-6 flex items-center text-sm text-slate-500">
-        <Link to="/" className="text-brand-700 hover:text-brand-800 font-medium">
+      {/* Breadcrumbs */}
+      <div className="mb-6 flex items-center text-[11px] font-black uppercase tracking-widest text-slate-400">
+        <Link to="/" className="text-brand-600 hover:text-brand-800 transition-colors">
           Home
         </Link>
-        <span className="mx-2">/</span>
+        <span className="mx-2 opacity-30">/</span>
         <span>Study Abroad</span>
-        <span className="mx-2">/</span>
-        <span className="font-medium text-slate-800">{details.name}</span>
+        <span className="mx-2 opacity-30">/</span>
+        <span className="text-slate-900">{pageData.name}</span>
       </div>
 
-      <div className="grid gap-10 rounded-[2.5rem] bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-100 md:grid-cols-2 md:p-10 transition-all duration-500 hover:shadow-[0_20px_50px_rgb(0,0,0,0.06)]">
-        <div className="relative overflow-hidden rounded-[2rem] shadow-sm">
+      {/* Hero Card */}
+      <div className="grid gap-10 rounded-[3rem] bg-white p-6 shadow-soft ring-1 ring-slate-100/50 md:grid-cols-2 md:p-12 transition-all duration-500 hover:shadow-xl">
+        <div className="relative overflow-hidden rounded-[2.5rem] shadow-lg group aspect-[4/3] md:aspect-auto">
           <img
-            src={details.image}
-            alt={details.name}
-            className="h-full max-h-80 w-full object-cover transition-transform duration-700 hover:scale-105"
+            src={pageData.image || "https://images.unsplash.com/photo-1526137630142-fca52b75e6e1?q=80&w=1287&auto=format&fit=crop"}
+            alt={pageData.name}
+            className="h-full w-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         </div>
         <div className="flex flex-col justify-center">
-          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 md:text-5xl">{details.name}</h1>
-          <p className="mt-5 text-lg leading-relaxed text-slate-600">{details.description}</p>
-          <div>
+          <div className="flex items-center gap-2 mb-4">
+             <span className="w-10 h-1 bg-brand-600 rounded-full" />
+             <span className="text-xs font-black text-brand-600 uppercase tracking-widest">Top Destination</span>
+          </div>
+          <h1 className="text-4xl font-black tracking-tighter text-slate-900 md:text-6xl text-balance">
+            Study in <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-teal-500">{pageData.name}</span>
+          </h1>
+          <p className="mt-8 text-lg md:text-xl leading-relaxed text-slate-500 font-medium">
+            {pageData.description}
+          </p>
+          <div className="mt-10 flex flex-wrap gap-4">
             <Link
-              to={`/start-journey?country=${details.name}`}
-              className="mt-8 inline-flex items-center justify-center rounded-full bg-slate-900 px-8 py-3.5 text-base font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 hover:shadow-lg active:scale-95"
+              to={`/start-journey?country=${pageData.name}`}
+              className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-10 py-4.5 text-base font-bold text-white shadow-xl shadow-slate-200 transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 hover:shadow-brand-100 active:scale-95"
             >
               Start Your Journey
             </Link>
@@ -49,27 +101,33 @@ function StudyAbroadPage() {
         </div>
       </div>
 
-      {details.universities && details.universities.length > 0 && (
-        <div className="mt-20">
-          <div className="mb-10 flex flex-col items-center justify-between gap-6 md:flex-row md:items-end">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-              Top Universities in {details.name}
-            </h2>
-            <div className="relative w-full max-w-sm">
-              <svg className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+      {/* Universities Grid */}
+      {pageData.universities && pageData.universities.length > 0 && (
+        <div className="mt-24">
+          <div className="mb-12 flex flex-col items-center justify-between gap-8 md:flex-row md:items-end">
+            <div>
+               <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900">
+                 Elite Universities
+               </h2>
+               <p className="text-slate-400 font-bold text-sm mt-1 uppercase tracking-widest italic flex items-center gap-2">
+                 <Sparkles size={14} className="text-amber-400" /> Discover your perfect match in {pageData.name}
+               </p>
+            </div>
+            
+            <div className="relative w-full max-w-sm group">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-brand-600 transition-colors" size={20} />
               <input
                 type="text"
-                placeholder={`Search in ${details.name}...`}
+                placeholder={`Search universities...`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-full border border-slate-200 bg-slate-50 py-3.5 pl-12 pr-4 text-sm font-medium text-slate-800 outline-none transition-all placeholder:text-slate-400 focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-400/10 shadow-sm"
+                className="w-full rounded-2xl border border-slate-100 bg-white py-4.5 pl-14 pr-6 text-sm font-bold text-slate-700 outline-none transition-all placeholder:text-slate-300 focus:border-brand-300 focus:ring-8 focus:ring-brand-600/5 shadow-soft"
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-8">
-            {details.universities
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {pageData.universities
               .filter(uni => uni.name.toLowerCase().includes(searchQuery.toLowerCase()))
               .map((uni, idx) => (
               <a
@@ -77,48 +135,61 @@ function StudyAbroadPage() {
                 href={uni.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative flex h-full flex-col justify-between rounded-3xl bg-white p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgb(0,0,0,0.08)]"
+                className="group relative flex h-full flex-col justify-between rounded-[2.5rem] bg-white p-8 border border-slate-50 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] hover:border-brand-100"
               >
                 {uni.exclusive && (
-                  <span className="absolute -top-3 right-4 rounded-full bg-gradient-to-r from-orange-400 to-rose-500 px-4 py-1.5 text-[10px] font-extrabold uppercase tracking-widest text-white shadow-md ring-4 ring-slate-50">
-                    Exclusive
+                  <span className="absolute -top-3 right-6 rounded-full bg-gradient-to-r from-brand-600 to-indigo-600 px-5 py-2 text-[9px] font-black uppercase tracking-widest text-white shadow-xl ring-4 ring-white">
+                    Exclusive Partner
                   </span>
                 )}
-                <div className="mb-6 flex h-24 w-full items-center justify-center shrink-0">
+                
+                <div className="mb-10 flex h-32 w-full items-center justify-center relative p-4">
+                   <div className="absolute inset-0 bg-slate-50/50 rounded-3xl -z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   {uni.image ? (
                     <img
                       src={uni.image}
                       alt={uni.name}
-                      className="h-full w-full object-contain mix-blend-multiply opacity-80 transition duration-500 group-hover:scale-110 group-hover:opacity-100"
+                      className="h-full w-full object-contain relative z-10 transition-transform duration-700 group-hover:scale-110"
                     />
                   ) : (
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-xl font-bold text-slate-300 transition duration-300 group-hover:bg-brand-50 group-hover:text-brand-400">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-50 text-2xl font-black text-brand-600 relative z-10">
                       {uni.name.charAt(0)}
                     </div>
                   )}
                 </div>
-                <div className="mt-auto flex flex-col items-center">
-                  <h3 className="text-center text-[13px] font-bold text-slate-800 transition-colors duration-300 group-hover:text-brand-600">
+
+                <div className="mt-auto">
+                  <h3 className="text-center text-base font-black text-slate-800 transition-colors duration-300 group-hover:text-brand-600 leading-tight mb-4">
                     {uni.name}
                   </h3>
-                  <div className="mt-3 flex w-full flex-col items-center gap-1.5 border-t border-slate-50 pt-3 text-[11px] font-medium text-slate-400 transition-colors duration-300 group-hover:border-slate-100/60">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <svg className="h-3.5 w-3.5 opacity-70" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                      </svg>
-                      <span>{uni.location || details.name}</span>
-                    </div>
-                    <div className="flex items-center justify-center gap-1.5">
-                      <svg className="h-3 w-3 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                      </svg>
-                      <span>{uni.ranking || `Top ${(uni.name.length % 5 + 1) * 50}`}</span>
+                  
+                  <div className="flex flex-col gap-3 pt-6 border-t border-slate-50 relative group-hover:border-brand-50 transition-colors">
+                    <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-tighter text-slate-400">
+                       <span className="flex items-center gap-1.5 group-hover:text-amber-500 transition-colors">
+                         <MapPin size={12} /> {uni.location || pageData.name}
+                       </span>
+                       <span className="px-2 py-1 bg-slate-50 rounded-lg group-hover:bg-brand-50 group-hover:text-brand-600 transition-colors">
+                         {uni.ranking || "Top Ranked"}
+                       </span>
                     </div>
                   </div>
+                </div>
+                
+                {/* Hover Indicator */}
+                <div className="mt-6 flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                   <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest flex items-center gap-1.5">
+                      Visit Website <Sparkles size={10} />
+                   </span>
                 </div>
               </a>
             ))}
           </div>
+          
+          {pageData.universities.filter(uni => uni.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+            <div className="py-20 text-center">
+               <p className="text-slate-400 font-bold italic">No universities match your search...</p>
+            </div>
+          )}
         </div>
       )}
     </main>

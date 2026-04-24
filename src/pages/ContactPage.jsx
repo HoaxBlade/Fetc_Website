@@ -6,7 +6,7 @@ const ContactPage = () => {
 
   const fetchPageContent = async () => {
     try {
-      const response = await fetch('/api/admin/pages/slug?slug=/contact');
+      const response = await fetch('/api/pages/contact');
       const data = await response.json();
       if (data.success && data.page) {
         setPageData(data.page.content);
