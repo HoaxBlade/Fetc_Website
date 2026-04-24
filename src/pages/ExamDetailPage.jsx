@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Loader2, BookOpen, Clock, Tag, ShieldCheck, Sparkles } from "lucide-react";
+import { Loader2, BookOpen } from "lucide-react";
 import { examData as EXAM_FALLBACKS } from "../data/siteData";
 
 function ExamDetailPage() {
@@ -58,73 +58,47 @@ function ExamDetailPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-16 md:px-6">
-      {/* Breadcrumbs */}
-      <div className="mb-8 flex items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
-        <Link to="/" className="text-brand-600 hover:text-brand-800">Home</Link>
-        <span className="mx-2 opacity-30">/</span>
-        <span>Exam & Training</span>
-        <span className="mx-2 opacity-30">/</span>
-        <span className="text-slate-900">{pageData.name}</span>
-      </div>
-
-      <div className="rounded-[3rem] bg-white p-8 shadow-soft ring-1 ring-slate-100/50 transition-all duration-500 hover:shadow-xl md:p-16">
+      <div className="rounded-[2.5rem] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-100 transition-all duration-500 hover:shadow-[0_20px_50px_rgb(0,0,0,0.06)] md:p-14">
         
-        <div className="mb-14 flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 mb-4 px-4 py-2 bg-brand-50 rounded-full">
-              Official Preparation
-            </span>
-            <h1 className="text-4xl font-black tracking-tighter text-slate-900 md:text-6xl lg:text-7xl">
-              {pageData.name}
-            </h1>
-          </div>
-          {/* <button className="inline-flex shrink-0 items-center gap-3 justify-center rounded-2xl bg-slate-900 px-10 py-5 text-base font-bold text-white shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600">
-             Apply Now <ChevronRight size={18} />
-          </button> */}
+        <div className="mb-12 flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900 md:text-5xl lg:text-6xl">
+            {pageData.name}
+          </h1>
+          {/* <Link
+            to="/about/company-profile"
+            className="inline-flex shrink-0 items-center justify-center rounded-full bg-slate-900 px-10 py-4 text-base font-semibold text-white shadow-[0_8px_30px_rgb(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 hover:shadow-[0_15px_40px_rgb(2,132,199,0.3)] active:scale-95"
+          >
+            Apply Now
+          </Link> */}
         </div>
 
         {pageData.metadata && pageData.metadata.length > 0 && (
-          <div className="mb-16 grid grid-cols-2 gap-6 sm:grid-cols-4">
-             {pageData.metadata.map((item, idx) => {
-                const Icon = [Tag, Clock, ShieldCheck, BookOpen][idx % 4] || Tag;
-                return (
-                  <div key={idx} className="flex flex-col rounded-3xl bg-slate-50/50 p-6 ring-1 ring-slate-100 transition-all duration-300 hover:bg-white hover:shadow-lg group">
-                     <Icon size={18} className="text-slate-300 group-hover:text-brand-600 transition-colors mb-3" />
-                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{item.label}</span>
-                     <span className="mt-2 text-sm font-black text-slate-800">{item.value}</span>
-                  </div>
-                );
-             })}
+          <div className="mb-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
+             {pageData.metadata.map((item, idx) => (
+                <div key={idx} className="flex flex-col rounded-[1.5rem] bg-slate-50 p-5 ring-1 ring-slate-100 transition duration-300 hover:bg-white hover:shadow-md">
+                   <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{item.label}</span>
+                   <span className="mt-1.5 text-sm font-bold text-slate-800">{item.value}</span>
+                </div>
+             ))}
           </div>
         )}
 
-        <div className="prose prose-slate max-w-none">
-          <div className="text-xl leading-relaxed text-slate-600 font-medium space-y-8">
-            {displayDesc.split('\n\n').map((para, idx) => (
-               <p key={idx} className="relative pl-0 md:pl-10">
-                  {idx === 0 && <span className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-brand-500 to-transparent rounded-full hidden md:block" />}
-                  {para}
-               </p>
-            ))}
-          </div>
+        <div className="prose prose-slate max-w-none text-lg leading-relaxed text-slate-600">
+          {displayDesc.split('\n\n').map((para, idx) => (
+             <p key={idx} className="mb-6">{para}</p>
+          ))}
         </div>
 
         {pageData.features && pageData.features.length > 0 && (
-          <div className="mt-24 border-t border-slate-100 pt-20">
-            <div className="text-center mb-16">
-               <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900">
-                 Elite <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">Training Features</span>
-               </h2>
-               <p className="text-slate-400 font-bold text-sm mt-3 uppercase tracking-widest italic">Why Choose FETC for your {pageData.name} Journey?</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="mt-16 border-t border-slate-100 pt-16">
+            <h2 className="mb-10 text-center text-3xl font-bold tracking-tight text-slate-900">
+              Key Features
+            </h2>
+            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
               {pageData.features.map((feature, idx) => (
-                <div key={idx} className="flex flex-col items-center justify-center rounded-[2.5rem] bg-white p-10 text-center ring-1 ring-slate-100 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl group">
-                   <div className="mb-4 w-16 h-16 rounded-2xl bg-brand-50 flex items-center justify-center text-brand-600 group-hover:bg-brand-600 group-hover:text-white transition-all duration-500">
-                      <Sparkles size={28} />
-                   </div>
-                   <div className="bg-gradient-to-br from-slate-900 to-brand-600 bg-clip-text text-4xl font-black text-transparent mb-2 group-hover:from-brand-600 group-hover:to-indigo-600 transition-all">{feature.highlight}</div>
-                   <div className="text-[11px] font-black uppercase tracking-widest text-slate-400">{feature.label}</div>
+                <div key={idx} className="flex flex-col items-center justify-center rounded-[2rem] bg-slate-50 p-6 text-center ring-1 ring-slate-200/60 transition-all duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-[0_15px_40px_rgb(0,0,0,0.08)]">
+                   <div className="mb-3 bg-gradient-to-br from-brand-600 to-sky-500 bg-clip-text text-4xl font-bold text-transparent">{feature.highlight}</div>
+                   <div className="text-sm font-medium text-slate-600">{feature.label}</div>
                 </div>
               ))}
             </div>

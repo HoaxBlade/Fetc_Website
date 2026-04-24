@@ -1055,12 +1055,21 @@ const AdminPages = () => {
                                  />
                                </div>
                                <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Detailed Description</label>
+                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Short Description (Summary)</label>
                                  <textarea 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-48 resize-none focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.fullDescription || selectedPage.content?.description || ""}
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.description || ""}
+                                   onChange={(e) => handleContentChange(null, 'description', e.target.value)}
+                                   placeholder="A short summary for lists..."
+                                 />
+                               </div>
+                               <div>
+                                 <label className="text-[10px] font-black text-brand-600 uppercase tracking-tight mb-1 block">Full Rich Content (Detailed Story)</label>
+                                 <textarea 
+                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-64 resize-none focus:border-brand-300 outline-none transition-all"
+                                   value={selectedPage.content?.fullDescription || ""}
                                    onChange={(e) => handleContentChange(null, 'fullDescription', e.target.value)}
-                                   placeholder="Add the full story about this exam preparation here..."
+                                   placeholder="Add the full detailed story here..."
                                  />
                                </div>
                             </div>

@@ -18,6 +18,7 @@ import PrivacyPage from "./pages/PrivacyPage";
 import RefundPage from "./pages/RefundPage";
 import ScrollToTop from "./components/ScrollToTop";
 import ScrollProgressBar from "./components/ScrollProgressBar";
+import NewsFlashBanner from "./components/NewsFlashBanner";
 // User Imports
 import UserLayout from "./components/user/UserLayout";
 import ProfilePage from "./pages/ProfilePage";
@@ -44,6 +45,7 @@ function App() {
       <ScrollToTop />
       <div className="min-h-screen bg-slate-50 flex flex-col">
         <Navbar />
+        <NewsFlashBanner />
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<HomePage />} />

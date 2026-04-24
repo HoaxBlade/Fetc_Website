@@ -438,6 +438,83 @@ app.patch('/api/admin/pages/:id', async (req, res) => {
   }
 });
 
+// --- News Flash API ---
+
+// Public: GET active news flashes
+app.get('/api/news-flash', async (req, res) => {
+  try {
+    const result = await db.query(
+      'SELECT content, link FROM news_flash WHERE is_active = true ORDER BY priority DESC, created_at DESC'
+    );
+    res.json({ success: true, news: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+// Admin: GET all news flashes
+app.get('/api/admin/news-flash', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM news_flash ORDER BY created_at DESC');
+    res.json({ success: true, news: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+// Admin: POST create news flash
+app.post('/api/admin/news-flash', async (req, res) => {
+  const { content, link, is_active, priority } = req.body;
+  try {
+    const result = await db.query(
+      'INSERT INTO news_flash (content, link, is_active, priority) VALUES ($1, $2, $3, $4) RETURNING *',
+      [content, link, is_active ?? true, priority ?? 0]
+    );
+    res.json({ success: true, item: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+// Admin: PATCH update news flash
+app.patch('/api/admin/news-flash/:id', async (req, res) => {
+  const { id } = req.params;
+  const { content, link, is_active, priority } = req.body;
+  try {
+    const result = await db.query(
+      `UPDATE news_flash 
+       SET content = COALESCE($1, content), 
+           link = COALESCE($2, link), 
+           is_active = COALESCE($3, is_active), 
+           priority = COALESCE($4, priority),
+           updated_at = CURRENT_TIMESTAMP 
+       WHERE id = $5 RETURNING *`,
+      [content, link, is_active, priority, id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Item not found' });
+    res.json({ success: true, item: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+// Admin: DELETE news flash
+app.delete('/api/admin/news-flash/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await db.query('DELETE FROM news_flash WHERE id = $1 RETURNING *', [id]);
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Item not found' });
+    res.json({ success: true, message: 'Deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
 // --- Public Pages API ---
 
 // GET /api/pages/* - Fetch public page content by slug
