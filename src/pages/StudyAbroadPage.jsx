@@ -93,7 +93,7 @@ function StudyAbroadPage() {
           <div className="mt-10 flex flex-wrap gap-4">
             <Link
               to={`/start-journey?country=${pageData.name}`}
-              className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-10 py-4.5 text-base font-bold text-white shadow-xl shadow-slate-200 transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 hover:shadow-brand-100 active:scale-95"
+              className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-8 py-4 text-base font-bold text-white shadow-xl shadow-slate-200 transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 hover:shadow-brand-100 active:scale-95"
             >
               Start Your Journey
             </Link>

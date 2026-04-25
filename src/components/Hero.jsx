@@ -148,7 +148,7 @@ const Hero = ({ content: propsContent }) => {
             >
               <Link
                 to="/contact"
-                className="group inline-flex items-center gap-3 bg-slate-900 text-white font-bold px-10 py-4.5 rounded-2xl transition-all duration-500 hover:bg-brand-600 hover:shadow-[0_20px_50px_rgba(13,94,183,0.3)] hover:-translate-y-1.5"
+                className="group inline-flex items-center gap-3 bg-slate-900 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-500 hover:bg-brand-600 hover:shadow-[0_20px_50px_rgba(13,94,183,0.3)] hover:-translate-y-1.5"
               >
                 <span>{content.buttonText}</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
