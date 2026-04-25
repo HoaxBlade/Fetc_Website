@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Target, Compass, Loader2 } from "lucide-react";
+import InteractiveGuide from "../components/InteractiveGuide";
 
 function CareerAssessmentPage() {
   const [pageData, setPageData] = useState(null);
@@ -33,7 +34,7 @@ function CareerAssessmentPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-20 md:px-6">
+    <main className="mx-auto max-w-7xl px-4 py-20 md:px-6">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -78,6 +79,11 @@ function CareerAssessmentPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* The Interactive Booklet Section */}
+      <div className="mt-20">
+         <InteractiveGuide slug="career-assessment-guide" />
+      </div>
     </main>
   );
 }

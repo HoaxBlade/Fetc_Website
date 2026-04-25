@@ -546,6 +546,106 @@ db.query('SELECT NOW()', (err, res) => {
   }
 });
 
+// -----------------------------------------------------------------------------
+// INTERACTIVE GUIDES API
+// -----------------------------------------------------------------------------
+
+// Fetch a guide by slug (Public)
+app.get('/api/guides/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const guide = await db.query('SELECT * FROM interactive_guides WHERE slug = $1 AND is_active = true', [slug]);
+        
+        if (guide.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Guide not found' });
+        }
+
+        const pages = await db.query('SELECT * FROM guide_pages WHERE guide_id = $1 ORDER BY page_number ASC', [guide.rows[0].id]);
+        
+        res.json({
+            success: true,
+            guide: guide.rows[0],
+            pages: pages.rows
+        });
+    } catch (err) {
+        console.error('Error fetching guide:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// Admin: Get all guides
+app.get('/api/admin/guides', async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM interactive_guides ORDER BY created_at DESC');
+        res.json({ success: true, guides: result.rows });
+    } catch (err) {
+        console.error('Error fetching all guides:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// Admin: Create/Update Guide
+app.post('/api/admin/guides', async (req, res) => {
+    const { id, slug, title, description, is_active } = req.body;
+    try {
+        if (id) {
+            // Update
+            const result = await db.query(
+                'UPDATE interactive_guides SET slug = $1, title = $2, description = $3, is_active = $4 WHERE id = $5 RETURNING *',
+                [slug, title, description, is_active, id]
+            );
+            res.json({ success: true, guide: result.rows[0] });
+        } else {
+            // Create
+            const result = await db.query(
+                'INSERT INTO interactive_guides (slug, title, description) VALUES ($1, $2, $3) RETURNING *',
+                [slug, title, description]
+            );
+            res.json({ success: true, guide: result.rows[0] });
+        }
+    } catch (err) {
+        console.error('Error saving guide:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// Admin: Manage Guide Pages
+app.post('/api/admin/guides/:id/pages', async (req, res) => {
+    const { id } = req.params;
+    const { pages } = req.body; // Array of { image_url, page_number }
+
+    try {
+        // Simple approach: Delete existing and re-insert
+        await db.query('DELETE FROM guide_pages WHERE guide_id = $1', [id]);
+        
+        if (pages && pages.length > 0) {
+            for (let page of pages) {
+                await db.query(
+                    'INSERT INTO guide_pages (guide_id, image_url, page_number) VALUES ($1, $2, $3)',
+                    [id, page.image_url, page.page_number]
+                );
+            }
+        }
+        
+        res.json({ success: true, message: 'Pages updated successfully' });
+    } catch (err) {
+        console.error('Error managing guide pages:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// Admin: Delete Guide
+app.delete('/api/admin/guides/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await db.query('DELETE FROM interactive_guides WHERE id = $1', [id]);
+        res.json({ success: true, message: 'Guide deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting guide:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 }).on('error', (err) => {

@@ -37,6 +37,7 @@ import AdminSupportTickets from "./pages/admin/AdminSupportTickets";
 import AdminInvoice from "./pages/admin/AdminInvoice";
 import AdminLeads from "./pages/admin/AdminLeads";
 import AdminPartners from "./pages/admin/AdminPartners";
+import AdminGuides from "./pages/admin/AdminGuides";
 
 function App() {
   return (
@@ -81,6 +82,7 @@ function App() {
               <Route path="invoice" element={<AdminInvoice />} />
               <Route path="leads" element={<AdminLeads />} />
               <Route path="partners" element={<AdminPartners />} />
+              <Route path="guides" element={<AdminGuides />} />
             </Route>
 
             {/* User Dashboard Nested Routes */}

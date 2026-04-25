@@ -3,7 +3,7 @@ import { Outlet, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, Users, FileText, Share2, 
-  Zap, Ticket, Menu, X
+  Zap, Ticket, Menu, X, BookOpen
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -21,6 +21,7 @@ const AdminLayout = () => {
     // { icon: FileText, label: "Invoice", path: "/admin/invoice" },
     { icon: LayoutDashboard, label: "Leads Dashboard", path: "/admin/leads" },
     { icon: Users, label: "Partner List", path: "/admin/partners" },
+    { icon: BookOpen, label: "Interactive Guides", path: "/admin/guides" },
   ];
 
   const SidebarContent = () => (

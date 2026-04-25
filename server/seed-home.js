@@ -1,8 +1,13 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+const { Client } = require('pg');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost:5432/fetc_db'
+const client = new Client({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
 });
 
 const homeContent = {
@@ -66,11 +71,13 @@ const homeContent = {
 
 async function seed() {
   try {
-    await pool.query(
+    await client.connect();
+    await client.query(
       "UPDATE pages SET content = $1 WHERE slug = '/';",
       [JSON.stringify(homeContent)]
     );
     console.log("✅ Home Page content seeded successfully!");
+    await client.end();
     process.exit(0);
   } catch (err) {
     console.error("❌ Seeding failed:", err);
