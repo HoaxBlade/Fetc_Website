@@ -1,11 +1,13 @@
 const { Client } = require('pg');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const client = new Client({
-  user: 'ayushranjan',
-  host: 'localhost',
-  database: 'fetc_db',
-  password: '',
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
 });
 
 const countryData = {
