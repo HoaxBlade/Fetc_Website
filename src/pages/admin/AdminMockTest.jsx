@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CheckSquare, Plus, Search } from 'lucide-react';
+import { CheckSquare, Plus } from 'lucide-react';
 
 const AdminMockTest = () => {
   return (

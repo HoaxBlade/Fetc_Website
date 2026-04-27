@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Plus, Bell, Trash2, Edit2, CheckCircle, XCircle, Loader2, Link as LinkIcon, X, Save, AlertCircle } from 'lucide-react';
+import { Zap, Plus, Bell, Trash2, Edit2, CheckCircle, XCircle, Loader2, Link as LinkIcon, X, Save } from 'lucide-react';
 
 const AdminNewsFlash = () => {
   const [items, setItems] = useState([]);

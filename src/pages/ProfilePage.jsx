@@ -48,7 +48,7 @@ const ProfilePage = () => {
     };
 
     fetchProfile();
-  }, [userData.id]);
+  }, [userData.id, isEditing, userData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

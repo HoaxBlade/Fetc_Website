@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  IndianRupee, ShoppingBag, 
+  ShoppingBag, 
   UserPlus, Search, RotateCcw, Download, 
   Users
 } from 'lucide-react';

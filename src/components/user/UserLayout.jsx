@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  User, BookOpen, ShoppingBag, CreditCard, 
-  HelpCircle, Settings, LogOut, Menu, X, Zap,
-  MessageCircle, ClipboardCheck
+  User, HelpCircle, Settings, LogOut, Menu, X,
+  MessageCircle
 } from 'lucide-react';
 
 const UserLayout = () => {
