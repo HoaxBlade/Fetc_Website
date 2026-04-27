@@ -4,10 +4,17 @@ const { Pool } = require('pg');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 require('dotenv').config();
 
+let connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.Databse_POSTGRES_URL;
+
+// If we have a cloud connection string, force sslmode=no-verify to kill that certificate error
+if (connectionString && !connectionString.includes('localhost') && !connectionString.includes('127.0.0.1')) {
+  connectionString += connectionString.includes('?') ? '&sslmode=no-verify' : '?sslmode=no-verify';
+}
+
 const pool = new Pool(
-  (process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.Databse_POSTGRES_URL)
+  connectionString
     ? { 
-        connectionString: process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.Databse_POSTGRES_URL,
+        connectionString: connectionString,
         ssl: { rejectUnauthorized: false } 
       }
     : {
