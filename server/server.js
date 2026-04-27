@@ -646,12 +646,17 @@ app.delete('/api/admin/guides/:id', async (req, res) => {
     }
 });
 
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-}).on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`❌ Port ${PORT} is already in use.`);
-  } else {
-    console.error('❌ Server error:', err);
-  }
-});
+// Export the app for Vercel serverless functions
+module.exports = app;
+
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  }).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`❌ Port ${PORT} is already in use.`);
+    } else {
+      console.error('❌ Server error:', err);
+    }
+  });
+}
