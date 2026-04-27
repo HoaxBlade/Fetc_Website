@@ -28,10 +28,14 @@ const transporter = nodemailer.createTransport({
 
 console.log('Email configured:', process.env.EMAIL_USER ? 'YES' : 'NO');
 
-// Create uploads folder if it doesn't exist (Only locally, Vercel is read-only)
+// Create uploads folder if it doesn't exist (Gracefully handle read-only filesystems like Vercel)
 const uploadDir = path.join(__dirname, 'uploads');
-if (!process.env.VERCEL && !fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (err) {
+  console.warn('⚠️ Could not create uploads directory (expected on Vercel):', err.message);
 }
 
 // Static folder for uploaded images
