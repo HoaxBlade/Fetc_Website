@@ -3,19 +3,12 @@ const bcrypt = require('bcrypt');
 
 const initDb = async () => {
   try {
-    // Create Users Table
-    await db.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        role VARCHAR(50) DEFAULT 'USER',
-        phone VARCHAR(20),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    console.log('Users table checked/created');
+    // Read and Execute Schema
+    const fs = require('fs');
+    const path = require('path');
+    const schema = fs.readFileSync(path.join(__dirname, 'db', 'schema.sql'), 'utf8');
+    await db.query(schema);
+    console.log('Database schema applied successfully');
 
     // Insert Default Admin if not exists
     const adminEmail = 'fetc2026@gmail.com';

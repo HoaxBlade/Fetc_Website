@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
-import loginBg from "../assets/officeImages/_DSC1638.JPG";
 import logo from "../assets/logo/FETC_FINAL LOGO-01_11 Version_Edit TM_PNG.png";
 
 const MyAccountPage = () => {

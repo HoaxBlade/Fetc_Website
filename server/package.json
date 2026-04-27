@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed-home": "node seed-home.js",
     "seed-all": "node seed-all-data.js",
-    "seed:gallery": "node seed-gallery.js"
+    "seed:gallery": "node seed-gallery.js",
+    "setup": "node ensure_db.js && node init_db.js && node seed-all-data.js"
   },
   "keywords": [],
   "author": "",
