@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Target, Compass, Loader2 } from "lucide-react";
+import { Target, Compass, Loader2, ClipboardList, FileBarChart, Users } from "lucide-react";
 import InteractiveGuide from "../components/InteractiveGuide";
 
 function CareerAssessmentPage() {
@@ -47,33 +47,54 @@ function CareerAssessmentPage() {
              <Target size={32} />
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-8 leading-tight">
+          <h1 className="text-4xl md:text-6xl font-bold text-slate-900 tracking-tight mb-8 leading-tight">
             {pageData?.title || "Behaviour and Career Analysis"}
           </h1>
           
           <div className="prose prose-slate max-w-none">
-            <p className="text-xl leading-relaxed text-slate-600 font-medium">
+            <p className="text-xl leading-relaxed text-slate-600 font-normal">
               {pageData?.description || "Our behavioural and career analysis service helps students identify the right pathway based on personality, strengths, interests, and global career opportunities."}
             </p>
           </div>
 
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-slate-50 pt-16">
-             <div className="flex gap-6">
-                <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
-                   <Compass size={24} />
+          {/* Process Steps */}
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-slate-50 pt-16">
+             {/* Step 1 */}
+             <div className="flex flex-col gap-4">
+                <div className="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+                   <ClipboardList size={24} />
                 </div>
                 <div>
-                   <h3 className="text-lg font-bold text-slate-900 mb-2">Identify Your Path</h3>
-                   <p className="text-slate-500 font-medium leading-relaxed">Discover the global opportunities that align perfectly with your unique personality and strengths.</p>
+                   <h3 className="text-lg font-bold text-slate-900 mb-2">Step 1: Take the Assessment</h3>
+                   <p className="text-slate-500 font-normal text-sm leading-relaxed">
+                     Complete a comprehensive psychometric and behavioral test designed to map your unique cognitive traits and work style.
+                   </p>
                 </div>
              </div>
-             <div className="flex gap-6">
-                <div className="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
-                   <Target size={24} />
+
+             {/* Step 2 */}
+             <div className="flex flex-col gap-4">
+                <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
+                   <FileBarChart size={24} />
                 </div>
                 <div>
-                   <h3 className="text-lg font-bold text-slate-900 mb-2">Expert Guidance</h3>
-                   <p className="text-slate-500 font-medium leading-relaxed">Our mentors provide data-driven insights to help you make informed decisions about your future.</p>
+                   <h3 className="text-lg font-bold text-slate-900 mb-2">Step 2: Get Your Detailed Report</h3>
+                   <p className="text-slate-500 font-normal text-sm leading-relaxed">
+                     Receive an in-depth, data-driven breakdown of your strengths, personality profile, and ideal global industry matches.
+                   </p>
+                </div>
+             </div>
+
+             {/* Step 3 */}
+             <div className="flex flex-col gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                   <Users size={24} />
+                </div>
+                <div>
+                   <h3 className="text-lg font-bold text-slate-900 mb-2">Step 3: Expert Counseling</h3>
+                   <p className="text-slate-500 font-normal text-sm leading-relaxed">
+                     Sit down with our mentors to translate your report into a concrete study abroad and career pathway.
+                   </p>
                 </div>
              </div>
           </div>
