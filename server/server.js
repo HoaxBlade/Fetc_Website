@@ -114,27 +114,6 @@ app.post('/api/auth/signup', async (req, res) => {
   }
 });
 
-// Database Initialization Route (Run once after connecting Cloud DB)
-app.get('/api/admin/db/setup', async (req, res) => {
-  try {
-    const schema = fs.readFileSync(path.join(__dirname, 'db', 'schema.sql'), 'utf8');
-    await db.query(schema);
-    
-    // Insert Default Admin
-    const adminEmail = 'fetc2026@gmail.com';
-    const hashedPassword = await bcrypt.hash('admin@12345', 10);
-    await db.query(
-      'INSERT INTO users (name, email, password, role, phone) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (email) DO NOTHING',
-      ['Admin', adminEmail, hashedPassword, 'ADMIN', '9033347209']
-    );
-
-    res.json({ success: true, message: 'Database initialized successfully!' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: 'Initialization failed', error: err.message });
-  }
-});
-
 // Real Auth Route with PostgreSQL
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
