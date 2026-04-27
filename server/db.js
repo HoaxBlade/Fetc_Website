@@ -1,4 +1,7 @@
 const { Pool } = require('pg');
+
+// Force-disable SSL certificate validation (Fix for Supabase/Vercel certificate chain error)
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 require('dotenv').config();
 
 const pool = new Pool(
