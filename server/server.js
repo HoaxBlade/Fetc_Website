@@ -28,9 +28,9 @@ const transporter = nodemailer.createTransport({
 
 console.log('Email configured:', process.env.EMAIL_USER ? 'YES' : 'NO');
 
-// Create uploads folder if it doesn't exist
+// Create uploads folder if it doesn't exist (Only locally, Vercel is read-only)
 const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
+if (!process.env.VERCEL && !fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 
