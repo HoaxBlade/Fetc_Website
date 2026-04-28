@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, Users, FileText, Share2, 
+import {
+  LayoutDashboard, Users, FileText, Share2,
   Zap, Ticket, Menu, X, BookOpen
 } from 'lucide-react';
 
@@ -29,7 +29,7 @@ const AdminLayout = () => {
       <div className="p-8 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-200">
-             <Zap className="text-white" size={20} />
+            <Zap className="text-white" size={20} />
           </div>
           <h2 className="text-xl font-bold text-slate-800 tracking-tight">Admin<span className="text-brand-600"> Panel</span></h2>
         </div>
@@ -47,8 +47,8 @@ const AdminLayout = () => {
             onClick={() => setIsSidebarOpen(false)}
             className={({ isActive }) => `
               w-full flex items-center gap-3.5 px-5 py-4 rounded-2xl text-sm font-bold transition-all duration-300
-              ${isActive 
-                ? "bg-brand-600 text-white shadow-lg shadow-brand-200" 
+              ${isActive
+                ? "bg-brand-600 text-white shadow-lg shadow-brand-200"
                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}
             `}
           >
@@ -61,7 +61,7 @@ const AdminLayout = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]/50 flex relative overflow-hidden">
+    <div className="h-screen bg-[#f8fafc]/50 flex overflow-hidden relative">
       {/* Dynamic Background Decorations */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-5%] left-[-5%] w-[45%] h-[45%] bg-brand-100/30 rounded-full blur-[120px]" />
@@ -69,8 +69,8 @@ const AdminLayout = () => {
       </div>
 
       {/* Mobile Header Overlay */}
-      <div className="lg:hidden fixed top-24 left-6 right-6 z-20 flex items-center justify-between">
-        <button 
+      <div className="lg:hidden fixed top-6 left-6 right-6 z-20 flex items-center justify-between">
+        <button
           onClick={() => setIsSidebarOpen(true)}
           className="p-4 bg-white/70 backdrop-blur-xl border border-white/80 rounded-[1.5rem] shadow-xl text-slate-600 hover:text-brand-600 transition-all"
         >
@@ -79,28 +79,28 @@ const AdminLayout = () => {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="w-72 mt-2 sticky top-24 hidden lg:flex flex-col h-fit z-20 m-6">
-        <div className="h-full bg-white/40 backdrop-blur-3xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2.5rem] overflow-hidden relative group">
+      <aside className="w-80 hidden lg:flex flex-col h-fit z-20 p-6 pr-0">
+        <div className="h-full bg-white/40 backdrop-blur-3xl border border-white/80 shadow-[0_20px_25px_rgba(0,0,0,0.08)] rounded-[2.5rem] overflow-hidden relative group">
           {/* Liquid Background Blobs */}
-          <motion.div 
-            animate={{ 
+          <motion.div
+            animate={{
               scale: [1, 1.2, 1],
               x: [0, 40, 0],
               y: [0, -20, 0]
             }}
             transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-0 -left-10 w-full h-full bg-brand-200/20 rounded-full blur-[80px] pointer-events-none" 
+            className="absolute top-0 -left-10 w-full h-full bg-brand-200/20 rounded-full blur-[80px] pointer-events-none"
           />
-          <motion.div 
-            animate={{ 
+          <motion.div
+            animate={{
               scale: [1.2, 1, 1.2],
               x: [0, -30, 0],
               y: [0, 30, 0]
             }}
             transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-0 -right-10 w-full h-full bg-blue-200/20 rounded-full blur-[80px] pointer-events-none" 
+            className="absolute bottom-0 -right-10 w-full h-full bg-blue-200/20 rounded-full blur-[80px] pointer-events-none"
           />
-          
+
           <div className="relative z-10 h-full">
             <SidebarContent />
           </div>
@@ -111,25 +111,25 @@ const AdminLayout = () => {
       <AnimatePresence>
         {isSidebarOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsSidebarOpen(false)}
               className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden"
             />
-            <motion.aside 
+            <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed inset-y-6 left-6 w-[280px] bg-white/80 backdrop-blur-3xl z-50 rounded-[2.5rem] shadow-2xl lg:hidden flex flex-col overflow-hidden relative"
             >
-               {/* Liquid Background Blobs for Mobile */}
-               <motion.div 
+              {/* Liquid Background Blobs for Mobile */}
+              <motion.div
                 animate={{ scale: [1, 1.1, 1], x: [0, 20, 0] }}
                 transition={{ duration: 10, repeat: Infinity }}
-                className="absolute top-0 left-0 w-full h-full bg-brand-100/30 rounded-full blur-[60px]" 
+                className="absolute top-0 left-0 w-full h-full bg-brand-100/30 rounded-full blur-[60px]"
               />
               <div className="relative z-10 h-full">
                 <SidebarContent />
@@ -140,8 +140,8 @@ const AdminLayout = () => {
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <main className={`flex-1 relative z-10 transition-all duration-500 ${isSidebarOpen ? 'lg:pl-0' : ''}`}>
-        <div className="p-6 md:p-8 pt-28 lg:pt-8 min-h-screen">
+      <main className="flex-1 h-full overflow-y-auto relative z-10 custom-scrollbar">
+        <div className="p-6 md:p-8 lg:p-12 min-h-full">
           <Outlet />
         </div>
       </main>

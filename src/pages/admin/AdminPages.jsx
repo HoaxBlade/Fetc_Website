@@ -28,11 +28,11 @@ const AdminPages = () => {
         } else {
           // Check if the field should be an array (like office showcase images or gallery)
           const currentVal = selectedPage.content?.[section]?.[field] || selectedPage.content?.[field];
-          
+
           if (selectedPage.slug === '/gallery' && field === 'images') {
-             // Special case for Gallery: Add as object
-             const current = selectedPage.content.images || [];
-             handleContentChange(null, 'images', [...current, { src: data.url, title: "New Moment", category: "Gallery" }]);
+            // Special case for Gallery: Add as object
+            const current = selectedPage.content.images || [];
+            handleContentChange(null, 'images', [...current, { src: data.url, title: "New Moment", category: "Gallery" }]);
           } else if (Array.isArray(currentVal)) {
             handleContentChange(section, field, [...currentVal, data.url]);
           } else {
@@ -81,7 +81,7 @@ const AdminPages = () => {
 
   const updatePage = async (id, updatedData) => {
     setIsSaving(true);
-    
+
     // Auto-sort arrays if they exist in content (e.g. universities)
     const processedData = { ...updatedData };
     if (processedData.content?.universities) {
@@ -167,7 +167,7 @@ const AdminPages = () => {
 
   const filteredPages = pages.filter(page => {
     return page.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           page.slug.toLowerCase().includes(searchTerm.toLowerCase());
+      page.slug.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   const formatDate = (dateString) => {
@@ -228,23 +228,23 @@ const AdminPages = () => {
           <>
             <img src={value} className="w-full h-full object-cover" alt="Banner" />
             <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-3">
-               <label className="p-3 bg-white text-slate-900 rounded-full cursor-pointer hover:bg-brand-50 transition-colors">
-                  <Edit size={18} />
-                  <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(section, field, e.target.files[0], customSectionId)} />
-               </label>
-               <button 
-                 onClick={() => handleContentChange(section, field, "")}
-                 className="p-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-               >
-                  <X size={18} />
-               </button>
+              <label className="p-3 bg-white text-slate-900 rounded-full cursor-pointer hover:bg-brand-50 transition-colors">
+                <Edit size={18} />
+                <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(section, field, e.target.files[0], customSectionId)} />
+              </label>
+              <button
+                onClick={() => handleContentChange(section, field, "")}
+                className="p-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+              >
+                <X size={18} />
+              </button>
             </div>
           </>
         ) : (
           <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-all gap-2">
-             <ImageIcon className="text-slate-200" size={32} />
-             <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Upload Image</span>
-             <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(section, field, e.target.files[0], customSectionId)} />
+            <ImageIcon className="text-slate-200" size={32} />
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Upload Image</span>
+            <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(section, field, e.target.files[0], customSectionId)} />
           </label>
         )}
       </div>
@@ -603,30 +603,30 @@ const AdminPages = () => {
                               <Globe size={18} className="text-brand-600" /> 1. Hero / Our Story
                             </h3>
                             <div className="space-y-4">
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Main Title (e.g. Our)</label>
-                                 <input 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.hero?.title || ""}
-                                   onChange={(e) => handleContentChange('hero', 'title', e.target.value)}
-                                 />
-                               </div>
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Title Highlight (e.g. Story)</label>
-                                 <input 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.hero?.titleHighlight || ""}
-                                   onChange={(e) => handleContentChange('hero', 'titleHighlight', e.target.value)}
-                                 />
-                               </div>
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
-                                 <textarea 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.hero?.description || ""}
-                                   onChange={(e) => handleContentChange('hero', 'description', e.target.value)}
-                                 />
-                               </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Main Title (e.g. Our)</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.hero?.title || ""}
+                                  onChange={(e) => handleContentChange('hero', 'title', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Title Highlight (e.g. Story)</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.hero?.titleHighlight || ""}
+                                  onChange={(e) => handleContentChange('hero', 'titleHighlight', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.hero?.description || ""}
+                                  onChange={(e) => handleContentChange('hero', 'description', e.target.value)}
+                                />
+                              </div>
                             </div>
                           </div>
 
@@ -635,23 +635,23 @@ const AdminPages = () => {
                               <Users size={18} className="text-brand-600" /> 2. Director's Note
                             </h3>
                             <div className="space-y-4">
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Main Quote</label>
-                                 <textarea 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 h-24 resize-none focus:border-brand-300 outline-none transition-all italic"
-                                   value={selectedPage.content?.directorsNote?.quote || ""}
-                                   onChange={(e) => handleContentChange('directorsNote', 'quote', e.target.value)}
-                                 />
-                               </div>
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Detailed Message</label>
-                                 <textarea 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-40 resize-none focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.directorsNote?.content || ""}
-                                   onChange={(e) => handleContentChange('directorsNote', 'content', e.target.value)}
-                                   placeholder="Add paragraphs here. Use new lines for separate paragraphs."
-                                 />
-                               </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Main Quote</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 h-24 resize-none focus:border-brand-300 outline-none transition-all italic"
+                                  value={selectedPage.content?.directorsNote?.quote || ""}
+                                  onChange={(e) => handleContentChange('directorsNote', 'quote', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Detailed Message</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-40 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.directorsNote?.content || ""}
+                                  onChange={(e) => handleContentChange('directorsNote', 'content', e.target.value)}
+                                  placeholder="Add paragraphs here. Use new lines for separate paragraphs."
+                                />
+                              </div>
                             </div>
                           </div>
 
@@ -661,71 +661,71 @@ const AdminPages = () => {
                               <Target size={18} className="text-brand-600" /> 3. Vision & Values
                             </h3>
                             <div className="space-y-4">
-                               <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
-                                    <input 
-                                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                      value={selectedPage.content?.visionSection?.badge || ""}
-                                      onChange={(e) => handleContentChange('visionSection', 'badge', e.target.value)}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Title Prefix</label>
-                                    <input 
-                                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                      value={selectedPage.content?.visionSection?.titlePrefix || ""}
-                                      onChange={(e) => handleContentChange('visionSection', 'titlePrefix', e.target.value)}
-                                    />
-                                  </div>
-                               </div>
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Title Highlight</label>
-                                 <input 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.visionSection?.titleHighlight || ""}
-                                   onChange={(e) => handleContentChange('visionSection', 'titleHighlight', e.target.value)}
-                                 />
-                               </div>
-                               
-                               <div className="space-y-3 pt-4">
-                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight block">Vision Pillars (3 Recommended)</label>
-                                  {(selectedPage.content?.visionSection?.values || []).map((val, idx) => (
-                                    <div key={idx} className="p-4 bg-white rounded-2xl border border-slate-100 space-y-3 relative group">
-                                      <div className="grid grid-cols-2 gap-3">
-                                        <input 
-                                          className="px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-bold"
-                                          value={val.icon}
-                                          onChange={(e) => {
-                                            const newVals = [...selectedPage.content.visionSection.values];
-                                            newVals[idx].icon = e.target.value;
-                                            handleContentChange('visionSection', 'values', newVals);
-                                          }}
-                                          placeholder="Icon (Target, Lightbulb, Compass)"
-                                        />
-                                        <input 
-                                          className="px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-bold"
-                                          value={val.title}
-                                          onChange={(e) => {
-                                            const newVals = [...selectedPage.content.visionSection.values];
-                                            newVals[idx].title = e.target.value;
-                                            handleContentChange('visionSection', 'values', newVals);
-                                          }}
-                                          placeholder="Pillar Title"
-                                        />
-                                      </div>
-                                      <textarea 
-                                        className="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-medium h-16 resize-none"
-                                        value={val.desc}
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.visionSection?.badge || ""}
+                                    onChange={(e) => handleContentChange('visionSection', 'badge', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Title Prefix</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.visionSection?.titlePrefix || ""}
+                                    onChange={(e) => handleContentChange('visionSection', 'titlePrefix', e.target.value)}
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Title Highlight</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.visionSection?.titleHighlight || ""}
+                                  onChange={(e) => handleContentChange('visionSection', 'titleHighlight', e.target.value)}
+                                />
+                              </div>
+
+                              <div className="space-y-3 pt-4">
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight block">Vision Pillars (3 Recommended)</label>
+                                {(selectedPage.content?.visionSection?.values || []).map((val, idx) => (
+                                  <div key={idx} className="p-4 bg-white rounded-2xl border border-slate-100 space-y-3 relative group">
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <input
+                                        className="px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-bold"
+                                        value={val.icon}
                                         onChange={(e) => {
                                           const newVals = [...selectedPage.content.visionSection.values];
-                                          newVals[idx].desc = e.target.value;
+                                          newVals[idx].icon = e.target.value;
                                           handleContentChange('visionSection', 'values', newVals);
                                         }}
+                                        placeholder="Icon (Target, Lightbulb, Compass)"
+                                      />
+                                      <input
+                                        className="px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-bold"
+                                        value={val.title}
+                                        onChange={(e) => {
+                                          const newVals = [...selectedPage.content.visionSection.values];
+                                          newVals[idx].title = e.target.value;
+                                          handleContentChange('visionSection', 'values', newVals);
+                                        }}
+                                        placeholder="Pillar Title"
                                       />
                                     </div>
-                                  ))}
-                               </div>
+                                    <textarea
+                                      className="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-medium h-16 resize-none"
+                                      value={val.desc}
+                                      onChange={(e) => {
+                                        const newVals = [...selectedPage.content.visionSection.values];
+                                        newVals[idx].desc = e.target.value;
+                                        handleContentChange('visionSection', 'values', newVals);
+                                      }}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
 
@@ -734,56 +734,56 @@ const AdminPages = () => {
                               <ImageIcon size={18} className="text-brand-600" /> 4. Office Showcase
                             </h3>
                             <div className="space-y-4">
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Main Headline</label>
-                                 <input 
-                                   className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.officeShowcase?.title || ""}
-                                   onChange={(e) => handleContentChange('officeShowcase', 'title', e.target.value)}
-                                 />
-                               </div>
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
-                                 <textarea 
-                                   className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.officeShowcase?.description || ""}
-                                   onChange={(e) => handleContentChange('officeShowcase', 'description', e.target.value)}
-                                 />
-                               </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Main Headline</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.officeShowcase?.title || ""}
+                                  onChange={(e) => handleContentChange('officeShowcase', 'title', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.officeShowcase?.description || ""}
+                                  onChange={(e) => handleContentChange('officeShowcase', 'description', e.target.value)}
+                                />
+                              </div>
 
-                               <div className="pt-4">
-                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-3 block">Showcase Gallery Images</label>
-                                  <div className="grid grid-cols-2 gap-4">
-                                     {(selectedPage.content?.officeShowcase?.images || []).map((img, idx) => (
-                                       <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-slate-100 group">
-                                          <img src={img} className="w-full h-full object-cover" alt="Showcase" />
-                                          <button 
-                                            onClick={() => {
-                                              const newImgs = selectedPage.content.officeShowcase.images.filter((_, i) => i !== idx);
-                                              handleContentChange('officeShowcase', 'images', newImgs);
-                                            }}
-                                            className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all font-bold text-xs"
-                                          >
-                                            <X size={16} /> Remove
-                                          </button>
-                                       </div>
-                                     ))}
-                                     <label className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-brand-300 hover:text-brand-600 transition-all group">
-                                        <Plus size={24} className="text-slate-300 group-hover:text-brand-600" />
-                                        <span className="text-[10px] font-black uppercase text-slate-400 group-hover:text-brand-600">Add Photo</span>
-                                        <input 
-                                          type="file" 
-                                          className="hidden" 
-                                          accept="image/*"
-                                          onChange={(e) => {
-                                            if (e.target.files?.[0]) {
-                                              handleFileUpload('officeShowcase', 'images', e.target.files[0], null);
-                                            }
-                                          }}
-                                        />
-                                     </label>
-                                  </div>
-                               </div>
+                              <div className="pt-4">
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-3 block">Showcase Gallery Images</label>
+                                <div className="grid grid-cols-2 gap-4">
+                                  {(selectedPage.content?.officeShowcase?.images || []).map((img, idx) => (
+                                    <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-slate-100 group">
+                                      <img src={img} className="w-full h-full object-cover" alt="Showcase" />
+                                      <button
+                                        onClick={() => {
+                                          const newImgs = selectedPage.content.officeShowcase.images.filter((_, i) => i !== idx);
+                                          handleContentChange('officeShowcase', 'images', newImgs);
+                                        }}
+                                        className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all font-bold text-xs"
+                                      >
+                                        <X size={16} /> Remove
+                                      </button>
+                                    </div>
+                                  ))}
+                                  <label className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-brand-300 hover:text-brand-600 transition-all group">
+                                    <Plus size={24} className="text-slate-300 group-hover:text-brand-600" />
+                                    <span className="text-[10px] font-black uppercase text-slate-400 group-hover:text-brand-600">Add Photo</span>
+                                    <input
+                                      type="file"
+                                      className="hidden"
+                                      accept="image/*"
+                                      onChange={(e) => {
+                                        if (e.target.files?.[0]) {
+                                          handleFileUpload('officeShowcase', 'images', e.target.files[0], null);
+                                        }
+                                      }}
+                                    />
+                                  </label>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -797,22 +797,22 @@ const AdminPages = () => {
                               <Info size={18} className="text-brand-600" /> 1. Intro Section
                             </h3>
                             <div className="space-y-4">
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Title</label>
-                                 <input 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.infoSection?.title || ""}
-                                   onChange={(e) => handleContentChange('infoSection', 'title', e.target.value)}
-                                 />
-                               </div>
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
-                                 <textarea 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.infoSection?.description || ""}
-                                   onChange={(e) => handleContentChange('infoSection', 'description', e.target.value)}
-                                 />
-                               </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Title</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.infoSection?.title || ""}
+                                  onChange={(e) => handleContentChange('infoSection', 'title', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.infoSection?.description || ""}
+                                  onChange={(e) => handleContentChange('infoSection', 'description', e.target.value)}
+                                />
+                              </div>
                             </div>
                           </div>
 
@@ -821,32 +821,32 @@ const AdminPages = () => {
                               <MapPin size={18} className="text-brand-600" /> 2. Contact Details
                             </h3>
                             <div className="space-y-6">
-                               <div className="p-4 bg-white rounded-2xl border border-slate-100 italic space-y-3">
-                                  <label className="text-[10px] font-bold text-slate-300 uppercase tracking-tight block">Address Lines (One per line)</label>
-                                  <textarea 
-                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-medium text-slate-600 h-24 resize-none focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.contactDetails?.address?.lines?.join('\n') || ""}
-                                    onChange={(e) => handleContentChange('contactDetails', 'address', { ...selectedPage.content.contactDetails.address, lines: e.target.value.split('\n') })}
+                              <div className="p-4 bg-white rounded-2xl border border-slate-100 italic space-y-3">
+                                <label className="text-[10px] font-bold text-slate-300 uppercase tracking-tight block">Address Lines (One per line)</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-medium text-slate-600 h-24 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.contactDetails?.address?.lines?.join('\n') || ""}
+                                  onChange={(e) => handleContentChange('contactDetails', 'address', { ...selectedPage.content.contactDetails.address, lines: e.target.value.split('\n') })}
+                                />
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Phone Number</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.contactDetails?.phone?.number || ""}
+                                    onChange={(e) => handleContentChange('contactDetails', 'phone', { ...selectedPage.content.contactDetails.phone, number: e.target.value })}
                                   />
-                               </div>
-                               <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Phone Number</label>
-                                    <input 
-                                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                      value={selectedPage.content?.contactDetails?.phone?.number || ""}
-                                      onChange={(e) => handleContentChange('contactDetails', 'phone', { ...selectedPage.content.contactDetails.phone, number: e.target.value })}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Email Address</label>
-                                    <input 
-                                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                      value={selectedPage.content?.contactDetails?.email?.address || ""}
-                                      onChange={(e) => handleContentChange('contactDetails', 'email', { ...selectedPage.content.contactDetails.email, address: e.target.value })}
-                                    />
-                                  </div>
-                               </div>
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Email Address</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.contactDetails?.email?.address || ""}
+                                    onChange={(e) => handleContentChange('contactDetails', 'email', { ...selectedPage.content.contactDetails.email, address: e.target.value })}
+                                  />
+                                </div>
+                              </div>
                             </div>
                           </div>
 
@@ -855,24 +855,24 @@ const AdminPages = () => {
                               <Clock size={18} className="text-brand-600" /> 3. Working Hours
                             </h3>
                             <div className="space-y-4">
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Weekday Hours</label>
-                                 <input 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.workingHours?.weekdays || ""}
-                                   onChange={(e) => handleContentChange('workingHours', 'weekdays', e.target.value)}
-                                   placeholder="Mon - Sat: 9:00 AM - 7:00 PM"
-                                 />
-                               </div>
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Sunday Status</label>
-                                 <input 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.workingHours?.sunday || ""}
-                                   onChange={(e) => handleContentChange('workingHours', 'sunday', e.target.value)}
-                                   placeholder="Sunday: Closed"
-                                 />
-                               </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Weekday Hours</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.workingHours?.weekdays || ""}
+                                  onChange={(e) => handleContentChange('workingHours', 'weekdays', e.target.value)}
+                                  placeholder="Mon - Sat: 9:00 AM - 7:00 PM"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Sunday Status</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.workingHours?.sunday || ""}
+                                  onChange={(e) => handleContentChange('workingHours', 'sunday', e.target.value)}
+                                  placeholder="Sunday: Closed"
+                                />
+                              </div>
                             </div>
                           </div>
 
@@ -881,15 +881,15 @@ const AdminPages = () => {
                               <Globe size={18} className="text-brand-600" /> 4. Location Map
                             </h3>
                             <div className="space-y-4">
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Google Maps Embed URL</label>
-                                 <textarea 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-medium text-slate-500 h-32 resize-none focus:border-brand-300 outline-none transition-all font-mono"
-                                   value={selectedPage.content?.mapSection?.mapUrl || ""}
-                                   onChange={(e) => handleContentChange('mapSection', 'mapUrl', e.target.value)}
-                                   placeholder="Paste the src URL from the Google Maps iframe..."
-                                 />
-                               </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Google Maps Embed URL</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-medium text-slate-500 h-32 resize-none focus:border-brand-300 outline-none transition-all font-mono"
+                                  value={selectedPage.content?.mapSection?.mapUrl || ""}
+                                  onChange={(e) => handleContentChange('mapSection', 'mapUrl', e.target.value)}
+                                  placeholder="Paste the src URL from the Google Maps iframe..."
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -903,137 +903,137 @@ const AdminPages = () => {
                               <Globe size={18} className="text-brand-600" /> 1. Country Identity
                             </h3>
                             <div className="space-y-4">
-                               <ImageUploader 
-                                 section="content" 
-                                 field="image" 
-                                 value={selectedPage.content?.image} 
-                                 label="Hero Banner Image" 
-                               />
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Country Name</label>
-                                 <input 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.name || ""}
-                                   onChange={(e) => handleContentChange(null, 'name', e.target.value)}
-                                 />
-                               </div>
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Short Description</label>
-                                 <textarea 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.description || ""}
-                                   onChange={(e) => handleContentChange(null, 'description', e.target.value)}
-                                 />
-                               </div>
+                              <ImageUploader
+                                section="content"
+                                field="image"
+                                value={selectedPage.content?.image}
+                                label="Hero Banner Image"
+                              />
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Country Name</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.name || ""}
+                                  onChange={(e) => handleContentChange(null, 'name', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Short Description</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.description || ""}
+                                  onChange={(e) => handleContentChange(null, 'description', e.target.value)}
+                                />
+                              </div>
                             </div>
                           </div>
 
                           <div className="pt-8 border-t border-slate-100">
-                             <div className="flex items-center justify-between mb-8">
-                               <div>
-                                 <h3 className="text-lg font-bold text-slate-900 tracking-tight">University Partnerships</h3>
-                                 <p className="text-xs text-slate-400 font-medium italic">Manage the institutions students can apply to in this country.</p>
-                               </div>
-                               <button 
-                                 onClick={() => {
-                                   const current = selectedPage.content.universities || [];
-                                   // Prepend new university to show it first in the editor
-                                   handleContentChange(null, 'universities', [{ name: "New University", link: "", ranking: "Top Ranked", exclusive: false, location: selectedPage.content.name }, ...current]);
-                                 }}
-                                 className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-brand-600 transition-all shadow-lg active:scale-95"
-                               >
-                                 <Plus size={14} /> Add University
-                               </button>
-                             </div>
+                            <div className="flex items-center justify-between mb-8">
+                              <div>
+                                <h3 className="text-lg font-bold text-slate-900 tracking-tight">University Partnerships</h3>
+                                <p className="text-xs text-slate-400 font-medium italic">Manage the institutions students can apply to in this country.</p>
+                              </div>
+                              <button
+                                onClick={() => {
+                                  const current = selectedPage.content.universities || [];
+                                  // Prepend new university to show it first in the editor
+                                  handleContentChange(null, 'universities', [{ name: "New University", link: "", ranking: "Top Ranked", exclusive: false, location: selectedPage.content.name }, ...current]);
+                                }}
+                                className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-brand-600 transition-all shadow-lg active:scale-95"
+                              >
+                                <Plus size={14} /> Add University
+                              </button>
+                            </div>
 
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {(selectedPage.content?.universities || []).map((uni, idx) => (
-                                  <div key={idx} className="p-5 bg-white border border-slate-100 rounded-3xl shadow-sm relative group">
-                                     <button 
-                                       onClick={() => {
-                                         const current = selectedPage.content.universities.filter((_, i) => i !== idx);
-                                         handleContentChange(null, 'universities', current);
-                                       }}
-                                       className="absolute -top-2 -right-2 w-7 h-7 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-300 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 shadow-sm"
-                                     >
-                                       <X size={14} />
-                                     </button>
-                                     
-                                     <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                          <div className="relative group w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
-                                            {uni.image ? (
-                                              <>
-                                                <img src={uni.image} className="w-full h-full object-contain" alt="Logo" />
-                                                <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
-                                                   <label className="p-1.5 bg-white text-slate-900 rounded-lg cursor-pointer shadow-xl">
-                                                      <Plus size={12} />
-                                                      <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(null, 'universities', e.target.files[0], null, idx)} />
-                                                   </label>
-                                                </div>
-                                              </>
-                                            ) : (
-                                              <label className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-all">
-                                                <Building size={20} className="text-slate-200" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {(selectedPage.content?.universities || []).map((uni, idx) => (
+                                <div key={idx} className="p-5 bg-white border border-slate-100 rounded-3xl shadow-sm relative group">
+                                  <button
+                                    onClick={() => {
+                                      const current = selectedPage.content.universities.filter((_, i) => i !== idx);
+                                      handleContentChange(null, 'universities', current);
+                                    }}
+                                    className="absolute -top-2 -right-2 w-7 h-7 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-300 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                                  >
+                                    <X size={14} />
+                                  </button>
+
+                                  <div className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                      <div className="relative group w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
+                                        {uni.image ? (
+                                          <>
+                                            <img src={uni.image} className="w-full h-full object-contain" alt="Logo" />
+                                            <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+                                              <label className="p-1.5 bg-white text-slate-900 rounded-lg cursor-pointer shadow-xl">
+                                                <Plus size={12} />
                                                 <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(null, 'universities', e.target.files[0], null, idx)} />
                                               </label>
-                                            )}
-                                          </div>
-                                          <div className="flex-1">
-                                             <input 
-                                               className="w-full bg-transparent border-none p-0 text-sm font-bold text-slate-800 focus:ring-0"
-                                               value={uni.name}
-                                               onChange={(e) => {
-                                                 const current = [...selectedPage.content.universities];
-                                                 current[idx].name = e.target.value;
-                                                 handleContentChange(null, 'universities', current);
-                                               }}
-                                               placeholder="University Name"
-                                             />
-                                             <div className="flex items-center gap-2 mt-1">
-                                                <input 
-                                                  className="text-[10px] font-bold text-slate-300 bg-transparent border-none p-0 focus:ring-0 italic"
-                                                  value={uni.ranking}
-                                                  onChange={(e) => {
-                                                    const current = [...selectedPage.content.universities];
-                                                    current[idx].ranking = e.target.value;
-                                                    handleContentChange(null, 'universities', current);
-                                                  }}
-                                                  placeholder="Ranking (e.g. Top 100)"
-                                                />
-                                             </div>
-                                          </div>
+                                            </div>
+                                          </>
+                                        ) : (
+                                          <label className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-all">
+                                            <Building size={20} className="text-slate-200" />
+                                            <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(null, 'universities', e.target.files[0], null, idx)} />
+                                          </label>
+                                        )}
+                                      </div>
+                                      <div className="flex-1">
+                                        <input
+                                          className="w-full bg-transparent border-none p-0 text-sm font-bold text-slate-800 focus:ring-0"
+                                          value={uni.name}
+                                          onChange={(e) => {
+                                            const current = [...selectedPage.content.universities];
+                                            current[idx].name = e.target.value;
+                                            handleContentChange(null, 'universities', current);
+                                          }}
+                                          placeholder="University Name"
+                                        />
+                                        <div className="flex items-center gap-2 mt-1">
+                                          <input
+                                            className="text-[10px] font-bold text-slate-300 bg-transparent border-none p-0 focus:ring-0 italic"
+                                            value={uni.ranking}
+                                            onChange={(e) => {
+                                              const current = [...selectedPage.content.universities];
+                                              current[idx].ranking = e.target.value;
+                                              handleContentChange(null, 'universities', current);
+                                            }}
+                                            placeholder="Ranking (e.g. Top 100)"
+                                          />
                                         </div>
-                                        
-                                        <div className="flex items-center gap-4 pt-2">
-                                           <div className="flex-1 space-y-1">
-                                              <label className="text-[9px] font-black text-slate-300 uppercase tracking-widest pl-1">Website URL</label>
-                                              <input 
-                                                className="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-medium"
-                                                value={uni.link}
-                                                onChange={(e) => {
-                                                  const current = [...selectedPage.content.universities];
-                                                  current[idx].link = e.target.value;
-                                                  handleContentChange(null, 'universities', current);
-                                                }}
-                                                placeholder="https://..."
-                                              />
-                                           </div>
-                                           <button 
-                                             onClick={() => {
-                                               const current = [...selectedPage.content.universities];
-                                               current[idx].exclusive = !current[idx].exclusive;
-                                               handleContentChange(null, 'universities', current);
-                                             }}
-                                             className={`px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all mt-4 border ${uni.exclusive ? 'bg-amber-500 text-white border-amber-600' : 'bg-slate-50 text-slate-400 border-slate-100'}`}
-                                           >
-                                             {uni.exclusive ? 'Exclusive Partner' : 'Standard Partner'}
-                                           </button>
-                                        </div>
-                                     </div>
+                                      </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-4 pt-2">
+                                      <div className="flex-1 space-y-1">
+                                        <label className="text-[9px] font-black text-slate-300 uppercase tracking-widest pl-1">Website URL</label>
+                                        <input
+                                          className="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-medium"
+                                          value={uni.link}
+                                          onChange={(e) => {
+                                            const current = [...selectedPage.content.universities];
+                                            current[idx].link = e.target.value;
+                                            handleContentChange(null, 'universities', current);
+                                          }}
+                                          placeholder="https://..."
+                                        />
+                                      </div>
+                                      <button
+                                        onClick={() => {
+                                          const current = [...selectedPage.content.universities];
+                                          current[idx].exclusive = !current[idx].exclusive;
+                                          handleContentChange(null, 'universities', current);
+                                        }}
+                                        className={`px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all mt-4 border ${uni.exclusive ? 'bg-amber-500 text-white border-amber-600' : 'bg-slate-50 text-slate-400 border-slate-100'}`}
+                                      >
+                                        {uni.exclusive ? 'Exclusive Partner' : 'Standard Partner'}
+                                      </button>
+                                    </div>
                                   </div>
-                                ))}
-                             </div>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       )}
@@ -1046,136 +1046,136 @@ const AdminPages = () => {
                               <BookOpen size={18} className="text-brand-600" /> 1. Exam Identity
                             </h3>
                             <div className="space-y-4">
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Exam Name (e.g. IDP for IELTS)</label>
-                                 <input 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.name || ""}
-                                   onChange={(e) => handleContentChange(null, 'name', e.target.value)}
-                                 />
-                               </div>
-                               <div>
-                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Short Description (Summary)</label>
-                                 <textarea 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.description || ""}
-                                   onChange={(e) => handleContentChange(null, 'description', e.target.value)}
-                                   placeholder="A short summary for lists..."
-                                 />
-                               </div>
-                               <div>
-                                 <label className="text-[10px] font-black text-brand-600 uppercase tracking-tight mb-1 block">Full Rich Content (Detailed Story)</label>
-                                 <textarea 
-                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-64 resize-none focus:border-brand-300 outline-none transition-all"
-                                   value={selectedPage.content?.fullDescription || ""}
-                                   onChange={(e) => handleContentChange(null, 'fullDescription', e.target.value)}
-                                   placeholder="Add the full detailed story here..."
-                                 />
-                               </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Exam Name (e.g. IDP for IELTS)</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.name || ""}
+                                  onChange={(e) => handleContentChange(null, 'name', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1 block">Short Description (Summary)</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.description || ""}
+                                  onChange={(e) => handleContentChange(null, 'description', e.target.value)}
+                                  placeholder="A short summary for lists..."
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-black text-brand-600 uppercase tracking-tight mb-1 block">Full Rich Content (Detailed Story)</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-64 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.fullDescription || ""}
+                                  onChange={(e) => handleContentChange(null, 'fullDescription', e.target.value)}
+                                  placeholder="Add the full detailed story here..."
+                                />
+                              </div>
                             </div>
                           </div>
 
                           <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                             <div className="flex items-center justify-between mb-6">
-                               <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                                 <Tag size={18} className="text-brand-600" /> 2. Exam Metadata (Cost, Validity, etc.)
-                               </h3>
-                               <button 
-                                 onClick={() => {
-                                   const current = selectedPage.content.metadata || [];
-                                   handleContentChange(null, 'metadata', [...current, { label: "New Tech", value: "TBA" }]);
-                                 }}
-                                 className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-bold hover:bg-brand-50 transition-all flex items-center gap-2 shadow-sm"
-                               >
-                                 <Plus size={12} /> Add Field
-                               </button>
-                             </div>
-                             <div className="grid grid-cols-2 gap-3">
-                                {(selectedPage.content?.metadata || []).map((item, idx) => (
-                                  <div key={idx} className="flex items-center gap-2 group">
-                                     <div className="flex-1 bg-white border border-slate-100 p-3 rounded-2xl flex flex-col gap-1">
-                                        <input 
-                                          className="bg-transparent border-none p-0 text-[10px] font-black uppercase text-slate-300 focus:ring-0"
-                                          value={item.label}
-                                          onChange={(e) => {
-                                            const current = [...selectedPage.content.metadata];
-                                            current[idx].label = e.target.value;
-                                            handleContentChange(null, 'metadata', current);
-                                          }}
-                                        />
-                                        <input 
-                                          className="bg-transparent border-none p-0 text-xs font-bold text-slate-800 focus:ring-0"
-                                          value={item.value}
-                                          onChange={(e) => {
-                                            const current = [...selectedPage.content.metadata];
-                                            current[idx].value = e.target.value;
-                                            handleContentChange(null, 'metadata', current);
-                                          }}
-                                        />
-                                     </div>
-                                     <button 
-                                       onClick={() => {
-                                         const current = selectedPage.content.metadata.filter((_, i) => i !== idx);
-                                         handleContentChange(null, 'metadata', current);
-                                       }}
-                                       className="opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-red-500 transition-all"
-                                     >
-                                        <X size={14} />
-                                     </button>
+                            <div className="flex items-center justify-between mb-6">
+                              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
+                                <Tag size={18} className="text-brand-600" /> 2. Exam Metadata (Cost, Validity, etc.)
+                              </h3>
+                              <button
+                                onClick={() => {
+                                  const current = selectedPage.content.metadata || [];
+                                  handleContentChange(null, 'metadata', [...current, { label: "New Tech", value: "TBA" }]);
+                                }}
+                                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-bold hover:bg-brand-50 transition-all flex items-center gap-2 shadow-sm"
+                              >
+                                <Plus size={12} /> Add Field
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              {(selectedPage.content?.metadata || []).map((item, idx) => (
+                                <div key={idx} className="flex items-center gap-2 group">
+                                  <div className="flex-1 bg-white border border-slate-100 p-3 rounded-2xl flex flex-col gap-1">
+                                    <input
+                                      className="bg-transparent border-none p-0 text-[10px] font-black uppercase text-slate-300 focus:ring-0"
+                                      value={item.label}
+                                      onChange={(e) => {
+                                        const current = [...selectedPage.content.metadata];
+                                        current[idx].label = e.target.value;
+                                        handleContentChange(null, 'metadata', current);
+                                      }}
+                                    />
+                                    <input
+                                      className="bg-transparent border-none p-0 text-xs font-bold text-slate-800 focus:ring-0"
+                                      value={item.value}
+                                      onChange={(e) => {
+                                        const current = [...selectedPage.content.metadata];
+                                        current[idx].value = e.target.value;
+                                        handleContentChange(null, 'metadata', current);
+                                      }}
+                                    />
                                   </div>
-                                ))}
-                             </div>
+                                  <button
+                                    onClick={() => {
+                                      const current = selectedPage.content.metadata.filter((_, i) => i !== idx);
+                                      handleContentChange(null, 'metadata', current);
+                                    }}
+                                    className="opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-red-500 transition-all"
+                                  >
+                                    <X size={14} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
                           </div>
 
                           <div className="p-6 bg-white border-2 border-brand-100 border-dashed rounded-3xl">
-                             <div className="flex items-center justify-between mb-8">
-                               <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                                 <Sparkles size={18} className="text-brand-600" /> 3. Key Training Features
-                               </h3>
-                               <button 
-                                 onClick={() => {
-                                   const current = selectedPage.content.features || [];
-                                   handleContentChange(null, 'features', [...current, { highlight: "100%", label: "New Feature" }]);
-                                 }}
-                                 className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold hover:bg-brand-600 transition-all shadow-lg active:scale-95 flex items-center gap-2"
-                               >
-                                 <Plus size={12} /> Add Feature
-                               </button>
-                             </div>
-                             
-                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {(selectedPage.content?.features || []).map((feature, idx) => (
-                                  <div key={idx} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl relative group">
-                                     <button 
-                                       onClick={() => {
-                                         const current = selectedPage.content.features.filter((_, i) => i !== idx);
-                                         handleContentChange(null, 'features', current);
-                                       }}
-                                       className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
-                                     >
-                                        <X size={14} />
-                                     </button>
-                                     <input 
-                                       className="w-full bg-transparent border-none p-0 text-2xl font-black text-brand-600 focus:ring-0 mb-1"
-                                       value={feature.highlight}
-                                       onChange={(e) => {
-                                          const current = [...selectedPage.content.features];
-                                          current[idx].highlight = e.target.value;
-                                          handleContentChange(null, 'features', current);
-                                       }}
-                                     />
-                                     <input 
-                                       className="w-full bg-transparent border-none p-0 text-[10px] font-black uppercase text-slate-400 focus:ring-0"
-                                       value={feature.label}
-                                       onChange={(e) => {
-                                          const current = [...selectedPage.content.features];
-                                          current[idx].label = e.target.value;
-                                          handleContentChange(null, 'features', current);
-                                       }}
-                                     />
-                                  </div>
-                                ))}
-                             </div>
+                            <div className="flex items-center justify-between mb-8">
+                              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
+                                <Sparkles size={18} className="text-brand-600" /> 3. Key Training Features
+                              </h3>
+                              <button
+                                onClick={() => {
+                                  const current = selectedPage.content.features || [];
+                                  handleContentChange(null, 'features', [...current, { highlight: "100%", label: "New Feature" }]);
+                                }}
+                                className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold hover:bg-brand-600 transition-all shadow-lg active:scale-95 flex items-center gap-2"
+                              >
+                                <Plus size={12} /> Add Feature
+                              </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {(selectedPage.content?.features || []).map((feature, idx) => (
+                                <div key={idx} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl relative group">
+                                  <button
+                                    onClick={() => {
+                                      const current = selectedPage.content.features.filter((_, i) => i !== idx);
+                                      handleContentChange(null, 'features', current);
+                                    }}
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
+                                  >
+                                    <X size={14} />
+                                  </button>
+                                  <input
+                                    className="w-full bg-transparent border-none p-0 text-2xl font-black text-brand-600 focus:ring-0 mb-1"
+                                    value={feature.highlight}
+                                    onChange={(e) => {
+                                      const current = [...selectedPage.content.features];
+                                      current[idx].highlight = e.target.value;
+                                      handleContentChange(null, 'features', current);
+                                    }}
+                                  />
+                                  <input
+                                    className="w-full bg-transparent border-none p-0 text-[10px] font-black uppercase text-slate-400 focus:ring-0"
+                                    value={feature.label}
+                                    onChange={(e) => {
+                                      const current = [...selectedPage.content.features];
+                                      current[idx].label = e.target.value;
+                                      handleContentChange(null, 'features', current);
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       )}
@@ -1184,77 +1184,77 @@ const AdminPages = () => {
                       {selectedPage.slug === '/gallery' && (
                         <div className="space-y-6 pb-20">
                           <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
-                             <div className="flex items-center justify-between mb-10">
-                               <div>
-                                 <h3 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                                   <ImageIcon size={24} className="text-brand-600" /> Visual Portfolio
-                                 </h3>
-                                 <p className="text-xs text-slate-400 font-medium italic mt-1">Manage the snapshots of your facilities and success stories.</p>
-                               </div>
-                               <label className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-brand-600 hover:-translate-y-1 transition-all shadow-xl cursor-pointer active:scale-95">
-                                 <Plus size={16} /> Add Photo
-                                 <input 
-                                   type="file" 
-                                   className="hidden" 
-                                   accept="image/*" 
-                                   onChange={(e) => e.target.files?.[0] && handleFileUpload(null, 'images', e.target.files[0])} 
-                                 />
-                               </label>
-                             </div>
+                            <div className="flex items-center justify-between mb-10">
+                              <div>
+                                <h3 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                                  <ImageIcon size={24} className="text-brand-600" /> Visual Portfolio
+                                </h3>
+                                <p className="text-xs text-slate-400 font-medium italic mt-1">Manage the snapshots of your facilities and success stories.</p>
+                              </div>
+                              <label className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-brand-600 hover:-translate-y-1 transition-all shadow-xl cursor-pointer active:scale-95">
+                                <Plus size={16} /> Add Photo
+                                <input
+                                  type="file"
+                                  className="hidden"
+                                  accept="image/*"
+                                  onChange={(e) => e.target.files?.[0] && handleFileUpload(null, 'images', e.target.files[0])}
+                                />
+                              </label>
+                            </div>
 
-                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {(selectedPage.content?.images || []).map((img, idx) => (
-                                  <div key={idx} className="group bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
-                                     <div className="relative aspect-[4/3] bg-slate-100 overflow-hidden">
-                                        <img src={img.src} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Gallery" />
-                                        <button 
-                                          onClick={() => {
-                                            const current = selectedPage.content.images.filter((_, i) => i !== idx);
-                                            handleContentChange(null, 'images', current);
-                                          }}
-                                          className="absolute top-4 right-4 w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-red-600"
-                                        >
-                                           <X size={18} />
-                                        </button>
-                                     </div>
-                                     <div className="p-5 space-y-4">
-                                        <div>
-                                          <label className="text-[9px] font-black text-slate-300 uppercase tracking-widest block mb-1">Photo Title</label>
-                                          <input 
-                                            className="w-full bg-slate-50 border border-slate-100 px-3 py-2 rounded-xl text-[11px] font-bold text-slate-700 focus:border-brand-200 outline-none transition-colors"
-                                            value={img.title || ""}
-                                            onChange={(e) => {
-                                              const current = [...selectedPage.content.images];
-                                              current[idx].title = e.target.value;
-                                              handleContentChange(null, 'images', current);
-                                            }}
-                                            placeholder="e.g. VIP Conference Room"
-                                          />
-                                        </div>
-                                        <div>
-                                          <label className="text-[9px] font-black text-slate-300 uppercase tracking-widest block mb-1">Category</label>
-                                          <input 
-                                            className="w-full bg-slate-50 border border-slate-100 px-3 py-2 rounded-xl text-[11px] font-bold text-slate-700 focus:border-brand-200 outline-none transition-colors"
-                                            value={img.category || ""}
-                                            onChange={(e) => {
-                                              const current = [...selectedPage.content.images];
-                                              current[idx].category = e.target.value;
-                                              handleContentChange(null, 'images', current);
-                                            }}
-                                            placeholder="e.g. Office / Labs"
-                                          />
-                                        </div>
-                                     </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                              {(selectedPage.content?.images || []).map((img, idx) => (
+                                <div key={idx} className="group bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
+                                  <div className="relative aspect-[4/3] bg-slate-100 overflow-hidden">
+                                    <img src={img.src} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Gallery" />
+                                    <button
+                                      onClick={() => {
+                                        const current = selectedPage.content.images.filter((_, i) => i !== idx);
+                                        handleContentChange(null, 'images', current);
+                                      }}
+                                      className="absolute top-4 right-4 w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-red-600"
+                                    >
+                                      <X size={18} />
+                                    </button>
                                   </div>
-                                ))}
-                             </div>
-                             
-                             {(!selectedPage.content?.images || selectedPage.content.images.length === 0) && (
-                               <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-[2.5rem]">
-                                  <ImageIcon size={40} className="mx-auto mb-4 text-slate-100" />
-                                  <p className="text-slate-300 font-bold italic tracking-tight">Your gallery is waiting for its first photo...</p>
-                               </div>
-                             )}
+                                  <div className="p-5 space-y-4">
+                                    <div>
+                                      <label className="text-[9px] font-black text-slate-300 uppercase tracking-widest block mb-1">Photo Title</label>
+                                      <input
+                                        className="w-full bg-slate-50 border border-slate-100 px-3 py-2 rounded-xl text-[11px] font-bold text-slate-700 focus:border-brand-200 outline-none transition-colors"
+                                        value={img.title || ""}
+                                        onChange={(e) => {
+                                          const current = [...selectedPage.content.images];
+                                          current[idx].title = e.target.value;
+                                          handleContentChange(null, 'images', current);
+                                        }}
+                                        placeholder="e.g. VIP Conference Room"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-[9px] font-black text-slate-300 uppercase tracking-widest block mb-1">Category</label>
+                                      <input
+                                        className="w-full bg-slate-50 border border-slate-100 px-3 py-2 rounded-xl text-[11px] font-bold text-slate-700 focus:border-brand-200 outline-none transition-colors"
+                                        value={img.category || ""}
+                                        onChange={(e) => {
+                                          const current = [...selectedPage.content.images];
+                                          current[idx].category = e.target.value;
+                                          handleContentChange(null, 'images', current);
+                                        }}
+                                        placeholder="e.g. Office / Labs"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {(!selectedPage.content?.images || selectedPage.content.images.length === 0) && (
+                              <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-[2.5rem]">
+                                <ImageIcon size={40} className="mx-auto mb-4 text-slate-100" />
+                                <p className="text-slate-300 font-bold italic tracking-tight">Your gallery is waiting for its first photo...</p>
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}
@@ -1263,35 +1263,35 @@ const AdminPages = () => {
                       {selectedPage.slug.includes('career-assessment') && (
                         <div className="space-y-6 pb-20">
                           <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
-                             <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
-                               <Target size={22} className="text-brand-600" /> Career Analysis Editor
-                             </h3>
-                             <div className="space-y-6">
-                                <div>
-                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-2 block">Main Heading</label>
-                                  <input 
-                                    className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:border-brand-300 outline-none transition-all shadow-sm"
-                                    value={selectedPage.content?.title || ""}
-                                    onChange={(e) => handleContentChange(null, 'title', e.target.value)}
-                                    placeholder="Behaviour and Career Analysis"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-2 block">Detailed Description</label>
-                                  <textarea 
-                                    className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-600 h-64 resize-none focus:border-brand-300 outline-none transition-all shadow-sm"
-                                    value={selectedPage.content?.description || ""}
-                                    onChange={(e) => handleContentChange(null, 'description', e.target.value)}
-                                    placeholder="Describe your career analysis services here..."
-                                  />
-                                </div>
-                             </div>
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
+                              <Target size={22} className="text-brand-600" /> Career Analysis Editor
+                            </h3>
+                            <div className="space-y-6">
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-2 block">Main Heading</label>
+                                <input
+                                  className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:border-brand-300 outline-none transition-all shadow-sm"
+                                  value={selectedPage.content?.title || ""}
+                                  onChange={(e) => handleContentChange(null, 'title', e.target.value)}
+                                  placeholder="Behaviour and Career Analysis"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-2 block">Detailed Description</label>
+                                <textarea
+                                  className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-600 h-64 resize-none focus:border-brand-300 outline-none transition-all shadow-sm"
+                                  value={selectedPage.content?.description || ""}
+                                  onChange={(e) => handleContentChange(null, 'description', e.target.value)}
+                                  placeholder="Describe your career analysis services here..."
+                                />
+                              </div>
+                            </div>
                           </div>
-                          
+
                           <div className="p-8 bg-brand-50/50 rounded-[2.5rem] border border-brand-100 border-dashed text-center">
-                             <p className="text-xs font-bold text-brand-600 opacity-60 flex items-center justify-center gap-2">
-                               <Sparkles size={14} /> Career Assessment Module Active
-                             </p>
+                            <p className="text-xs font-bold text-brand-600 opacity-60 flex items-center justify-center gap-2">
+                              <Sparkles size={14} /> Career Assessment Module Active
+                            </p>
                           </div>
                         </div>
                       )}
@@ -1300,71 +1300,71 @@ const AdminPages = () => {
                       {(selectedPage.slug === '/terms' || selectedPage.slug === '/privacy' || selectedPage.slug === '/refund') && (
                         <div className="space-y-6 pb-20">
                           <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
-                             <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
-                               <FileText size={22} className="text-brand-600" /> Policy Content Editor
-                             </h3>
-                             <div className="space-y-6">
-                                <div>
-                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-2 block">Last Updated Date</label>
-                                  <input 
-                                    className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:border-brand-300 outline-none transition-all shadow-sm"
-                                    value={selectedPage.content?.lastUpdated || ""}
-                                    onChange={(e) => handleContentChange(null, 'lastUpdated', e.target.value)}
-                                    placeholder="e.g. October 24, 2026"
-                                  />
-                                </div>
-                                
-                                <div className="space-y-4">
-                                  <div className="flex items-center justify-between">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Policy Sections</label>
-                                    <button 
-                                      onClick={() => {
-                                        const current = selectedPage.content?.sections || [];
-                                        handleContentChange(null, 'sections', [...current, { title: "New Section", body: "" }]);
-                                      }}
-                                      className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold hover:bg-brand-600 transition-all flex items-center gap-2"
-                                    >
-                                      <Plus size={12} /> Add Section
-                                    </button>
-                                  </div>
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
+                              <FileText size={22} className="text-brand-600" /> Policy Content Editor
+                            </h3>
+                            <div className="space-y-6">
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-2 block">Last Updated Date</label>
+                                <input
+                                  className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:border-brand-300 outline-none transition-all shadow-sm"
+                                  value={selectedPage.content?.lastUpdated || ""}
+                                  onChange={(e) => handleContentChange(null, 'lastUpdated', e.target.value)}
+                                  placeholder="e.g. October 24, 2026"
+                                />
+                              </div>
 
-                                  <div className="space-y-4">
-                                    {(selectedPage.content?.sections || []).map((section, idx) => (
-                                      <div key={idx} className="p-6 bg-white border border-slate-200 rounded-[2rem] relative group shadow-sm">
-                                        <button 
-                                          onClick={() => {
-                                            const current = selectedPage.content.sections.filter((_, i) => i !== idx);
-                                            handleContentChange(null, 'sections', current);
-                                          }}
-                                          className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
-                                        >
-                                          <X size={16} />
-                                        </button>
-                                        <input 
-                                          className="w-full bg-transparent border-none p-0 text-lg font-black text-slate-900 focus:ring-0 mb-3"
-                                          value={section.title}
-                                          onChange={(e) => {
-                                            const current = [...selectedPage.content.sections];
-                                            current[idx].title = e.target.value;
-                                            handleContentChange(null, 'sections', current);
-                                          }}
-                                          placeholder="Section Title"
-                                        />
-                                        <textarea 
-                                          className="w-full bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm font-medium text-slate-600 h-32 resize-none focus:border-brand-200 outline-none transition-colors"
-                                          value={section.body}
-                                          onChange={(e) => {
-                                            const current = [...selectedPage.content.sections];
-                                            current[idx].body = e.target.value;
-                                            handleContentChange(null, 'sections', current);
-                                          }}
-                                          placeholder="Enter policy details here..."
-                                        />
-                                      </div>
-                                    ))}
-                                  </div>
+                              <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Policy Sections</label>
+                                  <button
+                                    onClick={() => {
+                                      const current = selectedPage.content?.sections || [];
+                                      handleContentChange(null, 'sections', [...current, { title: "New Section", body: "" }]);
+                                    }}
+                                    className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold hover:bg-brand-600 transition-all flex items-center gap-2"
+                                  >
+                                    <Plus size={12} /> Add Section
+                                  </button>
                                 </div>
-                             </div>
+
+                                <div className="space-y-4">
+                                  {(selectedPage.content?.sections || []).map((section, idx) => (
+                                    <div key={idx} className="p-6 bg-white border border-slate-200 rounded-[2rem] relative group shadow-sm">
+                                      <button
+                                        onClick={() => {
+                                          const current = selectedPage.content.sections.filter((_, i) => i !== idx);
+                                          handleContentChange(null, 'sections', current);
+                                        }}
+                                        className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
+                                      >
+                                        <X size={16} />
+                                      </button>
+                                      <input
+                                        className="w-full bg-transparent border-none p-0 text-lg font-black text-slate-900 focus:ring-0 mb-3"
+                                        value={section.title}
+                                        onChange={(e) => {
+                                          const current = [...selectedPage.content.sections];
+                                          current[idx].title = e.target.value;
+                                          handleContentChange(null, 'sections', current);
+                                        }}
+                                        placeholder="Section Title"
+                                      />
+                                      <textarea
+                                        className="w-full bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm font-medium text-slate-600 h-32 resize-none focus:border-brand-200 outline-none transition-colors"
+                                        value={section.body}
+                                        onChange={(e) => {
+                                          const current = [...selectedPage.content.sections];
+                                          current[idx].body = e.target.value;
+                                          handleContentChange(null, 'sections', current);
+                                        }}
+                                        placeholder="Enter policy details here..."
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -1373,60 +1373,60 @@ const AdminPages = () => {
                       {selectedPage.slug === '/faq' && (
                         <div className="space-y-6 pb-20">
                           <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
-                             <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
-                               <Info size={22} className="text-brand-600" /> FAQ Knowledge Base
-                             </h3>
-                             <div className="space-y-6">
-                                <div className="flex items-center justify-between">
-                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Questions & Answers</label>
-                                  <button 
-                                    onClick={() => {
-                                      const current = selectedPage.content?.faqs || [];
-                                      handleContentChange(null, 'faqs', [...current, { question: "New Question?", answer: "" }]);
-                                    }}
-                                    className="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-bold hover:bg-brand-600 transition-all flex items-center gap-2 shadow-lg"
-                                  >
-                                    <Plus size={14} /> Add FAQ Item
-                                  </button>
-                                </div>
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
+                              <Info size={22} className="text-brand-600" /> FAQ Knowledge Base
+                            </h3>
+                            <div className="space-y-6">
+                              <div className="flex items-center justify-between">
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Questions & Answers</label>
+                                <button
+                                  onClick={() => {
+                                    const current = selectedPage.content?.faqs || [];
+                                    handleContentChange(null, 'faqs', [...current, { question: "New Question?", answer: "" }]);
+                                  }}
+                                  className="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-bold hover:bg-brand-600 transition-all flex items-center gap-2 shadow-lg"
+                                >
+                                  <Plus size={14} /> Add FAQ Item
+                                </button>
+                              </div>
 
-                                <div className="space-y-4">
-                                  {(selectedPage.content?.faqs || []).map((faq, idx) => (
-                                    <div key={idx} className="p-6 bg-white border border-slate-200 rounded-[2rem] relative group shadow-sm overflow-hidden">
-                                      <div className="absolute top-0 left-0 w-1 h-full bg-brand-600" />
-                                      <button 
-                                        onClick={() => {
-                                          const current = selectedPage.content.faqs.filter((_, i) => i !== idx);
-                                          handleContentChange(null, 'faqs', current);
-                                        }}
-                                        className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
-                                      >
-                                        <X size={16} />
-                                      </button>
-                                      <input 
-                                        className="w-full bg-transparent border-none p-0 text-base font-black text-slate-900 focus:ring-0 mb-3"
-                                        value={faq.question}
-                                        onChange={(e) => {
-                                          const current = [...selectedPage.content.faqs];
-                                          current[idx].question = e.target.value;
-                                          handleContentChange(null, 'faqs', current);
-                                        }}
-                                        placeholder="Question?"
-                                      />
-                                      <textarea 
-                                        className="w-full bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm font-medium text-slate-600 h-24 resize-none focus:border-brand-200 outline-none transition-colors"
-                                        value={faq.answer}
-                                        onChange={(e) => {
-                                          const current = [...selectedPage.content.faqs];
-                                          current[idx].answer = e.target.value;
-                                          handleContentChange(null, 'faqs', current);
-                                        }}
-                                        placeholder="Answer the question..."
-                                      />
-                                    </div>
-                                  ))}
-                                </div>
-                             </div>
+                              <div className="space-y-4">
+                                {(selectedPage.content?.faqs || []).map((faq, idx) => (
+                                  <div key={idx} className="p-6 bg-white border border-slate-200 rounded-[2rem] relative group shadow-sm overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-brand-600" />
+                                    <button
+                                      onClick={() => {
+                                        const current = selectedPage.content.faqs.filter((_, i) => i !== idx);
+                                        handleContentChange(null, 'faqs', current);
+                                      }}
+                                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
+                                    >
+                                      <X size={16} />
+                                    </button>
+                                    <input
+                                      className="w-full bg-transparent border-none p-0 text-base font-black text-slate-900 focus:ring-0 mb-3"
+                                      value={faq.question}
+                                      onChange={(e) => {
+                                        const current = [...selectedPage.content.faqs];
+                                        current[idx].question = e.target.value;
+                                        handleContentChange(null, 'faqs', current);
+                                      }}
+                                      placeholder="Question?"
+                                    />
+                                    <textarea
+                                      className="w-full bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm font-medium text-slate-600 h-24 resize-none focus:border-brand-200 outline-none transition-colors"
+                                      value={faq.answer}
+                                      onChange={(e) => {
+                                        const current = [...selectedPage.content.faqs];
+                                        current[idx].answer = e.target.value;
+                                        handleContentChange(null, 'faqs', current);
+                                      }}
+                                      placeholder="Answer the question..."
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -1497,7 +1497,7 @@ const AdminPages = () => {
 
                 // For "Main Pages", always show individual cards
                 if (cat === "Main Pages") {
-                   return pagesInCategory.map(page => <PageCard key={page.id} page={page} />);
+                  return pagesInCategory.map(page => <PageCard key={page.id} page={page} />);
                 }
 
                 // For groupable categories, show ONE card
@@ -1518,17 +1518,17 @@ const AdminPages = () => {
                         <FileText size={22} />
                       </div>
                       <div className="flex flex-col items-end gap-2">
-                         <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full border ${activePage.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
-                           {activePage.status}
-                         </span>
-                         <span className="text-[8px] font-black uppercase tracking-widest text-slate-300">GROUP CARD</span>
+                        <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full border ${activePage.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
+                          {activePage.status}
+                        </span>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-slate-300">GROUP CARD</span>
                       </div>
                     </div>
 
                     <div className="mb-8 relative z-10">
                       <h3 className="text-2xl font-black text-slate-900 mb-2 truncate">{cat}</h3>
                       <div className="relative inline-block w-full">
-                        <select 
+                        <select
                           value={activePage.id}
                           onChange={(e) => {
                             e.stopPropagation();
@@ -1545,15 +1545,15 @@ const AdminPages = () => {
                     </div>
 
                     <div className="flex items-center justify-between pt-6 border-t border-slate-50 relative z-10">
-                       <button 
-                         onClick={() => setSelectedPage(activePage)}
-                         className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 transition-colors"
-                       >
-                         Edit {activePage.title} <ChevronRight size={12} className="mt-0.5" />
-                       </button>
-                       <div className="text-[9px] font-bold text-slate-300 italic">
-                         {pagesInCategory.length} Pages Available
-                       </div>
+                      <button
+                        onClick={() => setSelectedPage(activePage)}
+                        className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 transition-colors"
+                      >
+                        Edit {activePage.title} <ChevronRight size={12} className="mt-0.5" />
+                      </button>
+                      <div className="text-[9px] font-bold text-slate-300 italic">
+                        {pagesInCategory.length} Pages Available
+                      </div>
                     </div>
                   </motion.div>
                 );
