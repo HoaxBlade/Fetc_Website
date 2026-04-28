@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, UserPlus, Search, Mail, Phone, MoreVertical, Loader2, X, ChevronRight, Trash2, Edit2, Shield } from 'lucide-react';
+import { Users, UserPlus, Search, Mail, MoreVertical, Loader2, X, ChevronRight, Trash2, Edit2, Shield } from 'lucide-react';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -88,13 +88,6 @@ const AdminUsers = () => {
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
 
   return (
     <motion.div 
@@ -104,7 +97,7 @@ const AdminUsers = () => {
     >
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">User Management</h1>
+          <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">User Management</h1>
           <p className="text-slate-500 font-medium text-sm italic">Oversee registrations, roles, and permissions.</p>
         </div>
         <button 
@@ -127,7 +120,7 @@ const AdminUsers = () => {
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl p-8 overflow-hidden"
+            className="relative w-full max-w-md bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl p-8 overflow-hidden border border-slate-200/60"
           >
             <div className="flex justify-between items-start mb-6">
               <div>
@@ -216,7 +209,7 @@ const AdminUsers = () => {
         </div>
       )}
 
-      <div className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] border border-white/100 shadow-soft overflow-hidden">
+      <div className="glass-card rounded-[2rem] border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-hidden">
         <div className="p-8 border-b border-slate-50 flex flex-wrap items-center justify-between gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -233,12 +226,12 @@ const AdminUsers = () => {
         <div className="overflow-x-auto p-4">
           <table className="w-full text-left border-separate border-spacing-y-2">
             <thead>
-              <tr className="text-slate-400 text-[10px] font-bold uppercase tracking-widest px-4">
-                <th className="px-6 pb-4">User</th>
-                <th className="px-6 pb-4">Role</th>
-                <th className="px-6 pb-4">Status</th>
-                <th className="px-6 pb-4">Phone</th>
-                <th className="px-6 pb-4 text-right">Actions</th>
+              <tr className="text-slate-400 text-[10px] font-black uppercase tracking-widest px-4">
+                <th className="px-6 pb-4">User Details</th>
+                <th className="px-6 pb-4">Access Role</th>
+                <th className="px-6 pb-4">Activity Status</th>
+                <th className="px-6 pb-4">Contact</th>
+                <th className="px-6 pb-4 text-right">Management</th>
               </tr>
             </thead>
             <tbody>

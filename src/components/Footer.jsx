@@ -4,7 +4,7 @@ import IASBadge from "./IASBadge";
 
 function Footer() {
   return (
-    <footer className="mt-16 bg-brand-800 text-white">
+    <footer className="bg-brand-800 text-white border-none">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-3 lg:grid-cols-6 md:px-6">
         <div>
           <h3 className="text-lg font-semibold">FETC</h3>

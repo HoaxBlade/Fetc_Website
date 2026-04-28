@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Ticket, Search, Loader2, Mail, Clock, CheckCircle, AlertCircle, User, X, MessageSquare } from 'lucide-react';
+import { Ticket, Search, Loader2, Mail, Clock, CheckCircle, User, X, MessageSquare } from 'lucide-react';
 
 const AdminSupportTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -81,8 +81,8 @@ const AdminSupportTickets = () => {
               className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
             />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden"
+              initial={{ opacity: 0, scale: 0.98, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 10 }}
+              className="relative w-full max-w-2xl bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60"
             >
               <div className="p-10">
                 <div className="flex justify-between items-start mb-8">
@@ -162,12 +162,12 @@ const AdminSupportTickets = () => {
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">Student Queries</h1>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Student Queries</h1>
           <p className="text-slate-500 font-medium text-sm italic">Resolve student queries and technical issues.</p>
         </div>
       </div>
 
-      <div className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] border border-white/100 shadow-soft overflow-hidden">
+      <div className="glass-card rounded-[2rem] border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-hidden">
         <div className="p-8 border-b border-slate-50 flex flex-wrap items-center justify-between gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />

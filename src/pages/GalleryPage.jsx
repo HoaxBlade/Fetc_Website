@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, X, Plus, Loader2, ImageIcon, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Plus, Loader2, ImageIcon } from 'lucide-react';
 
 const ImageWrapper = ({ src, alt }) => {
   const [isLoaded, setIsLoaded] = useState(false);

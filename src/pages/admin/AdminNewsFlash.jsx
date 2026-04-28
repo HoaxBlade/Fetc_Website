@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Plus, Bell, Trash2, Edit2, CheckCircle, XCircle, Loader2, Link as LinkIcon, X, Save, AlertCircle } from 'lucide-react';
+import { Zap, Plus, Bell, Trash2, Edit2, CheckCircle, XCircle, Loader2, Link as LinkIcon, X, Save } from 'lucide-react';
 
 const AdminNewsFlash = () => {
   const [items, setItems] = useState([]);
@@ -126,7 +126,7 @@ const AdminNewsFlash = () => {
             <motion.div 
               layout
               key={item.id}
-              className={`group bg-white rounded-3xl border transition-all duration-300 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 ${item.is_active ? 'border-brand-100 shadow-md hover:shadow-xl' : 'border-slate-100 opacity-60 hover:opacity-100 shadow-sm'}`}
+              className={`group glass-card rounded-[2rem] border transition-all duration-300 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 ${item.is_active ? 'border-brand-100 shadow-md hover:shadow-xl' : 'border-slate-100 opacity-60 hover:opacity-100 shadow-sm'}`}
             >
               <div className="flex-1 flex gap-4">
                 <div className={`mt-1 shrink-0 p-2 rounded-xl h-fit ${item.is_active ? 'bg-brand-50 text-brand-600' : 'bg-slate-50 text-slate-400'}`}>
@@ -151,21 +151,21 @@ const AdminNewsFlash = () => {
               <div className="flex items-center gap-3 self-end md:self-center">
                 <button 
                   onClick={() => toggleStatus(item)}
-                  className={`p-3 rounded-2xl transition-all ${item.is_active ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                  className={`p-3 rounded-xl transition-all ${item.is_active ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
                   title={item.is_active ? "Deactivate" : "Activate"}
                 >
                   {item.is_active ? <CheckCircle size={20} /> : <XCircle size={20} />}
                 </button>
                 <button 
                   onClick={() => handleOpenModal(item)}
-                  className="p-3 bg-slate-50 text-slate-600 rounded-2xl hover:bg-slate-100 transition-all"
+                  className="p-3 bg-slate-50 text-slate-600 rounded-xl hover:bg-slate-100 transition-all"
                   title="Edit"
                 >
                   <Edit2 size={20} />
                 </button>
                 <button 
                   onClick={() => handleDelete(item.id)}
-                  className="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-100 transition-all"
+                  className="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-all"
                   title="Delete"
                 >
                   <Trash2 size={20} />
@@ -188,10 +188,10 @@ const AdminNewsFlash = () => {
               className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
             />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.98, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-xl bg-white rounded-[3rem] shadow-2xl overflow-hidden"
+              exit={{ opacity: 0, scale: 0.98, y: 10 }}
+              className="relative w-full max-w-xl bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60"
             >
               <div className="p-8 md:p-10">
                 <div className="flex justify-between items-center mb-8">
