@@ -384,6 +384,63 @@ app.get('/api/admin/tickets', async (req, res) => {
   }
 });
 
+// Helper function for sending ticket status emails
+const sendTicketStatusEmail = async (studentEmail, studentName, subject, status) => {
+  try {
+    const statusText = status === 'IN_PROGRESS' ? 'is now being reviewed' : 'has been successfully resolved';
+    const statusColor = status === 'IN_PROGRESS' ? '#f59e0b' : '#10b981';
+    
+    const mailOptions = {
+      from: `"FETC Support" <${process.env.EMAIL_USER}>`,
+      to: studentEmail,
+      subject: `Update on your query: ${subject}`,
+      html: `
+        <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #f8fafc; border-radius: 24px;">
+          <div style="text-align: center; margin-bottom: 32px;">
+            <div style="display: inline-block; padding: 12px; background-color: #2563eb; border-radius: 12px; margin-bottom: 16px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-1.41 1.41L15.17 8H2V10h13.17l-1.59 1.59L15 13l4-4-4-4z"></path></svg>
+            </div>
+            <h1 style="color: #0f172a; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.025em;">Support Update</h1>
+          </div>
+          
+          <div style="background-color: white; padding: 32px; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+            <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">Hello <strong>${studentName || 'Student'}</strong>,</p>
+            <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+              This is to inform you that your query regarding <strong>"${subject}"</strong> 
+              <span style="color: ${statusColor}; font-weight: 700;">${statusText}</span> by our expert team.
+            </p>
+            
+            <div style="background-color: #f1f5f9; padding: 20px; border-radius: 12px; margin-bottom: 24px;">
+              <p style="color: #64748b; font-size: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; margin: 0 0 8px 0;">New Status</p>
+              <p style="color: ${statusColor}; font-size: 14px; font-weight: 700; margin: 0;">${status.replace('_', ' ')}</p>
+            </div>
+            
+            <p style="color: #475569; font-size: 15px; line-height: 1.6; margin-bottom: 32px;">
+              ${status === 'IN_PROGRESS' 
+                ? "Our team is currently analyzing your request. You don't need to take any action; we'll reach out to you if we need more details." 
+                : "We have addressed your concerns. If you have any further questions or if the issue persists, please don't hesitate to reply to this email."}
+            </p>
+            
+            <div style="padding-top: 24px; border-top: 1px solid #f1f5f9; text-align: center;">
+              <p style="color: #94a3b8; font-size: 14px; margin: 0;">Best regards,</p>
+              <p style="color: #0f172a; font-size: 15px; font-weight: 700; margin: 4px 0 0 0;">FETC Team</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-top: 24px;">
+            <p style="color: #94a3b8; font-size: 12px;">© 2026 FETC Education. All rights reserved.</p>
+          </div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`Notification email sent to ${studentEmail} for ticket status: ${status}`);
+  } catch (error) {
+    console.error('Email sending error:', error);
+  }
+};
+
 // PATCH /api/admin/tickets/:id - Update ticket status
 app.patch('/api/admin/tickets/:id', async (req, res) => {
   const { id } = req.params;
@@ -393,8 +450,20 @@ app.patch('/api/admin/tickets/:id', async (req, res) => {
       'UPDATE tickets SET status = $1 WHERE id = $2 RETURNING *',
       [status, id]
     );
-    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Ticket not found' });
-    res.json({ success: true, ticket: result.rows[0] });
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Ticket not found' });
+    }
+
+    const ticket = result.rows[0];
+    
+    // Trigger email notification if status is IN_PROGRESS or RESOLVED
+    if (status === 'IN_PROGRESS' || status === 'RESOLVED') {
+      // Fire and forget email sending
+      sendTicketStatusEmail(ticket.email, ticket.name, ticket.subject, status);
+    }
+
+    res.json({ success: true, ticket });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Database error' });
