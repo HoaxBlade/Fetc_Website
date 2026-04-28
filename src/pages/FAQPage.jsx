@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 const FAQItem = ({ question, answer }) => {
@@ -46,6 +46,21 @@ const FAQSection = ({ title, faqs }) => {
 };
 
 const FAQPage = () => {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchFaqs = async () => {
+      try {
+        const response = await fetch('/api/pages/faq');
+        const result = await response.json();
+        if (result.success) setData(result.page);
+      } catch (err) {
+        console.error("Failed to fetch FAQs:", err);
+      }
+    };
+    fetchFaqs();
+  }, []);
+
   const generalFaqs = [
     {
       question: "What services do you offer?",
@@ -120,7 +135,10 @@ const FAQPage = () => {
     }
   ];
 
-  const examinationFaqs = [...studyFaqs]; // Use the same structure and content as Study FAQs
+  const examinationFaqs = [...studyFaqs];
+
+  // Merge dynamic FAQs from database if they exist
+  const dynamicFaqs = data?.content?.faqs || [];
 
   return (
     <div className="min-h-screen bg-slate-50 py-16 px-4 md:px-8 lg:px-16">
@@ -138,6 +156,11 @@ const FAQPage = () => {
 
         {/* FAQ Sections */}
         <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-6 md:p-10 shadow-soft border border-slate-100">
+          {/* Show dynamic FAQs if they exist */}
+          {dynamicFaqs.length > 0 && (
+            <FAQSection title="Recently Added Questions" faqs={dynamicFaqs} />
+          )}
+
           <FAQSection title="1. General Questions" faqs={generalFaqs} />
           <FAQSection title="2. Study FAQs" faqs={studyFaqs} />
           <FAQSection title="3. Examination FAQs" faqs={examinationFaqs} />

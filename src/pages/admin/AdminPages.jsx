@@ -1296,8 +1296,143 @@ const AdminPages = () => {
                         </div>
                       )}
 
+                      {/* 8. POLICY EDITOR (Terms, Privacy, Refund) */}
+                      {(selectedPage.slug === '/terms' || selectedPage.slug === '/privacy' || selectedPage.slug === '/refund') && (
+                        <div className="space-y-6 pb-20">
+                          <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
+                             <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
+                               <FileText size={22} className="text-brand-600" /> Policy Content Editor
+                             </h3>
+                             <div className="space-y-6">
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-2 block">Last Updated Date</label>
+                                  <input 
+                                    className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:border-brand-300 outline-none transition-all shadow-sm"
+                                    value={selectedPage.content?.lastUpdated || ""}
+                                    onChange={(e) => handleContentChange(null, 'lastUpdated', e.target.value)}
+                                    placeholder="e.g. October 24, 2026"
+                                  />
+                                </div>
+                                
+                                <div className="space-y-4">
+                                  <div className="flex items-center justify-between">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Policy Sections</label>
+                                    <button 
+                                      onClick={() => {
+                                        const current = selectedPage.content?.sections || [];
+                                        handleContentChange(null, 'sections', [...current, { title: "New Section", body: "" }]);
+                                      }}
+                                      className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold hover:bg-brand-600 transition-all flex items-center gap-2"
+                                    >
+                                      <Plus size={12} /> Add Section
+                                    </button>
+                                  </div>
+
+                                  <div className="space-y-4">
+                                    {(selectedPage.content?.sections || []).map((section, idx) => (
+                                      <div key={idx} className="p-6 bg-white border border-slate-200 rounded-[2rem] relative group shadow-sm">
+                                        <button 
+                                          onClick={() => {
+                                            const current = selectedPage.content.sections.filter((_, i) => i !== idx);
+                                            handleContentChange(null, 'sections', current);
+                                          }}
+                                          className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
+                                        >
+                                          <X size={16} />
+                                        </button>
+                                        <input 
+                                          className="w-full bg-transparent border-none p-0 text-lg font-black text-slate-900 focus:ring-0 mb-3"
+                                          value={section.title}
+                                          onChange={(e) => {
+                                            const current = [...selectedPage.content.sections];
+                                            current[idx].title = e.target.value;
+                                            handleContentChange(null, 'sections', current);
+                                          }}
+                                          placeholder="Section Title"
+                                        />
+                                        <textarea 
+                                          className="w-full bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm font-medium text-slate-600 h-32 resize-none focus:border-brand-200 outline-none transition-colors"
+                                          value={section.body}
+                                          onChange={(e) => {
+                                            const current = [...selectedPage.content.sections];
+                                            current[idx].body = e.target.value;
+                                            handleContentChange(null, 'sections', current);
+                                          }}
+                                          placeholder="Enter policy details here..."
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                             </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 9. FAQ EDITOR */}
+                      {selectedPage.slug === '/faq' && (
+                        <div className="space-y-6 pb-20">
+                          <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
+                             <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
+                               <Info size={22} className="text-brand-600" /> FAQ Knowledge Base
+                             </h3>
+                             <div className="space-y-6">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Questions & Answers</label>
+                                  <button 
+                                    onClick={() => {
+                                      const current = selectedPage.content?.faqs || [];
+                                      handleContentChange(null, 'faqs', [...current, { question: "New Question?", answer: "" }]);
+                                    }}
+                                    className="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-bold hover:bg-brand-600 transition-all flex items-center gap-2 shadow-lg"
+                                  >
+                                    <Plus size={14} /> Add FAQ Item
+                                  </button>
+                                </div>
+
+                                <div className="space-y-4">
+                                  {(selectedPage.content?.faqs || []).map((faq, idx) => (
+                                    <div key={idx} className="p-6 bg-white border border-slate-200 rounded-[2rem] relative group shadow-sm overflow-hidden">
+                                      <div className="absolute top-0 left-0 w-1 h-full bg-brand-600" />
+                                      <button 
+                                        onClick={() => {
+                                          const current = selectedPage.content.faqs.filter((_, i) => i !== idx);
+                                          handleContentChange(null, 'faqs', current);
+                                        }}
+                                        className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
+                                      >
+                                        <X size={16} />
+                                      </button>
+                                      <input 
+                                        className="w-full bg-transparent border-none p-0 text-base font-black text-slate-900 focus:ring-0 mb-3"
+                                        value={faq.question}
+                                        onChange={(e) => {
+                                          const current = [...selectedPage.content.faqs];
+                                          current[idx].question = e.target.value;
+                                          handleContentChange(null, 'faqs', current);
+                                        }}
+                                        placeholder="Question?"
+                                      />
+                                      <textarea 
+                                        className="w-full bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm font-medium text-slate-600 h-24 resize-none focus:border-brand-200 outline-none transition-colors"
+                                        value={faq.answer}
+                                        onChange={(e) => {
+                                          const current = [...selectedPage.content.faqs];
+                                          current[idx].answer = e.target.value;
+                                          handleContentChange(null, 'faqs', current);
+                                        }}
+                                        placeholder="Answer the question..."
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                             </div>
+                          </div>
+                        </div>
+                      )}
+
                       {/* FALLBACK MESSAGE */}
-                      {selectedPage.slug !== '/' && selectedPage.slug !== '/about/company-profile' && selectedPage.slug.toLowerCase() !== '/contact' && !selectedPage.slug.startsWith('/study-abroad/') && !selectedPage.slug.startsWith('/exam-training/') && selectedPage.slug !== '/gallery' && !selectedPage.slug.includes('career-assessment') && (
+                      {selectedPage.slug !== '/' && selectedPage.slug !== '/about/company-profile' && selectedPage.slug.toLowerCase() !== '/contact' && !selectedPage.slug.startsWith('/study-abroad/') && !selectedPage.slug.startsWith('/exam-training/') && selectedPage.slug !== '/gallery' && !selectedPage.slug.includes('career-assessment') && selectedPage.slug !== '/terms' && selectedPage.slug !== '/privacy' && selectedPage.slug !== '/refund' && selectedPage.slug !== '/faq' && (
                         <div className="py-20 text-center opacity-40">
                           <Edit size={32} className="mx-auto mb-4 text-slate-300" />
                           <p className="text-sm font-bold italic text-slate-400 tracking-tight">Content editor for this page is under development.</p>
