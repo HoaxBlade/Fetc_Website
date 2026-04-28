@@ -122,16 +122,25 @@ const policies = [
     title: "Frequently Asked Questions",
     slug: "/faq",
     content: {
-      lastUpdated: "April 28, 2026",
+      lastUpdated: "February 03, 2025",
       faqs: [
-        {
-          question: "How do I start my study abroad journey?",
-          answer: "Simply book a free consultation through our website or visit one of our branches."
-        },
-        {
-          question: "What exams do you provide training for?",
-          answer: "We provide training for IELTS, TOEFL, PTE, and Pearson Versant."
-        }
+        { question: "What services do you offer?", answer: "We provide a comprehensive suite of study abroad services, including personalized counselling to help you choose the right program, expert assistance with university applications and visa processing, pre-departure orientation, and post-arrival support." },
+        { question: "Why should I choose your consultancy over others?", answer: "We have a high success rate, experienced advisors, and strong partnerships with prestigious universities. We provide personalized guidance and continuous support throughout your journey." },
+        { question: "Do you charge for your services?", answer: "Yes, we charge a fee for our services, which includes personalized support and expert guidance. Detailed fee information is provided during the initial consultation." },
+        { question: "Do you assist in visa dates?", answer: "Yes, we do." },
+        { question: "How far in advance should I start the application process?", answer: "We recommend starting 6 to 12 months before your intended start date to allow time for preparation and processing." },
+        { question: "How do I start the application process?", answer: "Schedule a consultation with our advisors. We assess your background, goals, and preferences to guide you toward suitable programs and universities." },
+        { question: "What documents are required?", answer: "Academic transcripts, financial statements, SOP, recommendation letters, resume, test scores, and proof of language proficiency." },
+        { question: "Do you assist with SOP and essays?", answer: "Yes, we help you create strong, personalized SOPs and essays." },
+        { question: "How much does studying abroad cost?", answer: "Costs vary depending on the country and program. We provide detailed estimates during consultation." },
+        { question: "Are scholarships available?", answer: "Yes, we assist in finding and applying for scholarships and financial aid." },
+        { question: "Can you help choose the right program and university?", answer: "Yes, we guide you based on your academic background and career goals." },
+        { question: "How can I improve my chances of acceptance?", answer: "Focus on a strong SOP, good recommendations, and academic performance. We provide guidance to strengthen your application." },
+        { question: "Do you assist with undergraduate and postgraduate applications?", answer: "Yes, we support undergraduate, postgraduate, and doctoral programs." },
+        { question: "Do you offer test preparation (IELTS, TOEFL, etc.)?", answer: "Yes, we provide coaching for IELTS, TOEFL, SAT, SELT, and PTE." },
+        { question: "What are the eligibility criteria?", answer: "It depends on the country and program, but generally includes academic qualifications and language proficiency." },
+        { question: "What is the application cost?", answer: "It includes application fees, test fees, and document preparation costs." },
+        { question: "Are financial requirements needed for a visa?", answer: "Yes, proof of funds is required. We assist in meeting these requirements." }
       ]
     }
   }

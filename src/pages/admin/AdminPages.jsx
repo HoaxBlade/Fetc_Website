@@ -57,7 +57,7 @@ const AdminPages = () => {
   const [groupSelectedPageIds, setGroupSelectedPageIds] = useState({});
 
   const getCategory = (slug) => {
-    if (slug === '/' || slug === '/contact' || slug === '/gallery' || slug.startsWith('/about/') || slug === '/forgot-password' || slug === '/my-account' || slug === '/terms' || slug === '/privacy' || slug === '/refund') return 'Main Pages';
+    if (slug === '/' || slug === '/contact' || slug === '/gallery' || slug.startsWith('/about/') || slug === '/forgot-password' || slug === '/my-account' || slug === '/terms' || slug === '/privacy' || slug === '/refund' || slug === '/faq') return 'Main Pages';
     if (slug.startsWith('/study-abroad/')) return 'Study Abroad';
     if (slug.startsWith('/exam-training/')) return 'Exams & Training';
     if (slug.includes('career-assessment')) return 'Assessment';
