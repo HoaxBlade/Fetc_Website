@@ -21,7 +21,7 @@ const AdminLayout = () => {
     // { icon: FileText, label: "Invoice", path: "/admin/invoice" },
     { icon: LayoutDashboard, label: "Leads Dashboard", path: "/admin/leads" },
     { icon: Users, label: "Partner List", path: "/admin/partners" },
-    { icon: BookOpen, label: "Interactive Guides", path: "/admin/guides" },
+    // { icon: BookOpen, label: "Interactive Guides", path: "/admin/guides" },
   ];
 
   const SidebarContent = () => (

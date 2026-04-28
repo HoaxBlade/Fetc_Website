@@ -299,30 +299,30 @@ const AdminGuides = () => {
                 >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
-                            <span className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-4 py-1.5 text-[10px] font-bold tracking-[0.2em] text-brand-600 uppercase italic">
+                            <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold tracking-[0.1em] text-slate-500 uppercase">
                                 <Sparkles size={12} /> Dynamic Visual Portfolios
                             </span>
-                            <h1 className="mt-5 text-4xl lg:text-6xl font-black tracking-tight text-slate-900 leading-none">
-                                Cinematic <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600 italic">Booklets</span>
+                            <h1 className="mt-4 text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 leading-tight">
+                                Cinematic <span className="text-brand-600">Booklets</span>
                             </h1>
-                            <p className="mt-4 text-lg text-slate-400 font-bold max-w-xl">Architect breathtaking interactive flipbooks that drive engagement and tell your story with precision.</p>
+                            <p className="mt-2 text-base text-slate-500 max-w-xl">Architect breathtaking interactive flipbooks that drive engagement and tell your story with precision.</p>
                         </div>
                         <button 
                             onClick={() => setSelectedGuide({})}
-                            className="inline-flex items-center gap-3 rounded-[1.5rem] bg-slate-900 px-8 py-5 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-slate-200 transition-all hover:-translate-y-1 hover:bg-brand-600 hover:shadow-brand-100 active:scale-95"
+                            className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-brand-600 active:scale-95"
                         >
-                            <Plus size={20} /> Create New Guide
+                            <Plus size={18} /> Create New Guide
                         </button>
                     </div>
 
                     <div className="relative">
-                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300">
-                             <Search size={22} className="opacity-40" />
+                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400">
+                             <Search size={20} className="opacity-60" />
                         </div>
                         <input 
                             type="text"
                             placeholder="Locate Guide by Title or Slug..."
-                            className="w-full bg-white border border-slate-100 rounded-[2rem] py-8 pl-16 pr-10 text-xl font-bold text-slate-600 placeholder:text-slate-200 focus:outline-none focus:ring-8 focus:ring-brand-600/5 transition-all shadow-sm"
+                            className="w-full bg-white border border-slate-200 rounded-xl py-4 pl-14 pr-6 text-sm font-medium text-slate-600 placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-600/5 transition-all shadow-sm"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
@@ -334,13 +334,12 @@ const AdminGuides = () => {
                             <p className="text-slate-400 font-bold tracking-widest uppercase text-xs italic">Syncing Guide Registry...</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {guides.filter(g => g.title.toLowerCase().includes(searchTerm.toLowerCase()) || g.slug.toLowerCase().includes(searchTerm.toLowerCase())).map((guide) => (
                                 <motion.div 
                                     key={guide.id}
-                                    whileHover={{ y: -10 }}
                                     onClick={() => setSelectedGuide(guide)}
-                                    className="bg-white border border-slate-100 rounded-[3rem] p-10 cursor-pointer group hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
+                                    className="bg-white border border-slate-100 rounded-2xl p-8 cursor-pointer group hover:border-brand-200 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
                                 >
                                     <div className="absolute -top-12 -right-12 w-48 h-48 bg-brand-50 rounded-full blur-[80px] group-hover:bg-brand-100 transition-colors opacity-40" />
                                     
