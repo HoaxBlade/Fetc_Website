@@ -376,7 +376,8 @@ app.post('/api/leads', async (req, res) => {
 // Admin Tickets List Route
 app.get('/api/admin/tickets', async (req, res) => {
   try {
-    const tickets = await db.query('SELECT * FROM tickets ORDER BY created_at DESC');
+    // Only fetch tickets that are NOT resolved to keep the dashboard clean
+    const tickets = await db.query("SELECT * FROM tickets WHERE status != 'RESOLVED' ORDER BY created_at DESC");
     res.json({ success: true, tickets: tickets.rows });
   } catch (err) {
     console.error('Fetch tickets error:', err);
