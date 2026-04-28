@@ -233,10 +233,57 @@ const countries = {
   }
 };
 
-async function seed() {
-  await client.connect();
-  console.log('Connected to database');
+const mainPages = {
+  "/": {
+    title: "Home",
+    content: {
+       hero: {
+         badge: "Your Global Education Partner",
+         titleMain: "Shape Your Future with",
+         titleHighlight: "Global Education",
+         subtitle: "We provide comprehensive behavioral analysis and expert guidance to help you find the perfect university and career path abroad.",
+         buttonText: "Start Assessment",
+         bgImage: "https://images.unsplash.com/photo-1523050335192-ce67a27662ad?q=80&w=2000"
+       },
+       trustBar: {
+         message: "Trusted by 100+ Global Universities & 10k+ Students Worldwide"
+       }
+    }
+  },
+  "/about/company-profile": {
+    title: "Company Profile",
+    content: {
+       hero: {
+         title: "Our",
+         titleHighlight: "Story",
+         description: "FETC (Foreign English Tests Capital) is a premier educational consultancy dedicated to bridging the gap between local talent and global opportunities."
+       },
+       directorsNote: {
+         quote: "Education is the most powerful weapon which you can use to change the world.",
+         content: "At FETC, we believe every student has a unique potential that deserves a global stage. Our mission is to guide you with honesty, data, and passion."
+       }
+    }
+  }
+};
 
+const db = require('./db');
+
+async function seed(externalDb) {
+  const database = externalDb || db;
+  console.log('Starting seeding process...');
+
+  // Seed Main Pages
+  for (const [slug, page] of Object.entries(mainPages)) {
+    const query = `
+      INSERT INTO pages (title, slug, content, status) 
+      VALUES ($1, $2, $3, 'PUBLISHED') 
+      ON CONFLICT (slug) DO UPDATE SET content = EXCLUDED.content, title = EXCLUDED.title;
+    `;
+    await database.query(query, [page.title, slug, JSON.stringify(page.content)]);
+    console.log(`Seeded Main Page: ${slug}`);
+  }
+
+  // Seed Countries
   for (const [slug, content] of Object.entries(countries)) {
     const fullSlug = `/study-abroad/${slug}`;
     const query = `
@@ -244,10 +291,11 @@ async function seed() {
       VALUES ($1, $2, $3, 'PUBLISHED') 
       ON CONFLICT (slug) DO UPDATE SET content = EXCLUDED.content, title = EXCLUDED.title;
     `;
-    await client.query(query, [content.name, fullSlug, JSON.stringify(content)]);
-    console.log(`Seeded: ${fullSlug}`);
+    await database.query(query, [content.name, fullSlug, JSON.stringify(content)]);
+    console.log(`Seeded Country: ${fullSlug}`);
   }
 
+  // Seed Exams
   for (const [slug, content] of Object.entries(exams)) {
     const fullSlug = `/exam-training/${slug}`;
     const query = `
@@ -255,15 +303,19 @@ async function seed() {
       VALUES ($1, $2, $3, 'PUBLISHED') 
       ON CONFLICT (slug) DO UPDATE SET content = EXCLUDED.content, title = EXCLUDED.title;
     `;
-    await client.query(query, [content.title, fullSlug, JSON.stringify(content)]);
-    console.log(`Seeded: ${fullSlug}`);
+    await database.query(query, [content.title, fullSlug, JSON.stringify(content)]);
+    console.log(`Seeded Exam: ${fullSlug}`);
   }
 
-  await client.end();
-  console.log('Seeding completed!');
+  console.log('Seeding completed successfully!');
+  return { success: true };
 }
 
-seed().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+module.exports = { seed };
+
+if (require.main === module) {
+  seed().catch(err => {
+    console.error(err);
+    process.exit(1);
+  }).then(() => process.exit(0));
+}

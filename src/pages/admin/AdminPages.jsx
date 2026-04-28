@@ -50,6 +50,8 @@ const AdminPages = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPage, setSelectedPage] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newPageData, setNewPageData] = useState({ title: "", slug: "" });
   const [activeTab, setActiveTab] = useState("settings"); // "settings" or "content"
   const [isSaving, setIsSaving] = useState(false);
 
@@ -104,6 +106,29 @@ const AdminPages = () => {
       }
     } catch (err) {
       console.error('Update failed:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleFinalCreate = async () => {
+    if (!newPageData.title || !newPageData.slug) return;
+    setIsSaving(true);
+    try {
+      const response = await fetch('/api/admin/pages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPageData),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setPages([...pages, data.page]);
+        setShowCreateModal(false);
+        setNewPageData({ title: "", slug: "" });
+        setSelectedPage(data.page);
+      }
+    } catch (err) {
+      console.error('Create failed:', err);
     } finally {
       setIsSaving(false);
     }
@@ -181,39 +206,97 @@ const AdminPages = () => {
     return date.toLocaleDateString();
   };
 
+  const CustomGroupSelector = ({ activePage, pages, onSelect }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    
+    return (
+      <div className="relative w-full">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }}
+          className="w-full flex items-center justify-between bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200/40 px-5 py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider text-slate-700 transition-all shadow-sm group"
+        >
+          <span className="truncate">{activePage.title}</span>
+          <ChevronRight className={`transition-transform duration-300 w-3.5 h-3.5 ${isOpen ? 'rotate-90 text-brand-600' : 'text-slate-400'}`} />
+        </button>
+        
+        <AnimatePresence>
+          {isOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+              <motion.div
+                initial={{ opacity: 0, y: 5, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 5, scale: 0.98 }}
+                className="absolute left-0 right-0 top-full z-50 mt-1.5 bg-white/95 backdrop-blur-xl rounded-2xl border border-slate-200/60 shadow-2xl overflow-hidden max-h-60 overflow-y-auto custom-scrollbar"
+              >
+                {pages.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelect(p.id);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full text-left px-5 py-3 text-[10px] font-bold transition-all border-b border-slate-100/50 last:border-0
+                      ${p.id === activePage.id 
+                        ? 'bg-brand-600 text-white' 
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-brand-600'}
+                    `}
+                  >
+                    {p.title}
+                  </button>
+                ))}
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
   const PageCard = ({ page }) => (
     <motion.div
       key={page.id}
-      whileHover={{ y: -5 }}
+      whileHover={{ y: -4, scale: 1.01 }}
       onClick={() => setSelectedPage(page)}
-      className="bg-slate-50/50 border border-slate-200 rounded-[2rem] p-6 shadow-sm hover:shadow-xl hover:bg-white transition-all cursor-pointer group"
+      className="glass-card rounded-[2rem] p-8 transition-all cursor-pointer group relative overflow-hidden active:scale-[0.99]"
     >
-      <div className="flex justify-between items-start mb-5">
-        <div className="p-3 bg-brand-50 text-brand-600 rounded-2xl shadow-sm group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
-          <FileText size={22} />
+      {/* Glow Effect */}
+      <div className="absolute -right-20 -top-20 w-40 h-40 bg-brand-400/10 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      <div className="flex justify-between items-start mb-8 relative z-10">
+        <div className="p-3.5 bg-slate-50 text-brand-600 rounded-xl border border-slate-100 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
+          <FileText size={20} />
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full ${page.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100' : 'bg-amber-50 text-amber-600 ring-1 ring-amber-100'
+        <div className="flex flex-col items-end gap-2.5">
+          <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border shadow-xs ${page.status === 'PUBLISHED' 
+            ? 'bg-emerald-400/5 text-emerald-600 border-emerald-400/20' 
+            : 'bg-amber-400/5 text-amber-600 border-amber-400/20'
             }`}>
             {page.status}
           </span>
-          <span className="text-[8px] font-bold uppercase tracking-tight text-slate-300 px-2 py-0.5 bg-slate-50 rounded-lg group-hover:bg-slate-100 transition-colors">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-100 group-hover:bg-white transition-colors">
             {getCategory(page.slug)}
           </span>
         </div>
       </div>
 
-      <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-brand-600 transition-colors">{page.title}</h3>
-      <p className="text-xs text-slate-400 font-bold mb-6 flex items-center gap-1.5">
-        <Globe size={12} className="opacity-40" /> {page.slug}
-      </p>
+      <div className="relative z-10">
+        <h3 className="text-2xl font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition-colors tracking-tight leading-tight">{page.title}</h3>
+        <p className="text-[11px] text-slate-400 font-medium mb-8 flex items-center gap-2 group-hover:text-slate-500 transition-colors">
+          <Globe size={13} className="opacity-40" /> {page.slug}
+        </p>
+      </div>
 
-      <div className="flex items-center justify-between pt-5 border-t border-slate-100/50 mt-auto">
-        <div className="flex items-center gap-1.5 text-slate-400 uppercase text-[9px] font-black tracking-tight">
-          <Clock size={10} /> {formatDate(page.updated_at)}
+      <div className="flex items-center justify-between pt-6 border-t border-white/40 mt-auto relative z-10">
+        <div className="flex items-center gap-2 text-slate-400 uppercase text-[10px] font-black tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">
+          <Clock size={12} /> {formatDate(page.updated_at)}
         </div>
-        <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
-          <ChevronRight size={16} />
+        <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0 shadow-lg shadow-slate-900/20">
+          <ChevronRight size={18} />
         </div>
       </div>
     </motion.div>
@@ -1457,30 +1540,119 @@ const AdminPages = () => {
         document.body
       )}
 
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">Pages Management</h1>
-          <p className="text-slate-500 font-medium text-sm italic">Edit and manage your website structure.</p>
+      <div className="flex flex-wrap items-end justify-between gap-6 mb-12">
+        <div className="relative">
+          <div className="absolute -left-10 -top-10 w-32 h-32 bg-brand-200/20 rounded-full blur-[60px] pointer-events-none" />
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2 relative z-10">Page Management</h1>
+          <p className="text-slate-500 font-medium text-sm italic relative z-10">Structure and manage your website's core pages.</p>
         </div>
-        <button className="flex items-center gap-2 bg-brand-600 text-white px-6 py-3 rounded-2xl font-bold text-sm hover:bg-brand-700 transition-all shadow-lg shadow-brand-200 active:scale-95">
-          <Plus size={18} /> Create New Page
+        <button 
+          onClick={() => setShowCreateModal(true)}
+          className="group flex items-center gap-3 bg-brand-600 text-white px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-brand-700 transition-all shadow-lg shadow-brand-100 active:scale-95 relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300 relative z-10" /> 
+          <span className="relative z-10">Create New Page</span>
         </button>
       </div>
 
-      <div className="flex gap-4 items-center mb-10 max-w-sm">
-        <div className="relative flex-1 text-slate-400 focus-within:text-brand-600 transition-colors">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" />
-          <input
-            className="w-full pl-12 pr-6 py-4 bg-white border border-slate-100 rounded-2xl text-xs focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium text-slate-600 shadow-sm"
-            placeholder="Search by title or URL..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      {/* Custom Creation Modal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {showCreateModal && (
+            <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowCreateModal(false)}
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98, y: 10 }}
+                className="relative w-full max-w-md bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl overflow-hidden p-10 border border-slate-200/60"
+              >
+                <div className="text-center mb-8">
+                  <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Plus size={32} />
+                  </div>
+                  <h2 className="text-2xl font-bold text-slate-900">Create New Page</h2>
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Structure your website</p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Page Title</label>
+                    <input
+                      autoFocus
+                      placeholder="e.g. Careers"
+                      className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-bold text-slate-700"
+                      value={newPageData.title}
+                      onChange={(e) => setNewPageData({ ...newPageData, title: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">URL Slug</label>
+                    <input
+                      placeholder="/careers"
+                      className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium text-slate-500"
+                      value={newPageData.slug}
+                      onChange={(e) => setNewPageData({ ...newPageData, slug: e.target.value })}
+                    />
+                  </div>
+                  
+                  <div className="pt-4 flex gap-3">
+                    <button 
+                      onClick={() => setShowCreateModal(false)}
+                      className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold text-xs hover:bg-slate-200 transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={handleFinalCreate}
+                      disabled={isSaving || !newPageData.title || !newPageData.slug}
+                      className="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs hover:bg-brand-600 transition-all shadow-xl shadow-slate-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+                      {isSaving ? "Creating..." : "Create Page"}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+
+      <div className="bg-slate-100/50 backdrop-blur-md rounded-[2rem] border border-slate-200/40 p-4 mb-16 flex flex-wrap items-center justify-between gap-6 shadow-sm">
+        <div className="flex gap-4 items-center flex-1 max-w-lg">
+          <div className="relative flex-1 group">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-600 transition-all duration-300" />
+            <input
+              className="w-full pl-12 pr-6 py-3 bg-white/80 border border-slate-200/60 rounded-xl text-[13px] focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-400/50 transition-all font-medium text-slate-700 placeholder:text-slate-400"
+              placeholder="Search pages..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
-        {isLoading && <Loader2 className="animate-spin text-brand-600" size={18} />}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 bg-white/80 border border-slate-200/60 rounded-xl shadow-xs">
+             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{pages.length} Pages</span>
+          </div>
+          {isLoading && (
+            <div className="flex items-center gap-2 px-3 py-2">
+              <Loader2 className="animate-spin text-brand-600" size={14} />
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-40">
             {searchTerm ? (
               filteredPages.map((page) => (
                 <PageCard key={page.id} page={page} />
@@ -1503,52 +1675,42 @@ const AdminPages = () => {
                 return (
                   <motion.div
                     key={cat}
-                    whileHover={{ y: -5 }}
-                    className="bg-slate-50/50 border border-slate-200 rounded-[2.5rem] p-8 transition-all cursor-pointer group relative overflow-hidden"
+                    whileHover={{ y: -4, scale: 1.01 }}
+                    className="glass-card rounded-[2rem] p-8 transition-all cursor-pointer group relative active:scale-[0.99] z-10 border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)]"
                   >
-                    {/* Background Accent */}
-                    <div className="absolute -right-10 -top-10 w-40 h-40 bg-brand-50/50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                    <div className="flex justify-between items-start mb-8 relative z-10">
-                      <div className="p-3 bg-brand-50 text-brand-600 rounded-2xl shadow-sm group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
+                    <div className="flex justify-between items-start mb-8 relative z-10 mt-2">
+                      <div className="p-4 bg-slate-50 text-brand-600 rounded-xl border border-slate-100 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
                         <FileText size={22} />
                       </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full border ${activePage.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
+                      <div className="flex flex-col items-end gap-3">
+                        <span className={`text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border shadow-xs ${activePage.status === 'PUBLISHED' ? 'bg-emerald-400/5 text-emerald-600 border-emerald-400/20' : 'bg-amber-400/5 text-amber-600 border-amber-400/20'}`}>
                           {activePage.status}
                         </span>
-                        <span className="text-[8px] font-black uppercase tracking-widest text-slate-300">GROUP CARD</span>
                       </div>
                     </div>
 
-                    <div className="mb-8 relative z-10">
-                      <h3 className="text-2xl font-black text-slate-900 mb-2 truncate">{cat}</h3>
-                      <div className="relative inline-block w-full">
-                        <select
-                          value={activePage.id}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            setGroupSelectedPageIds(prev => ({ ...prev, [cat]: parseInt(e.target.value) }));
-                          }}
-                          className="w-full bg-slate-50/80 backdrop-blur-sm border border-slate-100 pl-4 pr-10 py-3 rounded-xl text-xs font-bold text-slate-500 focus:outline-none focus:border-brand-300 appearance-none cursor-pointer transition-all hover:bg-slate-100"
-                        >
-                          {pagesInCategory.map(p => (
-                            <option key={p.id} value={p.id}>{p.title}</option>
-                          ))}
-                        </select>
-                        <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-slate-300 pointer-events-none" size={14} />
-                      </div>
+                    <div className="mb-10 relative z-20">
+                      <h3 className="text-2xl font-bold text-slate-800 mb-4 truncate tracking-tight">{cat}</h3>
+                      <CustomGroupSelector 
+                        activePage={activePage} 
+                        pages={pagesInCategory} 
+                        onSelect={(id) => setGroupSelectedPageIds(prev => ({ ...prev, [cat]: id }))}
+                      />
                     </div>
 
-                    <div className="flex items-center justify-between pt-6 border-t border-slate-50 relative z-10">
+                    <div className="flex items-center justify-between pt-6 border-t border-slate-100/60 relative z-10">
                       <button
-                        onClick={() => setSelectedPage(activePage)}
-                        className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedPage(activePage);
+                        }}
+                        className="group/btn flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-brand-600 hover:text-brand-700 transition-colors"
                       >
-                        Edit {activePage.title} <ChevronRight size={12} className="mt-0.5" />
+                        Edit {activePage.title} 
+                        <ChevronRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
                       </button>
-                      <div className="text-[9px] font-bold text-slate-300 italic">
-                        {pagesInCategory.length} Pages Available
+                      <div className="flex items-center gap-2 text-[9px] font-bold text-slate-300 uppercase tracking-widest">
+                        {pagesInCategory.length} Pages
                       </div>
                     </div>
                   </motion.div>

@@ -484,6 +484,21 @@ app.get('/api/admin/pages', async (req, res) => {
   }
 });
 
+// POST /api/admin/pages - Create new page
+app.post('/api/admin/pages', async (req, res) => {
+  const { title, slug } = req.body;
+  try {
+    const result = await db.query(
+      'INSERT INTO pages (title, slug, status, content) VALUES ($1, $2, $3, $4) RETURNING *',
+      [title, slug, 'DRAFT', '{}']
+    );
+    res.json({ success: true, page: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error', error: err.message });
+  }
+});
+
 // PATCH /api/admin/pages/:id - Update page metadata/status
 app.patch('/api/admin/pages/:id', async (req, res) => {
   const { id } = req.params;
@@ -582,6 +597,61 @@ app.delete('/api/admin/news-flash/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+// --- Blog Posts Management API ---
+
+// GET /api/admin/posts - List all posts
+app.get('/api/admin/posts', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM posts ORDER BY created_at DESC');
+    res.json({ success: true, posts: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+// POST /api/admin/posts - Create new post
+app.post('/api/admin/posts', async (req, res) => {
+  const { title, slug } = req.body;
+  try {
+    // Ensure table exists
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS posts (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        slug TEXT UNIQUE NOT NULL,
+        content JSONB DEFAULT '{}',
+        status TEXT DEFAULT 'DRAFT',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    const result = await db.query(
+      'INSERT INTO posts (title, slug, status, content) VALUES ($1, $2, $3, $4) RETURNING *',
+      [title, slug, 'DRAFT', '{}']
+    );
+    res.json({ success: true, post: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error', error: err.message });
+  }
+});
+
+// --- Database Maintenance API ---
+
+// GET /api/admin/db/seed - Run the data seeder
+app.get('/api/admin/db/seed', async (req, res) => {
+  try {
+    const seeder = require('./seed-all-data');
+    const result = await seeder.seed(db);
+    res.json({ success: true, message: 'Database seeded successfully', result });
+  } catch (err) {
+    console.error('Seeding error:', err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

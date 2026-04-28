@@ -61,12 +61,12 @@ const AdminLeads = () => {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto">
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">Leads Dashboard</h1>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Leads Dashboard</h1>
           <p className="text-slate-500 font-medium text-sm italic">Track potential student inquiries and conversions.</p>
         </div>
       </div>
 
-      <div className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] border border-white/100 shadow-soft overflow-hidden">
+      <div className="glass-card rounded-[2rem] border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-hidden">
         <div className="p-8 border-b border-slate-50 flex flex-wrap items-center justify-between gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -83,12 +83,12 @@ const AdminLeads = () => {
         <div className="overflow-x-auto p-4">
           <table className="w-full text-left border-separate border-spacing-y-2">
             <thead>
-              <tr className="text-slate-400 text-[10px] font-bold uppercase tracking-widest px-4">
-                <th className="px-6 pb-4">Lead Info</th>
-                <th className="px-6 pb-4">Interest / Subject</th>
-                <th className="px-6 pb-4">Message</th>
-                <th className="px-6 pb-4">Status</th>
-                <th className="px-6 pb-4 text-right">Actions</th>
+              <tr className="text-slate-400 text-[10px] font-black uppercase tracking-widest px-4">
+                <th className="px-6 pb-4">Lead Information</th>
+                <th className="px-6 pb-4">Area of Interest</th>
+                <th className="px-6 pb-4">Inquiry Message</th>
+                <th className="px-6 pb-4">Lead Status</th>
+                <th className="px-6 pb-4 text-right">Lead Actions</th>
               </tr>
             </thead>
             <tbody>

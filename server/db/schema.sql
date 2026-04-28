@@ -59,3 +59,44 @@ CREATE TABLE IF NOT EXISTS pages (
     content JSONB DEFAULT '{}',             -- Flexible storage for page sections
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 6. News Flash Table
+CREATE TABLE IF NOT EXISTS news_flash (
+    id SERIAL PRIMARY KEY,
+    content TEXT NOT NULL,
+    link VARCHAR(255),
+    is_active BOOLEAN DEFAULT true,
+    priority INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 7. Blog Posts Table
+CREATE TABLE IF NOT EXISTS posts (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    content JSONB DEFAULT '{}',
+    status TEXT DEFAULT 'DRAFT',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 8. Interactive Guides Table
+CREATE TABLE IF NOT EXISTS interactive_guides (
+    id SERIAL PRIMARY KEY,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 9. Guide Pages Table
+CREATE TABLE IF NOT EXISTS guide_pages (
+    id SERIAL PRIMARY KEY,
+    guide_id INTEGER REFERENCES interactive_guides(id) ON DELETE CASCADE,
+    image_url TEXT NOT NULL,
+    page_number INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
