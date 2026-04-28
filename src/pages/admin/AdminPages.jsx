@@ -1467,24 +1467,20 @@ const AdminPages = () => {
         </button>
       </div>
 
-      <div className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] border border-white shadow-soft overflow-hidden mb-12">
-        <div className="p-8 border-b border-slate-50 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex gap-4 items-center flex-1 max-w-sm">
-            <div className="relative flex-1 text-slate-400 focus-within:text-brand-600 transition-colors">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" />
-              <input
-                className="w-full pl-12 pr-6 py-3.5 bg-slate-50/50 border border-slate-100 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium text-slate-600"
-                placeholder="Search by title or URL..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-          {isLoading && <Loader2 className="animate-spin text-brand-600" size={18} />}
+      <div className="flex gap-4 items-center mb-10 max-w-sm">
+        <div className="relative flex-1 text-slate-400 focus-within:text-brand-600 transition-colors">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" />
+          <input
+            className="w-full pl-12 pr-6 py-4 bg-white border border-slate-100 rounded-2xl text-xs focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium text-slate-600 shadow-sm"
+            placeholder="Search by title or URL..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
+        {isLoading && <Loader2 className="animate-spin text-brand-600" size={18} />}
+      </div>
 
-        <div className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {searchTerm ? (
               filteredPages.map((page) => (
                 <PageCard key={page.id} page={page} />
@@ -1569,8 +1565,6 @@ const AdminPages = () => {
                 <p className="text-slate-400 text-sm">Try searching for something else.</p>
               </div>
             )}
-          </div>
-        </div>
       </div>
     </motion.div>
   );
