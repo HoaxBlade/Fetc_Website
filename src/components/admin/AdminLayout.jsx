@@ -90,7 +90,7 @@ const AdminLayout = () => {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="w-[360px] hidden lg:flex flex-col z-20 pt-20 px-8 pb-8 pr-0">
+      <aside className="w-[360px] hidden lg:flex flex-col h-screen z-20 pt-20 px-8 pb-8 pr-0">
         <div className="h-fit max-h-[calc(100vh-4rem)] glass-card backdrop-blur-3xl border border-white/80 shadow-[0_20px_40px_rgba(0,0,0,0.05)] rounded-[2rem] overflow-hidden relative group">
           {/* Internal Glows */}
           <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
