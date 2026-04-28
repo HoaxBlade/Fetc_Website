@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { User, Mail, FileText, MessageSquare, Send, MapPin, Phone, Mail as MailIcon, Plane } from "lucide-react";
+import { User, Mail, FileText, MessageSquare, Send, MapPin, Phone, Plane } from "lucide-react";
 
 const StartJourneyPage = () => {
   const location = useLocation();

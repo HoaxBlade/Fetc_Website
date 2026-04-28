@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Download, Search } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 const AdminInvoice = () => {
   return (

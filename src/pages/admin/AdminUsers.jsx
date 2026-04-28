@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, UserPlus, Search, Mail, Phone, MoreVertical, Loader2, X, ChevronRight, Trash2, Edit2, Shield } from 'lucide-react';
+import { Users, UserPlus, Search, Mail, MoreVertical, Loader2, X, ChevronRight, Trash2, Edit2, Shield } from 'lucide-react';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -88,13 +88,6 @@ const AdminUsers = () => {
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
 
   return (
     <motion.div 

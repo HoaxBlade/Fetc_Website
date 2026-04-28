@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Share2, Plus, Search, Calendar, MessageSquare } from 'lucide-react';
+import { Share2, Plus, Search } from 'lucide-react';
 
 const AdminPosts = () => {
   return (

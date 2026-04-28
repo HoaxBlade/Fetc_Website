@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Handshake, Search } from 'lucide-react';
+import { Handshake } from 'lucide-react';
 
 const AdminPartners = () => {
   return (

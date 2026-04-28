@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Ticket, Search, Loader2, Mail, Clock, CheckCircle, AlertCircle, User, X, MessageSquare } from 'lucide-react';
+import { Ticket, Search, Loader2, Mail, Clock, CheckCircle, User, X, MessageSquare } from 'lucide-react';
 
 const AdminSupportTickets = () => {
   const [tickets, setTickets] = useState([]);

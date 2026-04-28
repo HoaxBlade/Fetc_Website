@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { UserCheck, Search, Mail, Phone, Calendar, Loader2, MessageSquare, CheckCircle, Clock } from 'lucide-react';
+import { UserCheck, Search, Mail, Calendar, Loader2, CheckCircle, Clock } from 'lucide-react';
 
 const AdminLeads = () => {
   const [leads, setLeads] = useState([]);
