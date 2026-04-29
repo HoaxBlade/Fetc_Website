@@ -235,7 +235,7 @@ const AdminPages = () => {
 
   const CustomGroupSelector = ({ activePage, pages, onSelect }) => {
     const [isOpen, setIsOpen] = useState(false);
-    
+
     return (
       <div className="relative w-full">
         <button
@@ -248,7 +248,7 @@ const AdminPages = () => {
           <span className="truncate">{activePage.title}</span>
           <ChevronRight className={`transition-transform duration-300 w-3.5 h-3.5 ${isOpen ? 'rotate-90 text-brand-600' : 'text-slate-400'}`} />
         </button>
-        
+
         <AnimatePresence>
           {isOpen && (
             <>
@@ -268,8 +268,8 @@ const AdminPages = () => {
                       setIsOpen(false);
                     }}
                     className={`w-full text-left px-5 py-3 text-[10px] font-bold transition-all border-b border-slate-100/50 last:border-0
-                      ${p.id === activePage.id 
-                        ? 'bg-brand-600 text-white' 
+                      ${p.id === activePage.id
+                        ? 'bg-brand-600 text-white'
                         : 'text-slate-600 hover:bg-slate-100 hover:text-brand-600'}
                     `}
                   >
@@ -293,14 +293,14 @@ const AdminPages = () => {
     >
       {/* Glow Effect */}
       <div className="absolute -right-20 -top-20 w-40 h-40 bg-brand-400/10 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
+
       <div className="flex justify-between items-start mb-8 relative z-10">
         <div className="p-3.5 bg-slate-50 text-brand-600 rounded-xl border border-slate-100 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
           <FileText size={20} />
         </div>
         <div className="flex flex-col items-end gap-2.5">
-          <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border shadow-xs ${page.status === 'PUBLISHED' 
-            ? 'bg-emerald-400/5 text-emerald-600 border-emerald-400/20' 
+          <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border shadow-xs ${page.status === 'PUBLISHED'
+            ? 'bg-emerald-400/5 text-emerald-600 border-emerald-400/20'
             : 'bg-amber-400/5 text-amber-600 border-amber-400/20'
             }`}>
             {page.status}
@@ -445,7 +445,7 @@ const AdminPages = () => {
                           <div className="space-y-3">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Visibility Status</label>
                             <div className="relative">
-                              <select 
+                              <select
                                 className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 focus:border-brand-200 focus:ring-4 focus:ring-brand-500/5 outline-none transition-all appearance-none cursor-pointer"
                                 value={selectedPage.status}
                                 onChange={(e) => setSelectedPage({ ...selectedPage, status: e.target.value })}
@@ -458,24 +458,24 @@ const AdminPages = () => {
                               </div>
                             </div>
                           </div>
-                          
-                          <div className="space-y-3">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Menu & Footer Placement</label>
-                            <div className="relative">
-                              <select 
-                                className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 focus:border-brand-200 focus:ring-4 focus:ring-brand-500/5 outline-none transition-all appearance-none cursor-pointer"
-                                value={selectedPage.nav_visibility || 'none'}
-                                onChange={(e) => setSelectedPage({ ...selectedPage, nav_visibility: e.target.value })}
-                              >
-                                <option value="none">Don't show in any menus (Private Link)</option>
-                                <option value="navbar">Show in Navbar only</option>
-                                <option value="footer">Show in Footer only</option>
-                                <option value="both">Show in both Navbar & Footer</option>
-                              </select>
-                              <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-brand-500">
-                                <Globe size={18} />
-                              </div>
-                            </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Menu & Footer Placement</label>
+                        <div className="relative">
+                          <select
+                            className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 focus:border-brand-200 focus:ring-4 focus:ring-brand-500/5 outline-none transition-all appearance-none cursor-pointer"
+                            value={selectedPage.nav_visibility || 'none'}
+                            onChange={(e) => setSelectedPage({ ...selectedPage, nav_visibility: e.target.value })}
+                          >
+                            <option value="none">Don't show in any menus (Private Link)</option>
+                            <option value="navbar">Show in Navbar only</option>
+                            <option value="footer">Show in Footer only</option>
+                            <option value="both">Show in both Navbar & Footer</option>
+                          </select>
+                          <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-brand-500">
+                            <Globe size={18} />
                           </div>
                         </div>
                       </div>
@@ -1571,13 +1571,13 @@ const AdminPages = () => {
                               <p className="text-xs text-brand-600 font-medium">Add sections to build your custom page layout.</p>
                             </div>
                             <div className="flex gap-2">
-                              <button 
+                              <button
                                 onClick={() => addSection('text')}
                                 className="px-5 py-3 bg-white text-brand-700 rounded-xl font-bold text-[11px] uppercase tracking-wider border border-brand-200 hover:bg-brand-600 hover:text-white transition-all shadow-sm"
                               >
                                 + Text Block
                               </button>
-                              <button 
+                              <button
                                 onClick={() => addSection('image_text')}
                                 className="px-5 py-3 bg-white text-brand-700 rounded-xl font-bold text-[11px] uppercase tracking-wider border border-brand-200 hover:bg-brand-600 hover:text-white transition-all shadow-sm"
                               >
@@ -1588,13 +1588,13 @@ const AdminPages = () => {
 
                           <div className="space-y-6">
                             {selectedPage.content?.sections?.map((section, idx) => (
-                              <motion.div 
+                              <motion.div
                                 key={idx}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="bg-white border border-slate-100 rounded-[2rem] p-8 shadow-sm group relative"
                               >
-                                <button 
+                                <button
                                   onClick={() => removeSection(idx)}
                                   className="absolute top-6 right-6 p-2 text-rose-300 hover:text-rose-500 transition-colors"
                                 >
@@ -1608,13 +1608,13 @@ const AdminPages = () => {
                                 </div>
 
                                 <div className="space-y-4">
-                                  <input 
+                                  <input
                                     className="w-full px-0 text-xl font-bold text-slate-900 placeholder:text-slate-300 border-none focus:ring-0 outline-none"
                                     placeholder="Enter section title..."
                                     value={section.title}
                                     onChange={(e) => updateSection(idx, 'title', e.target.value)}
                                   />
-                                  
+
                                   {section.type === 'image_text' && (
                                     <div className="grid grid-cols-2 gap-6 items-start">
                                       <div className="space-y-2">
@@ -1631,10 +1631,10 @@ const AdminPages = () => {
                                           <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
                                             <label className="p-3 bg-white text-slate-900 rounded-full cursor-pointer shadow-xl">
                                               <Edit size={18} />
-                                              <input 
-                                                type="file" 
-                                                className="hidden" 
-                                                accept="image/*" 
+                                              <input
+                                                type="file"
+                                                className="hidden"
+                                                accept="image/*"
                                                 onChange={(e) => {
                                                   const file = e.target.files?.[0];
                                                   if (file) {
@@ -1644,13 +1644,13 @@ const AdminPages = () => {
                                                       .then(res => res.json())
                                                       .then(data => data.success && updateSection(idx, 'image', data.url));
                                                   }
-                                                }} 
+                                                }}
                                               />
                                             </label>
                                           </div>
                                         </div>
                                       </div>
-                                      <textarea 
+                                      <textarea
                                         className="w-full h-full min-h-[150px] p-6 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium text-slate-600 focus:border-brand-200 outline-none transition-colors resize-none"
                                         placeholder="Write section body content..."
                                         value={section.body}
@@ -1660,7 +1660,7 @@ const AdminPages = () => {
                                   )}
 
                                   {section.type === 'text' && (
-                                    <textarea 
+                                    <textarea
                                       className="w-full min-h-[200px] p-6 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium text-slate-600 focus:border-brand-200 outline-none transition-colors resize-none"
                                       placeholder="Write section body content..."
                                       value={section.body}
@@ -1705,12 +1705,12 @@ const AdminPages = () => {
           <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2 relative z-10">Page Management</h1>
           <p className="text-slate-500 font-medium text-sm italic relative z-10">Structure and manage your website's core pages.</p>
         </div>
-        <button 
+        <button
           onClick={() => setShowCreateModal(true)}
           className="group flex items-center gap-3 bg-brand-600 text-white px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-brand-700 transition-all shadow-lg shadow-brand-100 active:scale-95 relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300 relative z-10" /> 
+          <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300 relative z-10" />
           <span className="relative z-10">Create New Page</span>
         </button>
       </div>
@@ -1761,15 +1761,15 @@ const AdminPages = () => {
                       onChange={(e) => setNewPageData({ ...newPageData, slug: e.target.value })}
                     />
                   </div>
-                  
+
                   <div className="pt-4 flex gap-3">
-                    <button 
+                    <button
                       onClick={() => setShowCreateModal(false)}
                       className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold text-xs hover:bg-slate-200 transition-all"
                     >
                       Cancel
                     </button>
-                    <button 
+                    <button
                       onClick={handleFinalCreate}
                       disabled={isSaving || !newPageData.title || !newPageData.slug}
                       className="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs hover:bg-brand-600 transition-all shadow-xl shadow-slate-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -1800,8 +1800,8 @@ const AdminPages = () => {
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-4 py-2 bg-white/80 border border-slate-200/60 rounded-xl shadow-xs">
-             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{pages.length} Pages</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{pages.length} Pages</span>
           </div>
           {isLoading && (
             <div className="flex items-center gap-2 px-3 py-2">
@@ -1812,80 +1812,80 @@ const AdminPages = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-40">
-            {searchTerm ? (
-              filteredPages.map((page) => (
-                <PageCard key={page.id} page={page} />
-              ))
-            ) : (
-              // Grouped Implementation
-              categories.map(cat => {
-                const pagesInCategory = pages.filter(p => getCategory(p.slug) === cat);
-                if (pagesInCategory.length === 0) return null;
+        {searchTerm ? (
+          filteredPages.map((page) => (
+            <PageCard key={page.id} page={page} />
+          ))
+        ) : (
+          // Grouped Implementation
+          categories.map(cat => {
+            const pagesInCategory = pages.filter(p => getCategory(p.slug) === cat);
+            if (pagesInCategory.length === 0) return null;
 
-                // For "Main Pages", always show individual cards
-                if (cat === "Main Pages") {
-                  return pagesInCategory.map(page => <PageCard key={page.id} page={page} />);
-                }
+            // For "Main Pages", always show individual cards
+            if (cat === "Main Pages") {
+              return pagesInCategory.map(page => <PageCard key={page.id} page={page} />);
+            }
 
-                // For groupable categories, show ONE card
-                const selectedId = groupSelectedPageIds[cat] || pagesInCategory[0].id;
-                const activePage = pagesInCategory.find(p => p.id === selectedId) || pagesInCategory[0];
+            // For groupable categories, show ONE card
+            const selectedId = groupSelectedPageIds[cat] || pagesInCategory[0].id;
+            const activePage = pagesInCategory.find(p => p.id === selectedId) || pagesInCategory[0];
 
-                return (
-                  <motion.div
-                    key={cat}
-                    whileHover={{ y: -4, scale: 1.01 }}
-                    className="glass-card rounded-[2rem] p-8 transition-all cursor-pointer group relative active:scale-[0.99] z-10 border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)]"
-                  >
-                    <div className="flex justify-between items-start mb-8 relative z-10 mt-2">
-                      <div className="p-4 bg-slate-50 text-brand-600 rounded-xl border border-slate-100 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
-                        <FileText size={22} />
-                      </div>
-                      <div className="flex flex-col items-end gap-3">
-                        <span className={`text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border shadow-xs ${activePage.status === 'PUBLISHED' ? 'bg-emerald-400/5 text-emerald-600 border-emerald-400/20' : 'bg-amber-400/5 text-amber-600 border-amber-400/20'}`}>
-                          {activePage.status}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="mb-10 relative z-20">
-                      <h3 className="text-2xl font-bold text-slate-800 mb-4 truncate tracking-tight">{cat}</h3>
-                      <CustomGroupSelector 
-                        activePage={activePage} 
-                        pages={pagesInCategory} 
-                        onSelect={(id) => setGroupSelectedPageIds(prev => ({ ...prev, [cat]: id }))}
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between pt-6 border-t border-slate-100/60 relative z-10">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedPage(activePage);
-                        }}
-                        className="group/btn flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-brand-600 hover:text-brand-700 transition-colors"
-                      >
-                        Edit {activePage.title} 
-                        <ChevronRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
-                      </button>
-                      <div className="flex items-center gap-2 text-[9px] font-bold text-slate-300 uppercase tracking-widest">
-                        {pagesInCategory.length} Pages
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })
-            )}
-
-            {!isLoading && filteredPages.length === 0 && (
-              <div className="col-span-full py-20 text-center">
-                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
-                  <Search size={24} />
+            return (
+              <motion.div
+                key={cat}
+                whileHover={{ y: -4, scale: 1.01 }}
+                className="glass-card rounded-[2rem] p-8 transition-all cursor-pointer group relative active:scale-[0.99] z-10 border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)]"
+              >
+                <div className="flex justify-between items-start mb-8 relative z-10 mt-2">
+                  <div className="p-4 bg-slate-50 text-brand-600 rounded-xl border border-slate-100 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
+                    <FileText size={22} />
+                  </div>
+                  <div className="flex flex-col items-end gap-3">
+                    <span className={`text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border shadow-xs ${activePage.status === 'PUBLISHED' ? 'bg-emerald-400/5 text-emerald-600 border-emerald-400/20' : 'bg-amber-400/5 text-amber-600 border-amber-400/20'}`}>
+                      {activePage.status}
+                    </span>
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold text-slate-800">No pages found</h3>
-                <p className="text-slate-400 text-sm">Try searching for something else.</p>
-              </div>
-            )}
+
+                <div className="mb-10 relative z-20">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-4 truncate tracking-tight">{cat}</h3>
+                  <CustomGroupSelector
+                    activePage={activePage}
+                    pages={pagesInCategory}
+                    onSelect={(id) => setGroupSelectedPageIds(prev => ({ ...prev, [cat]: id }))}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between pt-6 border-t border-slate-100/60 relative z-10">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedPage(activePage);
+                    }}
+                    className="group/btn flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-brand-600 hover:text-brand-700 transition-colors"
+                  >
+                    Edit {activePage.title}
+                    <ChevronRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
+                  </button>
+                  <div className="flex items-center gap-2 text-[9px] font-bold text-slate-300 uppercase tracking-widest">
+                    {pagesInCategory.length} Pages
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })
+        )}
+
+        {!isLoading && filteredPages.length === 0 && (
+          <div className="col-span-full py-20 text-center">
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+              <Search size={24} />
+            </div>
+            <h3 className="text-lg font-bold text-slate-800">No pages found</h3>
+            <p className="text-slate-400 text-sm">Try searching for something else.</p>
+          </div>
+        )}
       </div>
     </motion.div>
   );
