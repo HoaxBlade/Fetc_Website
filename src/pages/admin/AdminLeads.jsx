@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { UserCheck, Search, Mail, Calendar, Loader2, CheckCircle, Clock } from 'lucide-react';
+import { UserCheck, Search, Mail, Calendar, Loader2, CheckCircle, Clock, RotateCcw, Trash2 } from 'lucide-react';
 
 const AdminLeads = () => {
   const [leads, setLeads] = useState([]);
@@ -35,6 +35,21 @@ const AdminLeads = () => {
       }
     } catch (err) {
       console.error('Update failed:', err);
+    }
+  };
+
+  const deleteLead = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this lead?')) return;
+    try {
+      const response = await fetch(`/api/admin/leads/${id}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (data.success) {
+        setLeads(leads.filter(l => l.id !== id));
+      }
+    } catch (err) {
+      console.error('Delete failed:', err);
     }
   };
 
@@ -131,7 +146,7 @@ const AdminLeads = () => {
                            <Clock size={16} />
                          </button>
                        )}
-                       {lead.status !== 'CLOSED' && (
+                       {lead.status !== 'CLOSED' ? (
                          <button 
                            onClick={() => updateStatus(lead.id, 'CLOSED')}
                            className="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
@@ -139,7 +154,22 @@ const AdminLeads = () => {
                          >
                            <CheckCircle size={16} />
                          </button>
+                       ) : (
+                         <button 
+                           onClick={() => updateStatus(lead.id, 'NEW')}
+                           className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                           title="Re-open Lead"
+                         >
+                           <RotateCcw size={16} />
+                         </button>
                        )}
+                       <button 
+                         onClick={() => deleteLead(lead.id)}
+                         className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                         title="Delete Lead"
+                       >
+                         <Trash2 size={16} />
+                       </button>
                     </div>
                   </td>
                 </tr>

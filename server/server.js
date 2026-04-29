@@ -354,6 +354,18 @@ app.patch('/api/admin/leads/:id', async (req, res) => {
   }
 });
 
+// Admin Delete Lead
+app.delete('/api/admin/leads/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query('DELETE FROM leads WHERE id = $1', [id]);
+    res.json({ success: true, message: 'Lead deleted successfully' });
+  } catch (err) {
+    console.error('Delete lead error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // Lead Capture Route (Public)
 app.post('/api/leads', async (req, res) => {
   const { name, email, phone, subject, message, userId } = req.body;
