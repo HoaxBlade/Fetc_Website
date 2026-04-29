@@ -92,7 +92,7 @@ const UserLayout = () => {
       </div>
 
       {/* Mobile Toolbar */}
-      <div className="lg:hidden fixed top-24 left-6 right-6 z-20 flex items-center justify-between">
+      <div className="lg:hidden fixed top-32 left-6 right-6 z-[2000] flex items-center justify-between">
         <button 
           onClick={() => setIsSidebarOpen(true)}
           className="p-4 bg-white/70 backdrop-blur-xl border border-white/80 rounded-[1.5rem] shadow-xl text-slate-600 hover:text-brand-600 transition-all"
@@ -131,14 +131,14 @@ const UserLayout = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsSidebarOpen(false)}
-              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[4000] lg:hidden"
             />
             <motion.aside 
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-24 left-6 right-6 md:left-auto md:right-6 md:w-[320px] h-fit bg-white/80 backdrop-blur-3xl z-50 rounded-[2.5rem] shadow-2xl lg:hidden flex flex-col overflow-hidden"
+              className="fixed top-32 left-6 right-6 md:left-auto md:right-6 md:w-[320px] h-fit bg-white/80 backdrop-blur-3xl z-[5000] rounded-[2.5rem] shadow-2xl lg:hidden flex flex-col overflow-hidden"
             >
                <motion.div 
                 animate={{ scale: [1, 1.1, 1], x: [0, 15, 0] }}
