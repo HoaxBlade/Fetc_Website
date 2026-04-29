@@ -172,6 +172,7 @@ export default function CareerAssessmentPage() {
                 </div>
               </div>
             </div>
+          </div>
         </motion.div>
 
         {/* --- MAIN DASHBOARD CONTAINER --- */}
@@ -422,7 +423,6 @@ export default function CareerAssessmentPage() {
                 </motion.div>
               )}
             </AnimatePresence>
->>>>>>> 274be88 (carrer assesment chnages)
           </div>
         </div>
 
