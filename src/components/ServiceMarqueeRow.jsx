@@ -79,20 +79,9 @@ function ServiceMarqueeRow({
         transition={{ duration: 0.8, ease: "easeOut" }}
         className={`relative overflow-hidden py-12 md:py-20 ${bgColor}`}
       >
-        {/* Subtle Textural Grain Overaly */}
-        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1e293b 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }}></div>
-
-        {/* Decorative Background Elements (Lava Lamp) */}
-        <div className="absolute inset-0 z-0 overflow-hidden">
-          {/* Top Linker Blob (for blending with previous section) */}
-          <div className="absolute -top-48 left-1/3 h-96 w-[600px] rounded-full bg-brand-200/20 blur-[150px]"></div>
-
-          {/* Main Decorative Blobs */}
-          <div className="absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-brand-200/40 blur-[120px]"></div>
-          <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-teal-200/30 blur-[120px]"></div>
-
-          {/* Bottom Linker Blob (for blending with next section) */}
-          <div className="absolute -bottom-48 right-1/3 h-96 w-[600px] rounded-full bg-blue-100/20 blur-[150px]"></div>
+        {/* Fresh Gradient Block (Single soft glow) */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-400/5 rounded-full blur-[150px]"></div>
         </div>
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 md:px-6">
@@ -296,7 +285,7 @@ function ServiceMarqueeRow({
             </div>
           </div>
         ) : (
-          <div className={`relative flex w-full overflow-hidden rounded-[2rem] shadow-inner ring-1 ring-slate-100/50 before:absolute before:inset-y-0 before:left-0 before:z-10 before:w-24 before:bg-gradient-to-r ${beforeMaskString(bgColor)} after:absolute after:inset-y-0 after:right-0 after:z-10 after:w-24 after:bg-gradient-to-l ${afterMaskString(bgColor)}`}>
+          <div className={`relative flex w-full overflow-hidden rounded-[2rem] shadow-inner ring-1 ring-slate-100/50`}>
             <div className="group flex w-max gap-8 px-4 py-8 animate-marquee-horizontal hover:[animation-play-state:paused] md:px-6">
               {scrollingItems.map((service, idx) => renderCard(service, idx))}
             </div>
@@ -305,21 +294,6 @@ function ServiceMarqueeRow({
       </div>
     </motion.section>
   );
-}
-
-// Helpers for the Tailwind dynamic edge masks
-function beforeMaskString(bg) {
-  if (bg === "bg-white") return "before:from-white before:to-transparent";
-  if (bg === "bg-[#F5F5F7]") return "before:from-[#F5F5F7] before:to-transparent";
-  if (bg === "bg-slate-50") return "before:from-slate-50 before:to-transparent";
-  return "";
-}
-
-function afterMaskString(bg) {
-  if (bg === "bg-white") return "after:from-white after:to-transparent";
-  if (bg === "bg-[#F5F5F7]") return "after:from-[#F5F5F7] after:to-transparent";
-  if (bg === "bg-slate-50") return "after:from-slate-50 after:to-transparent";
-  return "";
 }
 
 export default ServiceMarqueeRow;

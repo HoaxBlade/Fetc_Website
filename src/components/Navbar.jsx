@@ -55,7 +55,7 @@ function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur"
+      className="sticky top-0 z-[2000] border-b border-slate-200 bg-white/95 backdrop-blur"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
         <Link to="/" className="flex items-center gap-2 text-lg font-bold text-brand-700 md:text-xl">

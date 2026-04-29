@@ -3,7 +3,7 @@ import { Outlet, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, FileText, Share2,
-  Zap, Ticket, Menu, X, BookOpen
+  Zap, Ticket, Menu, X
 } from 'lucide-react';
 
 const AdminLayout = () => {

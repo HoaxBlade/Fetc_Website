@@ -82,7 +82,12 @@ const Hero = ({ content: propsContent }) => {
             animate={{ scale: 1, opacity: 0.8 }}
             transition={{ duration: 1.2 }}
             src={content.bgImage || banner}
-            alt="UK Education Banner"
+            onError={(e) => {
+              if (e.target.src !== banner) {
+                e.target.src = banner;
+              }
+            }}
+            alt="Hero Banner"
             className="w-full h-full object-cover object-center lg:object-[center_25%]"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-white" />

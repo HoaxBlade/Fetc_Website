@@ -1,5 +1,6 @@
 const { Client } = require('pg');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const client = new Client({
@@ -305,6 +306,47 @@ async function seed(externalDb) {
     `;
     await database.query(query, [content.title, fullSlug, JSON.stringify(content)]);
     console.log(`Seeded Exam: ${fullSlug}`);
+  }
+
+  // --- Gallery Auto Seeding ---
+  try {
+    const officeImagesDir = path.join(__dirname, '..', 'public', 'assets', 'office-images');
+    if (fs.existsSync(officeImagesDir)) {
+      const files = fs.readdirSync(officeImagesDir);
+      const galleryImages = files
+        .filter(file => file.match(/\.(jpg|jpeg|png|gif|webp)$/i))
+        .map(file => {
+          const title = file
+            .replace(/\.[^/.]+$/, "")
+            .split(/[-_ ]+/)
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+
+          return {
+            src: `/assets/office-images/${file}`,
+            title: title,
+            category: "Infrastructure"
+          };
+        });
+
+      // Special sorting: keep some recognizable ones at the start
+      galleryImages.sort((a, b) => {
+        if (a.src.includes('exterior')) return -1;
+        if (b.src.includes('exterior')) return 1;
+        return 0;
+      });
+
+      const galleryContent = { images: galleryImages };
+      const galleryQuery = `
+        INSERT INTO pages (title, slug, content, status) 
+        VALUES ($1, $2, $3, 'PUBLISHED') 
+        ON CONFLICT (slug) DO UPDATE SET content = EXCLUDED.content, title = EXCLUDED.title;
+      `;
+      await database.query(galleryQuery, ['Gallery', '/gallery', JSON.stringify(galleryContent)]);
+      console.log(`Seeded: /gallery with ${galleryImages.length} images (Auto-scanned)`);
+    }
+  } catch (err) {
+    console.warn('Gallery auto-seeding skipped or failed:', err.message);
   }
 
   console.log('Seeding completed successfully!');

@@ -1,20 +1,12 @@
-const { Client } = require('pg');
 const fs = require('fs');
 const path = require('path');
+const db = require('./db');
 
-const client = new Client({
-  user: 'ayushranjan',
-  host: 'localhost',
-  database: 'fetc_db',
-  password: '',
-  port: 5432,
-});
-
+const pathPrefix = "/assets/office-images/";
 const officeImagesDir = path.join(__dirname, '..', 'public', 'assets', 'office-images');
 
 async function seed() {
-  await client.connect();
-  console.log('Connected to database');
+  console.log('Starting automatic gallery seeding...');
 
   try {
     const files = fs.readdirSync(officeImagesDir);
@@ -54,13 +46,12 @@ async function seed() {
       ON CONFLICT (slug) DO UPDATE SET content = EXCLUDED.content, title = EXCLUDED.title;
     `;
     
-    await client.query(query, ['Gallery', '/gallery', JSON.stringify(galleryContent)]);
+    await db.query(query, ['Gallery', '/gallery', JSON.stringify(galleryContent)]);
     console.log(`Seeded: /gallery with ${galleryImages.length} images`);
 
   } catch (err) {
     console.error('Error during seeding:', err);
   } finally {
-    await client.end();
     console.log('Gallery seeding completed!');
   }
 }

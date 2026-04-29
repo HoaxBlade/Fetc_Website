@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, Plus, Search, Calendar, MessageSquare, Loader2, X, Edit, Save, Globe, Info, ImageIcon, User, Tag } from 'lucide-react';
+import { Share2, Plus, Search, Calendar, Loader2, Save, Globe } from 'lucide-react';
 
 const AdminPosts = () => {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPost, setSelectedPost] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newPostData, setNewPostData] = useState({ title: "", slug: "" });
   const [isSaving, setIsSaving] = useState(false);
@@ -101,7 +100,6 @@ const AdminPosts = () => {
                 <motion.div
                   key={post.id}
                   whileHover={{ y: -4, scale: 1.01 }}
-                  onClick={() => setSelectedPost(post)}
                   className="glass-card rounded-[2rem] p-8 transition-all cursor-pointer group relative active:scale-[0.99] border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)]"
                 >
                   <div className="flex justify-between items-start mb-8 relative z-10 mt-2">
@@ -221,7 +219,5 @@ const AdminPosts = () => {
     </motion.div>
   );
 };
-
-const FileText = ({ size, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>;
 
 export default AdminPosts;

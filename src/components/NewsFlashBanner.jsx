@@ -26,7 +26,7 @@ const NewsFlashBanner = () => {
   const tickerText = news.map(item => item.content).join('      •      ');
 
   return (
-    <div className="bg-amber-400 border-b border-amber-500/20 relative overflow-hidden z-[45] h-10 flex items-center">
+    <div className="bg-amber-400 border-b border-amber-500/20 relative overflow-hidden z-[1500] h-10 flex items-center">
       <div className="w-full flex items-center h-full px-4 sm:px-6">
 
         {/* Persistent Icon */}
