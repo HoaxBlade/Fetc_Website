@@ -73,8 +73,8 @@ const AdminLayout = () => {
         <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-indigo-100/10 rounded-full blur-[100px]" />
       </div>
 
-      {/* Mobile Header Overlay */}
-      <div className="lg:hidden fixed top-8 left-8 right-8 z-[100] flex items-center justify-between">
+      {/* Mobile Header Overlay - Adjusted for main Navbar presence */}
+      <div className="lg:hidden fixed top-24 left-8 right-8 z-[4000] flex items-center justify-between">
         <button
           onClick={() => setIsSidebarOpen(true)}
           className="p-5 glass-card backdrop-blur-3xl border border-white/80 rounded-[2rem] shadow-2xl text-slate-800 hover:text-brand-600 transition-all active:scale-90"
@@ -111,14 +111,14 @@ const AdminLayout = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsSidebarOpen(false)}
-              className="fixed inset-0 bg-slate-900/30 backdrop-blur-md z-[1000] lg:hidden"
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[5000] lg:hidden"
             />
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed inset-y-8 left-8 w-[300px] glass backdrop-blur-[40px] z-[1001] rounded-[3.5rem] shadow-[0_40px_80px_rgba(0,0,0,0.2)] lg:hidden flex flex-col overflow-hidden border border-white/50"
+              className="fixed inset-y-0 left-0 w-[300px] bg-white/80 backdrop-blur-2xl lg:hidden flex flex-col overflow-hidden border-r border-white/20 z-[5001] shadow-2xl"
             >
               <div className="relative z-10 h-full">
                 <SidebarContent />
@@ -130,7 +130,7 @@ const AdminLayout = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 h-screen overflow-y-auto relative z-10 custom-scrollbar scroll-smooth">
-        <div className="p-10 md:p-14 lg:p-20 pb-80 min-h-full">
+        <div className="pt-40 pb-80 px-6 md:p-14 lg:p-20 min-h-full">
           <Outlet />
         </div>
       </main>

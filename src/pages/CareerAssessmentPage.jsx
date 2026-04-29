@@ -179,8 +179,8 @@ export default function CareerAssessmentPage() {
         <div className="bg-white rounded-[3rem] border border-slate-200/80 shadow-sm min-h-[700px] flex flex-col overflow-hidden">
 
           {/* Rounded Segmented Navigation */}
-          <div className="w-full border-b border-slate-100 p-4 flex justify-center">
-            <div className="flex bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
+          <div className="w-full border-b border-slate-100 px-8 py-4 overflow-x-auto no-scrollbar flex md:justify-center">
+            <div className="flex bg-slate-50 p-1.5 rounded-2xl border border-slate-100 shrink-0">
               {TABS.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -188,7 +188,7 @@ export default function CareerAssessmentPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`relative flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${isActive ? 'text-blue-700' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50'
+                    className={`relative flex items-center gap-2.5 px-4 md:px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${isActive ? 'text-blue-700' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50'
                       }`}
                   >
                     {isActive && (
@@ -275,7 +275,7 @@ export default function CareerAssessmentPage() {
                       <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="70%" data={COMPETENCY_DATA}>
                           <PolarGrid stroke="#f1f5f9" strokeWidth={2} />
-                          <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 13, fontWeight: 600 }} />
+                          <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 11, fontWeight: 600 }} />
                           <Tooltip content={<CustomTooltip />} />
                           <Radar name="Score" dataKey="score" stroke="#3b82f6" strokeWidth={3} fill="#3b82f6" fillOpacity={0.15} />
                         </RadarChart>

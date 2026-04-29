@@ -74,7 +74,7 @@ const Hero = ({ content: propsContent }) => {
       />
 
       {/* Banner & Content Container */}
-      <div className="relative w-full min-h-[650px] lg:h-[800px] flex items-center justify-center overflow-hidden">
+      <div className="relative w-full min-h-[max(700px,90vh)] lg:min-h-[850px] flex items-center justify-center overflow-hidden py-16 md:py-24 lg:py-0">
         {/* Banner Image Background */}
         <div className="absolute inset-0 z-0">
           <motion.img
@@ -90,7 +90,7 @@ const Hero = ({ content: propsContent }) => {
             alt="Hero Banner"
             className="w-full h-full object-cover object-center lg:object-[center_25%]"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-white" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-white/90" />
         </div>
 
         {/* Floating Glass Cards - Integrated with banner */}
@@ -111,8 +111,8 @@ const Hero = ({ content: propsContent }) => {
         </motion.div>
 
         {/* Content Box - Positioned DIRECTLY on Top */}
-        <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10 w-full">
-          <div className="max-w-2xl space-y-6 text-center lg:text-left bg-white/70 backdrop-blur-3xl p-6 md:p-10 rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-white/60 mx-auto lg:mx-0 relative overflow-hidden group">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 w-full">
+          <div className="max-w-3xl space-y-6 text-center lg:text-left bg-white/75 backdrop-blur-[40px] p-8 md:p-12 lg:p-16 rounded-[2.5rem] md:rounded-[4rem] shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-white/80 mx-auto lg:mx-0 relative overflow-hidden group">
             {/* Subtle light leak effect */}
             <div className="absolute -top-24 -left-24 w-48 h-48 bg-brand-200/20 rounded-full blur-[60px] pointer-events-none group-hover:bg-brand-300/30 transition-colors duration-700" />
 

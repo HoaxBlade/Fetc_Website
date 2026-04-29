@@ -29,20 +29,20 @@ const UserLayout = () => {
   };
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-fit overflow-hidden">
-      <div className="p-8 border-b border-slate-100 flex items-center justify-between">
+    <div className="flex flex-col h-fit w-full overflow-hidden">
+      <div className="p-6 md:p-8 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-xl shadow-slate-200">
+          <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-xl shadow-slate-200 shrink-0">
              <User className="text-white" size={20} />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 tracking-tight">My<span className="text-brand-600"> Account</span></h2>
+          <h2 className="text-xl font-bold text-slate-800 tracking-tight whitespace-nowrap">My<span className="text-brand-600"> Account</span></h2>
         </div>
         <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all">
           <X size={20} />
         </button>
       </div>
 
-      <nav className="flex-1 p-6 space-y-1.5 overflow-y-auto custom-scrollbar">
+      <nav className="p-6 space-y-1.5 overflow-y-auto custom-scrollbar">
         {sidebarItems.map((item, idx) => (
           <NavLink
             key={idx}
@@ -138,7 +138,7 @@ const UserLayout = () => {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-6 left-6 w-[280px] bg-white/80 backdrop-blur-3xl z-50 rounded-[2.5rem] shadow-2xl lg:hidden flex flex-col overflow-hidden relative"
+              className="fixed top-24 left-6 right-6 md:left-auto md:right-6 md:w-[320px] h-fit bg-white/80 backdrop-blur-3xl z-50 rounded-[2.5rem] shadow-2xl lg:hidden flex flex-col overflow-hidden"
             >
                <motion.div 
                 animate={{ scale: [1, 1.1, 1], x: [0, 15, 0] }}
@@ -155,7 +155,7 @@ const UserLayout = () => {
 
       {/* Content */}
       <main className="flex-1 relative z-10">
-        <div className="p-6 md:p-8 pt-28 lg:pt-8 min-h-screen">
+        <div className="p-6 md:p-8 pt-44 lg:pt-8 min-h-screen">
           <Outlet />
         </div>
       </main>

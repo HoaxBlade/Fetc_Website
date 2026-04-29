@@ -48,7 +48,7 @@ const ProfilePage = () => {
     };
 
     fetchProfile();
-  }, [userData.id, isEditing, userData]);
+  }, [userData.id, isEditing]); // Removed userData to prevent infinite loop
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
