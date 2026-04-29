@@ -1,8 +1,27 @@
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { Phone } from "lucide-react";
 import IASBadge from "./IASBadge";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function Footer() {
+  const [dynamicPages, setDynamicPages] = useState([]);
+
+  useEffect(() => {
+    const fetchDynamicPages = async () => {
+      try {
+        const response = await fetch('/api/nav-pages');
+        const data = await response.json();
+        if (data.success) {
+          setDynamicPages(data.pages);
+        }
+      } catch (err) {
+        console.error('Failed to fetch footer pages:', err);
+      }
+    };
+    fetchDynamicPages();
+  }, []);
+
   return (
     <footer className="bg-brand-800 text-white border-none">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-3 lg:grid-cols-6 md:px-6">
@@ -111,6 +130,21 @@ function Footer() {
             <IASBadge />
           </div>
         </div>
+
+        {dynamicPages.length > 0 && (
+          <div>
+            <h4 className="font-semibold text-brand-400">Resources</h4>
+            <ul className="mt-2 space-y-2 text-sm text-slate-200">
+              {dynamicPages.map((page) => (
+                <li key={page.slug}>
+                  <Link to={page.slug} className="hover:text-slate-50 transition-colors">
+                    {page.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </footer>
   );

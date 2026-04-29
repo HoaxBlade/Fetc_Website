@@ -518,7 +518,7 @@ app.post('/api/admin/pages', async (req, res) => {
 // PATCH /api/admin/pages/:id - Update page metadata/status
 app.patch('/api/admin/pages/:id', async (req, res) => {
   const { id } = req.params;
-  const { title, status, seo_title, seo_description, content } = req.body;
+  const { title, status, seo_title, seo_description, content, show_in_nav } = req.body;
   try {
     const result = await db.query(
       `UPDATE pages 
@@ -527,12 +527,27 @@ app.patch('/api/admin/pages/:id', async (req, res) => {
            seo_title = COALESCE($3, seo_title), 
            seo_description = COALESCE($4, seo_description), 
            content = COALESCE($5, content),
+           show_in_nav = COALESCE($6, show_in_nav),
            updated_at = CURRENT_TIMESTAMP 
-       WHERE id = $6 RETURNING *`,
-      [title, status, seo_title, seo_description, content ? JSON.stringify(content) : null, id]
+       WHERE id = $7 RETURNING *`,
+      [title, status, seo_title, seo_description, content ? JSON.stringify(content) : null, show_in_nav, id]
     );
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Page not found' });
     res.json({ success: true, page: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+// GET /api/nav-pages - List all pages for navbar/footer
+app.get('/api/nav-pages', async (req, res) => {
+  try {
+    const result = await db.query(
+      'SELECT title, slug FROM pages WHERE status = $1 AND show_in_nav = $2 ORDER BY title ASC',
+      ['PUBLISHED', true]
+    );
+    res.json({ success: true, pages: result.rows });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Database error' });

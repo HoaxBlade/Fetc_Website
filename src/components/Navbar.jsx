@@ -10,6 +10,19 @@ function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeMobileMenu, setActiveMobileMenu] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [dynamicPages, setDynamicPages] = useState([]);
+
+  const fetchDynamicPages = async () => {
+    try {
+      const response = await fetch('/api/nav-pages');
+      const data = await response.json();
+      if (data.success) {
+        setDynamicPages(data.pages);
+      }
+    } catch (err) {
+      console.error('Failed to fetch nav pages:', err);
+    }
+  };
 
   const checkUser = () => {
     const user = localStorage.getItem("user");
@@ -30,6 +43,7 @@ function Navbar() {
 
   useEffect(() => {
     checkUser();
+    fetchDynamicPages();
     
     // Listen for custom login/logout events to sync components
     window.addEventListener("user-login", checkUser);
@@ -109,6 +123,34 @@ function Navbar() {
                 )}
               </div>
             )))}
+
+            {/* Dynamic Pages Dropdown */}
+            {dynamicPages.length > 0 && (
+              <div className="group relative">
+                <button className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold text-brand-600 transition hover:bg-brand-50">
+                  More <ChevronDown size={16} />
+                </button>
+                <div className="pointer-events-none absolute left-0 top-full w-56 pt-2 opacity-0 transition-opacity duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
+                  <div className="translate-y-2 rounded-xl border border-slate-200 bg-white p-2 shadow-soft transition-transform duration-200 group-hover:translate-y-0">
+                    {dynamicPages.map((page) => (
+                      <NavLink
+                        key={page.slug}
+                        to={page.slug}
+                        className={({ isActive }) =>
+                          `block rounded-lg px-4 py-2.5 text-sm font-medium transition ${
+                            isActive
+                              ? "bg-brand-50 text-brand-700"
+                              : "text-slate-700 hover:bg-slate-50"
+                          }`
+                        }
+                      >
+                        {page.title}
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </nav>
 
           <div className="hidden md:block border-l border-slate-200 pl-4 ml-1">
