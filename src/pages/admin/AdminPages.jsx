@@ -72,7 +72,20 @@ const AdminPages = () => {
       const response = await fetch('/api/admin/pages');
       const data = await response.json();
       if (data.success) {
-        setPages(data.pages);
+        const processedPages = data.pages.map(p => {
+          let content = p.content;
+          while (typeof content === 'string') {
+            try {
+              const next = JSON.parse(content);
+              if (typeof next === 'string' && next === content) break;
+              content = next;
+            } catch (e) {
+              break;
+            }
+          }
+          return { ...p, content: content || { sections: [] } };
+        });
+        setPages(processedPages);
       }
     } catch (err) {
       console.error('Failed to fetch pages:', err);
@@ -101,7 +114,18 @@ const AdminPages = () => {
       });
       const data = await response.json();
       if (data.success) {
-        setPages(pages.map(p => p.id === id ? data.page : p));
+        let content = data.page.content;
+        while (typeof content === 'string') {
+          try {
+            const next = JSON.parse(content);
+            if (typeof next === 'string' && next === content) break;
+            content = next;
+          } catch (e) {
+            break;
+          }
+        }
+        const cleanPage = { ...data.page, content: content || { sections: [] } };
+        setPages(pages.map(p => p.id === id ? cleanPage : p));
         setSelectedPage(null); // Close modal on success
       }
     } catch (err) {

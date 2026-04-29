@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { Loader2, ArrowLeft, Globe, AlertCircle } from 'lucide-react';
 
 const GenericPage = () => {
-  const { '*': slug } = useParams();
+  const params = useParams();
+  const slug = params['*'] || params.slug;
   const [page, setPage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,7 +20,18 @@ const GenericPage = () => {
         const data = await response.json();
         
         if (data.success) {
-          setPage(data.page);
+          let parsedContent = data.page.content;
+          // Robust multi-pass parsing for double-stringified JSON
+          while (typeof parsedContent === 'string') {
+            try {
+              const next = JSON.parse(parsedContent);
+              if (typeof next === 'string' && next === parsedContent) break; // Avoid infinite loop on simple strings
+              parsedContent = next;
+            } catch (e) {
+              break;
+            }
+          }
+          setPage({ ...data.page, content: parsedContent });
         } else {
           setError(data.message || 'Page not found');
         }
@@ -91,53 +103,73 @@ const GenericPage = () => {
       </section>
 
       {/* Page Content Rendering */}
-      <section className="max-w-4xl mx-auto px-4">
-        {page.content && typeof page.content === 'object' ? (
-          <div className="space-y-16">
-            {/* Generic Section Rendering */}
-            {page.content.sections && Array.isArray(page.content.sections) ? (
-              page.content.sections.map((section, idx) => (
-                <motion.div 
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="prose prose-slate prose-lg max-w-none"
-                >
-                  {section.type === 'text' && (
-                    <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm shadow-slate-200/50">
-                      <h2 className="text-2xl font-bold text-slate-900 mb-4">{section.title}</h2>
-                      <div className="text-slate-600 leading-relaxed whitespace-pre-wrap">
+      <section className="max-w-5xl mx-auto px-4">
+        {(() => {
+          // Robustly extract sections regardless of nesting
+          let sections = page.content?.sections || [];
+          if (page.content?.content?.sections) sections = page.content.content.sections;
+          
+          const hasSections = Array.isArray(sections) && sections.length > 0;
+
+          if (hasSections) {
+            return (
+              <div className="space-y-20">
+                {sections.map((section, idx) => (
+                  <motion.div 
+                    key={idx}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                  >
+                    {section.type === 'text' && (
+                      <div className="bg-white p-12 md:p-16 rounded-[3rem] border border-slate-100 shadow-sm shadow-slate-200/50">
+                        <h2 className="text-3xl font-black text-slate-900 mb-8 tracking-tight">{section.title}</h2>
+                      <div className="text-slate-600 leading-relaxed whitespace-pre-wrap text-lg">
                         {section.body}
                       </div>
                     </div>
                   )}
                   {section.type === 'image_text' && (
-                    <div className={`flex flex-col ${section.reversed ? 'md:flex-row-reverse' : 'md:flex-row'} gap-12 items-center`}>
-                      <div className="flex-1">
-                        <img src={section.image || 'https://via.placeholder.com/800x600'} alt={section.title} className="rounded-[2.5rem] shadow-2xl w-full object-cover aspect-video" />
+                    <div className={`flex flex-col ${section.reversed ? 'md:flex-row-reverse' : 'md:flex-row'} gap-16 items-center`}>
+                      <div className="flex-1 w-full">
+                        <div className="relative group">
+                          <div className="absolute inset-0 bg-brand-600/10 rounded-[3rem] translate-x-4 translate-y-4 -z-10 group-hover:translate-x-6 group-hover:translate-y-6 transition-transform" />
+                          <img src={section.image || 'https://via.placeholder.com/800x600'} alt={section.title} className="rounded-[3rem] shadow-2xl w-full object-cover aspect-video border-4 border-white" />
+                        </div>
                       </div>
                       <div className="flex-1">
-                        <h2 className="text-3xl font-bold text-slate-900 mb-4">{section.title}</h2>
-                        <p className="text-slate-600 leading-relaxed">{section.body}</p>
+                        <h2 className="text-4xl font-black text-slate-900 mb-6 tracking-tight">{section.title}</h2>
+                        <div className="text-slate-600 leading-relaxed text-lg whitespace-pre-wrap">
+                          {section.body}
+                        </div>
                       </div>
                     </div>
                   )}
                 </motion.div>
-              ))
-            ) : (
-              // Fallback for simple content
-              <div className="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/20 prose prose-slate max-w-none">
-                 <div dangerouslySetInnerHTML={{ __html: typeof page.content === 'string' ? page.content : JSON.stringify(page.content) }} />
+              ))}
+            </div>
+            );
+          } else {
+            return (
+              // 2. Legacy / Unknown Content structure
+              <div className="bg-white p-16 rounded-[3.5rem] border border-slate-100 shadow-2xl shadow-slate-200/40 text-center">
+                <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-8">
+                  <Globe size={32} />
+                </div>
+                <h2 className="text-3xl font-black text-slate-900 mb-4">Content Under Review</h2>
+                <p className="text-slate-500 max-w-lg mx-auto leading-relaxed">
+                  We are currently updating this page's layout to bring you a better experience. 
+                  Please check back shortly or explore our other resources!
+                </p>
+                <div className="mt-10 pt-10 border-t border-slate-50 flex justify-center gap-6">
+                   <Link to="/" className="text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors">Home Page</Link>
+                   <Link to="/contact" className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">Contact Support</Link>
+                </div>
               </div>
-            )}
-          </div>
-        ) : (
-          <div className="py-20 text-center text-slate-400 italic">
-            This page is still being drafted. Check back soon for amazing content!
-          </div>
-        )}
+            );
+          }
+        })()}
       </section>
     </motion.div>
   );

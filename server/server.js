@@ -531,7 +531,7 @@ app.patch('/api/admin/pages/:id', async (req, res) => {
            nav_visibility = COALESCE($7, nav_visibility),
            updated_at = CURRENT_TIMESTAMP 
        WHERE id = $8 RETURNING *`,
-      [title, status, seo_title, seo_description, content ? JSON.stringify(content) : null, show_in_nav, nav_visibility, id]
+      [title, status, seo_title, seo_description, content, show_in_nav, nav_visibility, id]
     );
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Page not found' });
     res.json({ success: true, page: result.rows[0] });
