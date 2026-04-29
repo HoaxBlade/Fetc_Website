@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { UserCheck, Search, Mail, Calendar, Loader2, CheckCircle, Clock, RotateCcw, Trash2 } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { UserCheck, Search, Mail, Calendar, Loader2, CheckCircle, Clock, RotateCcw, Trash2, AlertTriangle, X } from 'lucide-react';
 
 const AdminLeads = () => {
   const [leads, setLeads] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
   const fetchLeads = async () => {
     setIsLoading(true);
@@ -39,7 +41,6 @@ const AdminLeads = () => {
   };
 
   const deleteLead = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this lead?')) return;
     try {
       const response = await fetch(`/api/admin/leads/${id}`, {
         method: 'DELETE',
@@ -47,6 +48,7 @@ const AdminLeads = () => {
       const data = await response.json();
       if (data.success) {
         setLeads(leads.filter(l => l.id !== id));
+        setDeleteConfirm({ show: false, id: null });
       }
     } catch (err) {
       console.error('Delete failed:', err);
@@ -73,7 +75,57 @@ const AdminLeads = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto">
+    <>
+      {/* Confirmation Modal via Portal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {deleteConfirm.show && (
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setDeleteConfirm({ show: false, id: null })}
+                className="fixed inset-0 bg-slate-900/60 backdrop-blur-md"
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative w-full max-w-sm bg-white rounded-[2.5rem] shadow-2xl overflow-hidden"
+              >
+                <div className="p-10 text-center">
+                  <div className="w-20 h-20 bg-rose-50 rounded-[2rem] flex items-center justify-center text-rose-500 mx-auto mb-8 shadow-inner">
+                    <AlertTriangle size={40} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Delete Lead?</h3>
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed mb-10">
+                    This action is permanent and cannot be undone. Are you sure you want to remove this record?
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <button 
+                      onClick={() => deleteLead(deleteConfirm.id)}
+                      className="w-full px-8 py-4 bg-rose-500 text-white rounded-2xl font-bold text-sm hover:bg-rose-600 shadow-xl shadow-rose-200 transition-all hover:scale-[1.02] active:scale-95"
+                    >
+                      Yes, Delete Lead
+                    </button>
+                    <button 
+                      onClick={() => setDeleteConfirm({ show: false, id: null })}
+                      className="w-full px-8 py-4 bg-white text-slate-700 border-2 border-slate-100 rounded-2xl font-bold text-sm hover:bg-slate-50 hover:border-slate-200 hover:shadow-sm transition-all active:scale-95"
+                    >
+                      Keep Record
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto">
+
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Leads Dashboard</h1>
@@ -164,7 +216,7 @@ const AdminLeads = () => {
                          </button>
                        )}
                        <button 
-                         onClick={() => deleteLead(lead.id)}
+                         onClick={() => setDeleteConfirm({ show: true, id: lead.id })}
                          className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
                          title="Delete Lead"
                        >
@@ -189,7 +241,8 @@ const AdminLeads = () => {
           </table>
         </div>
       </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 };
 
