@@ -22,6 +22,7 @@ import StudyAbroadPage from "./pages/StudyAbroadPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import RefundPage from "./pages/RefundPage";
+import GenericPage from "./pages/GenericPage";
 import ScrollToTop from "./components/ScrollToTop";
 import ScrollProgressBar from "./components/ScrollProgressBar";
 import NewsFlashBanner from "./components/NewsFlashBanner";
@@ -70,6 +71,11 @@ function AppContent() {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/refund" element={<RefundPage />} />
+          
+          {/* Dynamic Catch-all Page Route */}
+          <Route path="/p/*" element={<GenericPage />} />
+          {/* Fallback for top-level slugs like /happy */}
+          <Route path="/:slug" element={<GenericPage />} />
           
           {/* Admin Nested Routes */}
           <Route path="/admin" element={<AdminLayout />}>

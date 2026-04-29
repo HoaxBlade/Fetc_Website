@@ -55,7 +55,7 @@ const AdminPages = () => {
   const [activeTab, setActiveTab] = useState("settings"); // "settings" or "content"
   const [isSaving, setIsSaving] = useState(false);
 
-  const categories = ["Main Pages", "Study Abroad", "Exams & Training", "Assessment"];
+  const categories = ["Main Pages", "Study Abroad", "Exams & Training", "Assessment", "Other"];
   const [groupSelectedPageIds, setGroupSelectedPageIds] = useState({});
 
   const getCategory = (slug) => {
@@ -135,30 +135,57 @@ const AdminPages = () => {
   };
 
   const handleContentChange = (section, field, value) => {
-    let updatedContent;
+    setSelectedPage(prev => {
+      const newContent = { ...(prev.content || {}) };
+      if (section) {
+        newContent[section] = { ...(newContent[section] || {}), [field]: value };
+      } else if (field === null) {
+        // Direct update of a complex section
+        newContent[section] = value;
+      } else {
+        newContent[field] = value;
+      }
+      return { ...prev, content: newContent };
+    });
+  };
 
-    if (!section) {
-      // Top-level field update (e.g. universities array)
-      updatedContent = {
-        ...selectedPage.content,
-        [field]: value
+  const addSection = (type) => {
+    setSelectedPage(prev => {
+      const currentSections = prev.content?.sections || [];
+      const newSection = {
+        type,
+        title: "New Section Title",
+        body: "Write your content here...",
+        image: type === 'image_text' ? "" : undefined,
+        reversed: type === 'image_text' ? false : undefined
       };
-    } else if (field === null) {
-      // Direct update of a complex section
-      updatedContent = {
-        ...selectedPage.content,
-        [section]: value
+      return {
+        ...prev,
+        content: { ...prev.content, sections: [...currentSections, newSection] }
       };
-    } else {
-      updatedContent = {
-        ...selectedPage.content,
-        [section]: {
-          ...(selectedPage.content[section] || {}),
-          [field]: value
-        }
+    });
+  };
+
+  const updateSection = (index, field, value) => {
+    setSelectedPage(prev => {
+      const currentSections = [...(prev.content?.sections || [])];
+      currentSections[index] = { ...currentSections[index], [field]: value };
+      return {
+        ...prev,
+        content: { ...prev.content, sections: currentSections }
       };
-    }
-    setSelectedPage({ ...selectedPage, content: updatedContent });
+    });
+  };
+
+  const removeSection = (index) => {
+    setSelectedPage(prev => {
+      const currentSections = [...(prev.content?.sections || [])];
+      currentSections.splice(index, 1);
+      return {
+        ...prev,
+        content: { ...prev.content, sections: currentSections }
+      };
+    });
   };
 
   const addCustomSection = () => {
@@ -1514,11 +1541,122 @@ const AdminPages = () => {
                         </div>
                       )}
 
-                      {/* FALLBACK MESSAGE */}
+                      {/* DYNAMIC SECTION EDITOR FOR GENERIC PAGES */}
                       {selectedPage.slug !== '/' && selectedPage.slug !== '/about/company-profile' && selectedPage.slug.toLowerCase() !== '/contact' && !selectedPage.slug.startsWith('/study-abroad/') && !selectedPage.slug.startsWith('/exam-training/') && selectedPage.slug !== '/gallery' && !selectedPage.slug.includes('career-assessment') && selectedPage.slug !== '/terms' && selectedPage.slug !== '/privacy' && selectedPage.slug !== '/refund' && selectedPage.slug !== '/faq' && (
-                        <div className="py-20 text-center opacity-40">
-                          <Edit size={32} className="mx-auto mb-4 text-slate-300" />
-                          <p className="text-sm font-bold italic text-slate-400 tracking-tight">Content editor for this page is under development.</p>
+                        <div className="space-y-8 pb-20">
+                          <div className="bg-brand-50/50 p-8 rounded-[2rem] border border-brand-100 flex items-center justify-between gap-6">
+                            <div>
+                              <h3 className="text-lg font-bold text-brand-900 mb-1">Custom Page Builder</h3>
+                              <p className="text-xs text-brand-600 font-medium">Add sections to build your custom page layout.</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button 
+                                onClick={() => addSection('text')}
+                                className="px-5 py-3 bg-white text-brand-700 rounded-xl font-bold text-[11px] uppercase tracking-wider border border-brand-200 hover:bg-brand-600 hover:text-white transition-all shadow-sm"
+                              >
+                                + Text Block
+                              </button>
+                              <button 
+                                onClick={() => addSection('image_text')}
+                                className="px-5 py-3 bg-white text-brand-700 rounded-xl font-bold text-[11px] uppercase tracking-wider border border-brand-200 hover:bg-brand-600 hover:text-white transition-all shadow-sm"
+                              >
+                                + Image & Text
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="space-y-6">
+                            {selectedPage.content?.sections?.map((section, idx) => (
+                              <motion.div 
+                                key={idx}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="bg-white border border-slate-100 rounded-[2rem] p-8 shadow-sm group relative"
+                              >
+                                <button 
+                                  onClick={() => removeSection(idx)}
+                                  className="absolute top-6 right-6 p-2 text-rose-300 hover:text-rose-500 transition-colors"
+                                >
+                                  <X size={18} />
+                                </button>
+
+                                <div className="flex items-center gap-2 mb-6">
+                                  <span className="px-3 py-1 bg-slate-50 text-slate-400 rounded-lg text-[9px] font-black uppercase tracking-widest border border-slate-100">
+                                    Section #{idx + 1} — {section.type}
+                                  </span>
+                                </div>
+
+                                <div className="space-y-4">
+                                  <input 
+                                    className="w-full px-0 text-xl font-bold text-slate-900 placeholder:text-slate-300 border-none focus:ring-0 outline-none"
+                                    placeholder="Enter section title..."
+                                    value={section.title}
+                                    onChange={(e) => updateSection(idx, 'title', e.target.value)}
+                                  />
+                                  
+                                  {section.type === 'image_text' && (
+                                    <div className="grid grid-cols-2 gap-6 items-start">
+                                      <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Section Image</label>
+                                        <div className="relative group aspect-video bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl overflow-hidden flex flex-col items-center justify-center text-slate-400">
+                                          {section.image ? (
+                                            <img src={section.image} className="w-full h-full object-cover" alt="Section" />
+                                          ) : (
+                                            <>
+                                              <ImageIcon size={24} className="mb-2" />
+                                              <span className="text-[10px] font-bold">No image selected</span>
+                                            </>
+                                          )}
+                                          <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+                                            <label className="p-3 bg-white text-slate-900 rounded-full cursor-pointer shadow-xl">
+                                              <Edit size={18} />
+                                              <input 
+                                                type="file" 
+                                                className="hidden" 
+                                                accept="image/*" 
+                                                onChange={(e) => {
+                                                  const file = e.target.files?.[0];
+                                                  if (file) {
+                                                    const formData = new FormData();
+                                                    formData.append('image', file);
+                                                    fetch('/api/admin/upload', { method: 'POST', body: formData })
+                                                      .then(res => res.json())
+                                                      .then(data => data.success && updateSection(idx, 'image', data.url));
+                                                  }
+                                                }} 
+                                              />
+                                            </label>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <textarea 
+                                        className="w-full h-full min-h-[150px] p-6 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium text-slate-600 focus:border-brand-200 outline-none transition-colors resize-none"
+                                        placeholder="Write section body content..."
+                                        value={section.body}
+                                        onChange={(e) => updateSection(idx, 'body', e.target.value)}
+                                      />
+                                    </div>
+                                  )}
+
+                                  {section.type === 'text' && (
+                                    <textarea 
+                                      className="w-full min-h-[200px] p-6 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium text-slate-600 focus:border-brand-200 outline-none transition-colors resize-none"
+                                      placeholder="Write section body content..."
+                                      value={section.body}
+                                      onChange={(e) => updateSection(idx, 'body', e.target.value)}
+                                    />
+                                  )}
+                                </div>
+                              </motion.div>
+                            ))}
+
+                            {(!selectedPage.content?.sections || selectedPage.content.sections.length === 0) && (
+                              <div className="py-20 text-center border-2 border-dashed border-slate-200 rounded-[3rem] opacity-40">
+                                <Plus size={32} className="mx-auto mb-4 text-slate-300" />
+                                <p className="text-sm font-bold italic text-slate-400 tracking-tight">Your page is empty. Start adding sections!</p>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
