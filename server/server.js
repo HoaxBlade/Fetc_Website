@@ -518,7 +518,7 @@ app.post('/api/admin/pages', async (req, res) => {
 // PATCH /api/admin/pages/:id - Update page metadata/status
 app.patch('/api/admin/pages/:id', async (req, res) => {
   const { id } = req.params;
-  const { title, status, seo_title, seo_description, content, show_in_nav } = req.body;
+  const { title, status, seo_title, seo_description, content, show_in_nav, nav_visibility } = req.body;
   try {
     const result = await db.query(
       `UPDATE pages 
@@ -528,9 +528,10 @@ app.patch('/api/admin/pages/:id', async (req, res) => {
            seo_description = COALESCE($4, seo_description), 
            content = COALESCE($5, content),
            show_in_nav = COALESCE($6, show_in_nav),
+           nav_visibility = COALESCE($7, nav_visibility),
            updated_at = CURRENT_TIMESTAMP 
-       WHERE id = $7 RETURNING *`,
-      [title, status, seo_title, seo_description, content ? JSON.stringify(content) : null, show_in_nav, id]
+       WHERE id = $8 RETURNING *`,
+      [title, status, seo_title, seo_description, content ? JSON.stringify(content) : null, show_in_nav, nav_visibility, id]
     );
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Page not found' });
     res.json({ success: true, page: result.rows[0] });
@@ -542,11 +543,22 @@ app.patch('/api/admin/pages/:id', async (req, res) => {
 
 // GET /api/nav-pages - List all pages for navbar/footer
 app.get('/api/nav-pages', async (req, res) => {
+  const { target } = req.query; // 'navbar' or 'footer'
   try {
-    const result = await db.query(
-      'SELECT title, slug FROM pages WHERE status = $1 AND show_in_nav = $2 ORDER BY title ASC',
-      ['PUBLISHED', true]
-    );
+    let query = 'SELECT title, slug FROM pages WHERE status = $1 ';
+    let params = ['PUBLISHED'];
+
+    if (target === 'navbar') {
+      query += "AND (nav_visibility = 'navbar' OR nav_visibility = 'both') ";
+    } else if (target === 'footer') {
+      query += "AND (nav_visibility = 'footer' OR nav_visibility = 'both') ";
+    } else {
+      query += "AND (nav_visibility != 'none' OR show_in_nav = true) ";
+    }
+
+    query += 'ORDER BY title ASC';
+    
+    const result = await db.query(query, params);
     res.json({ success: true, pages: result.rows });
   } catch (err) {
     console.error(err);

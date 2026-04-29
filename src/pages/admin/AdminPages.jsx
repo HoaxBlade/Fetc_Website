@@ -441,32 +441,41 @@ const AdminPages = () => {
                             onChange={(e) => setSelectedPage({ ...selectedPage, slug: e.target.value })}
                           />
                         </div>
-                        <div className="grid grid-cols-2 gap-8">
+                        <div className="space-y-6">
                           <div className="space-y-3">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Visibility Status</label>
-                            <select 
-                              className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 focus:border-brand-200 outline-none transition-colors appearance-none"
-                              value={selectedPage.status}
-                              onChange={(e) => setSelectedPage({ ...selectedPage, status: e.target.value })}
-                            >
-                              <option value="DRAFT">DRAFT</option>
-                              <option value="PUBLISHED">PUBLISHED</option>
-                            </select>
+                            <div className="relative">
+                              <select 
+                                className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 focus:border-brand-200 focus:ring-4 focus:ring-brand-500/5 outline-none transition-all appearance-none cursor-pointer"
+                                value={selectedPage.status}
+                                onChange={(e) => setSelectedPage({ ...selectedPage, status: e.target.value })}
+                              >
+                                <option value="DRAFT">DRAFT (Hidden from website)</option>
+                                <option value="PUBLISHED">PUBLISHED (Live on website)</option>
+                              </select>
+                              <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                <ChevronRight className="rotate-90" size={16} />
+                              </div>
+                            </div>
                           </div>
                           
                           <div className="space-y-3">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Navigation & Footer</label>
-                            <button 
-                              onClick={() => setSelectedPage({ ...selectedPage, show_in_nav: !selectedPage.show_in_nav })}
-                              className={`w-full px-6 py-4 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-3 border-2 ${
-                                selectedPage.show_in_nav 
-                                  ? 'bg-brand-50 border-brand-200 text-brand-700' 
-                                  : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-200'
-                              }`}
-                            >
-                              <div className={`w-2 h-2 rounded-full ${selectedPage.show_in_nav ? 'bg-brand-500 animate-pulse' : 'bg-slate-300'}`} />
-                              {selectedPage.show_in_nav ? 'Added to Navbar & Footer' : 'Add it in Navbar & Footer'}
-                            </button>
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Menu & Footer Placement</label>
+                            <div className="relative">
+                              <select 
+                                className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 focus:border-brand-200 focus:ring-4 focus:ring-brand-500/5 outline-none transition-all appearance-none cursor-pointer"
+                                value={selectedPage.nav_visibility || 'none'}
+                                onChange={(e) => setSelectedPage({ ...selectedPage, nav_visibility: e.target.value })}
+                              >
+                                <option value="none">Don't show in any menus (Private Link)</option>
+                                <option value="navbar">Show in Navbar only</option>
+                                <option value="footer">Show in Footer only</option>
+                                <option value="both">Show in both Navbar & Footer</option>
+                              </select>
+                              <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-brand-500">
+                                <Globe size={18} />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

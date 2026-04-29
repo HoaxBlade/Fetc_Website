@@ -14,7 +14,7 @@ function Navbar() {
 
   const fetchDynamicPages = async () => {
     try {
-      const response = await fetch('/api/nav-pages');
+      const response = await fetch('/api/nav-pages?target=navbar');
       const data = await response.json();
       if (data.success) {
         setDynamicPages(data.pages);
