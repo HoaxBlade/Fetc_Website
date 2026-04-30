@@ -46,99 +46,72 @@ const FAQSection = ({ title, faqs }) => {
 };
 
 const FAQPage = () => {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchFaqs = async () => {
-      try {
-        const response = await fetch('/api/pages/faq');
-        const result = await response.json();
-        if (result.success) setData(result.page);
-      } catch (err) {
-        console.error("Failed to fetch FAQs:", err);
-      }
-    };
-    fetchFaqs();
-  }, []);
-
   const generalFaqs = [
     {
       question: "What services do you offer?",
-      answer: "We provide a comprehensive suite of study abroad services, including personalized counselling to help you choose the right program, expert assistance with university applications and visa processing, pre-departure orientation, and post-arrival support."
+      answer: "We provide comprehensive study abroad services including, counselling, university selection, application assistance, visa processing, pre-departure orientation, and post-arrival support."
     },
     {
       question: "Why should I choose your consultancy over others?",
-      answer: "We have a high success rate, experienced advisors, and strong partnerships with prestigious universities. We provide personalized guidance and continuous support throughout your journey."
+      answer: "Our consultancy boasts a high success rate, personalized guidance from experienced advisors, and partnerships with top universities worldwide. We also offer ongoing support throughout your study abroad journey."
+    }
+  ];
+
+  const applicationFaqs = [
+    {
+      question: "How do I start the application process?",
+      answer: "Begin by scheduling a consultation with one of our advisors. We will assess your academic background, financial background, career goals, and preferences to help you select suitable programs and universities."
+    },
+    {
+      question: "What documents are required for the application?",
+      answer: "Typically, you will need your academic transcripts, financials, a statement of purpose, letters of recommendation, a resume, standardized test scores (if applicable), and proof of language proficiency."
+    },
+    {
+      question: "Do you assist with writing the Statement of Purpose (SOP) and essays?",
+      answer: "Yes, we only write the SOPs. Students just need to provide craft compelling SOPs and essays that reflect your strengths and aspirations."
+    }
+  ];
+
+  const financialFaqs = [
+    {
+      question: "How much does studying abroad cost?",
+      answer: "Costs vary depending on the country, university, and program. They include tuition fees, accommodation, living expenses, insurance, and travel costs. We can provide detailed estimates during your consultation."
+    },
+    {
+      question: "Are there scholarships or financial aid available?",
+      answer: "Yes, many universities offer scholarships and financial aid. We can assist you in identifying and applying for these opportunities to help reduce your expenses."
     },
     {
       question: "Do you charge for your services?",
-      answer: "Yes, we charge a fee for our services, which includes personalized support and expert guidance. Detailed fee information is provided during the initial consultation."
+      answer: "Yes, we charge a fee for our services, which covers the personalized support and expertise we provide throughout the application and visa process. Detailed fee information can be provided during your initial consultation."
+    }
+  ];
+
+  const visaFaqs = [
+    {
+      question: "How do you assist with the visa application process?",
+      answer: "We provide step-by-step guidance on visa requirements, help you prepare the necessary documentation, and conduct mock visa interviews to ensure you are well-prepared."
     },
     {
-      question: "Do you assist in visa dates?",
-      answer: "Yes, we do."
+      question: "What if my visa application is denied?",
+      answer: "Firstly, we have 99% of visa ratio. In case, if your visa application is denied, we will analyze the reasons for denial, assist in addressing any issues, and guide you through the reapplication process."
+    }
+  ];
+
+  const miscellaneousFaqs = [
+    {
+      question: "Can you help me choose the right program and university?",
+      answer: "Absolutely! Our advisors have extensive knowledge of programs and universities worldwide and will help match your interests, curriculam, and career goals with the right options."
     },
     {
       question: "How far in advance should I start the application process?",
-      answer: "We recommend starting 6 to 12 months before your intended start date to allow time for preparation and processing."
+      answer: "It’s best to start the application process at least 06-12 months before your intended start date to ensure ample time for research, test preparation, application submission, financials check and visa processing."
+    },
+    {
+      question: "Can you help with applications for both undergraduate and postgraduate programs?",
+      answer: "Yes, we assist with applications for undergraduate, postgraduate, and doctoral programs across various fields of study."
     }
   ];
-
-  const studyFaqs = [
-    {
-      question: "How do I start the application process?",
-      answer: "Schedule a consultation with our advisors. We assess your background, goals, and preferences to guide you toward suitable programs and universities."
-    },
-    {
-      question: "What documents are required?",
-      answer: "Academic transcripts, financial statements, SOP, recommendation letters, resume, test scores, and proof of language proficiency."
-    },
-    {
-      question: "Do you assist with SOP and essays?",
-      answer: "Yes, we help you create strong, personalized SOPs and essays."
-    },
-    {
-      question: "How much does studying abroad cost?",
-      answer: "Costs vary depending on the country and program. We provide detailed estimates during consultation."
-    },
-    {
-      question: "Are scholarships available?",
-      answer: "Yes, we assist in finding and applying for scholarships and financial aid."
-    },
-    {
-      question: "Can you help choose the right program and university?",
-      answer: "Yes, we guide you based on your academic background and career goals."
-    },
-    {
-      question: "How can I improve my chances of acceptance?",
-      answer: "Focus on a strong SOP, good recommendations, and academic performance. We provide guidance to strengthen your application."
-    },
-    {
-      question: "Do you assist with undergraduate and postgraduate applications?",
-      answer: "Yes, we support undergraduate, postgraduate, and doctoral programs."
-    },
-    {
-      question: "Do you offer test preparation (IELTS, TOEFL, etc.)?",
-      answer: "Yes, we provide coaching for IELTS, TOEFL, SAT, SELT, and PTE."
-    },
-    {
-      question: "What are the eligibility criteria?",
-      answer: "It depends on the country and program, but generally includes academic qualifications and language proficiency."
-    },
-    {
-      question: "What is the application cost?",
-      answer: "It includes application fees, test fees, and document preparation costs."
-    },
-    {
-      question: "Are financial requirements needed for a visa?",
-      answer: "Yes, proof of funds is required. We assist in meeting these requirements."
-    }
-  ];
-
-  const examinationFaqs = [...studyFaqs];
-
-  // Merge dynamic FAQs from database if they exist
-  const dynamicFaqs = data?.content?.faqs || [];
 
   return (
     <div className="min-h-screen bg-slate-50 py-16 px-4 md:px-8 lg:px-16">
@@ -156,14 +129,12 @@ const FAQPage = () => {
 
         {/* FAQ Sections */}
         <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-6 md:p-10 shadow-soft border border-slate-100">
-          {/* Show dynamic FAQs if they exist */}
-          {dynamicFaqs.length > 0 && (
-            <FAQSection title="Recently Added Questions" faqs={dynamicFaqs} />
-          )}
 
-          <FAQSection title="1. General Questions" faqs={generalFaqs} />
-          <FAQSection title="2. Study FAQs" faqs={studyFaqs} />
-          <FAQSection title="3. Examination FAQs" faqs={examinationFaqs} />
+          <FAQSection title="1. General Information" faqs={generalFaqs} />
+          <FAQSection title="2. Application Process" faqs={applicationFaqs} />
+          <FAQSection title="3. Financial Information" faqs={financialFaqs} />
+          <FAQSection title="4. Visa and Travel" faqs={visaFaqs} />
+          <FAQSection title="5. Miscellaneous" faqs={miscellaneousFaqs} />
         </div>
 
       </div>
