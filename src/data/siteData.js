@@ -13,6 +13,10 @@ export const countryData = {
     image: ukImg,
     description:
       "Study in globally recognized UK institutions with excellent academic support, scholarships, and post-study work opportunities.",
+    sopLinks: [
+      { label: "Download UK SOP", url: "https://drive.google.com/file/d/1B8woekjA86ypLvtVr9OMYXRWCktk-4F1/view?usp=sharing" },
+      { label: "Download Birmingham SOP", url: "https://drive.google.com/file/d/1UPXSyf1pQCDwig2wLHoc-3chCZpb929g/view?usp=sharing" }
+    ],
     universities: [
       ...allUniversities["united-kingdom"],
       { name: "QA Universities", image: null, link: "https://highereducation.qa.com/", exclusive: true }
@@ -33,6 +37,7 @@ export const countryData = {
     image: usaImg,
     description:
       "Access world-class universities, cutting-edge research opportunities, and diverse campus experiences in the United States.",
+    sopLink: "https://drive.google.com/file/d/1KVCqKaaMkmR3f6AntE6ozke8Q6KMgi8p/view?usp=sharing",
     universities: allUniversities.usa,
   },
   australia: {
@@ -40,6 +45,7 @@ export const countryData = {
     image: australiaImg,
     description:
       "Choose from top-ranked Australian universities known for practical learning, innovation, and student-friendly cities.",
+    sopLink: "https://drive.google.com/file/d/1O7WaRkNDy0jJVvixXTuWiGorXHSliZZu/view?usp=sharing",
     universities: allUniversities.australia,
   },
   canada: {
@@ -60,6 +66,7 @@ export const countryData = {
     image: irelandImg,
     description:
       "Study in Ireland for strong industry connections, international exposure, and a vibrant academic atmosphere.",
+    sopLink: "https://drive.google.com/file/d/15uyRlYmQJiU6fv4YFnSaja3yplxaic2j/view?usp=sharing",
     universities: [
       ...allUniversities.ireland,
       ...allUniversities.europe.filter(u => u.name.includes("Ireland"))

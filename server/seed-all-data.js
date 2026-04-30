@@ -107,6 +107,10 @@ const countries = {
     name: "United Kingdom",
     image: "/assets/countries/uk.png",
     description: "Study in globally recognized UK institutions with excellent academic support, scholarships, and post-study work opportunities.",
+    sopLinks: [
+      { label: "Download UK SOP", url: "https://drive.google.com/file/d/1B8woekjA86ypLvtVr9OMYXRWCktk-4F1/view?usp=sharing" },
+      { label: "Download Birmingham SOP", url: "https://drive.google.com/file/d/1UPXSyf1pQCDwig2wLHoc-3chCZpb929g/view?usp=sharing" }
+    ],
     universities: [
       { name: "UWS UK", link: "https://www.uws.ac.uk/", image: pathPrefix + "exclusive-logos/UWS UK.png", exclusive: true },
       { name: "Bangor University", link: "http://www.bangor.ac.uk/", image: pathPrefix + "UK/Bangor University_UK.png", exclusive: false },
@@ -138,6 +142,7 @@ const countries = {
     name: "USA",
     image: "/assets/countries/usa.png",
     description: "Access world-class universities, cutting-edge research opportunities, and diverse campus experiences in the United States.",
+    sopLink: "https://drive.google.com/file/d/1KVCqKaaMkmR3f6AntE6ozke8Q6KMgi8p/view?usp=sharing",
     universities: [
       { name: "LIM College", link: "https://www.limcollege.edu/", image: pathPrefix + "exclusive-logos/LIM College_USA.png", exclusive: true },
       { name: "Texas A&M San Antonio", link: "https://www.tamusa.edu/", image: pathPrefix + "exclusive-logos/University Texas a&m USA.png", exclusive: true },
@@ -192,6 +197,7 @@ const countries = {
     name: "Australia",
     image: "/assets/countries/australia.png",
     description: "Choose from top-ranked Australian universities known for practical learning, innovation, and student-friendly cities.",
+    sopLink: "https://drive.google.com/file/d/1O7WaRkNDy0jJVvixXTuWiGorXHSliZZu/view?usp=sharing",
     universities: [
       { name: "Bond University", link: "http://www.bond.edu.au/", image: pathPrefix + "AUSTRALIA/Bond University_Australia.png", exclusive: false },
       { name: "Charles Darwin University", link: "http://www.cdu.edu.au/", image: pathPrefix + "AUSTRALIA/Charles Darwin University_Australia.png", exclusive: false },
@@ -264,6 +270,7 @@ const countries = {
     name: "Ireland",
     image: "/assets/countries/ireland.png",
     description: "Study in Ireland, a hub for technology and innovation with world-class academic institutions and a rich cultural heritage.",
+    sopLink: "https://drive.google.com/file/d/15uyRlYmQJiU6fv4YFnSaja3yplxaic2j/view?usp=sharing",
     universities: [
       { name: "Griffith College", link: "https://www.griffith.ie/", image: pathPrefix + "exclusive-logos/Griffith Logo Ireland.jpg", exclusive: true },
       { name: "Trinity College Dublin", link: "https://www.tcd.ie/", image: pathPrefix + "EUROPE/Trinity College Dublin_Ireland.png", exclusive: false },

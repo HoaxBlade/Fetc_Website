@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Loader2, Search, MapPin, Sparkles } from "lucide-react";
+import { Loader2, Search, MapPin, Sparkles, Download, ChevronDown } from "lucide-react";
 import { countryData as STATIC_FALLBACKS } from "../data/siteData";
 
 function StudyAbroadPage() {
@@ -8,6 +8,7 @@ function StudyAbroadPage() {
   const [pageData, setPageData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSopDropdownOpen, setIsSopDropdownOpen] = useState(false);
 
   const fetchCountryData = useCallback(async () => {
     setIsLoading(true);
@@ -97,6 +98,47 @@ function StudyAbroadPage() {
             >
               Start Your Journey
             </Link>
+            {pageData.sopLinks && pageData.sopLinks.length > 1 ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsSopDropdownOpen(!isSopDropdownOpen)}
+                  onBlur={() => setTimeout(() => setIsSopDropdownOpen(false), 200)}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-8 py-4 text-base font-bold text-slate-900 shadow-xl shadow-slate-200 ring-1 ring-slate-200/50 transition-all duration-300 hover:-translate-y-1 hover:text-brand-600 hover:shadow-brand-100/50 active:scale-95"
+                >
+                  <Download size={20} />
+                  Download SOP
+                  <ChevronDown size={16} className={`transition-transform duration-200 ${isSopDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isSopDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-full min-w-[240px] rounded-2xl bg-white p-2 shadow-xl shadow-slate-200/50 ring-1 ring-slate-100 z-50">
+                    {pageData.sopLinks.map((sop, idx) => (
+                      <a
+                        key={idx}
+                        href={sop.url}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-600"
+                      >
+                        <Download size={16} />
+                        {sop.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (pageData.sopLinks || pageData.sopLink) && (
+              <a
+                href={pageData.sopLinks ? pageData.sopLinks[0].url : pageData.sopLink}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-8 py-4 text-base font-bold text-slate-900 shadow-xl shadow-slate-200 ring-1 ring-slate-200/50 transition-all duration-300 hover:-translate-y-1 hover:text-brand-600 hover:shadow-brand-100/50 active:scale-95"
+              >
+                <Download size={20} />
+                Download SOP
+              </a>
+            )}
           </div>
         </div>
       </div>
