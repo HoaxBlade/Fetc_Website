@@ -301,6 +301,27 @@ const mainPages = {
        },
        trustBar: {
          message: "Trusted by 100+ Global Universities & 10k+ Students Worldwide"
+       },
+       careerAssessment: {
+         title: "Career Assessment",
+         description: "Align your natural strengths with the perfect professional or academic trajectory. We help you discover what you are meant to do.",
+         linkText: "Get Assessed",
+         items: [
+           {
+             title: "Behaviour and Career Analysis",
+             description: "Discover your perfect professional path with our highly tailored behavioral and occupational analysis.",
+             path: "/career-assessment/behaviour-and-career-analysis"
+           },
+           {
+             title: "Helpful Resources",
+             links: [
+               { label: "Financial Planning Checklist", url: "https://drive.google.com/file/d/1wX99-y42WJNS8U8uAiS3xQzUrpiivcUM/view?usp=drive_link" },
+               { label: "Part time job and internships", url: "https://drive.google.com/file/d/1iXz--uNuiuBBHnNv8yX3khWjzBhUspyG/view?usp=drive_link" },
+               { label: "Road Map Study Abroad", url: "https://drive.google.com/file/d/139BsYSsVSIPziOebKWNL8StFU7LGs6P3/view?usp=drive_link" },
+               { label: "Service Provider Agreement", url: "https://drive.google.com/file/d/16RCN90tqMDusAexTX6L2fKCLu92XSZYh/view?usp=drive_link" }
+             ]
+           }
+         ]
        }
     }
   },

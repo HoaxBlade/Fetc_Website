@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Download } from "lucide-react";
 
 function ServiceMarqueeRow({
   title,
@@ -52,20 +53,43 @@ function ServiceMarqueeRow({
         <h3 className={`bg-gradient-to-br ${gradientColors[idx % gradientColors.length]} bg-clip-text mb-3 text-2xl font-bold tracking-tight text-transparent`}>
           {service.title}
         </h3>
-        <p className="text-sm font-medium leading-relaxed text-slate-600">
-          {service.description.length > 120 ? service.description.substring(0, 120) + "..." : service.description}
-        </p>
+        {service.links ? (
+          <div className="space-y-3 mt-4">
+             {service.links.map((link, lIdx) => (
+               <a 
+                 key={lIdx} 
+                 href={link.url} 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-brand-600 transition-colors group/link"
+               >
+                 <div className="p-1.5 rounded-lg bg-slate-50 border border-slate-100 group-hover/link:bg-brand-50 transition-colors">
+                   <Download size={14} className="text-slate-400 group-hover/link:text-brand-600" />
+                 </div>
+                 {link.label}
+               </a>
+             ))}
+          </div>
+        ) : (
+          <p className="text-sm font-medium leading-relaxed text-slate-600">
+            {service.description && (service.description.length > 120 ? service.description.substring(0, 120) + "..." : service.description)}
+          </p>
+        )}
       </div>
       <div className="mt-8">
-        <Link
-          to={service.path}
-          className="group-hover:text-brand-600 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-900 transition-colors hover:text-brand-600"
-        >
-          Explore Details
-          <svg className="h-3 w-3 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </Link>
+        {service.path ? (
+          <Link
+            to={service.path}
+            className="group-hover:text-brand-600 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-900 transition-colors hover:text-brand-600"
+          >
+            Explore Details
+            <svg className="h-3 w-3 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </Link>
+        ) : (
+          <div className="h-4" /> // Spacing if no path
+        )}
       </div>
     </div>
   );
