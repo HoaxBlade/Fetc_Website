@@ -144,7 +144,7 @@ export const examData = {
     ]
   },
   "idp-for-ielts": {
-    name: "IDP for IELTS",
+    name: "IELTS",
     shortLabel: "IELTS (IDP)",
     description:
       "Comprehensive IELTS coaching by experienced mentors with speaking practice, writing correction, and mock tests.",
@@ -200,6 +200,7 @@ export const examData = {
       { highlight: "300+", label: "Objective Scoring" }
     ]
   },
+/*
   "pearson-versant": {
     name: "Pearson Versant Test",
     shortLabel: "Pearson Versant",
@@ -238,6 +239,7 @@ export const examData = {
       { highlight: "300+", label: "Objective Scoring" }
     ]
   },
+*/
 };
 
 export const navMenus = [
@@ -276,8 +278,8 @@ export const navMenus = [
       { label: "IDP for IELTS", path: "/exam-training/idp-for-ielts" },
       { label: "TOEFL", path: "/exam-training/toefl" },
       { label: "PTE", path: "/exam-training/pte" },
-      { label: "Pearson Versant Test", path: "/exam-training/pearson-versant" },
-      { label: "PSI", path: "/exam-training/psi" },
+      // { label: "Pearson Versant Test", path: "/exam-training/pearson-versant" },
+      // { label: "PSI", path: "/exam-training/psi" },
     ],
   },
   {

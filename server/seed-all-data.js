@@ -48,7 +48,7 @@ const exams = {
     ]
   },
   "idp-for-ielts": {
-    title: "IDP IELTS - Academic & General",
+    title: "IELTS - Academic & General",
     description: "The International English Language Testing System (IELTS) is a widely recognized English language proficiency exam required for study, work, and immigration purposes.",
     fullDescription: "The International English Language Testing System (IELTS) is a widely recognized English language proficiency exam required for study, work, and immigration purposes. It is accepted by educational institutions, employers, and immigration authorities in countries like the UK, USA, Australia, Canada, and New Zealand. IELTS assesses your ability to communicate effectively in English across all key skills.\n\nExam Format and Structure\nThe IELTS exam comprises four sections: Listening, Reading, Writing, and Speaking. Each section is designed to evaluate your English language proficiency in academic or general contexts. The test is available in both pen-and-paper and computer-based formats, providing flexibility to candidates.\n\nWho Needs to Take IELTS?\nIELTS is essential for individuals seeking to study, work, or migrate to English-speaking countries. It is required by universities for admission, by employers for job applications, and by immigration authorities for visa processing. The test is a key step for anyone planning to pursue opportunities abroad.\n\nAccepted Countries and Cost\nIELTS is accepted in the UK, USA, Australia, Canada, New Zealand, and other countries for educational, professional, and immigration purposes. The cost of the exam is INR 17,000, making it a crucial investment for your future abroad.",
     features: [
@@ -80,6 +80,7 @@ const exams = {
       { highlight: "300+", label: "Objective Scoring" }
     ]
   },
+/*
   "pearson-versant": {
     title: "Pearson Versant - Language Assessment",
     description: "Measure your automated language proficiency with the world's most trusted AI-driven assessment tool.",
@@ -100,6 +101,7 @@ const exams = {
       { highlight: "Targeted", label: "Strategy" }
     ]
   }
+*/
 };
 
 const countries = {
