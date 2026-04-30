@@ -1,0 +1,70 @@
+# FETC Website - Comprehensive Local Server & Demo Instructions (Mac & Windows)
+
+This guide provides everything needed to run the FETC website locally and expose it for a remote client demonstration.
+
+---
+
+## 🏗️ Pre-requisites: PostgreSQL
+Ensure **PostgreSQL** is running on your machine.
+
+### On Mac:
+- Run: `brew services start postgresql` OR open the Postgres.app if installed.
+
+### On Windows:
+- Press `Win + R`, type `services.msc`, and press Enter.
+- Look for `postgresql-x64` (the version number), right-click it, and select **Start**.
+
+---
+
+## 🚀 Step 1: Start the Backend Server (Port 5001)
+1. Open a terminal.
+2. Navigate to the server directory: `cd server`
+3. Run: `npm run dev`
+4. **Verification**: You should see "🚀 Server running on http://localhost:5001".
+
+---
+
+## 🌐 Step 2: Start the Tunnel (Ngrok)
+1. Open a **new** terminal.
+2. Run: `npx -y ngrok http 3000`
+3. **Copy the Link**: Look for the "Forwarding" line (e.g., `https://a1b2-c3d4.ngrok-free.app`).
+
+---
+
+## 🛠️ Step 3: "Connect" the Project to your Laptop
+This step makes your laptop the "Server" for the project, even if the website is opened from elsewhere.
+
+1. Open the `.env` file in the root directory of the project.
+2. Find the line: `REACT_APP_API_URL=`
+3. Paste your new ngrok link there. It should look like this:
+   `REACT_APP_API_URL=https://your-new-link.ngrok-free.app`
+4. **Save the file.**
+
+---
+
+## 💻 Step 4: Start the Frontend (Port 3000)
+1. Open a **new** terminal.
+2. Run: `npm start`
+3. **Note**: If you change the `.env` link while the frontend is running, you must **restart** this terminal (Ctrl+C and then `npm start`) for the changes to take effect.
+
+---
+
+## 🔗 Step 5: Demonstration
+- Since you have put the link in the `.env`, the project is now "hardcoded" to talk to your laptop.
+- You can now build the project (`npm run build`) and deploy it to Vercel/Netlify, and it will still work perfectly by fetching data from your local machine via that ngrok tunnel.
+
+---
+
+## 🛠️ Troubleshooting
+
+### "Port already in use"
+**On Mac:** `lsof -i :3000` then `kill -9 <PID>`
+**On Windows:** `netstat -ano | findstr :3000` then `taskkill /PID <PID> /F`
+
+### "Proxy error" or "Failed to fetch"
+- Check that your **Backend** is running.
+- Check that your **Ngrok Link** in the `.env` file matches the one currently running in your terminal.
+- Ensure you restarted the frontend after updating the `.env`.
+
+---
+*Created for FETC Project Demo - Professional Environment Setup*

@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown, Menu, X, User, LayoutDashboard, LogOut, Settings } from "lucide-react";
 import { motion } from "framer-motion";
 import { navMenus } from "../data/siteData";
+import { getApiUrl } from "../apiConfig";
 import logo from "../assets/logo/FETC_FINAL LOGO-01_11 Version_Edit TM_PNG.png";
 
 function Navbar() {
@@ -14,7 +15,7 @@ function Navbar() {
 
   const fetchDynamicPages = async () => {
     try {
-      const response = await fetch('/api/nav-pages?target=navbar');
+      const response = await fetch(getApiUrl('/api/nav-pages?target=navbar'));
       const data = await response.json();
       if (data.success) {
         setDynamicPages(data.pages);

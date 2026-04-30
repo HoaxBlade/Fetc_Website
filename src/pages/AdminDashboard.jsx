@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { getApiUrl } from '../apiConfig';
 import { 
   ShoppingBag, 
   UserPlus, Search, RotateCcw, Download, 
@@ -19,7 +20,7 @@ const AdminDashboard = () => {
   const fetchStats = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/admin/stats');
+      const response = await fetch(getApiUrl('/api/admin/stats'));
       const data = await response.json();
       if (data.success) {
         setLiveStats(data.stats);
@@ -33,7 +34,7 @@ const AdminDashboard = () => {
 
   const handleExportData = async () => {
     try {
-      const response = await fetch('/api/admin/users');
+      const response = await fetch(getApiUrl('/api/admin/users'));
       const data = await response.json();
       if (data.success) {
         // Simple JSON export for now

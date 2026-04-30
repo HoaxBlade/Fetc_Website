@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getApiUrl } from "../apiConfig";
 import Hero from "../components/Hero";
 import ServiceMarqueeRow from "../components/ServiceMarqueeRow";
 import WelcomeSection from "../components/WelcomeSection";
@@ -14,7 +15,7 @@ function HomePage() {
 
   useEffect(() => {
     console.log("Fetching home page data...");
-    fetch('/api/pages/home')
+    fetch(getApiUrl('/api/pages/home'))
       .then(res => res.json())
       .then(data => {
         console.log("Home Page Data:", data);
