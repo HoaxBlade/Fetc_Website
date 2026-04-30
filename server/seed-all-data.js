@@ -306,6 +306,8 @@ const mainPages = {
          title: "Career Assessment",
          description: "Align your natural strengths with the perfect professional or academic trajectory. We help you discover what you are meant to do.",
          linkText: "Get Assessed",
+         secondTitle: "Helpful Resources",
+         secondDescription: "Access essential documents and guides to help you navigate your journey abroad with confidence.",
          items: [
            {
              title: "Behaviour and Career Analysis",

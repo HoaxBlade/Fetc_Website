@@ -18,6 +18,8 @@ function ServiceMarqueeRow({
   stats = [],
   floatingTags = [],
   reverse = false,
+  secondTitle,
+  secondDescription,
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -48,48 +50,49 @@ function ServiceMarqueeRow({
   ];
 
   const renderCard = (service, idx) => (
-    <div key={idx} className={`flex w-[320px] shrink-0 flex-col justify-between rounded-[1.5rem] p-6 ring-1 ring-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgb(0,0,0,0.08)] md:w-[350px] ${cardBg}`}>
+    <div 
+      key={idx} 
+      className={`flex w-full flex-col justify-between rounded-[2.5rem] p-10 ring-1 ring-slate-100 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl md:max-w-[480px] ${cardBg}`}
+    >
       <div>
-        <h3 className={`bg-gradient-to-br ${gradientColors[idx % gradientColors.length]} bg-clip-text mb-3 text-2xl font-bold tracking-tight text-transparent`}>
+        <h3 className="mb-6 text-2xl font-bold tracking-tight text-blue-600">
           {service.title}
         </h3>
         {service.links ? (
-          <div className="space-y-3 mt-4">
+          <div className="space-y-4 mt-6">
              {service.links.map((link, lIdx) => (
                <a 
                  key={lIdx} 
                  href={link.url} 
                  target="_blank" 
                  rel="noopener noreferrer"
-                 className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-brand-600 transition-colors group/link"
+                 className="flex items-center gap-4 text-base font-bold text-slate-700 hover:text-blue-600 transition-colors group/link"
                >
-                 <div className="p-1.5 rounded-lg bg-slate-50 border border-slate-100 group-hover/link:bg-brand-50 transition-colors">
-                   <Download size={14} className="text-slate-400 group-hover/link:text-brand-600" />
+                 <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 group-hover/link:bg-blue-50 group-hover/link:border-blue-100 transition-all">
+                   <Download size={16} className="text-slate-400 group-hover/link:text-blue-600" />
                  </div>
                  {link.label}
                </a>
              ))}
           </div>
         ) : (
-          <p className="text-sm font-medium leading-relaxed text-slate-600">
-            {service.description && (service.description.length > 120 ? service.description.substring(0, 120) + "..." : service.description)}
+          <p className="text-base font-medium leading-relaxed text-slate-500">
+            {service.description && (service.description.length > 200 ? service.description.substring(0, 200) + "..." : service.description)}
           </p>
         )}
       </div>
-      <div className="mt-8">
+      <div className="mt-12">
         {service.path ? (
           <Link
             to={service.path}
-            className="group-hover:text-brand-600 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-900 transition-colors hover:text-brand-600"
+            className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-900 transition-colors hover:text-blue-600 group/btn"
           >
             Explore Details
-            <svg className="h-3 w-3 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            <svg className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
           </Link>
-        ) : (
-          <div className="h-4" /> // Spacing if no path
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -285,28 +288,41 @@ function ServiceMarqueeRow({
     >
       <div className="mx-auto max-w-7xl px-4 md:px-6">
 
-        {/* iOS Style Centered Header */}
-        <div className="mb-10 flex flex-col items-center text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl lg:text-5xl">
-            {title}
-          </h2>
-          <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-slate-500">
-            {description}
-          </p>
-          <div className="mt-8">
-            <Link
-              to={linkTarget}
-              className="inline-flex items-center justify-center rounded-full bg-slate-900 px-7 py-3 text-sm font-bold text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 active:scale-95"
-            >
-              {linkText}
-            </Link>
+        {/* iOS Style Header - Supports single centered or dual split headers */}
+        <div className={`mb-12 grid grid-cols-1 gap-10 lg:gap-20 ${secondTitle ? 'lg:grid-cols-2 text-left' : 'items-center text-center'}`}>
+          <div className="flex flex-col">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl lg:text-5xl">
+              {title}
+            </h2>
+            <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-slate-500">
+              {description}
+            </p>
+            {linkText && (
+              <div className="mt-8">
+                <Link
+                  to={linkTarget}
+                  className="inline-flex items-center justify-center rounded-full bg-slate-900 px-7 py-3 text-sm font-bold text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 active:scale-95"
+                >
+                  {linkText}
+                </Link>
+              </div>
+            )}
           </div>
+          
+          {secondTitle && (
+            <div className="flex flex-col">
+              <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl lg:text-5xl">
+                {secondTitle}
+              </h2>
+              <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-slate-500">
+                {secondDescription}
+              </p>
+            </div>
+          )}
         </div>
         {isStatic ? (
-          <div className="flex w-full justify-center">
-            <div className="flex flex-wrap justify-center gap-8">
-              {items.map((service, idx) => renderCard(service, idx))}
-            </div>
+          <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 md:grid-cols-2">
+            {items.map((service, idx) => renderCard(service, idx))}
           </div>
         ) : (
           <div className={`relative flex w-full overflow-hidden rounded-[2rem] shadow-inner ring-1 ring-slate-100/50`}>

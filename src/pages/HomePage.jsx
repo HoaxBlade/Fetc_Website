@@ -148,6 +148,8 @@ function HomePage() {
             isStatic={true}
             badgeText={pageData?.careerAssessment?.badgeText || "Strategic Growth"}
             stats={pageData?.careerAssessment?.stats}
+            secondTitle={pageData?.careerAssessment?.secondTitle || "Helpful Resources"}
+            secondDescription={pageData?.careerAssessment?.secondDescription || "Access essential documents and guides to help you navigate your journey abroad with confidence."}
           />
         </div>
       </div>
