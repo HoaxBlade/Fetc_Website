@@ -20,7 +20,7 @@ const AdminDashboard = () => {
   const fetchStats = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(getApiUrl('/api/admin/stats'));
+      const response = await fetch((window.API_BASE||'') + '/api/admin/stats');
       const data = await response.json();
       if (data.success) {
         setLiveStats(data.stats);
@@ -34,7 +34,7 @@ const AdminDashboard = () => {
 
   const handleExportData = async () => {
     try {
-      const response = await fetch(getApiUrl('/api/admin/users'));
+      const response = await fetch((window.API_BASE||'') + '/api/admin/users');
       const data = await response.json();
       if (data.success) {
         // Simple JSON export for now

@@ -7,7 +7,7 @@ const TermsPage = () => {
     const fetchTerms = async () => {
       try {
         console.log("Fetching Terms from DB...");
-        const response = await fetch('/api/pages/terms');
+        const response = await fetch((window.API_BASE||'') + '/api/pages/terms');
         const result = await response.json();
         console.log("DB Response:", result);
         if (result.success) setData(result.page);

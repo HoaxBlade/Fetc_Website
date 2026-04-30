@@ -15,7 +15,7 @@ function HomePage() {
 
   useEffect(() => {
     console.log("Fetching home page data...");
-    fetch(getApiUrl('/api/pages/home'))
+    fetch((window.API_BASE||'') + '/api/pages/home')
       .then(res => res.json())
       .then(data => {
         console.log("Home Page Data:", data);

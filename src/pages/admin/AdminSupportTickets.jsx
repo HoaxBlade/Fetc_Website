@@ -11,7 +11,7 @@ const AdminSupportTickets = () => {
   const fetchTickets = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/admin/tickets');
+      const response = await fetch((window.API_BASE||'') + '/api/admin/tickets');
       const data = await response.json();
       if (data.success) {
         setTickets(data.tickets);

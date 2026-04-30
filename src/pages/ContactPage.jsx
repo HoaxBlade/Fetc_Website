@@ -6,7 +6,7 @@ const ContactPage = () => {
 
   const fetchPageContent = async () => {
     try {
-      const response = await fetch('/api/pages/contact');
+      const response = await fetch((window.API_BASE||'') + '/api/pages/contact');
       const data = await response.json();
       if (data.success && data.page) {
         setPageData(data.page.content);
@@ -37,7 +37,7 @@ const ContactPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/leads', {
+      const response = await fetch((window.API_BASE||'') + '/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

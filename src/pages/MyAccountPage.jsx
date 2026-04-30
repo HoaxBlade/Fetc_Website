@@ -58,7 +58,7 @@ export default function MyAccountPage() {
         ? { email: formData.email, password: formData.password }
         : { name: formData.name, email: formData.email, password: formData.password };
 
-      const response = await fetch(endpoint, {
+      const response = await fetch((window.API_BASE || "") + endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -10,7 +10,7 @@ function Footer() {
   useEffect(() => {
     const fetchDynamicPages = async () => {
       try {
-        const response = await fetch('/api/nav-pages?target=footer');
+        const response = await fetch((window.API_BASE||'') + '/api/nav-pages?target=footer');
         const data = await response.json();
         if (data.success) {
           setDynamicPages(data.pages);

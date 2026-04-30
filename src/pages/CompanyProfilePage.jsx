@@ -57,7 +57,7 @@ function CompanyProfilePage() {
 
   const fetchPageContent = async () => {
     try {
-      const response = await fetch('/api/pages/about/company-profile');
+      const response = await fetch((window.API_BASE||'') + '/api/pages/about/company-profile');
       const data = await response.json();
       if (data.success && data.page) {
         setPageData(data.page.content);

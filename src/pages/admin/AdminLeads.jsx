@@ -12,7 +12,7 @@ const AdminLeads = () => {
   const fetchLeads = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/admin/leads');
+      const response = await fetch((window.API_BASE||'') + '/api/admin/leads');
       const data = await response.json();
       if (data.success) {
         setLeads(data.leads);

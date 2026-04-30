@@ -99,7 +99,7 @@ const ProfilePage = () => {
     uploadData.append('image', file);
 
     try {
-      const uploadRes = await fetch('/api/admin/upload', {
+      const uploadRes = await fetch((window.API_BASE||'') + '/api/admin/upload', {
         method: 'POST',
         body: uploadData
       });

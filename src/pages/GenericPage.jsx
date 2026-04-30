@@ -16,7 +16,7 @@ const GenericPage = () => {
       setError(null);
       try {
         const fullSlug = slug ? `/${slug}` : '/';
-        const response = await fetch(`/api/pages${fullSlug}`);
+        const response = await fetch((window.API_BASE || "") + `/api/pages${fullSlug}`);
         const data = await response.json();
         
         if (data.success) {

@@ -40,7 +40,7 @@ function GalleryPage() {
 
   const fetchGalleryData = useCallback(async () => {
     try {
-      const response = await fetch('/api/pages/gallery');
+      const response = await fetch((window.API_BASE||'') + '/api/pages/gallery');
       const data = await response.json();
       if (data.success && data.page) {
         setPageData(data.page.content);

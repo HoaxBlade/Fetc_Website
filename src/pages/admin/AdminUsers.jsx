@@ -42,7 +42,7 @@ const AdminUsers = () => {
     e.preventDefault();
     setIsInviting(true);
     try {
-      const response = await fetch('/api/admin/users/invite', {
+      const response = await fetch((window.API_BASE||'') + '/api/admin/users/invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(inviteForm)
@@ -67,7 +67,7 @@ const AdminUsers = () => {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/admin/users');
+      const response = await fetch((window.API_BASE||'') + '/api/admin/users');
       const data = await response.json();
       if (data.success) {
         setUsers(data.users);

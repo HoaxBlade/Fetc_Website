@@ -26,7 +26,7 @@ const StartJourneyPage = () => {
     setIsSubmitting(true);
     try {
       // Backend /api/leads already creates both leads and tickets now
-      const response = await fetch('/api/leads', {
+      const response = await fetch((window.API_BASE||'') + '/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

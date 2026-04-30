@@ -9,7 +9,7 @@ const AdminPages = () => {
     formData.append('image', file);
 
     try {
-      const response = await fetch('/api/admin/upload', {
+      const response = await fetch((window.API_BASE||'') + '/api/admin/upload', {
         method: 'POST',
         body: formData,
       });
@@ -69,7 +69,7 @@ const AdminPages = () => {
   const fetchPages = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/admin/pages');
+      const response = await fetch((window.API_BASE||'') + '/api/admin/pages');
       const data = await response.json();
       if (data.success) {
         const processedPages = data.pages.map(p => {
@@ -139,7 +139,7 @@ const AdminPages = () => {
     if (!newPageData.title || !newPageData.slug) return;
     setIsSaving(true);
     try {
-      const response = await fetch('/api/admin/pages', {
+      const response = await fetch((window.API_BASE||'') + '/api/admin/pages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newPageData),
@@ -1664,7 +1664,7 @@ const AdminPages = () => {
                                                   if (file) {
                                                     const formData = new FormData();
                                                     formData.append('image', file);
-                                                    fetch('/api/admin/upload', { method: 'POST', body: formData })
+                                                    fetch((window.API_BASE||'') + '/api/admin/upload', { method: 'POST', body: formData })
                                                       .then(res => res.json())
                                                       .then(data => data.success && updateSection(idx, 'image', data.url));
                                                   }

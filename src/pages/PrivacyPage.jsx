@@ -6,7 +6,7 @@ const PrivacyPage = () => {
   useEffect(() => {
     const fetchPrivacy = async () => {
       try {
-        const response = await fetch('/api/pages/privacy');
+        const response = await fetch((window.API_BASE||'') + '/api/pages/privacy');
         const result = await response.json();
         if (result.success) setData(result.page);
       } catch (err) {

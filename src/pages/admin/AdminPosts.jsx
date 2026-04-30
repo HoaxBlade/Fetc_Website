@@ -14,7 +14,7 @@ const AdminPosts = () => {
   const fetchPosts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/admin/posts');
+      const response = await fetch((window.API_BASE||'') + '/api/admin/posts');
       const data = await response.json();
       if (data.success) {
         setPosts(data.posts);
@@ -40,7 +40,7 @@ const AdminPosts = () => {
 
     setIsSaving(true);
     try {
-      const response = await fetch('/api/admin/posts', {
+      const response = await fetch((window.API_BASE||'') + '/api/admin/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: newPostData.title, slug }),

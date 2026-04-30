@@ -17,7 +17,7 @@ const AdminNewsFlash = () => {
   const fetchNews = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/admin/news-flash');
+      const res = await fetch((window.API_BASE||'') + '/api/admin/news-flash');
       const data = await res.json();
       if (data.success) setItems(data.news);
     } catch (err) {

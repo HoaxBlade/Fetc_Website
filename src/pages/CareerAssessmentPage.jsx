@@ -92,7 +92,7 @@ export default function CareerAssessmentPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch('/api/pages/career-assessment/behaviour-and-career-analysis')
+    fetch((window.API_BASE||'') + '/api/pages/career-assessment/behaviour-and-career-analysis')
       .then(res => res.json())
       .then(data => setPageData(data))
       .catch(err => console.error('Failed to fetch career data:', err))

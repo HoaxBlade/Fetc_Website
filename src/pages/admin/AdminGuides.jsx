@@ -38,7 +38,7 @@ const EditGuideView = ({ selectedGuide, setSelectedGuide, handleSaveGuide, handl
         const formData = new FormData();
         formData.append('image', file);
         try {
-            const response = await fetch('/api/admin/upload', {
+            const response = await fetch((window.API_BASE||'') + '/api/admin/upload', {
                 method: 'POST',
                 body: formData
             });
@@ -236,7 +236,7 @@ const AdminGuides = () => {
     const fetchGuides = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('/api/admin/guides');
+            const response = await fetch((window.API_BASE||'') + '/api/admin/guides');
             const data = await response.json();
             if (data.success) {
                 setGuides(data.guides);
@@ -256,7 +256,7 @@ const AdminGuides = () => {
         e.preventDefault();
         try {
             setIsSaving(true);
-            const response = await fetch('/api/admin/guides', {
+            const response = await fetch((window.API_BASE||'') + '/api/admin/guides', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(selectedGuide)

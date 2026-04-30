@@ -25,7 +25,7 @@ const Hero = ({ content: propsContent }) => {
     } else {
       const fetchContent = async () => {
         try {
-          const response = await fetch('/api/pages/home');
+          const response = await fetch((window.API_BASE||'') + '/api/pages/home');
           const data = await response.json();
           if (data.success && data.page.content?.hero) {
             setContent(prev => ({ ...prev, ...data.page.content.hero }));

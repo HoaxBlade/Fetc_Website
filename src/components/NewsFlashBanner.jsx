@@ -9,7 +9,7 @@ const NewsFlashBanner = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const res = await fetch('/api/news-flash');
+        const res = await fetch((window.API_BASE||'') + '/api/news-flash');
         const data = await res.json();
         if (data.success && data.news.length > 0) {
           setNews(data.news);

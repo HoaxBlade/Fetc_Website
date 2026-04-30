@@ -6,7 +6,7 @@ const RefundPage = () => {
   useEffect(() => {
     const fetchRefund = async () => {
       try {
-        const response = await fetch('/api/pages/refund');
+        const response = await fetch((window.API_BASE||'') + '/api/pages/refund');
         const result = await response.json();
         if (result.success) setData(result.page);
       } catch (err) {
