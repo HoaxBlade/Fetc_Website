@@ -6,6 +6,23 @@ import reportWebVitals from './reportWebVitals';
 
 window.API_BASE = process.env.REACT_APP_API_URL || '';
 
+// Global fetch interceptor to bypass Ngrok browser warning
+const originalFetch = window.fetch;
+window.fetch = async (...args) => {
+  let [resource, config] = args;
+  
+  // If hitting the ngrok tunnel, add the bypass header
+  if (typeof resource === 'string' && resource.includes('ngrok-free.app')) {
+    config = config || {};
+    config.headers = {
+      ...config.headers,
+      'ngrok-skip-browser-warning': 'true'
+    };
+  }
+  
+  return originalFetch(resource, config);
+};
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
