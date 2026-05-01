@@ -11,24 +11,119 @@ const multer = require('multer');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 
-// Middleware
 const runMigrations = async () => {
   try {
     console.log('Running auto-migrations...');
+    
+    // Users updates
     await db.query(`
       ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image TEXT;
+    `);
+
+    // Doubts table
+    await db.query(`
       CREATE TABLE IF NOT EXISTS doubts (
         id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES users(id),
-        subject VARCHAR(255) NOT NULL,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        subject TEXT NOT NULL,
         description TEXT NOT NULL,
-        status VARCHAR(20) DEFAULT 'OPEN',
-        admin_response TEXT,
+        status TEXT DEFAULT 'OPEN',
+        answer TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Posts table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS posts (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        slug TEXT UNIQUE NOT NULL,
+        content JSONB DEFAULT '{}',
+        status TEXT DEFAULT 'DRAFT',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Leads table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS leads (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(20),
+        subject VARCHAR(255),
+        message TEXT,
+        status VARCHAR(20) DEFAULT 'NEW',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
-    console.log('✅ Migrations completed');
+
+    // Tickets table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS tickets (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
+        name VARCHAR(255),
+        email VARCHAR(255),
+        subject VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        priority VARCHAR(20) DEFAULT 'MEDIUM',
+        status VARCHAR(20) DEFAULT 'OPEN',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // News Flash table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS news_flash (
+        id SERIAL PRIMARY KEY,
+        content TEXT NOT NULL,
+        link VARCHAR(255),
+        is_active BOOLEAN DEFAULT true,
+        priority INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Pages table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS pages (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        slug VARCHAR(255) UNIQUE NOT NULL,
+        status VARCHAR(20) DEFAULT 'DRAFT',
+        seo_title VARCHAR(255),
+        seo_description TEXT,
+        content JSONB DEFAULT '{}',
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Interactive Guides tables
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS interactive_guides (
+        id SERIAL PRIMARY KEY,
+        slug VARCHAR(255) UNIQUE NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE TABLE IF NOT EXISTS guide_pages (
+        id SERIAL PRIMARY KEY,
+        guide_id INTEGER REFERENCES interactive_guides(id) ON DELETE CASCADE,
+        image_url TEXT NOT NULL,
+        page_number INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    console.log('✅ All migrations completed successfully');
   } catch (err) {
     console.error('❌ Migration error:', err);
   }
@@ -547,20 +642,6 @@ app.get('/api/users/:userId/tickets', async (req, res) => {
 
 // --- Doubts API ---
 
-// Create doubts table if not exists
-db.query(`
-  CREATE TABLE IF NOT EXISTS doubts (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    subject TEXT NOT NULL,
-    description TEXT NOT NULL,
-    status TEXT DEFAULT 'OPEN',
-    answer TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )
-`).catch(console.error);
-
 // GET /api/users/:userId/doubts - Get doubts for a user
 app.get('/api/users/:userId/doubts', async (req, res) => {
   const { userId } = req.params;
@@ -797,18 +878,8 @@ app.get('/api/admin/posts', async (req, res) => {
 app.post('/api/admin/posts', async (req, res) => {
   const { title, slug } = req.body;
   try {
-    // Ensure table exists
-    await db.query(`
-      CREATE TABLE IF NOT EXISTS posts (
-        id SERIAL PRIMARY KEY,
-        title TEXT NOT NULL,
-        slug TEXT UNIQUE NOT NULL,
-        content JSONB DEFAULT '{}',
-        status TEXT DEFAULT 'DRAFT',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
+    // POST /api/admin/posts - Create new post
+    // Note: Migration handled at startup
 
     const result = await db.query(
       'INSERT INTO posts (title, slug, status, content) VALUES ($1, $2, $3, $4) RETURNING *',
