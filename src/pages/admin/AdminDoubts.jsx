@@ -112,22 +112,20 @@ const AdminDoubts = () => {
                     <CheckCircle size={14} /> Instructor's Response
                   </h4>
                   
-                  {selectedDoubt.answer ? (
+                  {selectedDoubt.status === 'ANSWERED' ? (
                     <div className="bg-indigo-50/50 rounded-2xl p-6 border border-indigo-100">
                       <p className="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">{selectedDoubt.answer}</p>
-                      {selectedDoubt.status === 'ANSWERED' && (
-                        <div className="mt-4 flex justify-end">
-                          <button 
-                            onClick={() => {
-                              setAnswerInput(selectedDoubt.answer);
-                              handleUpdate(selectedDoubt.id, 'OPEN'); // Reset to open to edit
-                            }}
-                            className="text-indigo-600 text-xs font-bold hover:underline"
-                          >
-                            Edit Response
-                          </button>
-                        </div>
-                      )}
+                      <div className="mt-4 flex justify-end">
+                        <button 
+                          onClick={() => {
+                            setAnswerInput(selectedDoubt.answer);
+                            handleUpdate(selectedDoubt.id, 'OPEN'); // Reset to open to edit
+                          }}
+                          className="text-indigo-600 text-xs font-bold hover:underline"
+                        >
+                          Edit Response
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div className="bg-white border-2 border-indigo-100 rounded-2xl p-2 focus-within:border-indigo-500 transition-colors">
