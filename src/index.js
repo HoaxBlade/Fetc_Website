@@ -12,7 +12,7 @@ window.fetch = async (...args) => {
   let [resource, config] = args;
   
   // If hitting the ngrok tunnel, add the bypass header
-  if (typeof resource === 'string' && resource.includes('ngrok-free.app')) {
+  if (typeof resource === 'string' && (resource.includes('ngrok-free.app') || resource.includes('ngrok-free.dev'))) {
     config = config || {};
     config.headers = {
       ...config.headers,
