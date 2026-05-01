@@ -17,7 +17,9 @@ const AdminNewsFlash = () => {
   const fetchNews = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch((window.API_BASE||'') + '/api/admin/news-flash');
+      const res = await fetch((window.API_BASE || "") + '/api/admin/news-flash', {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       const data = await res.json();
       if (data.success) setItems(data.news);
     } catch (err) {
@@ -45,9 +47,12 @@ const AdminNewsFlash = () => {
     const method = editingItem ? 'PATCH' : 'POST';
 
     try {
-      const res = await fetch(url, {
+      const res = await fetch((window.API_BASE || "") + url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
@@ -65,7 +70,10 @@ const AdminNewsFlash = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this news flash?')) return;
     try {
-      const res = await fetch(`/api/admin/news-flash/${id}`, { method: 'DELETE' });
+      const res = await fetch((window.API_BASE || "") + `/api/admin/news-flash/${id}`, { 
+        method: 'DELETE',
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       const data = await res.json();
       if (data.success) fetchNews();
     } catch (err) {
@@ -75,9 +83,12 @@ const AdminNewsFlash = () => {
 
   const toggleStatus = async (item) => {
     try {
-      const res = await fetch(`/api/admin/news-flash/${item.id}`, {
+      const res = await fetch((window.API_BASE || "") + `/api/admin/news-flash/${item.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify({ is_active: !item.is_active }),
       });
       const data = await res.json();

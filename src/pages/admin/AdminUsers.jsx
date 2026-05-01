@@ -24,7 +24,10 @@ const AdminUsers = () => {
     if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
     
     try {
-      const response = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+      const response = await fetch((window.API_BASE || "") + `/api/admin/users/${id}`, { 
+        method: 'DELETE',
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       const data = await response.json();
       if (data.success) {
         fetchUsers();
@@ -42,9 +45,12 @@ const AdminUsers = () => {
     e.preventDefault();
     setIsInviting(true);
     try {
-      const response = await fetch((window.API_BASE||'') + '/api/admin/users/invite', {
+      const response = await fetch((window.API_BASE || "") + '/api/admin/users/invite', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify(inviteForm)
       });
       const data = await response.json();
@@ -72,9 +78,12 @@ const AdminUsers = () => {
   const handleUpdateUser = async (id, payload, closeModal) => {
     setIsUpdating(true);
     try {
-      const response = await fetch((window.API_BASE||'') + `/api/admin/users/${id}`, {
+      const response = await fetch((window.API_BASE || "") + `/api/admin/users/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify(payload)
       });
       const data = await response.json();
@@ -95,7 +104,9 @@ const AdminUsers = () => {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch((window.API_BASE||'') + '/api/admin/users');
+      const response = await fetch((window.API_BASE || "") + '/api/admin/users', {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       const data = await response.json();
       if (data.success) {
         setUsers(data.users);

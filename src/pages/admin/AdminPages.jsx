@@ -9,8 +9,9 @@ const AdminPages = () => {
     formData.append('image', file);
 
     try {
-      const response = await fetch((window.API_BASE||'') + '/api/admin/upload', {
+      const response = await fetch((window.API_BASE || "") + '/api/admin/upload', {
         method: 'POST',
+        headers: { 'ngrok-skip-browser-warning': 'true' },
         body: formData,
       });
       const data = await response.json();
@@ -69,7 +70,9 @@ const AdminPages = () => {
   const fetchPages = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch((window.API_BASE||'') + '/api/admin/pages');
+      const response = await fetch((window.API_BASE || "") + '/api/admin/pages', {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       const data = await response.json();
       if (data.success) {
         const processedPages = data.pages.map(p => {
@@ -107,9 +110,12 @@ const AdminPages = () => {
     }
 
     try {
-      const response = await fetch(`/api/admin/pages/${id}`, {
+      const response = await fetch((window.API_BASE || "") + `/api/admin/pages/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify(processedData),
       });
       const data = await response.json();
@@ -139,9 +145,12 @@ const AdminPages = () => {
     if (!newPageData.title || !newPageData.slug) return;
     setIsSaving(true);
     try {
-      const response = await fetch((window.API_BASE||'') + '/api/admin/pages', {
+      const response = await fetch((window.API_BASE || "") + '/api/admin/pages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify(newPageData),
       });
       const data = await response.json();

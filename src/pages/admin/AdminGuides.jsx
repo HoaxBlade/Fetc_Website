@@ -16,7 +16,9 @@ const EditGuideView = ({ selectedGuide, setSelectedGuide, handleSaveGuide, handl
         if (!selectedGuide?.slug) return;
         try {
             setIsFetchingPages(true);
-            const response = await fetch(`/api/guides/${selectedGuide.slug}`);
+            const response = await fetch((window.API_BASE || "") + `/api/guides/${selectedGuide.slug}`, {
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
             const data = await response.json();
             if (data.success) {
                 setPages(data.pages);
@@ -38,8 +40,9 @@ const EditGuideView = ({ selectedGuide, setSelectedGuide, handleSaveGuide, handl
         const formData = new FormData();
         formData.append('image', file);
         try {
-            const response = await fetch((window.API_BASE||'') + '/api/admin/upload', {
+            const response = await fetch((window.API_BASE || "") + '/api/admin/upload', {
                 method: 'POST',
+                headers: { 'ngrok-skip-browser-warning': 'true' },
                 body: formData
             });
             const data = await response.json();
@@ -58,9 +61,12 @@ const EditGuideView = ({ selectedGuide, setSelectedGuide, handleSaveGuide, handl
     const savePages = async () => {
         try {
             setIsUpdatingPages(true);
-            const response = await fetch(`/api/admin/guides/${selectedGuide.id}/pages`, {
+            const response = await fetch((window.API_BASE || "") + `/api/admin/guides/${selectedGuide.id}/pages`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
                 body: JSON.stringify({ pages })
             });
             const data = await response.json();
@@ -236,7 +242,9 @@ const AdminGuides = () => {
     const fetchGuides = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response = await fetch((window.API_BASE||'') + '/api/admin/guides');
+            const response = await fetch((window.API_BASE || "") + '/api/admin/guides', {
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
             const data = await response.json();
             if (data.success) {
                 setGuides(data.guides);
@@ -256,9 +264,12 @@ const AdminGuides = () => {
         e.preventDefault();
         try {
             setIsSaving(true);
-            const response = await fetch((window.API_BASE||'') + '/api/admin/guides', {
+            const response = await fetch((window.API_BASE || "") + '/api/admin/guides', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
                 body: JSON.stringify(selectedGuide)
             });
             const data = await response.json();
@@ -276,7 +287,10 @@ const AdminGuides = () => {
     const handleDeleteGuide = async (id) => {
         if (!window.confirm('Are you absolutely sure? This will delete all guide pages forever.')) return;
         try {
-            const response = await fetch(`/api/admin/guides/${id}`, { method: 'DELETE' });
+            const response = await fetch((window.API_BASE || "") + `/api/admin/guides/${id}`, { 
+                method: 'DELETE',
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
             const data = await response.json();
             if (data.success) {
                 fetchGuides();
