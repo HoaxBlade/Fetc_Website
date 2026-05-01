@@ -12,7 +12,10 @@ const fs = require('fs');
 const nodemailer = require('nodemailer');
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*', // Allow all origins
+  allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning']
+}));
 app.use(express.json());
 
 // Transporter for Email (Configure as needed)
