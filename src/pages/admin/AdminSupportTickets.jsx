@@ -25,9 +25,12 @@ const AdminSupportTickets = () => {
 
   const updateStatus = async (id, newStatus) => {
     try {
-      const response = await fetch(`/api/admin/tickets/${id}`, {
+      const response = await fetch((window.API_BASE || "") + `/api/admin/tickets/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify({ status: newStatus }),
       });
       const data = await response.json();

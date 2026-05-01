@@ -21,7 +21,9 @@ function UserSupport() {
 
   const fetchTickets = async () => {
     try {
-      const response = await fetch(`/api/users/${user.id}/tickets`);
+      const response = await fetch((window.API_BASE || "") + `/api/users/${user.id}/tickets`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       const data = await response.json();
       if (data.success) setTickets(data.tickets);
     } catch (err) {
@@ -35,9 +37,12 @@ function UserSupport() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/leads', {
+      const response = await fetch((window.API_BASE || "") + '/api/leads', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify({
           name: user.name,
           email: user.email,

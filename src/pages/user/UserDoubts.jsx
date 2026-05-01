@@ -21,7 +21,9 @@ function UserDoubts() {
 
   const fetchDoubts = async () => {
     try {
-      const response = await fetch(`/api/users/${user.id}/doubts`);
+      const response = await fetch((window.API_BASE || "") + `/api/users/${user.id}/doubts`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       const data = await response.json();
       if (data.success) setDoubts(data.doubts);
     } catch (err) {
@@ -35,14 +37,17 @@ function UserDoubts() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/doubts', {
+      const response = await fetch((window.API_BASE || "") + '/api/doubts', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify({
           userId: user.id,
           subject: formData.subject,
           description: formData.description
-        })
+        }),
       });
       const data = await response.json();
       if (data.success) {

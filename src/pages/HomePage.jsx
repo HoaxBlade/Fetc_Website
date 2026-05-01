@@ -15,7 +15,9 @@ function HomePage() {
 
   useEffect(() => {
     console.log("Fetching home page data...");
-    fetch((window.API_BASE||'') + '/api/pages/home')
+    fetch((window.API_BASE || "") + '/api/pages/home', {
+      headers: { 'ngrok-skip-browser-warning': 'true' }
+    })
       .then(res => res.json())
       .then(data => {
         console.log("Home Page Data:", data);

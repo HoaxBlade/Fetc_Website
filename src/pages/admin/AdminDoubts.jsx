@@ -35,9 +35,12 @@ const AdminDoubts = () => {
       const payload = { status };
       if (answer !== null) payload.answer = answer;
 
-      const response = await fetch(`/api/admin/doubts/${id}`, {
+      const response = await fetch((window.API_BASE || "") + `/api/admin/doubts/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify(payload),
       });
       const data = await response.json();

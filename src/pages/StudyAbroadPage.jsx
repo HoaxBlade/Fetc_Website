@@ -13,7 +13,9 @@ function StudyAbroadPage() {
   const fetchCountryData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/pages/study-abroad/${country}`);
+      const response = await fetch((window.API_BASE || "") + `/api/pages/study-abroad/${country}`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       const data = await response.json();
       if (data.success && data.page) {
         setPageData(data.page.content);
