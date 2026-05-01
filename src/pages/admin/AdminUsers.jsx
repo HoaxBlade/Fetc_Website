@@ -138,11 +138,11 @@ const AdminUsers = () => {
 
       {/* Invite User Modal */}
       {isInviteModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
           <motion.div 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             onClick={() => setIsInviteModalOpen(false)}
           />
           <motion.div 
@@ -190,19 +190,21 @@ const AdminUsers = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">User Role</label>
-                  <div className="relative group">
-                    <select 
-                      className="w-full px-5 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-300 focus:ring-4 focus:ring-brand-600/5 transition-all appearance-none cursor-pointer"
-                      value={inviteForm.role}
-                      onChange={(e) => setInviteForm({...inviteForm, role: e.target.value})}
-                    >
-                      <option value="USER">User</option>
-                      <option value="ADMIN">Admin</option>
-                      <option value="COUNSELOR">Counselor</option>
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-brand-600 transition-colors">
-                      <ChevronRight size={14} className="rotate-90" />
-                    </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['USER', 'ADMIN', 'COUNSELOR'].map((role) => (
+                      <button
+                        key={role}
+                        type="button"
+                        onClick={() => setInviteForm({...inviteForm, role})}
+                        className={`py-2.5 rounded-xl text-[10px] font-black tracking-widest transition-all border ${
+                          inviteForm.role === role 
+                            ? 'bg-brand-600 text-white border-brand-600 shadow-lg shadow-brand-200' 
+                            : 'bg-white text-slate-400 border-slate-100 hover:border-brand-200 hover:text-slate-600'
+                        }`}
+                      >
+                        {role}
+                      </button>
+                    ))}
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -238,10 +240,10 @@ const AdminUsers = () => {
       )}
       {/* Edit User Modal */}
       {editingUser && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             onClick={() => setEditingUser(null)}
           />
           <motion.div 
@@ -282,10 +284,10 @@ const AdminUsers = () => {
 
       {/* Change Role Modal */}
       {roleEditingUser && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             onClick={() => setRoleEditingUser(null)}
           />
           <motion.div 
@@ -301,22 +303,34 @@ const AdminUsers = () => {
                 <X size={24} />
               </button>
             </div>
-            <form onSubmit={(e) => { e.preventDefault(); handleUpdateUser(roleEditingUser.id, { role: roleEditingUser.role }, () => setRoleEditingUser(null)); }} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Select Role</label>
-                <div className="relative group">
-                  <select 
-                    className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-300 focus:ring-4 focus:ring-brand-600/5 transition-all appearance-none cursor-pointer"
-                    value={roleEditingUser.role}
-                    onChange={(e) => setRoleEditingUser({...roleEditingUser, role: e.target.value})}
-                  >
-                    <option value="USER">User</option>
-                    <option value="ADMIN">Admin</option>
-                    <option value="COUNSELOR">Counselor</option>
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-brand-600 transition-colors">
-                    <ChevronRight size={14} className="rotate-90" />
-                  </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleUpdateUser(roleEditingUser.id, { role: roleEditingUser.role }, () => setRoleEditingUser(null)); }} className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Select Access Permission</label>
+                <div className="flex flex-col gap-2">
+                  {['USER', 'ADMIN', 'COUNSELOR'].map((role) => (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => setRoleEditingUser({...roleEditingUser, role})}
+                      className={`w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all border-2 ${
+                        roleEditingUser.role === role 
+                          ? 'bg-brand-50 border-brand-600 text-brand-900 ring-4 ring-brand-600/5' 
+                          : 'bg-white border-slate-50 text-slate-400 hover:border-slate-200 hover:text-slate-600'
+                      }`}
+                    >
+                      <div className="flex flex-col items-start">
+                        <span className="text-xs font-black tracking-widest">{role}</span>
+                        <span className="text-[9px] font-medium opacity-60">
+                          {role === 'ADMIN' ? 'Full system access' : role === 'COUNSELOR' ? 'Student management' : 'Standard user portal'}
+                        </span>
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                        roleEditingUser.role === role ? 'border-brand-600 bg-brand-600' : 'border-slate-100'
+                      }`}>
+                        {roleEditingUser.role === role && <motion.div layoutId="check" className="w-1.5 h-1.5 bg-white rounded-full" />}
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </div>
               <div className="pt-4">

@@ -123,7 +123,7 @@ export default function CareerAssessmentPage() {
 
   return (
     <main className="min-h-screen bg-[#F4F7FB] py-12 px-4 sm:px-6 lg:px-8 font-sans selection:bg-blue-100 selection:text-blue-900">
-      <div className="mx-auto max-w-[1200px] space-y-8">
+      <div className="mx-auto max-w-[1200px] space-y-16">
 
         {/* --- PROFESSIONAL HERO HEADER WITH ROUNDED BORDERS & COLORS --- */}
         <motion.div
@@ -227,9 +227,14 @@ export default function CareerAssessmentPage() {
                       <p className="text-slate-300 text-base leading-relaxed max-w-xl mb-10 font-medium">
                         The ComPAS Now™ analysis indicates a strong alignment with roles requiring methodical organization, interpersonal diplomacy, and contextual consistency. High scores in democratic values suggest proficiency in collaborative environments.
                       </p>
-                      <button onClick={() => setActiveTab('competencies')} className="px-6 py-3 bg-white text-slate-900 text-sm font-bold rounded-xl shadow-sm hover:scale-105 transition-transform inline-flex items-center gap-2 w-fit">
-                        View Matrix Data <ArrowRight size={18} />
-                      </button>
+                      <div className="flex flex-wrap gap-4">
+                        <button onClick={() => setActiveTab('competencies')} className="px-6 py-3 bg-white text-slate-900 text-sm font-bold rounded-xl shadow-sm hover:scale-105 transition-transform inline-flex items-center gap-2 w-fit">
+                          View Matrix Data <ArrowRight size={18} />
+                        </button>
+                        <a href="http://compasnow.com/newOnlineTest.jsp" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-blue-600/30 backdrop-blur-md border border-white/20 text-white text-sm font-bold rounded-xl shadow-sm hover:bg-blue-600/50 transition-all inline-flex items-center gap-2 w-fit">
+                          Start Online Test <ArrowRight size={18} />
+                        </a>
+                      </div>
                     </div>
                   </motion.div>
 
@@ -427,11 +432,50 @@ export default function CareerAssessmentPage() {
           </div>
         </div>
 
-        {/* Footer Actions */}
+        {/* --- TAKE ASSESSMENT CTA --- */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative overflow-hidden rounded-[3rem] bg-gradient-to-r from-blue-600 to-indigo-700 p-12 text-white shadow-2xl shadow-blue-200/50"
+        >
+          {/* Decorative Circles */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-400/20 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4" />
 
-      </div>
-      <div className="mt-12 -mb-12 -mx-4 sm:-mx-6 lg:-mx-8">
-        <ContactPage />
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
+            <div className="text-center md:text-left max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-white/20 border border-white/30 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+                Ready to Start?
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-bold mb-4 leading-tight">
+                Take Your Professional <br />
+                ComPAS Now™ Assessment
+              </h2>
+              <p className="text-blue-50 text-base font-medium opacity-90 leading-relaxed">
+                Unlock your full potential with our advanced behavioral evaluation. 
+                Complete the online test now to receive your personalized roadmap to career excellence.
+              </p>
+            </div>
+            
+            <a 
+              href="http://compasnow.com/newOnlineTest.jsp" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group relative px-10 py-5 bg-white text-blue-700 rounded-[2rem] font-black text-sm tracking-widest uppercase shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all flex items-center gap-3 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="relative z-10">Start Assessment</span>
+              <Compass size={20} className="relative z-10 group-hover:rotate-45 transition-transform duration-500" />
+            </a>
+          </div>
+        </motion.div>
+
+        {/* --- CONTACT SEGMENT (Now parallel and perfectly spaced) --- */}
+        <div className="w-full">
+          <ContactPage bgTransparent={true} showMap={false} compact={true} />
+        </div>
+
       </div>
     </main>
   );

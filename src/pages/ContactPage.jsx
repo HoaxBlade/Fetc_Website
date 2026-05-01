@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { User, Mail, FileText, MessageSquare, Send, MapPin, Phone, Mail as MailIcon } from "lucide-react";
 
-const ContactPage = () => {
+const ContactPage = ({ bgTransparent = false, showMap = true, compact = false }) => {
   const [pageData, setPageData] = useState(null);
 
   const fetchPageContent = async () => {
@@ -58,8 +58,8 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="w-full bg-slate-50 py-16 px-4 md:px-8 lg:px-16 flex flex-col items-center justify-center">
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <div className={`w-full ${bgTransparent ? 'bg-transparent' : 'bg-slate-50'} ${compact ? 'py-0 px-0' : 'py-16 px-4 md:px-8 lg:px-16'} flex flex-col items-center justify-center`}>
+      <div className={`w-full ${compact ? 'max-w-none' : 'max-w-6xl'} grid grid-cols-1 lg:grid-cols-3 gap-10`}>
 
         {/* Left Column - Contact Info */}
         <div className="col-span-1 bg-brand-800 text-white rounded-2xl p-8 shadow-soft flex flex-col justify-between transition-transform duration-500 hover:-translate-y-1">
@@ -262,68 +262,70 @@ const ContactPage = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-6xl mt-12 bg-white p-4 rounded-[2rem] shadow-soft border border-slate-100 relative group">
-        <h3 className="text-xl font-bold text-slate-800 mb-4 px-2">Our Location</h3>
-        <div className="w-full h-[500px] sm:h-[600px] rounded-[1.5rem] overflow-hidden relative shadow-inner bg-slate-100">
-          <iframe
-            title="FETC Location Map"
-            frameBorder="0"
-            style={{ border: 0 }}
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3721.2173516541525!2d72.77322501493404!3d21.132808085942443!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04fca00000001%3A0x3938b81313333333!2sForeign%20English%20Tests%20Capital%20-%20FETC!5e0!3m2!1sen!2sin!4v1714310000000!5m2!1sen!2sin"
-            allowFullScreen=""
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className="absolute -top-16 left-0 w-full h-[calc(100%+4rem)] transition-all duration-700 pointer-events-none"
-          ></iframe>
+      {showMap && (
+        <div className="w-full max-w-6xl mt-12 bg-white p-4 rounded-[2rem] shadow-soft border border-slate-100 relative group">
+          <h3 className="text-xl font-bold text-slate-800 mb-4 px-2">Our Location</h3>
+          <div className="w-full h-[500px] sm:h-[600px] rounded-[1.5rem] overflow-hidden relative shadow-inner bg-slate-100">
+            <iframe
+              title="FETC Location Map"
+              frameBorder="0"
+              style={{ border: 0 }}
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3721.2173516541525!2d72.77322501493404!3d21.132808085942443!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04fca00000001%3A0x3938b81313333333!2sForeign%20English%20Tests%20Capital%20-%20FETC!5e0!3m2!1sen!2sin!4v1714310000000!5m2!1sen!2sin"
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="absolute -top-16 left-0 w-full h-[calc(100%+4rem)] transition-all duration-700 pointer-events-none"
+            ></iframe>
 
-          {/* Custom Pin Marker Overlay */}
-          <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-[100%] pointer-events-none flex flex-col items-center">
-            <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white shadow-xl ring-4 ring-white animate-bounce">
-              <MapPin size={24} fill="currentColor" className="text-white" />
-            </div>
-            <div className="w-2 h-2 bg-red-500/50 rounded-full blur-[2px] mt-1"></div>
-          </div>
-
-          {/* Floating Map Card */}
-          <div className="absolute top-8 left-8 w-[90%] max-w-sm glass-card backdrop-blur-xl p-8 rounded-[2rem] border border-white/60 shadow-2xl animate-fade-in-up">
-            <h4 className="text-2xl font-black text-slate-900 leading-tight mb-2">
-              Foreign English Tests Capital - FETC
-            </h4>
-
-            <div className="flex items-center gap-2 mb-6">
-              <span className="text-brand-600 font-black text-lg">4.9</span>
-              <div className="flex text-amber-400">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
+            {/* Custom Pin Marker Overlay */}
+            <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-[100%] pointer-events-none flex flex-col items-center">
+              <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white shadow-xl ring-4 ring-white animate-bounce">
+                <MapPin size={24} fill="currentColor" className="text-white" />
               </div>
-              <span className="text-slate-400 text-sm font-medium">(83 Reviews)</span>
+              <div className="w-2 h-2 bg-red-500/50 rounded-full blur-[2px] mt-1"></div>
             </div>
 
-            <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8">
-              Second Floor, Roongta Signature, 238 – 239, VIP Rd, opp. Shyam Mandir, Anand Park, Vesu, Surat, Gujarat 395007
-            </p>
+            {/* Floating Map Card */}
+            <div className="absolute top-8 left-8 w-[90%] max-w-sm glass-card backdrop-blur-xl p-8 rounded-[2rem] border border-white/60 shadow-2xl animate-fade-in-up">
+              <h4 className="text-2xl font-black text-slate-900 leading-tight mb-2">
+                Foreign English Tests Capital - FETC
+              </h4>
 
-            <div className="flex gap-3">
-              <a
-                href="https://www.google.com/maps/dir//Foreign+English+Tests+Capital+-+FETC/data=!4m6!4m5!1m1!4e2!1m2!1m1!1s0x3be04fca00000001:0x3938b81313333333?sa=X"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 bg-brand-600 text-white py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-brand-700 transition-all shadow-lg shadow-brand-100"
-              >
-                Get Directions
-              </a>
-              <button className="p-4 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-brand-600 transition-all shadow-sm">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </button>
+              <div className="flex items-center gap-2 mb-6">
+                <span className="text-brand-600 font-black text-lg">4.9</span>
+                <div className="flex text-amber-400">
+                  {[...Array(5)].map((_, i) => (
+                    <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <span className="text-slate-400 text-sm font-medium">(83 Reviews)</span>
+              </div>
+
+              <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8">
+                Second Floor, Roongta Signature, 238 – 239, VIP Rd, opp. Shyam Mandir, Anand Park, Vesu, Surat, Gujarat 395007
+              </p>
+
+              <div className="flex gap-3">
+                <a
+                  href="https://www.google.com/maps/dir//Foreign+English+Tests+Capital+-+FETC/data=!4m6!4m5!1m1!4e2!1m2!1m1!1s0x3be04fca00000001:0x3938b81313333333?sa=X"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 bg-brand-600 text-white py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-brand-700 transition-all shadow-lg shadow-brand-100"
+                >
+                  Get Directions
+                </a>
+                <button className="p-4 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-brand-600 transition-all shadow-sm">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
