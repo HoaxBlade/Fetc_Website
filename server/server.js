@@ -12,6 +12,29 @@ const fs = require('fs');
 const nodemailer = require('nodemailer');
 
 // Middleware
+const runMigrations = async () => {
+  try {
+    console.log('Running auto-migrations...');
+    await db.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image TEXT;
+      CREATE TABLE IF NOT EXISTS doubts (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
+        subject VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        status VARCHAR(20) DEFAULT 'OPEN',
+        admin_response TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('✅ Migrations completed');
+  } catch (err) {
+    console.error('❌ Migration error:', err);
+  }
+};
+runMigrations();
+
 app.use(cors({
   origin: '*', // Allow all origins
   allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning']

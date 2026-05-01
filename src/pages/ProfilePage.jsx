@@ -26,7 +26,7 @@ const ProfilePage = () => {
       if (!userData.id) return;
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/users/profile/${userData.id}`);
+        const response = await fetch((window.API_BASE || "") + `/api/users/profile/${userData.id}`);
         const data = await response.json();
         if (data.success) {
           const updatedUser = { ...userData, ...data.user };
@@ -58,9 +58,12 @@ const ProfilePage = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch(`/api/users/profile/${userData.id}`, {
+      const response = await fetch((window.API_BASE || "") + `/api/users/profile/${userData.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify(formData),
       });
 
@@ -106,9 +109,12 @@ const ProfilePage = () => {
       const uploadResult = await uploadRes.json();
 
       if (uploadResult.success) {
-        const profileRes = await fetch(`/api/users/profile/${userData.id}`, {
+        const profileRes = await fetch((window.API_BASE || "") + `/api/users/profile/${userData.id}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          },
           body: JSON.stringify({ profile_image: uploadResult.url })
         });
         const profileResult = await profileRes.json();
@@ -134,9 +140,12 @@ const ProfilePage = () => {
 
     setIsUploading(true);
     try {
-      const response = await fetch(`/api/users/profile/${userData.id}`, {
+      const response = await fetch((window.API_BASE || "") + `/api/users/profile/${userData.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         // Use empty string or null to reset the column in DB
         body: JSON.stringify({ profile_image: "" }) 
       });

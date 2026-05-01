@@ -8,7 +8,20 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     role VARCHAR(50) DEFAULT 'USER',
     phone VARCHAR(20),
+    bio TEXT,
+    profile_image TEXT,
     status VARCHAR(20) DEFAULT 'ACTIVE',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. Doubts Table (Student Support)
+CREATE TABLE IF NOT EXISTS doubts (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    subject VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    status VARCHAR(20) DEFAULT 'OPEN',
+    admin_response TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
