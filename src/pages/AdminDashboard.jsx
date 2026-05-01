@@ -151,7 +151,7 @@ const AdminDashboard = () => {
             <h4 className="text-lg font-bold text-slate-800 tracking-tight mb-6">Quick Actions</h4>
             <div className="grid grid-cols-2 gap-4 h-fit">
                {[
-                 { label: "New Lead", icon: ShoppingBag, color: "bg-blue-500", action: () => navigate('/admin/leads') },
+                 { label: "Doubts Portal", icon: ShoppingBag, color: "bg-blue-500", action: () => navigate('/admin/doubts') },
                  { label: "User Audit", icon: Users, color: "bg-purple-500", action: () => navigate('/admin/users') },
                  { label: "Export Data", icon: Download, color: "bg-emerald-500", action: handleExportData }
                ].map((action, i) => (

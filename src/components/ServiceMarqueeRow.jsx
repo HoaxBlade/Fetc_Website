@@ -97,6 +97,78 @@ function ServiceMarqueeRow({
     </div>
   );
 
+  const renderStaticCard = (service, idx) => {
+    const isLinkCard = !!service.links;
+    
+    return (
+      <div 
+        key={idx} 
+        className="group relative flex w-full flex-col justify-between overflow-hidden rounded-[2.5rem] bg-white/70 backdrop-blur-2xl p-8 md:p-12 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.04)] ring-1 ring-white/80 transition-all duration-700 hover:-translate-y-3 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] hover:bg-white/90 hover:ring-blue-50/50"
+      >
+        {/* Soft, ethereal background glows */}
+        <div className="absolute -right-32 -top-32 h-80 w-80 rounded-full bg-blue-50/40 blur-[80px] transition-opacity duration-1000 group-hover:opacity-100 opacity-50 pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-indigo-50/40 blur-[80px] transition-opacity duration-1000 group-hover:opacity-100 opacity-50 pointer-events-none" />
+        
+        <div className="relative z-10">
+          <div className="mb-8 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50/50 ring-1 ring-blue-100/50 backdrop-blur-sm transition-transform duration-700 group-hover:scale-110 group-hover:bg-blue-50">
+            {isLinkCard ? (
+              <svg className="h-7 w-7 text-blue-600 drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            ) : (
+              <svg className="h-7 w-7 text-blue-600 drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            )}
+          </div>
+          
+          {service.title && service.title !== title && service.title !== secondTitle && (
+            <h3 className="mb-4 text-3xl font-extrabold tracking-tight text-slate-900 transition-colors duration-500">
+              {service.title}
+            </h3>
+          )}
+          
+          {service.links ? (
+            <div className="mt-8 flex flex-col gap-4">
+               {service.links.map((link, lIdx) => (
+                 <a 
+                   key={lIdx} 
+                   href={link.url} 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   className="group/link relative flex items-center justify-between rounded-2xl bg-white/60 backdrop-blur-md p-4 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.03)] ring-1 ring-slate-100/50 transition-all duration-500 hover:-translate-y-1 hover:bg-white hover:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.08)] hover:ring-blue-100"
+                 >
+                   <div className="relative flex items-center gap-4">
+                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-50/80 transition-colors duration-500 group-hover/link:bg-blue-50">
+                       <Download size={16} className="text-slate-400 transition-colors duration-500 group-hover/link:text-blue-500" />
+                     </div>
+                     <span className="font-semibold text-sm text-slate-700 transition-colors duration-500 group-hover/link:text-slate-900">
+                       {link.label}
+                     </span>
+                   </div>
+                 </a>
+               ))}
+            </div>
+          ) : (
+            <p className="mt-4 text-lg font-medium leading-relaxed text-slate-500">
+              {service.description}
+            </p>
+          )}
+        </div>
+        
+        <div className="relative z-10 mt-12">
+          {service.path ? (
+            <Link
+              to={service.path}
+              className="group/btn inline-flex items-center gap-3 rounded-full bg-[#0F172A] px-8 py-3.5 text-sm font-bold tracking-wide text-white shadow-[0_8px_25px_-8px_rgba(15,23,42,0.4)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_-10px_rgba(15,23,42,0.6)]"
+            >
+              Explore Details
+              <svg className="h-4 w-4 transition-transform duration-500 group-hover/btn:translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </Link>
+          ) : null}
+        </div>
+      </div>
+    );
+  };
+
   if (layout === "split-overlapping") {
     return (
       <motion.section
@@ -288,20 +360,23 @@ function ServiceMarqueeRow({
     >
       <div className="mx-auto max-w-7xl px-4 md:px-6">
 
-        {/* iOS Style Header - Supports single centered or dual split headers */}
-        <div className={`mb-12 grid grid-cols-1 gap-10 lg:gap-20 ${secondTitle ? 'lg:grid-cols-2 text-left' : 'items-center text-center'}`}>
-          <div className="flex flex-col">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl lg:text-5xl">
+        {/* Premium Split Header for Static Section */}
+        <div className={`mb-16 grid grid-cols-1 gap-10 lg:gap-16 ${secondTitle ? 'lg:grid-cols-2 text-left' : 'items-center text-center'}`}>
+          <div className="relative flex flex-col">
+            {secondTitle && (
+              <div className="absolute -right-8 top-1/2 hidden h-24 w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-slate-200 to-transparent lg:block" />
+            )}
+            <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 md:text-5xl">
               {title}
             </h2>
-            <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-slate-500">
+            <p className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-slate-500">
               {description}
             </p>
             {linkText && (
               <div className="mt-8">
                 <Link
                   to={linkTarget}
-                  className="inline-flex items-center justify-center rounded-full bg-slate-900 px-7 py-3 text-sm font-bold text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 active:scale-95"
+                  className="inline-flex w-max items-center justify-center rounded-full bg-[#0F172A] px-8 py-3.5 text-sm font-bold tracking-wide text-white shadow-[0_8px_25px_-8px_rgba(15,23,42,0.4)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_-10px_rgba(15,23,42,0.6)] active:scale-95"
                 >
                   {linkText}
                 </Link>
@@ -311,18 +386,18 @@ function ServiceMarqueeRow({
           
           {secondTitle && (
             <div className="flex flex-col">
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl lg:text-5xl">
+              <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 md:text-5xl">
                 {secondTitle}
               </h2>
-              <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-slate-500">
+              <p className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-slate-500">
                 {secondDescription}
               </p>
             </div>
           )}
         </div>
         {isStatic ? (
-          <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 md:grid-cols-2">
-            {items.map((service, idx) => renderCard(service, idx))}
+          <div className="grid w-full grid-cols-1 gap-8 lg:gap-12 md:grid-cols-2">
+            {items.map((service, idx) => renderStaticCard(service, idx))}
           </div>
         ) : (
           <div className={`relative flex w-full overflow-hidden rounded-[2rem] shadow-inner ring-1 ring-slate-100/50`}>

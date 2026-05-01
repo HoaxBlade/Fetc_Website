@@ -30,6 +30,8 @@ import NewsFlashBanner from "./components/NewsFlashBanner";
 import UserLayout from "./components/user/UserLayout";
 import ProfilePage from "./pages/ProfilePage";
 import StartJourneyPage from "./pages/StartJourneyPage";
+import UserSupport from "./pages/user/UserSupport";
+import UserDoubts from "./pages/user/UserDoubts";
 
 // Admin Imports
 import AdminLayout from "./components/admin/AdminLayout";
@@ -42,8 +44,8 @@ import AdminMockTest from "./pages/admin/AdminMockTest";
 import AdminNewsFlash from "./pages/admin/AdminNewsFlash";
 import AdminSupportTickets from "./pages/admin/AdminSupportTickets";
 import AdminInvoice from "./pages/admin/AdminInvoice";
-import AdminLeads from "./pages/admin/AdminLeads";
-import AdminPartners from "./pages/admin/AdminPartners";
+import AdminDoubts from "./pages/admin/AdminDoubts";
+
 import AdminGuides from "./pages/admin/AdminGuides";
 
 function AppContent() {
@@ -89,8 +91,8 @@ function AppContent() {
             <Route path="news-flash" element={<AdminNewsFlash />} />
             <Route path="support-tickets" element={<AdminSupportTickets />} />
             <Route path="invoice" element={<AdminInvoice />} />
-            <Route path="leads" element={<AdminLeads />} />
-            <Route path="partners" element={<AdminPartners />} />
+            <Route path="doubts" element={<AdminDoubts />} />
+
             <Route path="guides" element={<AdminGuides />} />
           </Route>
 
@@ -101,8 +103,8 @@ function AppContent() {
             <Route path="courses" element={<div className="p-8 text-slate-400 italic">My Courses component coming soon...</div>} />
             <Route path="orders" element={<div className="p-8 text-slate-400 italic">My Orders component coming soon...</div>} />
             <Route path="payments" element={<div className="p-8 text-slate-400 italic">Payments component coming soon...</div>} />
-            <Route path="support" element={<div className="p-8 text-slate-400 italic">Support component coming soon...</div>} />
-            <Route path="doubts" element={<div className="p-8 text-slate-400 italic text-sm font-medium tracking-wide">Doubts portal coming soon...</div>} />
+            <Route path="support" element={<UserSupport />} />
+            <Route path="doubts" element={<UserDoubts />} />
             <Route path="mock-tests" element={<div className="p-8 text-slate-400 italic text-sm font-medium tracking-wide">Mock Test dashboard coming soon...</div>} />
           </Route>
 

@@ -12,6 +12,7 @@ import {
   Layers, Check, ClipboardList, FileBarChart, Users
 } from 'lucide-react';
 import InteractiveGuide from "../components/InteractiveGuide";
+import ContactPage from "./ContactPage";
 
 // --- Extracted Data ---
 const VAK_DATA = [
@@ -428,6 +429,9 @@ export default function CareerAssessmentPage() {
 
         {/* Footer Actions */}
 
+      </div>
+      <div className="mt-12 -mb-12 -mx-4 sm:-mx-6 lg:-mx-8">
+        <ContactPage />
       </div>
     </main>
   );

@@ -84,9 +84,22 @@ function ExamDetailPage() {
         )}
 
         <div className="prose prose-slate max-w-none text-lg leading-relaxed text-slate-600">
-          {displayDesc.split('\n\n').map((para, idx) => (
-             <p key={idx} className="mb-6">{para}</p>
-          ))}
+          {displayDesc.split('\n\n').map((para, idx) => {
+             const lines = para.split('\n');
+             if (lines.length > 1) {
+               return (
+                 <div key={idx} className="mb-10 bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100">
+                   <h3 className="text-xl font-extrabold text-slate-800 mb-4 tracking-tight">{lines[0]}</h3>
+                   <div className="space-y-4">
+                     {lines.slice(1).map((line, i) => (
+                       <p key={i} className="text-slate-600 leading-relaxed m-0">{line}</p>
+                     ))}
+                   </div>
+                 </div>
+               );
+             }
+             return <p key={idx} className="mb-8 font-medium text-slate-700">{para}</p>;
+          })}
         </div>
 
         {pageData.features && pageData.features.length > 0 && (

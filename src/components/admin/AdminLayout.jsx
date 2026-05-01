@@ -3,7 +3,7 @@ import { Outlet, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, FileText, Share2,
-  Zap, Ticket, Menu, X
+  Zap, Ticket, Menu, X, HelpCircle
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -17,10 +17,10 @@ const AdminLayout = () => {
     { icon: Share2, label: "Posts", path: "/admin/posts" },
     // { icon: CheckSquare, label: "Mock Test", path: "/admin/mock-test" },
     { icon: Zap, label: "News Flash", path: "/admin/news-flash" },
-    { icon: Ticket, label: "Student Queries", path: "/admin/support-tickets" },
+    { icon: Ticket, label: "Student Support", path: "/admin/support-tickets" },
     // { icon: FileText, label: "Invoice", path: "/admin/invoice" },
-    { icon: LayoutDashboard, label: "Leads Dashboard", path: "/admin/leads" },
-    { icon: Users, label: "Partner List", path: "/admin/partners" },
+    { icon: HelpCircle, label: "Doubts Portal", path: "/admin/doubts" },
+
     // { icon: BookOpen, label: "Interactive Guides", path: "/admin/guides" },
   ];
 
@@ -65,7 +65,7 @@ const AdminLayout = () => {
   );
 
   return (
-    <div className="h-screen bg-[#f8fafc] flex overflow-hidden relative font-['Inter']">
+    <div className="min-h-screen bg-[#f8fafc] flex relative font-['Inter'] overflow-clip">
       {/* Dynamic Background Decorations */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-200/20 rounded-full blur-[140px] animate-pulse" />
@@ -90,7 +90,7 @@ const AdminLayout = () => {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="w-[360px] hidden lg:flex flex-col h-screen z-20 pt-20 px-8 pb-8 pr-0">
+      <aside className="w-[360px] hidden lg:flex flex-col h-screen sticky top-0 z-20 pt-24 px-8 pb-8 pr-0">
         <div className="h-fit max-h-[calc(100vh-4rem)] glass-card backdrop-blur-3xl border border-white/80 shadow-[0_20px_40px_rgba(0,0,0,0.05)] rounded-[2rem] overflow-hidden relative group">
           {/* Internal Glows */}
           <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
@@ -129,8 +129,8 @@ const AdminLayout = () => {
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <main className="flex-1 h-screen overflow-y-auto relative z-10 custom-scrollbar scroll-smooth">
-        <div className="pt-40 pb-80 px-6 md:p-14 lg:p-20 min-h-full">
+      <main className="flex-1 relative z-10 w-full">
+        <div className="pt-32 pb-20 px-6 md:p-14 lg:p-20 min-h-full">
           <Outlet />
         </div>
       </main>

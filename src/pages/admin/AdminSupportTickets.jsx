@@ -53,12 +53,7 @@ const AdminSupportTickets = () => {
       (ticket.email && ticket.email.toLowerCase().includes(searchTerm.toLowerCase()))
     );
     
-    // Only show Study Abroad or Course Related enquiries
-    const isRelevant = 
-      ticket.subject.toLowerCase().includes("study abroad") || 
-      ticket.subject.toLowerCase().includes("course related");
-
-    return isMatched && isRelevant;
+    return isMatched;
   });
 
   const getPriorityColor = (priority) => {
@@ -162,8 +157,8 @@ const AdminSupportTickets = () => {
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Student Queries</h1>
-          <p className="text-slate-500 font-medium text-sm italic">Resolve student queries and technical issues.</p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Student Support</h1>
+          <p className="text-slate-500 font-medium text-sm italic">Resolve student support tickets and technical issues.</p>
         </div>
       </div>
 

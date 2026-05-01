@@ -317,6 +317,26 @@ app.post('/api/admin/users/invite', async (req, res) => {
   }
 });
 
+// Admin Update User Route
+app.patch('/api/admin/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, email, phone, role } = req.body;
+  
+  try {
+    const result = await db.query(
+      'UPDATE users SET name = COALESCE($1, name), email = COALESCE($2, email), phone = COALESCE($3, phone), role = COALESCE($4, role) WHERE id = $5 RETURNING id, name, email, role, phone, status, created_at',
+      [name, email, phone, role, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.json({ success: true, user: result.rows[0], message: 'User updated successfully' });
+  } catch (err) {
+    console.error('Update user error:', err);
+    res.status(500).json({ success: false, message: 'Error updating user' });
+  }
+});
+
 // Admin Delete User Route
 app.delete('/api/admin/users/:id', async (req, res) => {
   const { id } = req.params;
@@ -477,9 +497,7 @@ app.patch('/api/admin/tickets/:id', async (req, res) => {
 
     const ticket = result.rows[0];
     
-    // Trigger email notification if status is IN_PROGRESS or RESOLVED
     if (status === 'IN_PROGRESS' || status === 'RESOLVED') {
-      // Fire and forget email sending
       sendTicketStatusEmail(ticket.email, ticket.name, ticket.subject, status);
     }
 
@@ -487,6 +505,99 @@ app.patch('/api/admin/tickets/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+// --- User Support API ---
+
+// GET /api/users/:userId/tickets - Get tickets for a specific user
+app.get('/api/users/:userId/tickets', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const result = await db.query('SELECT * FROM tickets WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
+    res.json({ success: true, tickets: result.rows });
+  } catch (err) {
+    console.error('Fetch user tickets error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// --- Doubts API ---
+
+// Create doubts table if not exists
+db.query(`
+  CREATE TABLE IF NOT EXISTS doubts (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    subject TEXT NOT NULL,
+    description TEXT NOT NULL,
+    status TEXT DEFAULT 'OPEN',
+    answer TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`).catch(console.error);
+
+// GET /api/users/:userId/doubts - Get doubts for a user
+app.get('/api/users/:userId/doubts', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const result = await db.query('SELECT * FROM doubts WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
+    res.json({ success: true, doubts: result.rows });
+  } catch (err) {
+    console.error('Fetch user doubts error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// POST /api/doubts - Create a new doubt
+app.post('/api/doubts', async (req, res) => {
+  const { userId, subject, description } = req.body;
+  try {
+    const result = await db.query(
+      'INSERT INTO doubts (user_id, subject, description) VALUES ($1, $2, $3) RETURNING *',
+      [userId, subject, description]
+    );
+    res.status(201).json({ success: true, doubt: result.rows[0] });
+  } catch (err) {
+    console.error('Create doubt error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Admin: GET all doubts
+app.get('/api/admin/doubts', async (req, res) => {
+  try {
+    // Fetch doubts along with user names if they exist
+    const result = await db.query(`
+      SELECT d.*, u.name as user_name, u.email as user_email
+      FROM doubts d
+      LEFT JOIN users u ON d.user_id = u.id
+      ORDER BY d.created_at DESC
+    `);
+    res.json({ success: true, doubts: result.rows });
+  } catch (err) {
+    console.error('Fetch admin doubts error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Admin: PATCH answer/status of doubt
+app.patch('/api/admin/doubts/:id', async (req, res) => {
+  const { id } = req.params;
+  const { answer, status } = req.body;
+  try {
+    const result = await db.query(
+      'UPDATE doubts SET answer = COALESCE($1, answer), status = COALESCE($2, status), updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *',
+      [answer, status, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Doubt not found' });
+    }
+    res.json({ success: true, doubt: result.rows[0] });
+  } catch (err) {
+    console.error('Update doubt error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 

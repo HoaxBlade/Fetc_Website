@@ -64,6 +64,34 @@ const AdminUsers = () => {
     }
   };
 
+  // Edit User State
+  const [editingUser, setEditingUser] = useState(null);
+  const [roleEditingUser, setRoleEditingUser] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleUpdateUser = async (id, payload, closeModal) => {
+    setIsUpdating(true);
+    try {
+      const response = await fetch((window.API_BASE||'') + `/api/admin/users/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      if (data.success) {
+        setUsers(users.map(u => u.id === id ? data.user : u));
+        closeModal();
+      } else {
+        alert(data.message || 'Failed to update user');
+      }
+    } catch (err) {
+      console.error('Update error:', err);
+      alert('Error connecting to server');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
@@ -208,8 +236,100 @@ const AdminUsers = () => {
           </motion.div>
         </div>
       )}
+      {/* Edit User Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            onClick={() => setEditingUser(null)}
+          />
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+            className="relative w-full max-w-md bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl p-8 overflow-hidden border border-slate-200/60"
+          >
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-slate-800">Edit User Info</h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Update personal details</p>
+              </div>
+              <button onClick={() => setEditingUser(null)} className="p-2 hover:bg-slate-50 rounded-full text-slate-400">
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleUpdateUser(editingUser.id, editingUser, () => setEditingUser(null)); }} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Full Name</label>
+                <input required className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-300 transition-all" value={editingUser.name} onChange={(e) => setEditingUser({...editingUser, name: e.target.value})} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Email Address</label>
+                <input required type="email" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-300 transition-all" value={editingUser.email} onChange={(e) => setEditingUser({...editingUser, email: e.target.value})} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Phone Number</label>
+                <input className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-300 transition-all font-mono" value={editingUser.phone || ''} onChange={(e) => setEditingUser({...editingUser, phone: e.target.value})} />
+              </div>
+              <div className="pt-4">
+                <button disabled={isUpdating} type="submit" className="w-full bg-brand-600 text-white py-4 rounded-2xl font-bold text-sm hover:bg-brand-700 transition-all shadow-xl flex items-center justify-center gap-2">
+                  {isUpdating ? <Loader2 className="animate-spin" size={18} /> : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
 
-      <div className="glass-card rounded-[2rem] border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-hidden">
+      {/* Change Role Modal */}
+      {roleEditingUser && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            onClick={() => setRoleEditingUser(null)}
+          />
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+            className="relative w-full max-w-sm bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl p-8 overflow-hidden border border-slate-200/60"
+          >
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-slate-800">Change Role</h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Update access permissions</p>
+              </div>
+              <button onClick={() => setRoleEditingUser(null)} className="p-2 hover:bg-slate-50 rounded-full text-slate-400">
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleUpdateUser(roleEditingUser.id, { role: roleEditingUser.role }, () => setRoleEditingUser(null)); }} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Select Role</label>
+                <div className="relative group">
+                  <select 
+                    className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-300 focus:ring-4 focus:ring-brand-600/5 transition-all appearance-none cursor-pointer"
+                    value={roleEditingUser.role}
+                    onChange={(e) => setRoleEditingUser({...roleEditingUser, role: e.target.value})}
+                  >
+                    <option value="USER">User</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="COUNSELOR">Counselor</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-brand-600 transition-colors">
+                    <ChevronRight size={14} className="rotate-90" />
+                  </div>
+                </div>
+              </div>
+              <div className="pt-4">
+                <button disabled={isUpdating} type="submit" className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold text-sm hover:bg-slate-800 transition-all shadow-xl flex items-center justify-center gap-2">
+                  {isUpdating ? <Loader2 className="animate-spin" size={18} /> : 'Confirm Role'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      <div className="glass-card rounded-[2rem] border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-visible">
         <div className="p-8 border-b border-slate-50 flex flex-wrap items-center justify-between gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -263,38 +383,30 @@ const AdminUsers = () => {
                   <td className="px-6 py-4 text-xs text-slate-500 font-medium font-mono">
                     {user.phone || "N/A"}
                   </td>
-                  <td className="px-6 py-4 text-right rounded-r-2xl relative">
-                    <button 
-                      onClick={() => setActiveMenuId(activeMenuId === user.id ? null : user.id)}
-                      className={`p-2 rounded-xl transition-all ${activeMenuId === user.id ? 'bg-slate-900 text-white' : 'text-slate-400 hover:bg-slate-100'}`}
-                    >
-                      <MoreVertical size={18} />
-                    </button>
-
-                    {activeMenuId === user.id && (
-                      <>
-                        <div className="fixed inset-0 z-[60]" onClick={() => setActiveMenuId(null)} />
-                        <motion.div 
-                          initial={{ opacity: 0, scale: 0.95, x: 10 }}
-                          animate={{ opacity: 1, scale: 1, x: 0 }}
-                          className="absolute right-full mr-2 top-0 z-[70] w-48 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 overflow-hidden"
-                        >
-                          <button className="w-full px-4 py-2.5 text-left text-[11px] font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-3 transition-colors">
-                             <Edit2 size={14} className="text-slate-400" /> Edit User Info
-                          </button>
-                          <button className="w-full px-4 py-2.5 text-left text-[11px] font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-3 transition-colors">
-                             <Shield size={14} className="text-slate-400" /> Change User Role
-                          </button>
-                          <div className="h-px bg-slate-50 my-1" />
-                          <button 
-                            onClick={() => handleDeleteUser(user.id)}
-                            className="w-full px-4 py-2.5 text-left text-[11px] font-bold text-red-500 hover:bg-red-50 flex items-center gap-3 transition-colors"
-                          >
-                             <Trash2 size={14} /> Delete Account
-                          </button>
-                        </motion.div>
-                      </>
-                    )}
+                  <td className="px-6 py-4 text-right rounded-r-2xl">
+                    <div className="flex items-center justify-end gap-2">
+                      <button 
+                        onClick={() => setEditingUser(user)}
+                        title="Edit User Info"
+                        className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-all"
+                      >
+                         <Edit2 size={16} />
+                      </button>
+                      <button 
+                        onClick={() => setRoleEditingUser(user)}
+                        title="Change User Role"
+                        className="p-2 text-indigo-500 hover:bg-indigo-50 rounded-xl transition-all"
+                      >
+                         <Shield size={16} />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteUser(user.id)}
+                        title="Delete Account"
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                      >
+                         <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

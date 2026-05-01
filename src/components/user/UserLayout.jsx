@@ -84,7 +84,7 @@ const UserLayout = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]/50 flex relative overflow-hidden">
+    <div className="min-h-screen bg-[#f8fafc]/50 flex relative overflow-clip">
       {/* Background Liquid Decorations */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-5%] left-[-5%] w-[45%] h-[45%] bg-brand-100/30 rounded-full blur-[120px]" />
@@ -156,7 +156,7 @@ const UserLayout = () => {
       {/* Content */}
       <main className="flex-1 relative z-10">
         <div className="p-6 md:p-8 pt-44 lg:pt-8 min-h-screen">
-          <Outlet />
+          <Outlet context={{ user: userData }} />
         </div>
       </main>
     </div>

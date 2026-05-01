@@ -145,7 +145,7 @@ export const examData = {
   },
   "idp-for-ielts": {
     name: "IELTS",
-    shortLabel: "IELTS (IDP)",
+    shortLabel: "IELTS",
     description:
       "Comprehensive IELTS coaching by experienced mentors with speaking practice, writing correction, and mock tests.",
     fullDescription: "The International English Language Testing System (IELTS) is a widely recognized English language proficiency exam required for study, work, and immigration purposes. It is accepted by educational institutions, employers, and immigration authorities in countries like the UK, USA, Australia, Canada, and New Zealand. IELTS assesses your ability to communicate effectively in English across all key skills.\n\nExam Format and Structure\nThe IELTS exam comprises four sections: Listening, Reading, Writing, and Speaking. Each section is designed to evaluate your English language proficiency in academic or general contexts. The test is available in both pen-and-paper and computer-based formats, providing flexibility to candidates.\n\nWho Needs to Take IELTS?\nIELTS is essential for individuals seeking to study, work, or migrate to English-speaking countries. It is required by universities for admission, by employers for job applications, and by immigration authorities for visa processing. The test is a key step for anyone planning to pursue opportunities abroad.\n\nAccepted Countries and Cost\nIELTS is accepted in the UK, USA, Australia, Canada, New Zealand, and other countries for educational, professional, and immigration purposes. The cost of the exam is INR 17,000, making it a crucial investment for your future abroad.",
@@ -275,7 +275,7 @@ export const navMenus = [
       { label: "SELT", path: "/exam-training/selt" },
       { label: "GRE & GMAT", path: "/exam-training/gre-gmat" },
       { label: "SAT", path: "/exam-training/sat" },
-      { label: "IDP for IELTS", path: "/exam-training/idp-for-ielts" },
+      { label: "IELTS", path: "/exam-training/idp-for-ielts" },
       { label: "TOEFL", path: "/exam-training/toefl" },
       { label: "PTE", path: "/exam-training/pte" },
       // { label: "Pearson Versant Test", path: "/exam-training/pearson-versant" },

@@ -157,7 +157,7 @@ function Navbar() {
           <div className="hidden md:block border-l border-slate-200 pl-4 ml-1">
             <div className="group relative flex items-center h-full">
               <NavLink 
-                to="/my-account"
+                to={!currentUser ? "/my-account" : currentUser.role === "ADMIN" ? "/admin/dashboard" : "/dashboard/profile"}
                 className={({ isActive }) => 
                   `flex items-center justify-center p-2 rounded-full transition-all duration-300 hover:bg-brand-50 hover:text-brand-700 hover:scale-110 ${
                     isActive ? "bg-brand-50 text-brand-700" : "text-slate-700 bg-slate-50"
@@ -228,7 +228,7 @@ function Navbar() {
                   {menu.path === "/my-account" ? (
                     <div className="space-y-1">
                       <NavLink
-                        to={menu.path}
+                        to={!currentUser ? "/my-account" : currentUser.role === "ADMIN" ? "/admin/dashboard" : "/dashboard/profile"}
                         onClick={() => setMobileOpen(false)}
                         className={({ isActive }) =>
                           `flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left font-medium transition-colors ${

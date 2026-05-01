@@ -58,7 +58,7 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-16 px-4 md:px-8 lg:px-16 flex flex-col items-center justify-center">
+    <div className="w-full bg-slate-50 py-16 px-4 md:px-8 lg:px-16 flex flex-col items-center justify-center">
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-10">
 
         {/* Left Column - Contact Info */}
