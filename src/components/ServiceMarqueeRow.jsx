@@ -156,7 +156,7 @@ function ServiceMarqueeRow({
           {service.path ? (
             <Link
               to={service.path}
-              className="group/btn inline-flex items-center gap-3 rounded-full bg-[#0F172A] px-8 py-3.5 text-sm font-bold tracking-wide text-white shadow-[0_8px_25px_-8px_rgba(15,23,42,0.4)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_-10px_rgba(15,23,42,0.6)]"
+              className="group/btn inline-flex items-center gap-3 rounded-full bg-brand-600 px-8 py-3.5 text-sm font-bold tracking-wide text-white shadow-[0_8px_25px_-8px_rgba(13,94,183,0.4)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_-10px_rgba(13,94,183,0.6)]"
             >
               Explore Details
               <svg className="h-4 w-4 transition-transform duration-500 group-hover/btn:translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -213,7 +213,7 @@ function ServiceMarqueeRow({
               <div className="mt-10">
                 <Link
                   to={items[activeIndex]?.path || linkTarget}
-                  className="inline-flex items-center justify-center rounded-full bg-slate-900 px-10 py-4 text-base font-bold text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-600 active:scale-95"
+                  className="inline-flex items-center justify-center rounded-full bg-brand-600 px-10 py-4 text-base font-bold text-white shadow-[0_8px_30px_rgba(13,94,183,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-700 active:scale-95"
                 >
                   {linkText}
                 </Link>
@@ -226,15 +226,105 @@ function ServiceMarqueeRow({
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
-              {/* World Map Background (Faint SVG) */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-[0.07] pointer-events-none">
-                <svg viewBox="0 0 1000 500" className={`w-full max-w-2xl text-slate-900 ${reverse ? 'scale-x-[-1]' : ''}`} fill="currentColor">
-                  <path d="M150,200 Q200,100 300,150 T450,200 T600,150 T750,200 T900,150 V350 Q800,450 650,400 T450,450 T250,400 T100,450 Z" opacity="0.5" />
-                  <circle cx="200" cy="150" r="5" />
-                  <circle cx="450" cy="250" r="3" />
-                  <circle cx="700" cy="180" r="4" />
-                  <circle cx="850" cy="300" r="3" />
-                </svg>
+              {/* Background Visual — Different per section */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                {!reverse ? (
+                  /* GLOBE for "Explore the World" (countries) */
+                  <>
+                    <motion.div
+                      key={activeIndex}
+                      initial={{ scale: 0.95 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.6, ease: "easeOut" }}
+                    >
+                      <svg
+                        viewBox="0 0 200 200"
+                        className="w-[280px] h-[280px] md:w-[340px] md:h-[340px] opacity-[0.08]"
+                        style={{ animation: 'spin 25s linear infinite' }}
+                      >
+                        <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-slate-700" />
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" strokeWidth="1" className="text-brand-600" />
+                        <ellipse cx="100" cy="100" rx="80" ry="30" fill="none" stroke="currentColor" strokeWidth="0.6" className="text-brand-500" />
+                        <ellipse cx="100" cy="100" rx="80" ry="55" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-brand-400" />
+                        <ellipse cx="100" cy="100" rx="80" ry="75" fill="none" stroke="currentColor" strokeWidth="0.4" className="text-brand-300" />
+                        <ellipse cx="100" cy="100" rx="30" ry="80" fill="none" stroke="currentColor" strokeWidth="0.6" className="text-brand-500" />
+                        <ellipse cx="100" cy="100" rx="55" ry="80" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-brand-400" />
+                        <ellipse cx="100" cy="100" rx="75" ry="80" fill="none" stroke="currentColor" strokeWidth="0.4" className="text-brand-300" />
+                        <line x1="20" y1="100" x2="180" y2="100" stroke="currentColor" strokeWidth="0.3" className="text-slate-400" />
+                        <line x1="100" y1="20" x2="100" y2="180" stroke="currentColor" strokeWidth="0.3" className="text-slate-400" />
+                        <circle cx="65" cy="60" r="3" className="text-brand-600" fill="currentColor" opacity="0.6" />
+                        <circle cx="130" cy="75" r="2.5" className="text-brand-500" fill="currentColor" opacity="0.5" />
+                        <circle cx="85" cy="120" r="2" className="text-teal-500" fill="currentColor" opacity="0.5" />
+                        <circle cx="145" cy="110" r="2.5" className="text-brand-400" fill="currentColor" opacity="0.4" />
+                        <circle cx="55" cy="95" r="2" className="text-orange-500" fill="currentColor" opacity="0.4" />
+                      </svg>
+                    </motion.div>
+                    <div 
+                      className="absolute w-[320px] h-[320px] md:w-[400px] md:h-[400px] border border-dashed border-slate-200/30 rounded-full"
+                      style={{ animation: 'spin 40s linear infinite reverse' }}
+                    >
+                      <div className="absolute -top-1.5 left-1/2 w-3 h-3 bg-brand-400/30 rounded-full" />
+                      <div className="absolute -bottom-1.5 left-1/2 w-2 h-2 bg-teal-400/20 rounded-full" />
+                      <div className="absolute top-1/2 -left-1 w-2.5 h-2.5 bg-orange-400/25 rounded-full" />
+                    </div>
+                  </>
+                ) : (
+                  /* BOOK / EXAM visual for "Ace Your Exams" */
+                  <>
+                    <svg
+                      viewBox="0 0 200 200"
+                      className="w-[280px] h-[280px] md:w-[340px] md:h-[340px] opacity-[0.06]"
+                    >
+                      {/* Open book shape */}
+                      <path d="M100 40 L100 170" stroke="currentColor" strokeWidth="1.5" className="text-teal-600" />
+                      {/* Left page */}
+                      <path d="M100 40 Q60 35 30 50 L30 160 Q60 148 100 155 Z" fill="none" stroke="currentColor" strokeWidth="1" className="text-teal-500" />
+                      {/* Right page */}
+                      <path d="M100 40 Q140 35 170 50 L170 160 Q140 148 100 155 Z" fill="none" stroke="currentColor" strokeWidth="1" className="text-teal-500" />
+                      {/* Text lines - left page */}
+                      <line x1="45" y1="70" x2="90" y2="68" stroke="currentColor" strokeWidth="0.6" className="text-slate-400" />
+                      <line x1="45" y1="82" x2="85" y2="80" stroke="currentColor" strokeWidth="0.6" className="text-slate-400" />
+                      <line x1="45" y1="94" x2="88" y2="92" stroke="currentColor" strokeWidth="0.6" className="text-slate-400" />
+                      <line x1="45" y1="106" x2="80" y2="104" stroke="currentColor" strokeWidth="0.6" className="text-slate-400" />
+                      <line x1="45" y1="118" x2="86" y2="117" stroke="currentColor" strokeWidth="0.6" className="text-slate-400" />
+                      {/* Text lines - right page */}
+                      <line x1="110" y1="68" x2="155" y2="70" stroke="currentColor" strokeWidth="0.6" className="text-slate-400" />
+                      <line x1="110" y1="80" x2="155" y2="82" stroke="currentColor" strokeWidth="0.6" className="text-slate-400" />
+                      <line x1="110" y1="92" x2="150" y2="94" stroke="currentColor" strokeWidth="0.6" className="text-slate-400" />
+                      <line x1="110" y1="104" x2="148" y2="106" stroke="currentColor" strokeWidth="0.6" className="text-slate-400" />
+                      {/* Checkmark on right page */}
+                      <path d="M120 120 L128 130 L145 110" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-teal-500" />
+                      {/* Graduation cap above */}
+                      <path d="M100 20 L130 30 L100 40 L70 30 Z" fill="currentColor" className="text-brand-500" opacity="0.3" />
+                      <line x1="130" y1="30" x2="130" y2="45" stroke="currentColor" strokeWidth="0.8" className="text-brand-400" />
+                      {/* Pencil accent */}
+                      <line x1="160" y1="170" x2="175" y2="155" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-orange-400" />
+                      <polygon points="175,155 178,152 176,158" fill="currentColor" className="text-orange-400" />
+                    </svg>
+                    {/* Floating formula/score accents */}
+                    <motion.div
+                      animate={{ y: [-8, 8, -8] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute top-8 right-16 text-sm font-bold text-teal-400/15 select-none"
+                    >
+                      Band 8.0
+                    </motion.div>
+                    <motion.div
+                      animate={{ y: [6, -6, 6] }}
+                      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute bottom-16 left-8 text-sm font-bold text-brand-400/15 select-none"
+                    >
+                      Score 90+
+                    </motion.div>
+                    <motion.div
+                      animate={{ y: [-5, 5, -5], x: [-3, 3, -3] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute top-1/3 left-4 text-xs font-bold text-orange-400/12 select-none"
+                    >
+                      A+
+                    </motion.div>
+                  </>
+                )}
               </div>
 
               {/* Floating Service Tags */}
@@ -376,7 +466,7 @@ function ServiceMarqueeRow({
               <div className="mt-8">
                 <Link
                   to={linkTarget}
-                  className="inline-flex w-max items-center justify-center rounded-full bg-[#0F172A] px-8 py-3.5 text-sm font-bold tracking-wide text-white shadow-[0_8px_25px_-8px_rgba(15,23,42,0.4)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_-10px_rgba(15,23,42,0.6)] active:scale-95"
+                  className="inline-flex w-max items-center justify-center rounded-full bg-brand-600 px-8 py-3.5 text-sm font-bold tracking-wide text-white shadow-[0_8px_25px_-8px_rgba(13,94,183,0.4)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_-10px_rgba(13,94,183,0.6)] active:scale-95"
                 >
                   {linkText}
                 </Link>

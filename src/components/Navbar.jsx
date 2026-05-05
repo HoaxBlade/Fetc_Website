@@ -65,14 +65,28 @@ function Navbar() {
     navigate("/my-account");
   };
 
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <motion.header 
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="sticky top-0 z-[2000] border-b border-slate-200 bg-white/95 backdrop-blur"
+      className={`sticky top-0 z-[2000] transition-all duration-300 ${
+        scrolled 
+          ? "bg-white/80 backdrop-blur-xl border-b border-slate-200 shadow-sm py-1" 
+          : "bg-transparent border-b border-transparent py-3"
+      }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-6">
         <Link to="/" className="flex items-center gap-2 text-lg font-bold text-brand-700 md:text-xl">
           {/* <span>FETC<span className="text-slate-500 text-sm"></span></span> */}
           <img src={logo} alt="FETC Logo" className="h-16 w-auto" />
@@ -125,33 +139,6 @@ function Navbar() {
               </div>
             )))}
 
-            {/* Dynamic Pages Dropdown */}
-            {dynamicPages.length > 0 && (
-              <div className="group relative">
-                <button className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold text-brand-600 transition hover:bg-brand-50">
-                  More <ChevronDown size={16} />
-                </button>
-                <div className="pointer-events-none absolute left-0 top-full w-56 pt-2 opacity-0 transition-opacity duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
-                  <div className="translate-y-2 rounded-xl border border-slate-200 bg-white p-2 shadow-soft transition-transform duration-200 group-hover:translate-y-0">
-                    {dynamicPages.map((page) => (
-                      <NavLink
-                        key={page.slug}
-                        to={page.slug}
-                        className={({ isActive }) =>
-                          `block rounded-lg px-4 py-2.5 text-sm font-medium transition ${
-                            isActive
-                              ? "bg-brand-50 text-brand-700"
-                              : "text-slate-700 hover:bg-slate-50"
-                          }`
-                        }
-                      >
-                        {page.title}
-                      </NavLink>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </nav>
 
           <div className="hidden md:block border-l border-slate-200 pl-4 ml-1">

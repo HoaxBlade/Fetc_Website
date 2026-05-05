@@ -131,20 +131,7 @@ function Footer() {
           </div>
         </div>
 
-        {dynamicPages.length > 0 && (
-          <div>
-            <h4 className="font-semibold text-brand-400">Resources</h4>
-            <ul className="mt-2 space-y-2 text-sm text-slate-200">
-              {dynamicPages.map((page) => (
-                <li key={page.slug}>
-                  <Link to={page.slug} className="hover:text-slate-50 transition-colors">
-                    {page.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+
       </div>
     </footer>
   );

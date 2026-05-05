@@ -16,8 +16,8 @@ const HowItWorks = () => {
       title: "Strategic Training",
       desc: "Enroll in our high-precision prep programs — IELTS, PTE, TOEFL — with AI-driven mock tests and 1-on-1 mentoring.",
       icon: ClipboardCheck,
-      gradient: "from-slate-700 to-slate-900",
-      shadowColor: "shadow-slate-300/40",
+      gradient: "from-orange-500 to-amber-600",
+      shadowColor: "shadow-orange-200/40",
       number: "02"
     },
     {

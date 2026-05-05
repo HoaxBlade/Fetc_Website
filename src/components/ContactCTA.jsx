@@ -14,19 +14,27 @@ const ContactCTA = () => {
           transition={{ duration: 0.8 }}
           className="relative rounded-[3rem] overflow-hidden"
         >
-          {/* Background */}
-          <div className="absolute inset-0 bg-slate-950" />
+          {/* Background — true dark */}
+          <div className="absolute inset-0 bg-[#0a0e1a]" />
 
-          {/* Animated Mesh Gradients */}
+          {/* Very subtle mesh accents */}
           <motion.div
-            animate={{ scale: [1, 1.2, 1], x: [0, 40, 0], y: [0, -20, 0] }}
-            transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-600/20 rounded-full blur-[150px]"
+            animate={{
+              scale: [1, 1.2, 1],
+              x: [-20, 20, -20],
+              y: [-20, 20, -20],
+            }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="absolute -top-1/2 -left-1/2 w-full h-full bg-brand-600/5 rounded-full blur-[120px]"
           />
           <motion.div
-            animate={{ scale: [1.1, 1, 1.1], x: [0, -30, 0], y: [0, 30, 0] }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-500/15 rounded-full blur-[120px]"
+            animate={{
+              scale: [1.2, 1, 1.2],
+              x: [20, -20, 20],
+              y: [20, -20, 20],
+            }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+            className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-indigo-600/5 rounded-full blur-[120px]"
           />
 
           {/* Dot grid texture */}
@@ -48,14 +56,14 @@ const ContactCTA = () => {
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-100 mb-6 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-full ring-1 ring-white/10"
+                  className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-300 mb-6 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-full ring-1 ring-white/10"
                 >
                   Let's Connect
                 </motion.span>
 
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight mb-6">
                   Ready to Start Your{" "}
-                  <span className="bg-gradient-to-r from-brand-100 via-teal-300 to-brand-100 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-brand-400 via-teal-400 to-brand-400 bg-clip-text text-transparent">
                     Global Chapter?
                   </span>
                 </h2>
@@ -88,25 +96,25 @@ const ContactCTA = () => {
                     icon: PhoneCall,
                     label: "Call Us Directly",
                     value: "+91-8854347201",
-                    gradient: "from-brand-600 to-blue-600"
+                    gradient: "from-brand-500 to-blue-500"
                   },
                   {
                     icon: Mail,
                     label: "Email Support",
                     value: "consult@fetc.in",
-                    gradient: "from-teal-500 to-emerald-600"
+                    gradient: "from-teal-500 to-emerald-500"
                   },
                   {
                     icon: MapPin,
                     label: "Visit Our Centre",
                     value: "Surat, Gujarat, India",
-                    gradient: "from-purple-500 to-fuchsia-600"
+                    gradient: "from-purple-500 to-fuchsia-500"
                   },
                   {
                     icon: Clock,
                     label: "Working Hours",
                     value: "Mon – Sat, 9AM – 7PM",
-                    gradient: "from-amber-500 to-orange-600"
+                    gradient: "from-amber-500 to-orange-500"
                   }
                 ].map((item, idx) => (
                   <motion.div
@@ -115,7 +123,7 @@ const ContactCTA = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1, duration: 0.6 }}
-                    className="group flex items-center gap-5 bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 transition-all duration-300 hover:bg-white/[0.08] hover:border-white/15 cursor-default"
+                    className="group flex items-center gap-5 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 transition-all duration-300 hover:bg-white/[0.1] hover:border-white/15 cursor-default"
                   >
                     <div className={`w-12 h-12 bg-gradient-to-br ${item.gradient} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                       <item.icon className="w-5 h-5 text-white" />

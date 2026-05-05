@@ -5,8 +5,8 @@ import { ShieldCheck, Zap, Users, Trophy, ArrowUpRight } from 'lucide-react';
 const FeaturesGrid = ({ title, subtitle, items }) => {
   const defaultFeatures = [
     {
-      title: "Expert 1-on-1 Mentors",
-      desc: "Learn from industry elites with decades of experience guiding students to global success.",
+      title: "Friendly Mentors",
+      desc: "Learn from people who have been there. Our mentors are here to guide you, not just lecture you.",
       icon: Users,
       gradient: "from-blue-500 to-indigo-600",
       bgGlow: "bg-blue-500/10",
@@ -15,7 +15,7 @@ const FeaturesGrid = ({ title, subtitle, items }) => {
     },
     {
       title: "98% Visa Success",
-      desc: "Highest success rate in visa processing across UK, USA, Canada, and Australia.",
+      desc: "We've got visa processing down to a science. Relax, we've done this thousands of times.",
       icon: ShieldCheck,
       gradient: "from-emerald-500 to-teal-600",
       bgGlow: "bg-emerald-500/10",
@@ -23,8 +23,8 @@ const FeaturesGrid = ({ title, subtitle, items }) => {
       metricLabel: "Approval Rate"
     },
     {
-      title: "100% Result Boost",
-      desc: "Accelerated learning modules and AI-driven mock tests for guaranteed band improvements.",
+      title: "Real Result Boost",
+      desc: "Our AI-powered mock tests show you exactly where to improve so you can ace your exams.",
       icon: Zap,
       gradient: "from-amber-500 to-orange-600",
       bgGlow: "bg-amber-500/10",
@@ -32,8 +32,8 @@ const FeaturesGrid = ({ title, subtitle, items }) => {
       metricLabel: "Band Increase"
     },
     {
-      title: "10+ Destinations",
-      desc: "Recognized as the premier gateway for international education across four continents.",
+      title: "Global Reach",
+      desc: "From London to Sydney, we have partners all over the world waiting to welcome you.",
       icon: Trophy,
       gradient: "from-purple-500 to-fuchsia-600",
       bgGlow: "bg-purple-500/10",
@@ -119,7 +119,7 @@ const FeaturesGrid = ({ title, subtitle, items }) => {
                       {f.metricLabel}
                     </span>
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-900 transition-colors duration-300">
+                  <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-brand-600 transition-colors duration-300">
                     <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors duration-300" />
                   </div>
                 </div>

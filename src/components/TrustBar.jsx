@@ -29,10 +29,10 @@ const TrustBar = ({ message }) => {
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400"
+          className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400"
         >
           {message || (
-            <>Trusted by <span className="text-brand-600">100+</span> Global Universities & Education Partners</>
+            <>Working with <span className="text-brand-600">100+</span> amazing universities to get you there</>
           )}
         </motion.p>
       </div>
