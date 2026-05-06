@@ -49,6 +49,9 @@ import AdminDoubts from "./pages/admin/AdminDoubts";
 import AdminGuides from "./pages/admin/AdminGuides";
 
 function AppContent() {
+  const location = useLocation();
+  const isAdminPath = location.pathname.startsWith('/admin');
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Navbar />
@@ -112,7 +115,7 @@ function AppContent() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
-      <Footer />
+      {!isAdminPath && <Footer />}
     </div>
   );
 }
