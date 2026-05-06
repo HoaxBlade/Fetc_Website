@@ -282,10 +282,10 @@ export const navMenus = [
       // { label: "PSI", path: "/exam-training/psi" },
     ],
   },
-  {
-    label: "Gallery",
-    path: "/gallery",
-  },
+  // {
+  //   label: "Gallery",
+  //   path: "/gallery",
+  // },
   {
     label: "My Account",
     path: "/my-account",

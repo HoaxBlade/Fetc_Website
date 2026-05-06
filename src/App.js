@@ -70,7 +70,7 @@ function AppContent() {
           />
           <Route path="/exam-training" element={<ExamTrainingPage />} />
           <Route path="/exam-training/:exam" element={<ExamDetailPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
+          {/* <Route path="/gallery" element={<GalleryPage />} /> */}
           <Route path="/my-account" element={<MyAccountPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/terms" element={<TermsPage />} />
