@@ -174,6 +174,7 @@ const AdminDashboard = () => {
             transition={{ delay: idx * 0.1 }}
             className={`group p-5 bg-white border ${stat.border} rounded-[1.25rem] shadow-[0_10px_35px_rgba(0,0,0,0.015)] hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-500 cursor-pointer flex items-center justify-between relative overflow-hidden`}
           >
+            {/* Standardized spacing for metric cards */}
             <div className="flex items-center gap-5">
               <div className={`p-3 ${stat.bg} ${stat.color} rounded-xl group-hover:scale-105 transition-transform duration-500 shrink-0`}>
                 <stat.icon size={20} className="stroke-[2.2px]" />
