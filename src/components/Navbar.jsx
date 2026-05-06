@@ -86,7 +86,11 @@ function Navbar() {
           : "bg-transparent border-b border-transparent py-3"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-6">
+      <div className={`mx-auto flex items-center justify-between transition-all duration-300 ${
+        location.pathname.startsWith('/admin') 
+          ? "max-w-full px-8 md:px-12" 
+          : "max-w-7xl px-4 md:px-6"
+      }`}>
         <Link to="/" className="flex items-center gap-2 text-lg font-bold text-brand-700 md:text-xl">
           {/* <span>FETC<span className="text-slate-500 text-sm"></span></span> */}
           <img src={logo} alt="FETC Logo" className="h-16 w-auto" />

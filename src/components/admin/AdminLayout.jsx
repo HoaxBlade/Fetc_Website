@@ -26,7 +26,7 @@ const AdminLayout = () => {
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="p-8 pb-4 flex items-center justify-between">
+      <div className="p-6 pb-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-brand-600 rounded-xl flex items-center justify-center shadow-md">
             <Zap className="text-white" size={16} />
@@ -46,15 +46,15 @@ const AdminLayout = () => {
             end={item.path === "/admin"}
             onClick={() => setIsSidebarOpen(false)}
             className={({ isActive }) => `
-              group flex items-center gap-4 px-8 py-4 rounded-2xl transition-all duration-300 font-bold text-sm tracking-wide
+              group flex items-center gap-4 px-6 py-3.5 rounded-xl transition-all duration-300 font-bold text-sm tracking-wide
               ${isActive 
-                ? 'bg-brand-600 text-white shadow-xl shadow-brand-100/20' 
-                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}
+                ? 'bg-brand-600 text-white shadow-xl shadow-brand-100/10' 
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}
             `}
           >
             {({ isActive }) => (
               <>
-                <item.icon size={16} className={isActive ? "text-white" : "text-slate-400"} />
+                <item.icon size={16} className={isActive ? "text-white" : "text-slate-500 stroke-[2.2px] group-hover:text-slate-800 transition-colors"} />
                 {item.label}
               </>
             )}
@@ -90,8 +90,8 @@ const AdminLayout = () => {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="w-[360px] hidden lg:flex flex-col h-screen sticky top-0 z-50 pt-24 px-8 pb-8 pr-0">
-        <div className="h-fit max-h-[calc(100vh-4rem)] glass-card backdrop-blur-3xl border border-white/80 shadow-[0_20px_40px_rgba(0,0,0,0.05)] rounded-[2rem] overflow-hidden relative group">
+      <aside className="w-[300px] hidden lg:flex flex-col h-screen sticky top-0 z-50 pt-24 px-4 pb-4 pr-0">
+        <div className="h-fit glass-card backdrop-blur-3xl border border-white/80 shadow-[0_12px_40px_rgba(0,0,0,0.03)] rounded-[1.5rem] overflow-hidden relative group">
           {/* Internal Glows */}
           <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
           

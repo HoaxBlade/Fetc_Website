@@ -139,9 +139,9 @@ const AdminDashboard = () => {
             <Clock size={14} />
             <span>Last sync: {new Date().toLocaleTimeString()}</span>
           </div>
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+          <h1 className="text-2xl md:text-3xl font-semibold text-slate-800 tracking-tight flex items-center gap-3">
             Admin Overview
-            <span className="text-sm font-medium bg-brand-50 text-brand-600 px-3 py-1 rounded-full border border-brand-100">Live</span>
+            <span className="text-xs font-semibold bg-brand-50 text-brand-600 px-2.5 py-0.5 rounded-full border border-brand-100/80">Live</span>
           </h1>
         </motion.div>
         
@@ -172,28 +172,28 @@ const AdminDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className={`group p-6 bg-white border ${stat.border} rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 cursor-pointer`}
+            className={`group p-5 bg-white border ${stat.border} rounded-[1.25rem] shadow-[0_10px_35px_rgba(0,0,0,0.015)] hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-500 cursor-pointer flex items-center justify-between relative overflow-hidden`}
           >
-            <div className="flex justify-between items-start mb-4">
-              <div className={`p-3.5 ${stat.bg} ${stat.color} rounded-2xl group-hover:scale-110 transition-transform duration-500`}>
-                <stat.icon size={22} />
+            <div className="flex items-center gap-4.5">
+              <div className={`p-3 ${stat.bg} ${stat.color} rounded-xl group-hover:scale-105 transition-transform duration-500 shrink-0`}>
+                <stat.icon size={20} className="stroke-[2.2px]" />
               </div>
-              {stat.growth && (
-                <div className={`flex items-center gap-1 text-[10px] font-black px-2.5 py-1 rounded-lg ${
-                  stat.growth.includes('-') ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-500"
-                }`}>
-                  <TrendingUp size={10} className={stat.growth.includes('-') ? "rotate-180" : ""} />
-                  {stat.growth}
+              <div>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">{stat.label}</p>
+                <div className="flex items-baseline gap-1.5">
+                  <h3 className="text-2xl font-extrabold text-slate-900">{isLoading ? '...' : stat.value}</h3>
+                  {stat.sub && <span className="text-[10px] text-slate-400 font-medium">{stat.sub}</span>}
                 </div>
-              )}
-            </div>
-            <div>
-              <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">{stat.label}</p>
-              <div className="flex items-baseline gap-2">
-                <h3 className="text-3xl font-black text-slate-900">{isLoading ? '...' : stat.value}</h3>
-                {stat.sub && <span className="text-[10px] text-slate-400 font-medium">{stat.sub}</span>}
               </div>
             </div>
+            {stat.growth && (
+              <div className={`absolute bottom-3.5 right-3.5 flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-lg ${
+                stat.growth.includes('-') ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-500"
+              }`}>
+                <TrendingUp size={10} className={stat.growth.includes('-') ? "rotate-180" : ""} />
+                {stat.growth}
+              </div>
+            )}
           </motion.div>
         ))}
       </div>
@@ -205,7 +205,7 @@ const AdminDashboard = () => {
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-2 p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm overflow-hidden"
+          className="lg:col-span-2 p-6 bg-white border border-slate-100/50 rounded-[1.5rem] shadow-[0_10px_35px_rgba(0,0,0,0.015)] overflow-hidden"
         >
           <div className="flex items-center justify-between mb-8">
             <div className="flex gap-6">
@@ -234,13 +234,20 @@ const AdminDashboard = () => {
             {isLoading ? (
               [1,2,3,4].map(i => <div key={i} className="h-16 bg-slate-50 animate-pulse rounded-2xl" />)
             ) : (tab === 'tickets' ? recentData.tickets : recentData.leads).length > 0 ? (
-              (tab === 'tickets' ? recentData.tickets : recentData.leads).map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-4 bg-slate-50/30 border border-slate-100/50 rounded-2xl hover:bg-white hover:border-brand-100 hover:shadow-md transition-all group">
+              (tab === 'tickets' ? recentData.tickets : recentData.leads).map((item, i, arr) => (
+                <div 
+                  key={i} 
+                  className={`flex items-center justify-between p-4 transition-all duration-300 group rounded-2xl border ${
+                    arr.length === 1 
+                      ? 'bg-slate-50/70 border-slate-200/50 shadow-[0_4px_20px_rgba(0,0,0,0.01)]' 
+                      : 'bg-white border-slate-100 hover:border-brand-100 hover:shadow-md'
+                  }`}
+                >
                   <div className="flex items-center gap-4">
                     <div className={`p-2.5 rounded-xl ${
                       item.priority === 'HIGH' || item.status === 'NEW' ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-500'
                     }`}>
-                      <AlertCircle size={18} />
+                      <AlertCircle size={18} className="stroke-[2.2px]" />
                     </div>
                     <div>
                       <h5 className="text-sm font-bold text-slate-800 line-clamp-1">{item.subject}</h5>
@@ -257,7 +264,7 @@ const AdminDashboard = () => {
                       onClick={() => navigate(tab === 'tickets' ? '/admin/support-tickets' : '/admin/users')}
                       className="opacity-0 group-hover:opacity-100 p-2 text-brand-600 hover:bg-brand-50 rounded-lg transition-all"
                     >
-                      <Plus size={16} />
+                      <Plus size={16} className="stroke-[2.2px]" />
                     </button>
                   </div>
                 </div>
@@ -277,21 +284,21 @@ const AdminDashboard = () => {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="lg:col-span-1 p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm flex flex-col"
+          className="lg:col-span-1 p-6 bg-white border border-slate-100/50 rounded-[1.5rem] shadow-[0_10px_35px_rgba(0,0,0,0.015)] flex flex-col"
         >
-          <div className="mb-6">
-            <h4 className="text-lg font-black text-slate-900 tracking-tight">Activity Analytics</h4>
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Load Distribution</p>
+          <div className="mb-4">
+            <h4 className="text-base font-bold text-slate-800 tracking-tight">Activity Analytics</h4>
+            <p className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Load Distribution</p>
           </div>
           
-          <div className="flex-grow min-h-[200px] relative">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="flex-grow min-h-[180px] relative flex items-center justify-center">
+            <ResponsiveContainer width="100%" height={180}>
               <PieChart>
                 <Pie
                   data={ticketStatusData}
-                  innerRadius={50}
-                  outerRadius={70}
-                  paddingAngle={8}
+                  innerRadius={58}
+                  outerRadius={68}
+                  paddingAngle={6}
                   dataKey="value"
                 >
                   {ticketStatusData.map((entry, index) => (
@@ -299,26 +306,27 @@ const AdminDashboard = () => {
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 20px rgba(0,0,0,0.05)', fontWeight: 'bold', fontSize: '12px' }}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.04)', fontWeight: 'bold', fontSize: '11px' }}
                 />
               </PieChart>
             </ResponsiveContainer>
             
             {/* Center Label */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-2xl font-black text-slate-900">{stats.openTickets + stats.pendingDoubts + stats.newLeads}</span>
-              <span className="text-[10px] text-slate-400 font-bold uppercase">Tasks</span>
+              <span className="text-xl font-extrabold text-slate-800">{stats.openTickets + stats.pendingDoubts + stats.newLeads}</span>
+              <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Tasks</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 mt-4">
+          {/* Horizontal Legend perfectly aligned with the bottom */}
+          <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100/60">
             {ticketStatusData.map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-3 bg-slate-50/50 rounded-2xl border border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="text-[10px] font-bold text-slate-600">{item.name}</span>
+              <div key={i} className="flex flex-col items-center text-center">
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">{item.name}</span>
                 </div>
-                <span className="text-xs font-black text-slate-900">{item.value}</span>
+                <span className="text-xs font-extrabold text-slate-700">{item.value}</span>
               </div>
             ))}
           </div>
@@ -333,7 +341,7 @@ const AdminDashboard = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm"
+          className="p-6 bg-white border border-slate-100/50 rounded-[1.5rem] shadow-[0_10px_35px_rgba(0,0,0,0.015)]"
         >
           <div className="flex items-center justify-between mb-8">
             <h4 className="text-lg font-black text-slate-900 tracking-tight">Recent Users</h4>
@@ -365,7 +373,7 @@ const AdminDashboard = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm"
+          className="p-6 bg-white border border-slate-100/50 rounded-[1.5rem] shadow-[0_10px_35px_rgba(0,0,0,0.015)]"
         >
           <h4 className="text-lg font-black text-slate-900 tracking-tight mb-8">Quick Actions</h4>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">

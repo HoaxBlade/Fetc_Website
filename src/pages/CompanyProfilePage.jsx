@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Building2, 
@@ -155,11 +155,30 @@ const CATEGORIES = ["All", "Labs", "Spaces", "Events & News", "Exterior", "Works
 
 function CompanyProfilePage() {
   const [activeTab, setActiveTab] = useState("All");
+  const [isChanging, setIsChanging] = useState(false);
+
+  // Preload all gallery images on component mount to make switches instantaneous
+  useEffect(() => {
+    GALLERY_ITEMS.forEach(item => {
+      const img = new Image();
+      img.src = item.src;
+    });
+  }, []);
 
   const filteredGallery = useMemo(() => {
     if (activeTab === "All") return GALLERY_ITEMS;
     return GALLERY_ITEMS.filter(item => item.category === activeTab);
   }, [activeTab]);
+
+  const handleTabChange = (tab) => {
+    if (tab === activeTab) return;
+    setIsChanging(true);
+    setActiveTab(tab);
+    const timer = setTimeout(() => {
+      setIsChanging(false);
+    }, 400);
+    return () => clearTimeout(timer);
+  };
 
   return (
     <main className="min-h-screen bg-[#F8FAFC] pb-24 text-slate-800 font-sans">
@@ -244,7 +263,34 @@ function CompanyProfilePage() {
           </div>
 
           {/* Right Timeline */}
-          <div className="lg:col-span-7 space-y-8 pl-0 lg:pl-12 border-l-0 lg:border-l border-slate-200/60">
+          <div className="lg:col-span-7 space-y-8 pl-0 lg:pl-12 relative">
+            {/* Animated Travelling Arrow Path (Desktop Only) */}
+            <div className="hidden lg:block absolute left-0 top-6 bottom-6 w-[2px] bg-slate-200/60">
+              {/* Travelling Arrow Indicator */}
+              <motion.div 
+                className="absolute left-1/2 -translate-x-1/2 z-10 flex flex-col items-center"
+                style={{ originY: 0 }}
+                animate={{
+                  top: ["0%", "100%"]
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                {/* Visual Arrow and Pulsing Ring */}
+                <div className="relative flex flex-col items-center">
+                  <span className="absolute inline-flex h-5 w-5 rounded-full bg-brand-400/50 opacity-75 animate-ping" />
+                  <div className="relative w-5 h-5 bg-brand-600 rounded-full flex items-center justify-center text-white shadow-[0_0_15px_rgba(37,99,235,0.8)] border border-white">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
             {TIMELINE.map((item, idx) => (
               <motion.div
                 key={item.year}
@@ -324,7 +370,7 @@ function CompanyProfilePage() {
               Campus Environment
             </span>
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none">
-              Explore Our <span className="text-brand-600">State-Of-The-Art Labs</span>
+              Explore Our <span className="text-brand-600">Team & Test Centres</span>
             </h2>
             <p className="text-slate-500 font-medium max-w-xl mx-auto text-base">
               A visual walkthrough of our high-tech examination halls, executive lounges, and academic spaces designed for your global journey.
@@ -335,7 +381,7 @@ function CompanyProfilePage() {
               {CATEGORIES.map(tab => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => handleTabChange(tab)}
                   className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all ${
                     activeTab === tab
                       ? "bg-brand-600 text-white shadow-lg shadow-brand-200"
@@ -349,51 +395,85 @@ function CompanyProfilePage() {
           </div>
 
           {/* Cards Grid */}
-          <motion.div 
-            layout 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredGallery.map((item) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 min-h-[400px]">
+            <AnimatePresence mode="wait">
+              {isChanging ? (
+                // Shimmering Preloader Grid
                 <motion.div
-                  layout
-                  key={item.src}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.4 }}
-                  className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-soft group hover:-translate-y-2 hover:shadow-xl transition-all duration-500"
+                  key="shimmer-preloaders"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="contents"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-                    <img
-                      src={item.src}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      loading="lazy"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <span className="text-[9px] font-black uppercase tracking-widest bg-white/90 backdrop-blur-md text-slate-700 px-3 py-1.5 rounded-full shadow-sm">
-                        {item.category}
-                      </span>
+                  {Array.from({ length: Math.min(filteredGallery.length || 4, 8) }).map((_, i) => (
+                    <div
+                      key={`preloader-${i}`}
+                      className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100/80 shadow-soft p-6 space-y-6"
+                    >
+                      <div className="relative aspect-[4/3] bg-slate-100 rounded-[1.8rem] overflow-hidden">
+                        {/* Shimmer overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-slate-100 via-slate-200/40 to-slate-100 animate-pulse" />
+                      </div>
+                      <div className="space-y-3">
+                        <div className="h-3 bg-slate-100 rounded w-1/3 animate-pulse" />
+                        <div className="h-5 bg-slate-100 rounded w-3/4 animate-pulse" />
+                        <div className="h-3 bg-slate-100 rounded w-5/6 animate-pulse" />
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="p-6 space-y-3">
-                    <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-brand-600">
-                      <MapPin size={11} className="stroke-[2.5]" />
-                      {item.location}
-                    </div>
-                    <h3 className="font-extrabold text-slate-900 text-base leading-snug group-hover:text-brand-600 transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-slate-400 text-xs font-medium leading-relaxed line-clamp-2">
-                      {item.desc}
-                    </p>
-                  </div>
+                  ))}
                 </motion.div>
-              ))}
+              ) : (
+                // Real Cards Grid (with lightweight layout-free animation)
+                <motion.div
+                  key="gallery-real-grid"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="contents"
+                >
+                  {filteredGallery.map((item, idx) => (
+                    <motion.div
+                      key={item.src}
+                      initial={{ opacity: 0, y: 15, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.3, delay: idx * 0.02, ease: "easeOut" }}
+                      className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-soft group hover:-translate-y-2 hover:shadow-xl transition-all duration-500"
+                    >
+                      <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
+                        <img
+                          src={item.src}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          loading="eager"
+                        />
+                        <div className="absolute top-4 left-4">
+                          <span className="text-[9px] font-black uppercase tracking-widest bg-white/90 backdrop-blur-md text-slate-700 px-3 py-1.5 rounded-full shadow-sm">
+                            {item.category}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="p-6 space-y-3">
+                        <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-brand-600">
+                          <MapPin size={11} className="stroke-[2.5]" />
+                          {item.location}
+                        </div>
+                        <h3 className="font-extrabold text-slate-900 text-base leading-snug group-hover:text-brand-600 transition-colors">
+                          {item.title}
+                        </h3>
+                        <p className="text-slate-400 text-xs font-medium leading-relaxed line-clamp-2">
+                          {item.desc}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
             </AnimatePresence>
-          </motion.div>
+          </div>
 
         </div>
       </section>
