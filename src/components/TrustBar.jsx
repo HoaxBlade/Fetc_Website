@@ -20,9 +20,9 @@ const TrustBar = ({ message }) => {
   const scrollingPartners = [...partners, ...partners, ...partners];
 
   return (
-    <div className="py-20 lg:py-14 bg-white/80 backdrop-blur-sm border-y border-slate-100/60 overflow-hidden relative">
+    <div className="py-20 lg:py-14 bg-white/20 backdrop-blur-md border-y border-white/20 overflow-hidden relative">
       {/* Subtle glow */}
-      <div className="absolute inset-0 bg-gradient-to-r from-brand-50/20 via-transparent to-teal-50/20 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-brand-50/10 via-transparent to-teal-50/10 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 mb-8 text-center relative z-10">
         <motion.p
@@ -60,8 +60,8 @@ const TrustBar = ({ message }) => {
         </motion.div>
 
         {/* Gradient Masks — wider for premium feel */}
-        <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-white to-transparent z-10"></div>
-        <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-white to-transparent z-10"></div>
+        <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-white/30 via-white/10 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-white/30 via-white/10 to-transparent z-10 pointer-events-none"></div>
       </div>
     </div>
   );

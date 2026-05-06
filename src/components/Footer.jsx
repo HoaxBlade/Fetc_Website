@@ -23,7 +23,7 @@ function Footer() {
   }, []);
 
   return (
-    <footer className="bg-brand-800 text-white border-none">
+    <footer className="bg-[#0a4a90] text-white border-none relative z-10">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-3 lg:grid-cols-6 md:px-6">
         <div>
           <h3 className="text-lg font-semibold">FETC</h3>

@@ -60,13 +60,15 @@ function HomePage() {
   ];
 
   return (
-    <div className="relative w-full bg-[#fdfdfd] overflow-hidden">
+    <div className="relative w-full bg-transparent overflow-hidden">
       {/* Premium Mesh Gradient Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[60%] bg-teal-200/20 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
-        <div className="absolute top-[15%] left-[5%] w-[40%] h-[40%] bg-cyan-200/20 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '7s' }} />
-        <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] bg-indigo-200/20 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '12s' }} />
-        <div className="absolute bottom-[-10%] left-[20%] w-[55%] h-[55%] bg-brand-200/20 rounded-full blur-[130px] animate-pulse" style={{ animationDuration: '10s' }} />
+        <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[60%] bg-teal-200/25 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute top-[10%] right-[-5%] w-[50%] h-[50%] bg-indigo-200/20 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '12s' }} />
+        <div className="absolute top-[35%] left-[-10%] w-[45%] h-[45%] bg-cyan-200/25 rounded-full blur-[110px] animate-pulse" style={{ animationDuration: '7s' }} />
+        <div className="absolute top-[55%] right-[-10%] w-[50%] h-[50%] bg-orange-100/20 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '9s' }} />
+        <div className="absolute bottom-[-10%] left-[15%] w-[55%] h-[55%] bg-brand-200/25 rounded-full blur-[130px] animate-pulse" style={{ animationDuration: '10s' }} />
+        <div className="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-teal-100/20 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '11s' }} />
       </div>
 
       {/* Global Background Texture (Glassy Noise) */}
@@ -116,7 +118,7 @@ function HomePage() {
       </div>
 
       {/* SECTION 2: EXAM TRAINING */}
-      <div className="relative w-full bg-[#F8FAFF]">
+      <div className="relative w-full bg-transparent">
         {/* Background Gradients */}
         <div className="absolute top-1/2 right-0 w-[700px] h-[700px] bg-teal-400/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4 pointer-events-none" />
 
