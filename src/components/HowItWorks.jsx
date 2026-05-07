@@ -31,7 +31,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-28 relative overflow-hidden bg-transparent">
+    <section className="py-14 md:py-16 relative overflow-hidden bg-transparent">
       {/* Ambient background blobs */}
       <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-brand-100/30 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[10%] w-[400px] h-[400px] bg-teal-100/20 rounded-full blur-[120px] pointer-events-none" />

@@ -12,7 +12,7 @@ const ScrollProgressBar = () => {
   });
 
   return (
-    <div className="fixed top-0 left-0 w-full h-1.5 z-[1000] pointer-events-none">
+    <div className="fixed top-0 left-0 w-full h-1.5 z-[3000] pointer-events-none">
       <motion.div 
         className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-r-full"
         style={{ scaleX, originX: 0 }}

@@ -52,7 +52,7 @@ const FeaturesGrid = ({ title, subtitle, items }) => {
   })) : defaultFeatures;
 
   return (
-    <section className="py-24 bg-transparent relative z-10 overflow-hidden">
+    <section className="py-14 md:py-16 bg-transparent relative z-10 overflow-hidden">
       {/* Section background accent */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-100/20 rounded-full blur-[150px] pointer-events-none" />
 

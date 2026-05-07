@@ -20,11 +20,11 @@ const TrustBar = ({ message }) => {
   const scrollingPartners = [...partners, ...partners, ...partners];
 
   return (
-    <div className="py-20 lg:py-14 bg-white/20 backdrop-blur-md border-y border-white/20 overflow-hidden relative">
+    <div className="py-10 lg:py-8 bg-white/20 backdrop-blur-md border-y border-white/20 overflow-hidden relative">
       {/* Subtle glow */}
       <div className="absolute inset-0 bg-gradient-to-r from-brand-50/10 via-transparent to-teal-50/10 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-8 text-center relative z-10">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-4 text-center relative z-10">
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -39,7 +39,7 @@ const TrustBar = ({ message }) => {
 
       <div className="relative flex">
         <motion.div
-          className="flex gap-10 md:gap-16 items-center whitespace-nowrap px-4 md:px-6"
+          className="flex gap-8 md:gap-12 items-center whitespace-nowrap px-4 md:px-6"
           animate={{ x: ["0%", "-33.33%"] }}
           transition={{
             duration: 40,

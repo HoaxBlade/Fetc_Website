@@ -51,7 +51,7 @@ const WelcomeSection = () => {
       whileInView="visible"
       viewport={{ once: true, amount: 0.1 }}
       variants={containerVariants}
-      className="py-28 bg-transparent relative overflow-hidden"
+      className="py-14 md:py-16 bg-transparent relative overflow-hidden"
     >
       {/* Decorative Blobs */}
       <div className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full bg-orange-100/30 blur-[150px] pointer-events-none" />

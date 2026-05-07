@@ -89,7 +89,7 @@ function HomePage() {
         <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-brand-400/5 rounded-full blur-[150px] -translate-y-1/4 -translate-x-1/4 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[700px] h-[700px] bg-orange-400/5 rounded-full blur-[150px] translate-y-1/4 translate-x-1/4 pointer-events-none" />
 
-        <div className="relative z-10 py-24 md:py-32">
+        <div className="relative z-10 py-14 md:py-16">
           <ServiceMarqueeRow
             title={pageData?.studyAbroad?.title || "Explore the World"}
             description={pageData?.studyAbroad?.description || "Pick your dream destination and let us handle the boring stuff. We've helped thousands of students settle in over 10+ countries."}
@@ -122,7 +122,7 @@ function HomePage() {
         {/* Background Gradients */}
         <div className="absolute top-1/2 right-0 w-[700px] h-[700px] bg-teal-400/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4 pointer-events-none" />
 
-        <div className="relative z-10 py-24 md:py-32">
+        <div className="relative z-10 py-14 md:py-16">
           <ServiceMarqueeRow
             title={pageData?.examTraining?.title || "Ace Your Exams"}
             description={pageData?.examTraining?.description || "From IELTS to PTE, we make exam prep feel like a breeze with expert coaching and real mock tests."}
@@ -151,7 +151,7 @@ function HomePage() {
       <div className="relative w-full">
         <div className="absolute top-1/2 left-1/2 w-[800px] h-[600px] bg-amber-400/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
-        <div className="relative z-10 py-24 md:py-32">
+        <div className="relative z-10 py-14 md:py-16">
           <ServiceMarqueeRow
             title={pageData?.careerAssessment?.title || "Find Your Path"}
             description={pageData?.careerAssessment?.description || "Not sure what to study? Our AI-powered analysis helps you discover your strengths and the perfect career to match."}
