@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import { getApiUrl } from "../apiConfig";
 import CasualHero from "../components/CasualHero";
 import ServiceMarqueeRow from "../components/ServiceMarqueeRow";
@@ -12,8 +13,10 @@ import { countryData, examData } from "../data/siteData";
 
 function HomePage() {
   const [pageData, setPageData] = useState(null);
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
 
   useEffect(() => {
+    // 1. Fetch DB Data
     console.log("Fetching home page data...");
     fetch((window.API_BASE||'') + '/api/pages/home', {
       headers: { 'ngrok-skip-browser-warning': 'true' }
@@ -28,7 +31,53 @@ function HomePage() {
       .catch(err => {
         console.warn("Using local fallback data:", err);
       });
+
+    // 2. Preload Heavy Memoji Assets
+    const imagesToPreload = Object.values(countryData)
+      .map(data => data.image)
+      .filter(Boolean); // Filter out nulls
+
+    // Also preload some static banner if needed, but memojis are the heaviest
+    
+    if (imagesToPreload.length === 0) {
+      setAssetsLoaded(true);
+      return;
+    }
+
+    let loadedCount = 0;
+    const totalImages = imagesToPreload.length;
+
+    imagesToPreload.forEach(src => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        loadedCount++;
+        if (loadedCount === totalImages) setAssetsLoaded(true);
+      };
+      img.onerror = () => {
+        loadedCount++; // Count even on error so we don't hang
+        if (loadedCount === totalImages) setAssetsLoaded(true);
+      };
+    });
+
+    // Fallback: If Vercel is extremely slow, force load after 3.5 seconds
+    const timeout = setTimeout(() => setAssetsLoaded(true), 3500);
+    return () => clearTimeout(timeout);
   }, []);
+
+  if (!assetsLoaded) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <div className="relative">
+          <Loader2 className="w-16 h-16 text-brand-600 animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-[10px] font-black text-brand-600">FETC</span>
+          </div>
+        </div>
+        <p className="text-slate-500 font-bold mt-6 uppercase text-sm tracking-widest animate-pulse">Loading Experience...</p>
+      </div>
+    );
+  }
 
   const studyAbroadCards = Object.entries(countryData).map(([key, data]) => ({
     title: data.name,
