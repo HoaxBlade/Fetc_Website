@@ -211,8 +211,8 @@ function Navbar() {
 
       {!location.pathname.startsWith('/admin') && (
         <div
-          className={`overflow-hidden border-t border-slate-200 bg-white transition-all duration-300 md:hidden ${
-            mobileOpen ? "max-h-screen" : "max-h-0"
+          className={`border-t border-slate-200 bg-white transition-all duration-300 md:hidden ${
+            mobileOpen ? "max-h-[calc(100vh-80px)] overflow-y-auto" : "max-h-0 overflow-hidden"
           }`}
         >
 
@@ -322,8 +322,8 @@ function Navbar() {
                   />
                 </button>
                 <div
-                  className={`overflow-hidden transition-all duration-300 ${
-                    isOpen ? "max-h-64" : "max-h-0"
+                  className={`transition-all duration-300 ${
+                    isOpen ? "max-h-[600px] overflow-y-auto" : "max-h-0 overflow-hidden"
                   }`}
                 >
                   <div className="space-y-1 px-2 pb-2">
