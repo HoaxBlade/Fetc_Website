@@ -87,8 +87,15 @@ function StudyAbroadPage() {
              <span className="w-10 h-1 bg-brand-600 rounded-full" />
              <span className="text-xs font-black text-brand-600 uppercase tracking-widest">Top Destination</span>
           </div>
-          <h1 className="text-4xl font-black tracking-tighter text-slate-900 md:text-6xl text-balance">
-            Study in <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-teal-500">{pageData.name}</span>
+          <h1 className="text-4xl font-black tracking-tighter text-slate-900 md:text-6xl text-balance flex flex-wrap items-center gap-4">
+            <span>Study in <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-teal-500">{pageData.name}</span></span>
+            {(STATIC_FALLBACKS[country]?.flag || pageData.flag) && (
+              <img 
+                src={STATIC_FALLBACKS[country]?.flag || pageData.flag} 
+                alt={`${pageData.name} flag`} 
+                className="h-10 md:h-12 w-auto object-contain rounded-lg filter drop-shadow-md select-none" 
+              />
+            )}
           </h1>
           <p className="mt-8 text-lg md:text-xl leading-relaxed text-slate-500 font-medium">
             {pageData.description}

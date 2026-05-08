@@ -55,8 +55,15 @@ function ServiceMarqueeRow({
       className={`flex w-full flex-col justify-between rounded-[2.5rem] p-10 ring-1 ring-slate-100 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl md:max-w-[480px] ${cardBg}`}
     >
       <div>
-        <h3 className="mb-6 text-2xl font-bold tracking-tight text-blue-600">
-          {service.title}
+        <h3 className="mb-6 text-2xl font-bold tracking-tight text-blue-600 flex items-center gap-3">
+          <span>{service.title}</span>
+          {service.flag && (
+            <img 
+              src={service.flag} 
+              alt={`${service.title} flag`} 
+              className="h-5 w-auto object-contain rounded-md filter drop-shadow-sm select-none" 
+            />
+          )}
         </h3>
         {service.links ? (
           <div className="space-y-4 mt-6">
@@ -119,8 +126,15 @@ function ServiceMarqueeRow({
           </div>
           
           {service.title && service.title !== title && service.title !== secondTitle && (
-            <h3 className="mb-4 text-3xl font-extrabold tracking-tight text-slate-900 transition-colors duration-500">
-              {service.title}
+            <h3 className="mb-4 text-3xl font-extrabold tracking-tight text-slate-900 transition-colors duration-500 flex items-center gap-3">
+              <span>{service.title}</span>
+              {service.flag && (
+                <img 
+                  src={service.flag} 
+                  alt={`${service.title} flag`} 
+                  className="h-6 w-auto object-contain rounded-md filter drop-shadow-sm select-none" 
+                />
+              )}
             </h3>
           )}
           
@@ -384,7 +398,8 @@ function ServiceMarqueeRow({
                         transform: `translate(${translateX}px, ${translateY}px) scale(${scale}) rotate(${rotate}deg)`,
                         opacity,
                         boxShadow: isTop ? '0 40px 80px -15px rgba(0,0,0,0.12)' : '0 10px 30px -5px rgba(0,0,0,0.03)',
-                        cursor: isTop ? 'default' : 'pointer'
+                        cursor: isTop ? 'default' : 'pointer',
+                        backgroundColor: isTop ? '#ffffff' : undefined
                       }}
                       onClick={() => {
                         if (!isTop) setActiveIndex(i);
@@ -397,13 +412,36 @@ function ServiceMarqueeRow({
                             Featured Destination
                           </div>
                         )}
-                        <h3 className={`bg-gradient-to-br ${gradientColors[i % gradientColors.length]} bg-clip-text mb-4 text-3xl font-extrabold tracking-tight text-transparent transition-opacity duration-500`}>
-                          {service.title}
+                        <h3 className="mb-4 text-3xl font-extrabold tracking-tight transition-opacity duration-500 flex items-center gap-3">
+                          <span className={`bg-gradient-to-br ${gradientColors[i % gradientColors.length]} bg-clip-text text-transparent`}>
+                            {service.title}
+                          </span>
+                          {service.flag && (
+                            <img 
+                              src={service.flag} 
+                              alt={`${service.title} flag`} 
+                              className="h-6 w-auto object-contain rounded-md filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)] select-none" 
+                            />
+                          )}
                         </h3>
                         <p className={`text-sm font-medium leading-relaxed transition-opacity duration-500 ${isTop ? 'text-slate-600 opacity-100' : 'text-slate-400 opacity-0'}`}>
                           {service.description}
                         </p>
                       </div>
+
+                      {service.image && (
+                        <div className="relative flex-1 flex items-center justify-center pt-4 pb-2 min-h-[130px]">
+                          <img 
+                            src={service.image} 
+                            alt={service.title} 
+                            className={`h-32 md:h-36 w-auto object-contain transition-all duration-700 select-none ${isTop ? 'opacity-100 scale-100 translate-y-2' : 'opacity-0 scale-90 translate-y-6 pointer-events-none'}`}
+                            style={{ 
+                              animation: isTop ? 'float 5s ease-in-out infinite' : 'none',
+                              mixBlendMode: 'multiply'
+                            }}
+                          />
+                        </div>
+                      )}
 
                       <div className={`mt-6 transition-all duration-500 ${isTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
                         <Link

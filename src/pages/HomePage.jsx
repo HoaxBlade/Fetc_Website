@@ -33,7 +33,9 @@ function HomePage() {
   const studyAbroadCards = Object.entries(countryData).map(([key, data]) => ({
     title: data.name,
     description: data.description,
-    path: `/study-abroad/${key}`
+    path: `/study-abroad/${key}`,
+    flag: data.flag,
+    image: data.image
   }));
 
   const examCards = Object.entries(examData).map(([key, data]) => ({

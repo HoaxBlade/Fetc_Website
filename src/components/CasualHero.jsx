@@ -107,32 +107,7 @@ const CasualHero = ({ content }) => {
               {finalContent.badge}
             </motion.div>
 
-            {/* Interactive Switcher Tabs */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-wrap gap-2 justify-center lg:justify-start"
-            >
-              {slides.map((slide, idx) => {
-                const Icon = slide.icon;
-                const isActive = currentIndex === idx;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentIndex(idx)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-full border text-xs font-bold transition-all duration-300 ${
-                      isActive
-                        ? `${slide.bgColor} ${slide.color} border-current shadow-md scale-105 z-20`
-                        : "bg-white/80 backdrop-blur-sm border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900"
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{slide.field}</span>
-                  </button>
-                );
-              })}
-            </motion.div>
+
           </div>
 
           {/* Heading with Underline Svg */}

@@ -5,11 +5,14 @@ import irelandImg from "../assets/countries/ireland.png";
 import newZealandImg from "../assets/countries/new-zealand.png";
 import ukImg from "../assets/countries/uk.png";
 import usaImg from "../assets/countries/usa.png";
+import canadaImg from "../assets/Study abroad/Canada.png";
+import singaporeImg from "../assets/countries/Singapore.png";
 import { allUniversities } from "./allUniversitiesData";
 
 export const countryData = {
   "united-kingdom": {
     name: "United Kingdom",
+    flag: "https://flagcdn.com/w80/gb.png",
     image: ukImg,
     description:
       "Study in globally recognized UK institutions with excellent academic support, scholarships, and post-study work opportunities.",
@@ -24,6 +27,7 @@ export const countryData = {
   },
   europe: {
     name: "Europe",
+    flag: "https://flagcdn.com/w80/eu.png",
     image: europeImg,
     description:
       "Explore affordable and high-quality education options across Europe with multicultural learning environments and career pathways.",
@@ -34,6 +38,7 @@ export const countryData = {
   },
   usa: {
     name: "USA",
+    flag: "https://flagcdn.com/w80/us.png",
     image: usaImg,
     description:
       "Access world-class universities, cutting-edge research opportunities, and diverse campus experiences in the United States.",
@@ -42,6 +47,7 @@ export const countryData = {
   },
   australia: {
     name: "Australia",
+    flag: "https://flagcdn.com/w80/au.png",
     image: australiaImg,
     description:
       "Choose from top-ranked Australian universities known for practical learning, innovation, and student-friendly cities.",
@@ -50,19 +56,22 @@ export const countryData = {
   },
   canada: {
     name: "Canada",
-    image: usaImg, // Placeholder for Canada image
+    flag: "https://flagcdn.com/w80/ca.png",
+    image: canadaImg,
     description:
       "Explore world-class academic institutions, diverse culture, and vast post-study opportunities in Canada.",
     universities: allUniversities.canada,
   },
   "new-zealand": {
     name: "New Zealand",
+    flag: "https://flagcdn.com/w80/nz.png",
     image: newZealandImg,
     description:
       "Build your future in New Zealand with globally valued qualifications and a safe, welcoming student lifestyle.",
   },
   ireland: {
     name: "Ireland",
+    flag: "https://flagcdn.com/w80/ie.png",
     image: irelandImg,
     description:
       "Study in Ireland for strong industry connections, international exposure, and a vibrant academic atmosphere.",
@@ -74,6 +83,7 @@ export const countryData = {
   },
   dubai: {
     name: "Dubai",
+    flag: "https://flagcdn.com/w80/ae.png",
     image: dubaiImg,
     description:
       "Pursue modern education programs in Dubai with strong global links and a fast-growing professional ecosystem.",
@@ -81,7 +91,8 @@ export const countryData = {
   },
   singapore: {
     name: "Singapore",
-    image: dubaiImg, // Placeholder for Singapore image
+    flag: "https://flagcdn.com/w80/sg.png",
+    image: singaporeImg,
     description:
       "Experience modern education in Singapore with unparalleled technological and business advancements.",
     universities: allUniversities.other, // Contains LSBF Singapore
