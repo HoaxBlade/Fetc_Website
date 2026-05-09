@@ -8,6 +8,8 @@ import TrustBar from "../components/TrustBar";
 import FeaturesGrid from "../components/FeaturesGrid";
 import HowItWorks from "../components/HowItWorks";
 import ContactCTA from "../components/ContactCTA";
+import SuccessStories from "../components/SuccessStories";
+import InTheNews from "../components/InTheNews";
 import GenericSection from "../components/GenericSection";
 import { countryData, examData } from "../data/siteData";
 
@@ -214,10 +216,19 @@ function HomePage() {
             isStatic={true}
             badgeText={pageData?.careerAssessment?.badgeText || "Smart Career"}
             stats={pageData?.careerAssessment?.stats}
-            secondTitle={pageData?.careerAssessment?.secondTitle || "Helpful Stuff"}
+            secondTitle={pageData?.careerAssessment?.secondTitle || "Assisted Guides"}
             secondDescription={pageData?.careerAssessment?.secondDescription || "Guides, checklists, and all the tools you need to stay organized."}
           />
         </div>
+      </div>
+
+      {/* SUCCESS STORIES & NEWS — Below Find Your Path */}
+      <div className="relative z-15">
+        <SuccessStories />
+      </div>
+
+      <div className="relative z-15">
+        <InTheNews />
       </div>
 
       <div className="relative z-20">
