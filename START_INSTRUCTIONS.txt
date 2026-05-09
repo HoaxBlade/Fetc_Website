@@ -37,7 +37,7 @@ This step makes your laptop the "Server" for the project, even if the website is
 1. Open the `.env` file in the root directory of the project.
 2. Find the line: `REACT_APP_API_URL=`
 3. Paste your new ngrok link there. It should look like this:
-   `REACT_APP_API_URL=https://your-new-link.ngrok-free.app`
+   `REACT_APP_API_URL= https://your-new-link.ngrok-free.app`
 4. **Save the file.**
 
 ---
