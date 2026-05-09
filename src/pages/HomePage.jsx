@@ -91,7 +91,9 @@ function HomePage() {
   const examCards = Object.entries(examData).map(([key, data]) => ({
     title: data.name,
     description: data.description,
-    path: `/exam-training/${key}`
+    path: `/exam-training/${key}`,
+    features: data.features,
+    metadata: data.metadata
   }));
 
   const careerCards = [
