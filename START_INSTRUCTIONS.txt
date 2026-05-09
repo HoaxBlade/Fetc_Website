@@ -31,7 +31,7 @@ Ensure **PostgreSQL** is running on your machine.
 
 ---
 
-## 🛠️ Step 3: " Connect" the Project to your Laptop
+## 🛠️ Step 3: "Connect" the Project to your Laptop
 This step makes your laptop the "Server" for the project, even if the website is opened from elsewhere.
 
 1. Open the `.env` file in the root directory of the project.
