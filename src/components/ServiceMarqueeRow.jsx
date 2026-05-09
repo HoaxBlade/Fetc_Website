@@ -192,9 +192,11 @@ function ServiceMarqueeRow({
         transition={{ duration: 0.8, ease: "easeOut" }}
         className={`relative overflow-hidden py-12 md:py-20 ${bgColor}`}
       >
-        {/* Fresh Gradient Block (Single soft glow) */}
+        {/* Richer multi-layered background */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-400/5 rounded-full blur-[150px]"></div>
+          {!reverse && <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-brand-300/8 rounded-full blur-[120px]" />}
+          {reverse && <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-teal-300/8 rounded-full blur-[120px]" />}
         </div>
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 md:px-6">
@@ -202,11 +204,18 @@ function ServiceMarqueeRow({
 
             {/* Text column (Order 2 on mobile if reversed, Order 1 on desktop if not) */}
             <div className={`flex flex-col items-start lg:col-span-5 ${reverse ? 'lg:order-2' : ''}`}>
-              <div className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-600 mb-6 ring-1 ring-brand-100">
+              <div className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest mb-6 ring-1 ${!reverse ? 'bg-brand-50 text-brand-600 ring-brand-100' : 'bg-teal-50 text-teal-600 ring-teal-100'}`}>
+                <span className="relative flex h-2 w-2">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${!reverse ? 'bg-brand-400' : 'bg-teal-400'}`}></span>
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${!reverse ? 'bg-brand-500' : 'bg-teal-500'}`}></span>
+                </span>
                 {badgeText}
               </div>
               <h2 className="text-4xl font-bold tracking-tight text-slate-900 md:text-5xl lg:text-6xl text-balance">
-                {title}
+                {title.split(' ').slice(0, -1).join(' ')}{' '}
+                <span className={`bg-gradient-to-r bg-clip-text text-transparent ${!reverse ? 'from-brand-600 to-blue-500' : 'from-teal-600 to-cyan-500'}`}>
+                  {title.split(' ').slice(-1)}
+                </span>
               </h2>
               <p className="mt-6 text-lg font-medium leading-relaxed text-slate-500">
                 {description}
@@ -214,11 +223,11 @@ function ServiceMarqueeRow({
 
               {/* Trust Stats Indicator */}
               {stats && stats.length > 0 && (
-                <div className="mt-10 grid w-full grid-cols-3 gap-4 border-y border-slate-100 py-8">
+                <div className="mt-10 grid w-full grid-cols-3 gap-4 rounded-2xl bg-white/60 backdrop-blur-sm border border-slate-100 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
                   {stats.map((stat, idx) => (
-                    <div key={idx} className={`${idx !== 0 ? 'border-l border-slate-100 pl-4' : ''}`}>
-                      <div className="text-2xl font-bold text-slate-900">{stat.value}</div>
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{stat.label}</div>
+                    <div key={idx} className={`text-center ${idx !== 0 ? 'border-l border-slate-100' : ''}`}>
+                      <div className={`text-2xl font-extrabold bg-gradient-to-r bg-clip-text text-transparent ${!reverse ? 'from-brand-600 to-blue-500' : 'from-teal-600 to-cyan-500'}`}>{stat.value}</div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1">{stat.label}</div>
                     </div>
                   ))}
                 </div>
@@ -227,9 +236,12 @@ function ServiceMarqueeRow({
               <div className="mt-10">
                 <Link
                   to={items[activeIndex]?.path || linkTarget}
-                  className="inline-flex items-center justify-center rounded-full bg-brand-600 px-10 py-4 text-base font-bold text-white shadow-[0_8px_30px_rgba(13,94,183,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-brand-700 active:scale-95"
+                  className={`group/cta relative inline-flex items-center justify-center rounded-full px-10 py-4 text-base font-bold text-white transition-all duration-300 hover:-translate-y-1 active:scale-95 overflow-hidden ${!reverse ? 'bg-gradient-to-r from-brand-600 to-blue-600 shadow-[0_8px_30px_rgba(13,94,183,0.3)] hover:shadow-[0_12px_40px_rgba(13,94,183,0.45)]' : 'bg-gradient-to-r from-teal-600 to-cyan-600 shadow-[0_8px_30px_rgba(13,148,136,0.3)] hover:shadow-[0_12px_40px_rgba(13,148,136,0.45)]'}`}
                 >
-                  {linkText}
+                  <span className="relative z-10">{linkText}</span>
+                  <svg className="relative z-10 ml-2 h-4 w-4 transition-transform group-hover/cta:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
                 </Link>
               </div>
             </div>
@@ -392,14 +404,18 @@ function ServiceMarqueeRow({
                   return (
                     <div
                       key={i}
-                      className={`absolute top-0 left-0 flex h-full w-full flex-col justify-between rounded-[2.5rem] p-8 ring-1 ring-slate-200/60 transition-all duration-1000 ease-[cubic-bezier(0.2,0.8,0.2,1)] origin-center ${cardBg}`}
+                      className={`absolute top-0 left-0 flex h-full w-full flex-col justify-between rounded-[2.5rem] p-8 transition-all duration-1000 ease-[cubic-bezier(0.2,0.8,0.2,1)] origin-center ${isTop ? 'ring-1 ring-slate-200/80' : 'ring-1 ring-slate-100/40'}`}
                       style={{
                         zIndex,
                         transform: `translate(${translateX}px, ${translateY}px) scale(${scale}) rotate(${rotate}deg)`,
                         opacity,
-                        boxShadow: isTop ? '0 40px 80px -15px rgba(0,0,0,0.12)' : '0 10px 30px -5px rgba(0,0,0,0.03)',
+                        boxShadow: isTop 
+                          ? (!reverse 
+                            ? '0 40px 80px -15px rgba(13,94,183,0.12), 0 20px 40px -10px rgba(0,0,0,0.06)' 
+                            : '0 40px 80px -15px rgba(13,148,136,0.12), 0 20px 40px -10px rgba(0,0,0,0.06)')
+                          : '0 10px 30px -5px rgba(0,0,0,0.03)',
                         cursor: isTop ? 'default' : 'pointer',
-                        backgroundColor: isTop ? '#ffffff' : undefined
+                        backgroundColor: isTop ? '#ffffff' : '#fafbfc'
                       }}
                       onClick={() => {
                         if (!isTop) setActiveIndex(i);
@@ -408,7 +424,7 @@ function ServiceMarqueeRow({
                       <div>
                         {/* Status chip for top card */}
                         {isTop && (
-                          <div className="mb-4 inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-600 ring-1 ring-brand-100">
+                          <div className={`mb-4 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest ring-1 ${!reverse ? 'bg-brand-50 text-brand-600 ring-brand-100' : 'bg-teal-50 text-teal-600 ring-teal-100'}`}>
                             Featured Destination
                           </div>
                         )}

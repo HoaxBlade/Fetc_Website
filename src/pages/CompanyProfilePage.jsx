@@ -122,6 +122,20 @@ const GALLERY_ITEMS = [
     location: "Surat Vesu Branch"
   },
   {
+    src: "/assets/news/news1.png",
+    title: "CBSE Mock Test Initiative for 700+ Students",
+    category: "Events & News",
+    desc: "FETC organized an English mock test for 700+ Class 11 CBSE students at Radiant International School, Piplod — boosting confidence and subject clarity through real exam practice.",
+    location: "Radiant International School, Piplod"
+  },
+  {
+    src: "/assets/news/news2.png",
+    title: "Foreign Innovation Test at Radiant School",
+    category: "Events & News",
+    desc: "Covered extensively in regional media, FETC's mock test program at Radiant School showcases 13 years of excellence in preparing students for academic and career success.",
+    location: "Radiant School, Surat"
+  },
+  {
     src: STORY_IMAGES.roongtaVesu,
     title: "Roongta Business Park Campus",
     category: "Exterior",

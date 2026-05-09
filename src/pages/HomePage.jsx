@@ -9,7 +9,6 @@ import FeaturesGrid from "../components/FeaturesGrid";
 import HowItWorks from "../components/HowItWorks";
 import ContactCTA from "../components/ContactCTA";
 import SuccessStories from "../components/SuccessStories";
-import InTheNews from "../components/InTheNews";
 import GenericSection from "../components/GenericSection";
 import { countryData, examData } from "../data/siteData";
 
@@ -227,9 +226,6 @@ function HomePage() {
         <SuccessStories />
       </div>
 
-      <div className="relative z-15">
-        <InTheNews />
-      </div>
 
       <div className="relative z-20">
         <WelcomeSection />
