@@ -20,7 +20,7 @@ Ensure **PostgreSQL** is running on your machine.
 1. Open a terminal.
 2. Navigate to the server directory: `cd server`
 3. Run: `npm run dev`
-4. **Verification**: You should see "🚀 Server running on http://localhost:5001".
+4. **Verification**: You should see " Server running on http://localhost:5001".
 
 ---
 
