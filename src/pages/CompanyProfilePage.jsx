@@ -171,14 +171,6 @@ function CompanyProfilePage() {
   const [activeTab, setActiveTab] = useState("All");
   const [isChanging, setIsChanging] = useState(false);
 
-  // Preload all gallery images on component mount to make switches instantaneous
-  useEffect(() => {
-    GALLERY_ITEMS.forEach(item => {
-      const img = new Image();
-      img.src = item.src;
-    });
-  }, []);
-
   const filteredGallery = useMemo(() => {
     if (activeTab === "All") return GALLERY_ITEMS;
     return GALLERY_ITEMS.filter(item => item.category === activeTab);

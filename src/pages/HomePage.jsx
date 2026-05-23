@@ -17,7 +17,7 @@ function HomePage() {
   const [assetsLoaded, setAssetsLoaded] = useState(false);
 
   useEffect(() => {
-    // 1. Fetch DB Data
+    // Fetch DB Data
     console.log("Fetching home page data...");
     fetch((window.API_BASE||'') + '/api/pages/home', {
       headers: { 'ngrok-skip-browser-warning': 'true' }
@@ -28,42 +28,12 @@ function HomePage() {
         if (data.success && data.page.content) {
           setPageData(data.page.content);
         }
+        setAssetsLoaded(true);
       })
       .catch(err => {
         console.warn("Using local fallback data:", err);
+        setAssetsLoaded(true);
       });
-
-    // 2. Preload Heavy Memoji Assets
-    const imagesToPreload = Object.values(countryData)
-      .map(data => data.image)
-      .filter(Boolean); // Filter out nulls
-
-    // Also preload some static banner if needed, but memojis are the heaviest
-    
-    if (imagesToPreload.length === 0) {
-      setAssetsLoaded(true);
-      return;
-    }
-
-    let loadedCount = 0;
-    const totalImages = imagesToPreload.length;
-
-    imagesToPreload.forEach(src => {
-      const img = new Image();
-      img.src = src;
-      img.onload = () => {
-        loadedCount++;
-        if (loadedCount === totalImages) setAssetsLoaded(true);
-      };
-      img.onerror = () => {
-        loadedCount++; // Count even on error so we don't hang
-        if (loadedCount === totalImages) setAssetsLoaded(true);
-      };
-    });
-
-    // Fallback: If Vercel is extremely slow, force load after 3.5 seconds
-    const timeout = setTimeout(() => setAssetsLoaded(true), 3500);
-    return () => clearTimeout(timeout);
   }, []);
 
   if (!assetsLoaded) {

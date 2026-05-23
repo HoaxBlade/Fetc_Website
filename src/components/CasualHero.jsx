@@ -83,7 +83,7 @@ const CasualHero = ({ content }) => {
               className={`w-full h-full object-cover ${slides[currentIndex].position || 'object-right'}`}
             />
             {/* Soft gradient overlay to blend left side with white background for maximum text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent md:from-white/90 md:via-white/60 md:to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-white/70 via-white/30 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
           </motion.div>
         </AnimatePresence>
@@ -91,7 +91,7 @@ const CasualHero = ({ content }) => {
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 w-full flex justify-center lg:justify-start">
         {/* Beautiful Glassmorphic Box Behind Heading Content */}
-        <div className="max-w-[580px] w-full bg-white/75 backdrop-blur-[30px] p-6 md:p-10 rounded-[2.5rem] border border-white/80 shadow-[0_50px_100px_rgba(0,0,0,0.06)] space-y-8 text-center lg:text-left relative overflow-hidden">
+        <div className="max-w-[580px] w-full bg-white/55 backdrop-blur-xl p-6 md:p-10 rounded-[2.5rem] border border-white/80 shadow-[0_50px_100px_rgba(0,0,0,0.06)] space-y-8 text-center lg:text-left relative overflow-hidden">
           {/* Subtle light leak effect inside the box */}
           <div className="absolute -top-24 -left-24 w-48 h-48 bg-brand-200/10 rounded-full blur-[60px] pointer-events-none" />
 

@@ -382,7 +382,10 @@ function ServiceMarqueeRow({
                   </motion.div>
                 );
               })}
-              <div className="relative h-[400px] w-[320px] md:h-[450px] md:w-[380px]">
+              <div 
+                className="relative h-[430px] w-[320px] md:h-[460px] md:w-[380px]"
+                style={{ transformStyle: 'preserve-3d', perspective: '1000px' }}
+              >
                 {items.map((service, i) => {
                   const offsetIndex = (i - activeIndex + items.length) % items.length;
 
@@ -406,7 +409,7 @@ function ServiceMarqueeRow({
                       className={`absolute top-0 left-0 flex h-full w-full flex-col rounded-[2.5rem] p-6 overflow-hidden transition-all duration-1000 ease-[cubic-bezier(0.2,0.8,0.2,1)] origin-center ${isTop ? 'ring-1 ring-slate-200/80' : 'ring-1 ring-slate-100/40'}`}
                       style={{
                         zIndex,
-                        transform: `translate(${translateX}px, ${translateY}px) scale(${scale}) rotate(${rotate}deg)`,
+                        transform: `translate3d(${translateX}px, ${translateY}px, ${zIndex * 4}px) scale(${scale}) rotate(${rotate}deg)`,
                         opacity,
                         boxShadow: isTop 
                           ? (!reverse 
@@ -427,7 +430,7 @@ function ServiceMarqueeRow({
                             {reverse ? 'Top Exam Prep' : 'Featured Destination'}
                           </div>
                         )}
-                        <h3 className="mb-2 text-2xl md:text-3xl font-extrabold tracking-tight transition-opacity duration-500 flex items-center gap-3">
+                        <h3 className={`mb-2 text-2xl md:text-3xl font-extrabold tracking-tight transition-all duration-500 flex items-center gap-3 ${isTop ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
                           <span className={`bg-gradient-to-br ${gradientColors[i % gradientColors.length]} bg-clip-text text-transparent`}>
                             {service.title}
                           </span>
@@ -461,7 +464,7 @@ function ServiceMarqueeRow({
 
                       {/* Rich visual interior for exam cards (no image) */}
                       {!service.image && service.features && (
-                        <div className={`flex-1 flex flex-col justify-center gap-2 min-h-0 transition-all duration-700 ${isTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'}`}>
+                        <div className={`flex-1 flex flex-col justify-start gap-3 mt-4 min-h-0 transition-all duration-700 ${isTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'}`}>
                           <div className="grid grid-cols-2 gap-2">
                             {service.features.slice(0, 4).map((feat, fi) => {
                               const pillColors = !reverse

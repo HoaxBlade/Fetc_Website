@@ -5,14 +5,14 @@ import { Link } from 'react-router-dom';
 
 const ContactCTA = () => {
   return (
-    <section className="py-28 overflow-hidden relative">
+    <section className="py-12 md:py-28 overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative rounded-[3rem] overflow-hidden"
+          className="relative rounded-2xl md:rounded-[3rem] overflow-hidden"
         >
           {/* Background — true dark */}
           <div className="absolute inset-0 bg-[#0a0e1a]" />
@@ -47,8 +47,8 @@ const ContactCTA = () => {
           />
 
           {/* Content */}
-          <div className="relative z-10 p-10 md:p-16 lg:p-20">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+          <div className="relative z-10 p-6 md:p-16 lg:p-20">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-14 items-center">
               
               {/* Left — Text & CTA */}
               <div>
@@ -56,33 +56,33 @@ const ContactCTA = () => {
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-300 mb-6 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-full ring-1 ring-white/10"
+                  className="inline-flex items-center gap-2 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] text-brand-300 mb-4 md:mb-6 px-3.5 py-1.5 bg-white/5 backdrop-blur-sm rounded-full ring-1 ring-white/10"
                 >
                   Let's Connect
                 </motion.span>
 
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight mb-6">
+                <h2 className="text-2xl xs:text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight mb-4 md:mb-6">
                   Ready to Start Your{" "}
                   <span className="bg-gradient-to-r from-brand-400 via-teal-400 to-brand-400 bg-clip-text text-transparent">
                     Global Chapter?
                   </span>
                 </h2>
-                <p className="text-slate-400 text-lg font-medium mb-10 max-w-md leading-relaxed">
+                <p className="text-slate-400 text-sm md:text-lg font-medium mb-6 md:mb-10 max-w-md leading-relaxed">
                   Schedule your one-on-one session with our senior experts today. Your success story begins with a single conversation.
                 </p>
 
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-3 md:gap-4">
                   <Link
                     to="/contact"
-                    className="group relative inline-flex items-center gap-3 bg-white text-slate-900 font-bold px-8 py-4 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_rgba(255,255,255,0.15)] hover:-translate-y-0.5 active:scale-[0.98]"
+                    className="group relative inline-flex items-center gap-2 md:gap-3 bg-white text-slate-900 text-sm md:text-base font-bold px-6 py-3 md:px-8 md:py-4 rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_rgba(255,255,255,0.15)] hover:-translate-y-0.5 active:scale-[0.98]"
                   >
                     <span className="relative z-10">Book Free Consultation</span>
-                    <ArrowRight className="relative z-10 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="relative z-10 w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
                     <div className="absolute inset-0 bg-gradient-to-r from-brand-100 to-teal-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </Link>
                   <Link
                     to="/about/company-profile"
-                    className="inline-flex items-center gap-2 border border-white/20 hover:border-white/40 text-white font-bold px-8 py-4 rounded-full transition-all duration-300 hover:bg-white/5 backdrop-blur-sm"
+                    className="inline-flex items-center gap-2 border border-white/20 hover:border-white/40 text-white text-sm md:text-base font-bold px-6 py-3 md:px-8 md:py-4 rounded-full transition-all duration-300 hover:bg-white/5 backdrop-blur-sm"
                   >
                     Our Values
                   </Link>
@@ -90,7 +90,7 @@ const ContactCTA = () => {
               </div>
 
               {/* Right — Contact Cards */}
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 {[
                   {
                     icon: PhoneCall,
@@ -123,14 +123,14 @@ const ContactCTA = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1, duration: 0.6 }}
-                    className="group flex items-center gap-5 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 transition-all duration-300 hover:bg-white/[0.1] hover:border-white/15 cursor-default"
+                    className="group flex items-center gap-4 md:gap-5 bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] rounded-xl md:rounded-2xl p-4 md:p-5 transition-all duration-300 hover:bg-white/[0.1] hover:border-white/15 cursor-default"
                   >
-                    <div className={`w-12 h-12 bg-gradient-to-br ${item.gradient} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                      <item.icon className="w-5 h-5 text-white" />
+                    <div className={`w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br ${item.gradient} rounded-lg md:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                      <item.icon className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{item.label}</p>
-                      <p className="text-lg font-bold text-white">{item.value}</p>
+                      <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-0.5 md:mb-1">{item.label}</p>
+                      <p className="text-base md:text-lg font-bold text-white">{item.value}</p>
                     </div>
                   </motion.div>
                 ))}
