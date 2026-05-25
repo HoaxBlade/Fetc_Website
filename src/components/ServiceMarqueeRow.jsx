@@ -23,14 +23,24 @@ function ServiceMarqueeRow({
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (layout !== "split-overlapping" || !items || items.length === 0 || isPaused) return;
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % items.length);
-    }, 5000); // Shuffling every 5 seconds per user request
+    }, 3000); // Reduced to 3 seconds per user request, resets timer on activeIndex change
     return () => clearInterval(interval);
-  }, [layout, items, isPaused]);
+  }, [layout, items, isPaused, activeIndex]);
 
   let scrollingItems = items;
   if (!isStatic) {
@@ -393,24 +403,38 @@ function ServiceMarqueeRow({
                   const isVisible = offsetIndex < 4;
                   const isTop = offsetIndex === 0;
 
-                  // Styling based on depth
+                  // Styling based on depth and viewport responsiveness
                   const scale = isVisible ? 1 - (offsetIndex * 0.05) : 0.8;
-                  const translateY = isVisible ? offsetIndex * 20 : 60;
-                  const translateX = isVisible ? offsetIndex * 8 : 20;
+                  const translateY = isVisible 
+                    ? (isMobile ? offsetIndex * 12 : offsetIndex * 20) 
+                    : (isMobile ? 40 : 60);
+                  const translateX = isVisible 
+                    ? (isMobile ? 0 : offsetIndex * 8) 
+                    : (isMobile ? 0 : 20);
 
                   const zIndex = items.length - offsetIndex;
                   const opacity = isVisible ? 1 - (offsetIndex * 0.2) : 0;
 
-                  // Consistent stack rotation per depth level
-                  const rotate = isVisible ? (offsetIndex === 1 ? -3 : offsetIndex === 2 ? 3 : offsetIndex === 3 ? -1.5 : 0) : 0;
+                  // Consistent stack rotation per depth level (subtle rotation on mobile to stay within screen boundaries)
+                  const rotate = isVisible 
+                    ? (offsetIndex === 1 
+                        ? (isMobile ? -1.5 : -3) 
+                        : offsetIndex === 2 
+                        ? (isMobile ? 1.5 : 3) 
+                        : offsetIndex === 3 
+                        ? (isMobile ? -0.8 : -1.5) 
+                        : 0) 
+                    : 0;
                    return (
                     <div
                       key={i}
-                      className={`absolute top-0 left-0 flex h-full w-full flex-col rounded-[2.5rem] p-6 overflow-hidden transition-all duration-1000 ease-[cubic-bezier(0.2,0.8,0.2,1)] origin-center ${isTop ? 'ring-1 ring-slate-200/80' : 'ring-1 ring-slate-100/40'}`}
+                      className={`absolute top-0 left-0 flex h-full w-full flex-col rounded-[2.5rem] p-6 overflow-hidden transition-[transform,opacity,box-shadow,background-color] duration-500 md:duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-[transform,opacity] origin-center ${isTop ? 'ring-1 ring-slate-200/80' : 'ring-1 ring-slate-100/40'}`}
                       style={{
                         zIndex,
                         transform: `translate3d(${translateX}px, ${translateY}px, ${zIndex * 4}px) scale(${scale}) rotate(${rotate}deg)`,
                         opacity,
+                        visibility: isVisible ? 'visible' : 'hidden',
+                        pointerEvents: isTop ? 'auto' : (isVisible ? 'auto' : 'none'),
                         boxShadow: isTop 
                           ? (!reverse 
                             ? '0 40px 80px -15px rgba(13,94,183,0.12), 0 20px 40px -10px rgba(0,0,0,0.06)' 
@@ -423,87 +447,89 @@ function ServiceMarqueeRow({
                         if (!isTop) setActiveIndex(i);
                       }}
                     >
-                      {/* Top section: badge + title + desc */}
-                      <div>
-                        {isTop && (
-                          <div className={`mb-3 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest ring-1 ${!reverse ? 'bg-brand-50 text-brand-600 ring-brand-100' : 'bg-teal-50 text-teal-600 ring-teal-100'}`}>
-                            {reverse ? 'Top Exam Prep' : 'Featured Destination'}
-                          </div>
-                        )}
-                        <h3 className={`mb-2 text-2xl md:text-3xl font-extrabold tracking-tight transition-all duration-500 flex items-center gap-3 ${isTop ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                          <span className={`bg-gradient-to-br ${gradientColors[i % gradientColors.length]} bg-clip-text text-transparent`}>
-                            {service.title}
-                          </span>
-                          {service.flag && (
-                            <img 
-                              src={service.flag} 
-                              alt={`${service.title} flag`} 
-                              className="h-6 w-auto object-contain rounded-md filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)] select-none" 
-                            />
-                          )}
-                        </h3>
-                        <p className={`text-sm font-medium leading-relaxed line-clamp-3 transition-opacity duration-500 ${isTop ? 'text-slate-500 opacity-100' : 'text-slate-400 opacity-0'}`}>
-                          {service.description}
-                        </p>
-                      </div>
-
-                      {/* Memoji image for study abroad cards */}
-                      {service.image && (
-                        <div className="relative flex-1 flex items-center justify-center min-h-0">
-                          <img 
-                            src={service.image} 
-                            alt={service.title} 
-                            className={`h-28 md:h-32 w-auto object-contain transition-all duration-700 select-none ${isTop ? 'opacity-100 scale-100' : 'opacity-0 scale-90 translate-y-6 pointer-events-none'}`}
-                            style={{ 
-                              animation: isTop ? 'float 5s ease-in-out infinite' : 'none',
-                              mixBlendMode: 'multiply'
-                            }}
-                          />
-                        </div>
-                      )}
-
-                      {/* Rich visual interior for exam cards (no image) */}
-                      {!service.image && service.features && (
-                        <div className={`flex-1 flex flex-col justify-start gap-3 mt-4 min-h-0 transition-all duration-700 ${isTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'}`}>
-                          <div className="grid grid-cols-2 gap-2">
-                            {service.features.slice(0, 4).map((feat, fi) => {
-                              const pillColors = !reverse
-                                ? ['bg-brand-50 text-brand-700 ring-brand-100', 'bg-sky-50 text-sky-700 ring-sky-100', 'bg-indigo-50 text-indigo-700 ring-indigo-100', 'bg-violet-50 text-violet-700 ring-violet-100']
-                                : ['bg-teal-50 text-teal-700 ring-teal-100', 'bg-emerald-50 text-emerald-700 ring-emerald-100', 'bg-cyan-50 text-cyan-700 ring-cyan-100', 'bg-green-50 text-green-700 ring-green-100'];
-                              return (
-                                <div key={fi} className={`rounded-xl px-3 py-2.5 ring-1 ${pillColors[fi % pillColors.length]}`}>
-                                  <div className="text-sm font-extrabold tracking-tight leading-none">{feat.highlight}</div>
-                                  <div className="text-[9px] font-bold uppercase tracking-wider opacity-60 mt-1">{feat.label}</div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                          {/* Compact metadata inline */}
-                          {service.metadata && (
-                            <div className="flex flex-wrap gap-1.5 mt-1">
-                              {service.metadata.slice(0, 2).map((meta, mi) => (
-                                <span key={mi} className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-slate-400 ring-1 ring-slate-100">
-                                  <span className="text-slate-600">{meta.value}</span>
-                                  <span>·</span>
-                                  <span>{meta.label}</span>
-                                </span>
-                              ))}
+                      <div className={`flex flex-col h-full w-full ${isTop ? '' : 'pointer-events-none'}`}>
+                        {/* Top section: badge + title + desc */}
+                        <div>
+                          {isTop && (
+                            <div className={`mb-3 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest ring-1 ${!reverse ? 'bg-brand-50 text-brand-600 ring-brand-100' : 'bg-teal-50 text-teal-600 ring-teal-100'}`}>
+                              {reverse ? 'Top Exam Prep' : 'Featured Destination'}
                             </div>
                           )}
+                          <h3 className={`mb-2 text-2xl md:text-3xl font-extrabold tracking-tight transition-all duration-500 flex items-center gap-3 ${isTop ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                            <span className={`bg-gradient-to-br ${gradientColors[i % gradientColors.length]} bg-clip-text text-transparent`}>
+                              {service.title}
+                            </span>
+                            {service.flag && (
+                              <img 
+                                src={service.flag} 
+                                alt={`${service.title} flag`} 
+                                className="h-6 w-auto object-contain rounded-md filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)] select-none" 
+                              />
+                            )}
+                          </h3>
+                          <p className={`text-sm font-medium leading-relaxed line-clamp-3 transition-opacity duration-500 ${isTop ? 'text-slate-500 opacity-100' : 'text-slate-400 opacity-0'}`}>
+                            {service.description}
+                          </p>
                         </div>
-                      )}
 
-                      {/* Explore Details link - always at bottom */}
-                      <div className={`mt-auto pt-3 transition-all duration-500 ${isTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-                        <Link
-                          to={service.path}
-                          className={`group/link inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-colors ${!reverse ? 'text-slate-900 hover:text-brand-600' : 'text-slate-900 hover:text-teal-600'}`}
-                        >
-                          Explore Details
-                          <svg className="h-4 w-4 transition-transform group-hover/link:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                          </svg>
-                        </Link>
+                        {/* Memoji image for study abroad cards */}
+                        {service.image && (
+                          <div className="relative flex-1 flex items-center justify-center min-h-0">
+                            <img 
+                              src={service.image} 
+                              alt={service.title} 
+                              className={`h-28 md:h-32 w-auto object-contain transition-all duration-700 select-none ${isTop ? 'opacity-100 scale-100' : 'opacity-0 scale-90 translate-y-6 pointer-events-none'}`}
+                              style={{ 
+                                animation: isTop ? 'float 5s ease-in-out infinite' : 'none',
+                                mixBlendMode: 'multiply'
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        {/* Rich visual interior for exam cards (no image) */}
+                        {!service.image && service.features && (
+                          <div className={`flex-1 flex flex-col justify-start gap-3 mt-4 min-h-0 transition-all duration-700 ${isTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'}`}>
+                            <div className="grid grid-cols-2 gap-2">
+                              {service.features.slice(0, 4).map((feat, fi) => {
+                                const pillColors = !reverse
+                                  ? ['bg-brand-50 text-brand-700 ring-brand-100', 'bg-sky-50 text-sky-700 ring-sky-100', 'bg-indigo-50 text-indigo-700 ring-indigo-100', 'bg-violet-50 text-violet-700 ring-violet-100']
+                                  : ['bg-teal-50 text-teal-700 ring-teal-100', 'bg-emerald-50 text-emerald-700 ring-emerald-100', 'bg-cyan-50 text-cyan-700 ring-cyan-100', 'bg-green-50 text-green-700 ring-green-100'];
+                                return (
+                                  <div key={fi} className={`rounded-xl px-3 py-2.5 ring-1 ${pillColors[fi % pillColors.length]}`}>
+                                    <div className="text-sm font-extrabold tracking-tight leading-none">{feat.highlight}</div>
+                                    <div className="text-[9px] font-bold uppercase tracking-wider opacity-60 mt-1">{feat.label}</div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            {/* Compact metadata inline */}
+                            {service.metadata && (
+                              <div className="flex flex-wrap gap-1.5 mt-1">
+                                {service.metadata.slice(0, 2).map((meta, mi) => (
+                                  <span key={mi} className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-slate-400 ring-1 ring-slate-100">
+                                    <span className="text-slate-600">{meta.value}</span>
+                                    <span>·</span>
+                                    <span>{meta.label}</span>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Explore Details link - always at bottom */}
+                        <div className={`mt-auto pt-3 transition-all duration-500 ${isTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+                          <Link
+                            to={service.path}
+                            className={`group/link inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-colors ${!reverse ? 'text-slate-900 hover:text-brand-600' : 'text-slate-900 hover:text-teal-600'}`}
+                          >
+                            Explore Details
+                            <svg className="h-4 w-4 transition-transform group-hover/link:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   );
