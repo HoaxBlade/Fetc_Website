@@ -8,7 +8,7 @@ This guide provides everything needed to run the FETC website locally and expose
 Ensure **PostgreSQL** is running on your machine.
 
 ### On Mac:
-- Run: `brew services start postgresql` OR open the Postgres.app if installed.
+- Run: ` brew services start postgresql` OR open the Postgres.app if installed.
 
 ### On Windows:
 - Press `Win + R`, type `services.msc`, and press Enter.
