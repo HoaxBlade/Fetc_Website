@@ -157,7 +157,15 @@ function Navbar() {
                 }
                 title="My Account"
               >
-                <User size={22} className="stroke-[2.5px]" />
+                {currentUser && currentUser.profile_image ? (
+                  <img 
+                    src={currentUser.profile_image} 
+                    alt={currentUser.name} 
+                    className="w-[22px] h-[22px] rounded-full object-cover" 
+                  />
+                ) : (
+                  <User size={22} className="stroke-[2.5px]" />
+                )}
               </NavLink>
               <div className="pointer-events-none absolute right-0 top-full pt-2 w-56 opacity-0 transition-all duration-300 group-hover:pointer-events-auto group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 z-50">
                 <div className="rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden flex flex-col p-1.5">
@@ -234,7 +242,15 @@ function Navbar() {
                           }`
                         }
                       >
-                        <User size={20} className="stroke-[2.5px]" />
+                        {currentUser && currentUser.profile_image ? (
+                          <img 
+                            src={currentUser.profile_image} 
+                            alt={currentUser.name} 
+                            className="w-[20px] h-[20px] rounded-full object-cover" 
+                          />
+                        ) : (
+                          <User size={20} className="stroke-[2.5px]" />
+                        )}
                         {menu.label}
                       </NavLink>
                       <div className="pl-10 space-y-1">

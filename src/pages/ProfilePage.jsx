@@ -23,15 +23,17 @@ const ProfilePage = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!userData.id) return;
+      const identifier = userData.id || userData.email;
+      if (!identifier) return;
       setIsLoading(true);
       try {
-        const response = await fetch((window.API_BASE || "") + `/api/users/profile/${userData.id}`);
+        const response = await fetch((window.API_BASE || "") + `/api/users/profile/${identifier}`);
         const data = await response.json();
         if (data.success) {
           const updatedUser = { ...userData, ...data.user };
           setUserData(updatedUser);
           localStorage.setItem('user', JSON.stringify(updatedUser));
+          window.dispatchEvent(new Event("user-login"));
           if (!isEditing) {
             setFormData({
               name: data.user.name,
@@ -39,6 +41,13 @@ const ProfilePage = () => {
               bio: data.user.bio || ""
             });
           }
+        } else if (response.status === 404) {
+          // User session is invalid/out-of-sync with DB. Log out gracefully!
+          console.warn("User not found in database. Clearing session.");
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          window.dispatchEvent(new Event("user-logout"));
+          window.location.href = '/my-account';
         }
       } catch (err) {
         console.error('Failed to fetch profile:', err);
@@ -48,7 +57,7 @@ const ProfilePage = () => {
     };
 
     fetchProfile();
-  }, [userData.id, isEditing]); // Removed userData to prevent infinite loop
+  }, [userData.id, userData.email, isEditing]); // Added userData.email to dependencies
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -56,9 +65,14 @@ const ProfilePage = () => {
   };
 
   const handleSave = async () => {
+    const identifier = userData.id || userData.email;
+    if (!identifier) {
+      alert("Unable to identify current user session. Please log in again.");
+      return;
+    }
     setIsSaving(true);
     try {
-      const response = await fetch((window.API_BASE || "") + `/api/users/profile/${userData.id}`, {
+      const response = await fetch((window.API_BASE || "") + `/api/users/profile/${identifier}`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
@@ -72,6 +86,7 @@ const ProfilePage = () => {
         const updatedUser = { ...userData, ...data.user };
         setUserData(updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
+        window.dispatchEvent(new Event("user-login"));
         setIsEditing(false);
       } else {
         alert(data.message || 'Failed to update profile');
@@ -97,6 +112,12 @@ const ProfilePage = () => {
       return;
     }
 
+    const identifier = userData.id || userData.email;
+    if (!identifier) {
+      alert("Unable to identify current user session. Please log in again.");
+      return;
+    }
+
     setIsUploading(true);
     const uploadData = new FormData();
     uploadData.append('image', file);
@@ -109,7 +130,7 @@ const ProfilePage = () => {
       const uploadResult = await uploadRes.json();
 
       if (uploadResult.success) {
-        const profileRes = await fetch((window.API_BASE || "") + `/api/users/profile/${userData.id}`, {
+        const profileRes = await fetch((window.API_BASE || "") + `/api/users/profile/${identifier}`, {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',
@@ -123,6 +144,9 @@ const ProfilePage = () => {
           const updatedUser = { ...userData, ...profileResult.user };
           setUserData(updatedUser);
           localStorage.setItem('user', JSON.stringify(updatedUser));
+          window.dispatchEvent(new Event("user-login"));
+        } else {
+          alert(profileResult.message || "Failed to update profile image in database.");
         }
       } else {
         alert("Failed to upload image.");
@@ -136,18 +160,23 @@ const ProfilePage = () => {
   };
 
   const handleRemoveImage = async () => {
+    const identifier = userData.id || userData.email;
+    if (!identifier) {
+      alert("Unable to identify current user session. Please log in again.");
+      return;
+    }
+
     if (!window.confirm("Are you sure you want to remove your profile picture?")) return;
 
     setIsUploading(true);
     try {
-      const response = await fetch((window.API_BASE || "") + `/api/users/profile/${userData.id}`, {
+      const response = await fetch((window.API_BASE || "") + `/api/users/profile/${identifier}`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true'
         },
-        // Use empty string or null to reset the column in DB
-        body: JSON.stringify({ profile_image: "" }) 
+        body: JSON.stringify({ profile_image: null }) // Use null to clear it in DB
       });
 
       const data = await response.json();
@@ -155,6 +184,9 @@ const ProfilePage = () => {
         const updatedUser = { ...userData, profile_image: null };
         setUserData(updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
+        window.dispatchEvent(new Event("user-login"));
+      } else {
+        alert(data.message || "Failed to remove profile image.");
       }
     } catch (err) {
       console.error('Remove image error:', err);

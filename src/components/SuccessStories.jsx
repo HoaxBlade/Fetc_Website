@@ -218,13 +218,14 @@ const SuccessStories = () => {
                 transition={{ duration: 0.6, delay: 0.2 + idx * 0.08 }}
                 className="group flex-shrink-0 snap-start w-[260px] md:w-[280px]"
               >
-                <div className="relative bg-white rounded-[1.8rem] overflow-hidden border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_25px_60px_rgba(0,0,0,0.1)] hover:-translate-y-2">
+                <div className="relative bg-white rounded-[1.8rem] overflow-hidden border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_25px_60px_rgba(0,0,0,0.1)] hover:-translate-y-2" style={{ transform: 'translate3d(0, 0, 0)' }}>
                   {/* Image */}
-                  <div className="relative h-72 overflow-hidden rounded-[1.8rem]">
+                  <div className="relative h-72 overflow-hidden">
                     <img
                       src={student.image}
                       alt={`${student.name} — ${student.achievement}`}
                       className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                      style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'translate3d(0, 0, 0)' }}
                     />
                     {/* Gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />

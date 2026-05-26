@@ -136,6 +136,14 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  if (req.body && Object.keys(req.body).length) {
+    console.log('Body:', req.body);
+  }
+  next();
+});
+
 // Transporter for Email (Configure as needed)
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.gmail.com',
@@ -275,13 +283,38 @@ app.post('/api/auth/login', async (req, res) => {
 // User Profile Update Route
 app.patch('/api/users/profile/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, phone, bio, profile_image } = req.body;
   
   try {
-    const result = await db.query(
-      'UPDATE users SET name = COALESCE($1, name), phone = COALESCE($2, phone), bio = COALESCE($3, bio), profile_image = COALESCE($4, profile_image) WHERE id = $5 RETURNING id, name, email, role, phone, bio, created_at, profile_image',
-      [name, phone, bio, profile_image, id]
-    );
+    let identifierQuery = 'id = $1';
+    let identifierParam = parseInt(id);
+
+    if (isNaN(identifierParam) && id.includes('@')) {
+      identifierQuery = 'email = $1';
+      identifierParam = id;
+    } else if (isNaN(identifierParam)) {
+      return res.status(400).json({ success: false, message: 'Invalid user identifier' });
+    }
+
+    const fields = [];
+    const values = [identifierParam]; // $1 is the identifier
+    let index = 2;
+
+    const allowedFields = ['name', 'phone', 'bio', 'profile_image'];
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        fields.push(`${field} = $${index}`);
+        values.push(req.body[field]);
+        index++;
+      }
+    }
+
+    if (fields.length === 0) {
+      return res.status(400).json({ success: false, message: 'No fields to update' });
+    }
+
+    const queryText = `UPDATE users SET ${fields.join(', ')} WHERE ${identifierQuery} RETURNING id, name, email, role, phone, bio, created_at, profile_image`;
+
+    const result = await db.query(queryText, values);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'User not found' });
@@ -298,10 +331,20 @@ app.patch('/api/users/profile/:id', async (req, res) => {
 app.get('/api/users/profile/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await db.query(
-      'SELECT id, name, email, role, phone, bio, created_at, profile_image FROM users WHERE id = $1',
-      [id]
-    );
+    let result;
+    if (isNaN(parseInt(id)) && id.includes('@')) {
+      result = await db.query(
+        'SELECT id, name, email, role, phone, bio, created_at, profile_image FROM users WHERE email = $1',
+        [id]
+      );
+    } else if (isNaN(parseInt(id))) {
+      return res.status(400).json({ success: false, message: 'Invalid user identifier' });
+    } else {
+      result = await db.query(
+        'SELECT id, name, email, role, phone, bio, created_at, profile_image FROM users WHERE id = $1',
+        [parseInt(id)]
+      );
+    }
     if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'User not found' });
     res.json({ success: true, user: result.rows[0] });
   } catch (err) {

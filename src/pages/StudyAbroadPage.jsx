@@ -165,14 +165,14 @@ function StudyAbroadPage() {
                </p>
             </div>
             
-            <div className="relative w-full max-w-sm group">
+            <div className="relative w-full max-w-md group">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-brand-600 transition-colors" size={20} />
               <input
                 type="text"
                 placeholder={`Search universities...`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-2xl border border-slate-100 bg-white py-4.5 pl-14 pr-6 text-sm font-bold text-slate-700 outline-none transition-all placeholder:text-slate-300 focus:border-brand-300 focus:ring-8 focus:ring-brand-600/5 shadow-soft"
+                className="w-full rounded-2xl border border-slate-100 bg-white py-4 pl-14 pr-6 text-sm font-bold text-slate-700 outline-none transition-all duration-300 placeholder:text-slate-300 hover:border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:shadow-[0_0_25px_rgba(59,130,246,0.15)] shadow-soft"
               />
             </div>
           </div>
@@ -181,11 +181,9 @@ function StudyAbroadPage() {
             {pageData.universities
               .filter(uni => uni.name.toLowerCase().includes(searchQuery.toLowerCase()))
               .map((uni, idx) => (
-              <a
+              <Link
                 key={idx}
-                href={uni.link}
-                target="_blank"
-                rel="noopener noreferrer"
+                to="/contact"
                 className="group relative flex h-full flex-col justify-between rounded-[2.5rem] bg-white p-8 border border-slate-50 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] hover:border-brand-100"
               >
                 {uni.exclusive && (
@@ -229,10 +227,10 @@ function StudyAbroadPage() {
                 {/* Hover Indicator */}
                 <div className="mt-6 flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                    <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest flex items-center gap-1.5">
-                      Visit Website <Sparkles size={10} />
+                      Contact Us <Sparkles size={10} />
                    </span>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
           

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -9,7 +9,21 @@ import {
 const UserLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
-  const userData = JSON.parse(localStorage.getItem('user') || '{"name":"User"}');
+  const [userData, setUserData] = useState(() => 
+    JSON.parse(localStorage.getItem('user') || '{"name":"User"}')
+  );
+
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      setUserData(JSON.parse(localStorage.getItem('user') || '{"name":"User"}'));
+    };
+    window.addEventListener("user-login", handleUserUpdate);
+    window.addEventListener("user-logout", handleUserUpdate);
+    return () => {
+      window.removeEventListener("user-login", handleUserUpdate);
+      window.removeEventListener("user-logout", handleUserUpdate);
+    };
+  }, []);
 
   const sidebarItems = [
     { icon: User, label: "Profile", path: "/dashboard/profile" },
@@ -32,8 +46,14 @@ const UserLayout = () => {
     <div className="flex flex-col h-fit w-full overflow-hidden">
       <div className="p-6 md:p-8 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-xl shadow-slate-200 shrink-0">
-             <User className="text-white" size={20} />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-xl shadow-slate-200 shrink-0 overflow-hidden">
+             {userData.profile_image ? (
+               <img src={userData.profile_image} alt={userData.name} className="w-full h-full object-cover" />
+             ) : (
+               <div className="w-full h-full bg-slate-900 flex items-center justify-center">
+                 <User className="text-white" size={20} />
+               </div>
+             )}
           </div>
           <h2 className="text-xl font-bold text-slate-800 tracking-tight whitespace-nowrap">My<span className="text-brand-600"> Account</span></h2>
         </div>
