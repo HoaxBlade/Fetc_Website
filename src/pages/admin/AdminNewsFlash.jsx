@@ -99,20 +99,20 @@ const AdminNewsFlash = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-6xl mx-auto px-4 sm:px-6">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-[1600px] mx-auto px-4 sm:px-6">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-brand-50 text-brand-600 rounded-lg">
+            <div className="p-2 bg-brand-50 text-brand-600 rounded-xl">
               <Zap size={20} />
             </div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">News Flash</h1>
+            <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">News Flash</h1>
           </div>
           <p className="text-slate-500 font-medium text-sm italic">Broadcast important announcements across the website footer.</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold text-sm hover:bg-brand-600 transition-all shadow-xl hover:-translate-y-1 active:scale-95"
+          className="flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl font-medium text-sm hover:bg-brand-600 transition-all shadow-xl hover:-translate-y-1 active:scale-95"
         >
           <Plus size={18} /> Create Announcement
         </button>
@@ -122,14 +122,14 @@ const AdminNewsFlash = () => {
         {isLoading ? (
           <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-3">
             <Loader2 className="animate-spin" size={32} />
-            <p className="text-sm font-bold uppercase tracking-widest italic">Fetching highlights...</p>
+            <p className="text-sm font-medium uppercase tracking-widest italic">Fetching highlights...</p>
           </div>
         ) : items.length === 0 ? (
-          <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-20 text-center">
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-20 text-center">
             <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <Bell className="text-brand-600" size={24} />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1">Silence is golden?</h3>
+            <h3 className="text-lg font-semibold text-slate-900 mb-1">Silence is golden?</h3>
             <p className="text-slate-400 text-sm italic">You haven't created any news flash announcements yet.</p>
           </div>
         ) : (
@@ -137,24 +137,24 @@ const AdminNewsFlash = () => {
             <motion.div 
               layout
               key={item.id}
-              className={`group glass-card rounded-[2rem] border transition-all duration-300 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 ${item.is_active ? 'border-brand-100 shadow-md hover:shadow-xl' : 'border-slate-100 opacity-60 hover:opacity-100 shadow-sm'}`}
+              className={`group glass-card rounded-2xl border transition-all duration-300 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 ${item.is_active ? 'border-brand-100 shadow-md hover:shadow-xl' : 'border-slate-100 opacity-60 hover:opacity-100 shadow-sm'}`}
             >
               <div className="flex-1 flex gap-4">
                 <div className={`mt-1 shrink-0 p-2 rounded-xl h-fit ${item.is_active ? 'bg-brand-50 text-brand-600' : 'bg-slate-50 text-slate-400'}`}>
                   <Zap size={18} />
                 </div>
                 <div className="space-y-1">
-                  <p className="font-bold text-slate-900 leading-relaxed">{item.content}</p>
+                  <p className="font-semibold text-slate-900 leading-relaxed">{item.content}</p>
                   {item.link && (
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-brand-600">
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-brand-600">
                       <LinkIcon size={12} />
                       <span>{item.link}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-4 pt-2">
-                    <span className="text-[10px] font-black uppercase text-slate-300 tracking-widest">Priority: {item.priority}</span>
-                    <span className="text-[10px] font-black uppercase text-slate-300 tracking-widest">•</span>
-                    <span className="text-[10px] font-black uppercase text-slate-300 tracking-widest">{new Date(item.created_at).toLocaleDateString()}</span>
+                    <span className="text-[10px] font-medium uppercase text-slate-300 tracking-widest">Priority: {item.priority}</span>
+                    <span className="text-[10px] font-medium uppercase text-slate-300 tracking-widest">•</span>
+                    <span className="text-[10px] font-medium uppercase text-slate-300 tracking-widest">{new Date(item.created_at).toLocaleDateString()}</span>
                   </div>
                 </div>
               </div>
@@ -202,7 +202,7 @@ const AdminNewsFlash = () => {
               initial={{ opacity: 0, scale: 0.98, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98, y: 10 }}
-              className="relative w-full max-w-xl bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60"
+              className="relative w-full max-w-xl bg-white/95 backdrop-blur-3xl rounded-2xl shadow-2xl overflow-hidden border border-slate-200/60"
             >
               <div className="p-8 md:p-10">
                 <div className="flex justify-between items-center mb-8">
@@ -210,7 +210,7 @@ const AdminNewsFlash = () => {
                     <div className="p-2 bg-brand-50 text-brand-600 rounded-xl">
                       <Plus size={20} />
                     </div>
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+                    <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">
                       {editingItem ? 'Edit Announcement' : 'New Flash News'}
                     </h2>
                   </div>
@@ -221,10 +221,10 @@ const AdminNewsFlash = () => {
 
                 <form onSubmit={handleSave} className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Announcement Content</label>
+                    <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-2">Announcement Content</label>
                     <textarea 
                       required
-                      className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all h-32 resize-none"
+                      className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all h-32 resize-none"
                       placeholder="e.g. 🚀 Big News: Top UK Universities offering 1 year pathway program!"
                       value={formData.content}
                       onChange={(e) => setFormData({...formData, content: e.target.value})}
@@ -233,19 +233,19 @@ const AdminNewsFlash = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Link (Optional)</label>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-2">Link (Optional)</label>
                       <input 
-                        className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-bold text-slate-600 focus:outline-none focus:border-brand-300 transition-all"
+                        className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-medium text-slate-600 focus:outline-none focus:border-brand-300 transition-all"
                         placeholder="https://fetc.in/..."
                         value={formData.link}
                         onChange={(e) => setFormData({...formData, link: e.target.value})}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Priority Level</label>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-2">Priority Level</label>
                       <input 
                         type="number"
-                        className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-bold text-slate-600 focus:outline-none focus:border-brand-300 transition-all"
+                        className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-medium text-slate-600 focus:outline-none focus:border-brand-300 transition-all"
                         value={formData.priority}
                         onChange={(e) => setFormData({...formData, priority: parseInt(e.target.value)})}
                       />
@@ -254,7 +254,7 @@ const AdminNewsFlash = () => {
 
                   <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
                     <div className="flex-1">
-                      <p className="text-xs font-bold text-slate-900">Active Status</p>
+                      <p className="text-xs font-semibold text-slate-900">Active Status</p>
                       <p className="text-[10px] text-slate-400 font-medium">Show this news flash on the website immediately.</p>
                     </div>
                     <button 
@@ -270,14 +270,14 @@ const AdminNewsFlash = () => {
                     <button 
                       type="button"
                       onClick={() => setIsModalOpen(false)}
-                      className="flex-1 py-4 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 transition-all"
+                      className="flex-1 py-4 rounded-2xl text-sm font-medium text-slate-500 hover:bg-slate-50 transition-all"
                     >
                       Cancel
                     </button>
                     <button 
                       type="submit"
                       disabled={isSaving}
-                      className="flex-2 bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold text-sm hover:bg-brand-600 transition-all shadow-xl flex items-center justify-center gap-2 group"
+                      className="flex-2 bg-slate-900 text-white px-10 py-4 rounded-2xl font-medium text-sm hover:bg-brand-600 transition-all shadow-xl flex items-center justify-center gap-2 group"
                     >
                       {isSaving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} className="group-hover:scale-110 transition-transform" />}
                       {editingItem ? 'Update Broadcast' : 'Launch News'}
@@ -294,3 +294,5 @@ const AdminNewsFlash = () => {
 };
 
 export default AdminNewsFlash;
+
+

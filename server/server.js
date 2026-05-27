@@ -62,6 +62,45 @@ const runMigrations = async () => {
       );
     `);
 
+    // Add stage fields to leads table to fully support the 3-stage funnel
+    await db.query(`
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS first_name VARCHAR(255);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS middle_name VARCHAR(255);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS last_name VARCHAR(255);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS dob DATE;
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS gender VARCHAR(50);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS location VARCHAR(100);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS address TEXT;
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS emergency_contact_name VARCHAR(255);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS emergency_contact_phone VARCHAR(50);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS emergency_contact_relation VARCHAR(100);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS service VARCHAR(100);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS country VARCHAR(255);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS program VARCHAR(255);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS visa_rejection VARCHAR(50);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS travel_history VARCHAR(50);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS exam_type VARCHAR(100);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS ebd DATE;
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS anyspecificlocation TEXT;
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS payment VARCHAR(100);
+    `);
+
+    // Create lead_documents table for premium file status tracking
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS lead_documents (
+        id SERIAL PRIMARY KEY,
+        lead_id INTEGER REFERENCES leads(id) ON DELETE CASCADE,
+        file_name VARCHAR(255) NOT NULL,
+        file_path TEXT NOT NULL,
+        document_type VARCHAR(100) NOT NULL,
+        status VARCHAR(50) DEFAULT 'Pending',
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (lead_id, document_type)
+      );
+    `);
+
+
     // Tickets table
     await db.query(`
       CREATE TABLE IF NOT EXISTS tickets (
@@ -549,6 +588,439 @@ app.delete('/api/admin/leads/:id', async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
+
+// --- Start of Three-Stage Lead Funnel API (/api/v1/lead) ---
+
+// Utility functions to map camelCase (frontend) and snake_case (database)
+const snakeToCamel = (obj) => {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (obj instanceof Date) return obj;
+  if (Array.isArray(obj)) return obj.map(snakeToCamel);
+  const n = {};
+  Object.keys(obj).forEach(k => {
+    // Map database ID key to _id for frontend compatibility
+    const ck = k === 'id' ? '_id' : k.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    n[ck] = snakeToCamel(obj[k]);
+  });
+  return n;
+};
+
+const camelToSnake = (obj) => {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (obj instanceof Date) return obj;
+  if (Array.isArray(obj)) return obj.map(camelToSnake);
+  const n = {};
+  Object.keys(obj).forEach(k => {
+    // Map _id from frontend back to id for DB queries
+    const sk = k === '_id' ? 'id' : k.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+    n[sk] = camelToSnake(obj[k]);
+  });
+  return n;
+};
+
+// GET /api/v1/lead/allleads - Get all leads with their documents populated
+app.get('/api/v1/lead/allleads', async (req, res) => {
+  try {
+    const leadsRes = await db.query('SELECT * FROM leads ORDER BY created_at DESC');
+    const leads = leadsRes.rows;
+    
+    // For each lead, fetch their documents
+    const populatedLeads = [];
+    for (const lead of leads) {
+      const docsRes = await db.query('SELECT * FROM lead_documents WHERE lead_id = $1', [lead.id]);
+      const docs = docsRes.rows;
+      
+      const docMap = {};
+      docs.forEach(doc => {
+        docMap[doc.document_type] = doc.file_path;
+      });
+
+      const formattedLead = {
+        ...lead,
+        ...docMap,
+        documents: docs
+      };
+      
+      populatedLeads.push(snakeToCamel(formattedLead));
+    }
+    
+    res.json({ success: true, leads: populatedLeads });
+  } catch (err) {
+    console.error('Fetch all leads v1 error:', err);
+    res.status(500).json({ success: false, message: 'Server error fetching leads' });
+  }
+});
+
+// GET /api/v1/lead/:id - Get a single lead with their documents
+app.get('/api/v1/lead/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const leadRes = await db.query('SELECT * FROM leads WHERE id = $1', [parseInt(id)]);
+    if (leadRes.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Lead not found' });
+    }
+    
+    const lead = leadRes.rows[0];
+    const docsRes = await db.query('SELECT * FROM lead_documents WHERE lead_id = $1', [lead.id]);
+    const docs = docsRes.rows;
+    
+    const docMap = {};
+    docs.forEach(doc => {
+      docMap[doc.document_type] = doc.file_path;
+    });
+
+    const formattedLead = {
+      ...lead,
+      ...docMap,
+      documents: docs
+    };
+    
+    res.json(snakeToCamel(formattedLead));
+  } catch (err) {
+    console.error('Fetch single lead v1 error:', err);
+    res.status(500).json({ success: false, message: 'Server error fetching lead' });
+  }
+});
+
+// POST /api/v1/lead/create - Create new lead
+app.post('/api/v1/lead/create', async (req, res) => {
+  try {
+    const rawBody = req.body;
+    const body = camelToSnake(rawBody);
+
+    // Legacy support: concatenate name if missing but first/last exist
+    let legacyName = body.name || '';
+    if (!legacyName && (body.first_name || body.last_name)) {
+      legacyName = `${body.first_name || ''} ${body.last_name || ''}`.trim();
+    }
+    if (!legacyName) legacyName = 'Unnamed Lead';
+
+    const columns = [
+      'name', 'email', 'phone', 'first_name', 'middle_name', 'last_name', 
+      'dob', 'gender', 'location', 'address', 'emergency_contact_name', 
+      'emergency_contact_phone', 'emergency_contact_relation', 'service', 
+      'country', 'program', 'visa_rejection', 'travel_history', 'exam_type', 
+      'ebd', 'anyspecificlocation', 'payment', 'status'
+    ];
+
+    const vals = [];
+    const placeholders = [];
+    let idx = 1;
+
+    columns.forEach(col => {
+      let val = body[col];
+      // Normalize empty strings to null or defaults
+      if (val === '') val = null;
+      if (col === 'status' && !val) val = 'NEW';
+      vals.push(val);
+      placeholders.push(`$${idx}`);
+      idx++;
+    });
+
+    const query = `
+      INSERT INTO leads (${columns.join(', ')})
+      VALUES (${placeholders.join(', ')})
+      RETURNING *
+    `;
+
+    const result = await db.query(query, vals);
+    const newLead = result.rows[0];
+
+    // If documents are included in the body, insert them
+    const docKeys = Object.keys(rawBody).filter(k => 
+      !['firstName', 'middleName', 'lastName', 'dob', 'gender', 'email', 
+        'phone', 'location', 'address', 'emergencyContactName', 
+        'emergencyContactPhone', 'emergencyContactRelation', 'service', 
+        'country', 'program', 'visaRejection', 'travelHistory', 'examType', 
+        'ebd', 'anyspecificlocation', 'payment', 'status', 'id', '_id', 'stage', 'isFinal', 'isFinalized'].includes(k) 
+      && typeof rawBody[k] === 'string' && rawBody[k].startsWith('http')
+    );
+
+    for (const docKey of docKeys) {
+      const fileUrl = rawBody[docKey];
+      const fileName = fileUrl.split('/').pop() || 'uploaded-file';
+      await db.query(`
+        INSERT INTO lead_documents (lead_id, file_name, file_path, document_type, status)
+        VALUES ($1, $2, $3, $4, 'Pending')
+        ON CONFLICT (lead_id, document_type) 
+        DO UPDATE SET file_name = EXCLUDED.file_name, file_path = EXCLUDED.file_path, status = 'Pending', updated_at = CURRENT_TIMESTAMP
+      `, [newLead.id, fileName, fileUrl, docKey]);
+    }
+
+    // Return the new lead populated with documents
+    const docsRes = await db.query('SELECT * FROM lead_documents WHERE lead_id = $1', [newLead.id]);
+    const docs = docsRes.rows;
+    
+    const docMap = {};
+    docs.forEach(doc => {
+      docMap[doc.document_type] = doc.file_path;
+    });
+
+    const finalLead = {
+      ...newLead,
+      ...docMap,
+      documents: docs
+    };
+
+    res.status(201).json({ success: true, data: snakeToCamel(finalLead) });
+  } catch (err) {
+    console.error('Create lead v1 error:', err);
+    res.status(500).json({ success: false, message: 'Server error creating lead: ' + err.message });
+  }
+});
+
+// PUT /api/v1/lead/:id - Update lead details (camelCase body)
+app.put('/api/v1/lead/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const rawBody = req.body;
+    const body = camelToSnake(rawBody);
+
+    const leadId = parseInt(id);
+
+    // Legacy support: concatenate name if missing but first/last exist
+    let legacyName = body.name;
+    if (!legacyName && (body.first_name || body.last_name)) {
+      legacyName = `${body.first_name || ''} ${body.last_name || ''}`.trim();
+    }
+
+    const updateFields = [];
+    const vals = [leadId];
+    let idx = 2;
+
+    const allowedColumns = [
+      'name', 'email', 'phone', 'first_name', 'middle_name', 'last_name', 
+      'dob', 'gender', 'location', 'address', 'emergency_contact_name', 
+      'emergency_contact_phone', 'emergency_contact_relation', 'service', 
+      'country', 'program', 'visa_rejection', 'travel_history', 'exam_type', 
+      'ebd', 'anyspecificlocation', 'payment', 'status'
+    ];
+
+    allowedColumns.forEach(col => {
+      let val = body[col];
+      if (col === 'name' && legacyName !== undefined) val = legacyName;
+      if (val !== undefined) {
+        if (val === '') val = null;
+        updateFields.push(`${col} = $${idx}`);
+        vals.push(val);
+        idx++;
+      }
+    });
+
+    if (updateFields.length > 0) {
+      const query = `
+        UPDATE leads 
+        SET ${updateFields.join(', ')} 
+        WHERE id = $1
+      `;
+      await db.query(query, vals);
+    }
+
+    // Process any file slot updates included in body
+    const docKeys = Object.keys(rawBody).filter(k => 
+      !['firstName', 'middleName', 'lastName', 'dob', 'gender', 'email', 
+        'phone', 'location', 'address', 'emergencyContactName', 
+        'emergencyContactPhone', 'emergencyContactRelation', 'service', 
+        'country', 'program', 'visaRejection', 'travelHistory', 'examType', 
+        'ebd', 'anyspecificlocation', 'payment', 'status', 'id', '_id', 'stage', 'isFinal', 'isFinalized', 'documents'].includes(k) 
+      && typeof rawBody[k] === 'string' && rawBody[k].startsWith('http')
+    );
+
+    for (const docKey of docKeys) {
+      const fileUrl = rawBody[docKey];
+      const fileName = fileUrl.split('/').pop() || 'uploaded-file';
+      await db.query(`
+        INSERT INTO lead_documents (lead_id, file_name, file_path, document_type, status)
+        VALUES ($1, $2, $3, $4, 'Pending')
+        ON CONFLICT (lead_id, document_type) 
+        DO UPDATE SET file_name = EXCLUDED.file_name, file_path = EXCLUDED.file_path, status = 'Pending', updated_at = CURRENT_TIMESTAMP
+      `, [leadId, fileName, fileUrl, docKey]);
+    }
+
+    // Return the updated lead populated with documents
+    const leadRes = await db.query('SELECT * FROM leads WHERE id = $1', [leadId]);
+    const updatedLead = leadRes.rows[0];
+
+    const docsRes = await db.query('SELECT * FROM lead_documents WHERE lead_id = $1', [leadId]);
+    const docs = docsRes.rows;
+    
+    const docMap = {};
+    docs.forEach(doc => {
+      docMap[doc.document_type] = doc.file_path;
+    });
+
+    const finalLead = {
+      ...updatedLead,
+      ...docMap,
+      documents: docs
+    };
+
+    res.json({ success: true, data: snakeToCamel(finalLead) });
+  } catch (err) {
+    console.error('Update lead v1 error:', err);
+    res.status(500).json({ success: false, message: 'Server error updating lead: ' + err.message });
+  }
+});
+
+// DELETE /api/v1/lead/:id - Delete lead and all cascading documents
+app.delete('/api/v1/lead/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await db.query('DELETE FROM leads WHERE id = $1 RETURNING *', [parseInt(id)]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Lead not found' });
+    }
+    res.json({ success: true, message: 'Lead and associated documents deleted successfully' });
+  } catch (err) {
+    console.error('Delete lead v1 error:', err);
+    res.status(500).json({ success: false, message: 'Server error deleting lead' });
+  }
+});
+
+// POST /api/v1/lead/single - Dynamic Multer file upload (accepts any file type up to 50MB)
+// Setup storage and limits dynamically for leads
+const leadMulterStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'fetc-doc-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const leadMulterUpload = multer({
+  storage: leadMulterStorage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+  fileFilter: (req, file, cb) => {
+    const filetypes = /pdf|jpeg|jpg|png|webp|gif|mp4|mp3/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if (mimetype && extname) return cb(null, true);
+    cb(new Error("Allowed extensions: PDF, JPEG, PNG, WebP, GIF, MP4, MP3!"));
+  }
+});
+
+app.post('/api/v1/lead/single', leadMulterUpload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'No file uploaded' });
+  }
+  const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+  res.json({ success: true, fileUrl });
+});
+
+// POST /api/v1/lead/upload-bulk - Bulk insert leads with duplicate prevention
+app.post('/api/v1/lead/upload-bulk', async (req, res) => {
+  const { leads } = req.body;
+  if (!Array.isArray(leads)) {
+    return res.status(400).json({ success: false, message: 'Invalid bulk data' });
+  }
+
+  let createdCount = 0;
+  try {
+    for (const rawLead of leads) {
+      const lead = camelToSnake(rawLead);
+      
+      // Duplicate check (by email and phone)
+      const dupCheck = await db.query(
+        'SELECT id FROM leads WHERE (email = $1 AND email != \'\') OR (phone = $2 AND phone != \'\')', 
+        [lead.email, lead.phone]
+      );
+      if (dupCheck.rows.length > 0) {
+        continue; // skip duplicate
+      }
+
+      // Legacy support name concatenate
+      let legacyName = lead.name || '';
+      if (!legacyName && (lead.first_name || lead.last_name)) {
+        legacyName = `${lead.first_name || ''} ${lead.last_name || ''}`.trim();
+      }
+      if (!legacyName) legacyName = 'Unnamed Lead';
+
+      const columns = [
+        'name', 'email', 'phone', 'first_name', 'middle_name', 'last_name', 
+        'dob', 'gender', 'location', 'address', 'status', 'created_at', 'service'
+      ];
+      
+      const vals = [];
+      const placeholders = [];
+      let idx = 1;
+
+      columns.forEach(col => {
+        let val = lead[col];
+        if (val === '') val = null;
+        if (col === 'name') val = legacyName;
+        if (col === 'status' && !val) val = 'NEW';
+        vals.push(val);
+        placeholders.push(`$${idx}`);
+        idx++;
+      });
+
+      await db.query(`
+        INSERT INTO leads (${columns.join(', ')})
+        VALUES (${placeholders.join(', ')})
+      `, vals);
+
+      createdCount++;
+    }
+
+    res.json({ success: true, created: createdCount });
+  } catch (err) {
+    console.error('Bulk upload error:', err);
+    res.status(500).json({ success: false, message: 'Server bulk upload error: ' + err.message });
+  }
+});
+
+// PATCH /api/v1/lead/:leadId/documents/:documentType/status - Admin status update
+app.patch('/api/v1/lead/:leadId/documents/:documentType/status', async (req, res) => {
+  const { leadId, documentType } = req.params;
+  const { status } = req.body;
+  try {
+    const result = await db.query(`
+      UPDATE lead_documents 
+      SET status = $1, updated_at = CURRENT_TIMESTAMP 
+      WHERE lead_id = $2 AND document_type = $3 
+      RETURNING *
+    `, [status, parseInt(leadId), documentType]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Document not found' });
+    }
+
+    res.json({ success: true, document: snakeToCamel(result.rows[0]) });
+  } catch (err) {
+    console.error('Update doc status error:', err);
+    res.status(500).json({ success: false, message: 'Server error updating document status' });
+  }
+});
+
+// POST /api/v1/lead/:leadId/documents/:documentType/upload - Direct slot upload and replacement
+app.post('/api/v1/lead/:leadId/documents/:documentType/upload', leadMulterUpload.single('file'), async (req, res) => {
+  const { leadId, documentType } = req.params;
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'No file uploaded' });
+  }
+
+  const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+  const fileName = req.file.originalname;
+
+  try {
+    const result = await db.query(`
+      INSERT INTO lead_documents (lead_id, file_name, file_path, document_type, status)
+      VALUES ($1, $2, $3, $4, 'Pending')
+      ON CONFLICT (lead_id, document_type) 
+      DO UPDATE SET file_name = EXCLUDED.file_name, file_path = EXCLUDED.file_path, status = 'Pending', updated_at = CURRENT_TIMESTAMP
+      RETURNING *
+    `, [parseInt(leadId), fileName, fileUrl, documentType]);
+
+    res.json({ success: true, fileUrl, document: snakeToCamel(result.rows[0]) });
+  } catch (err) {
+    console.error('Direct slot upload error:', err);
+    res.status(500).json({ success: false, message: 'Server error saving uploaded file' });
+  }
+});
+
+// --- End of Three-Stage Lead Funnel API ---
 
 // Lead Capture Route (Public)
 app.post('/api/leads', async (req, res) => {

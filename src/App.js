@@ -45,6 +45,8 @@ import AdminNewsFlash from "./pages/admin/AdminNewsFlash";
 import AdminSupportTickets from "./pages/admin/AdminSupportTickets";
 import AdminInvoice from "./pages/admin/AdminInvoice";
 import AdminDoubts from "./pages/admin/AdminDoubts";
+import AdminLeads from "./pages/admin/AdminLeads";
+import EditLead from "./pages/admin/EditLead";
 
 import AdminGuides from "./pages/admin/AdminGuides";
 
@@ -55,7 +57,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Navbar />
-      <NewsFlashBanner />
+      {!isAdminPath && <NewsFlashBanner />}
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -95,6 +97,8 @@ function AppContent() {
             <Route path="support-tickets" element={<AdminSupportTickets />} />
             <Route path="invoice" element={<AdminInvoice />} />
             <Route path="doubts" element={<AdminDoubts />} />
+            <Route path="leads" element={<AdminLeads />} />
+            <Route path="leads/edit/:id" element={<EditLead />} />
 
             <Route path="guides" element={<AdminGuides />} />
           </Route>

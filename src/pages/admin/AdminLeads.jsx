@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserCheck, Search, Mail, Calendar, Loader2, CheckCircle, Clock, RotateCcw, Trash2, AlertTriangle} from 'lucide-react';
+import { UserCheck, Search, Mail, Calendar, Loader2, CheckCircle, Clock, RotateCcw, Trash2, AlertTriangle, Edit } from 'lucide-react';
 
 const AdminLeads = () => {
+  const navigate = useNavigate();
   const [leads, setLeads] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -92,26 +94,26 @@ const AdminLeads = () => {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-sm bg-white rounded-[2.5rem] shadow-2xl overflow-hidden"
+                className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden"
               >
                 <div className="p-10 text-center">
-                  <div className="w-20 h-20 bg-rose-50 rounded-[2rem] flex items-center justify-center text-rose-500 mx-auto mb-8 shadow-inner">
+                  <div className="w-20 h-20 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 mx-auto mb-8 shadow-inner">
                     <AlertTriangle size={40} />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Delete Lead?</h3>
+                  <h3 className="text-2xl font-semibold text-slate-900 mb-3 tracking-tight">Delete Lead?</h3>
                   <p className="text-sm text-slate-500 font-medium leading-relaxed mb-10">
                     This action is permanent and cannot be undone. Are you sure you want to remove this record?
                   </p>
                   <div className="flex flex-col gap-3">
                     <button 
                       onClick={() => deleteLead(deleteConfirm.id)}
-                      className="w-full px-8 py-4 bg-rose-500 text-white rounded-2xl font-bold text-sm hover:bg-rose-600 shadow-xl shadow-rose-200 transition-all hover:scale-[1.02] active:scale-95"
+                      className="w-full px-8 py-4 bg-rose-500 text-white rounded-2xl font-medium text-sm hover:bg-rose-600 shadow-xl shadow-rose-200 transition-all hover:scale-[1.02] active:scale-95"
                     >
                       Yes, Delete Lead
                     </button>
                     <button 
                       onClick={() => setDeleteConfirm({ show: false, id: null })}
-                      className="w-full px-8 py-4 bg-white text-slate-700 border-2 border-slate-100 rounded-2xl font-bold text-sm hover:bg-slate-50 hover:border-slate-200 hover:shadow-sm transition-all active:scale-95"
+                      className="w-full px-8 py-4 bg-white text-slate-700 border-2 border-slate-100 rounded-2xl font-medium text-sm hover:bg-slate-50 hover:border-slate-200 hover:shadow-sm transition-all active:scale-95"
                     >
                       Keep Record
                     </button>
@@ -124,16 +126,16 @@ const AdminLeads = () => {
         document.body
       )}
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-[1600px] mx-auto">
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Leads Dashboard</h1>
+          <h1 className="text-3xl font-semibold text-slate-900 tracking-tight mb-2">Leads Dashboard</h1>
           <p className="text-slate-500 font-medium text-sm italic">Track potential student inquiries and conversions.</p>
         </div>
       </div>
 
-      <div className="glass-card rounded-[2rem] border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="glass-card rounded-2xl border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-hidden">
         <div className="p-8 border-b border-slate-50 flex flex-wrap items-center justify-between gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -150,7 +152,7 @@ const AdminLeads = () => {
         <div className="overflow-x-auto p-4">
           <table className="w-full text-left border-separate border-spacing-y-2">
             <thead>
-              <tr className="text-slate-400 text-[10px] font-black uppercase tracking-widest px-4">
+              <tr className="text-slate-400 text-[10px] font-medium uppercase tracking-widest px-4">
                 <th className="px-6 pb-4">Lead Information</th>
                 <th className="px-6 pb-4">Area of Interest</th>
                 <th className="px-6 pb-4">Inquiry Message</th>
@@ -163,7 +165,7 @@ const AdminLeads = () => {
                 <tr key={lead.id} className="bg-slate-50/50 rounded-2xl group hover:bg-white transition-all">
                   <td className="px-6 py-4 rounded-l-2xl">
                     <div className="flex flex-col">
-                      <p className="text-sm font-bold text-slate-800">{lead.name}</p>
+                      <p className="text-sm font-semibold text-slate-800">{lead.name}</p>
                       <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
                         <Mail size={10} /> {lead.email}
                       </p>
@@ -173,13 +175,13 @@ const AdminLeads = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-xs font-bold text-slate-600">{lead.subject || "General Inquiry"}</span>
+                    <span className="text-xs font-medium text-slate-600">{lead.subject || "General Inquiry"}</span>
                   </td>
                   <td className="px-6 py-4 max-w-xs">
-                    <p className="text-[11px] text-slate-500 line-clamp-2 italic">"{lead.message}"</p>
+                    <p className="text-[11px] text-slate-500 line-clamp-2 italic">{lead.message ? `"${lead.message}"` : <span className="text-slate-300">No message</span>}</p>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 text-[9px] font-black rounded-full uppercase tracking-tighter ${
+                    <span className={`px-3 py-1 text-[9px] font-medium rounded-full uppercase tracking-tighter ${
                       lead.status === 'NEW' 
                         ? "bg-brand-50 text-brand-600" 
                         : lead.status === 'CONTACTED' ? "bg-amber-50 text-amber-600" : "bg-emerald-50 text-emerald-600"
@@ -192,7 +194,7 @@ const AdminLeads = () => {
                        {lead.status === 'NEW' && (
                          <button 
                            onClick={() => updateStatus(lead.id, 'CONTACTED')}
-                           className="p-2 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors"
+                           className="p-2 text-amber-500 hover:bg-amber-50 rounded-xl transition-colors"
                            title="Mark as Contacted"
                          >
                            <Clock size={16} />
@@ -201,7 +203,7 @@ const AdminLeads = () => {
                        {lead.status !== 'CLOSED' ? (
                          <button 
                            onClick={() => updateStatus(lead.id, 'CLOSED')}
-                           className="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
+                           className="p-2 text-emerald-500 hover:bg-emerald-50 rounded-xl transition-colors"
                            title="Mark as Closed / Won"
                          >
                            <CheckCircle size={16} />
@@ -209,15 +211,22 @@ const AdminLeads = () => {
                        ) : (
                          <button 
                            onClick={() => updateStatus(lead.id, 'NEW')}
-                           className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                           className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-colors"
                            title="Re-open Lead"
                          >
                            <RotateCcw size={16} />
                          </button>
                        )}
                        <button 
+                         onClick={() => navigate(`/admin/leads/edit/${lead.id}`)}
+                         className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-colors"
+                         title="Edit Lead"
+                       >
+                         <Edit size={16} />
+                       </button>
+                       <button 
                          onClick={() => setDeleteConfirm({ show: true, id: lead.id })}
-                         className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                         className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors"
                          title="Delete Lead"
                        >
                          <Trash2 size={16} />
@@ -247,3 +256,5 @@ const AdminLeads = () => {
 };
 
 export default AdminLeads;
+
+

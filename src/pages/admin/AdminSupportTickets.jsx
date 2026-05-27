@@ -68,7 +68,7 @@ const AdminSupportTickets = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-[1600px] mx-auto">
       {/* Ticket Detail Modal */}
       <AnimatePresence>
         {selectedTicket && (
@@ -80,23 +80,23 @@ const AdminSupportTickets = () => {
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.98, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 10 }}
-              className="relative w-full max-w-2xl bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60"
+              className="relative w-full max-w-2xl bg-white/95 backdrop-blur-3xl rounded-2xl shadow-2xl overflow-hidden border border-slate-200/60"
             >
               <div className="p-10">
                 <div className="flex justify-between items-start mb-8">
                    <div className="flex flex-col gap-2">
-                     <span className={`w-fit px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${getPriorityColor(selectedTicket.priority)}`}>
+                     <span className={`w-fit px-3 py-1 rounded-full text-[9px] font-medium tracking-widest uppercase ${getPriorityColor(selectedTicket.priority)}`}>
                         {selectedTicket.priority} Priority
                       </span>
-                      <h2 className="text-2xl font-bold text-slate-900">{selectedTicket.subject}</h2>
+                      <h2 className="text-2xl font-semibold text-slate-900">{selectedTicket.subject}</h2>
                    </div>
                    <button onClick={() => setSelectedTicket(null)} className="p-2 hover:bg-slate-50 rounded-full text-slate-400">
                      <X size={24} />
                    </button>
                 </div>
 
-                <div className="bg-slate-50 rounded-3xl p-8 mb-8">
-                  <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                <div className="bg-slate-50 rounded-2xl p-8 mb-8">
+                  <h4 className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <MessageSquare size={12} /> Student's Query
                   </h4>
                   <p className="text-slate-700 leading-relaxed font-medium break-words">"{selectedTicket.message}"</p>
@@ -108,8 +108,8 @@ const AdminSupportTickets = () => {
                         <User size={20} />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Student Name</p>
-                        <p className="text-sm font-bold text-slate-900">{selectedTicket.name || 'Anonymous'}</p>
+                        <p className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">Student Name</p>
+                        <p className="text-sm font-semibold text-slate-900">{selectedTicket.name || 'Anonymous'}</p>
                       </div>
                    </div>
                    <div className="flex items-center gap-3">
@@ -117,16 +117,16 @@ const AdminSupportTickets = () => {
                         <Mail size={20} />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Contact Email</p>
-                        <p className="text-sm font-bold text-slate-900">{selectedTicket.email}</p>
+                        <p className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">Contact Email</p>
+                        <p className="text-sm font-semibold text-slate-900">{selectedTicket.email}</p>
                       </div>
                    </div>
                 </div>
 
                 <div className="flex items-center justify-between pt-8 border-t border-slate-100">
                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-500">Current Status:</span>
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase ${
+                      <span className="text-xs font-medium text-slate-500">Current Status:</span>
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-medium tracking-widest uppercase ${
                         selectedTicket.status === 'OPEN' ? 'bg-blue-100 text-blue-600' : 
                         selectedTicket.status === 'IN_PROGRESS' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'
                       }`}>
@@ -160,12 +160,12 @@ const AdminSupportTickets = () => {
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Student Support</h1>
+          <h1 className="text-3xl font-semibold text-slate-900 tracking-tight mb-2">Student Support</h1>
           <p className="text-slate-500 font-medium text-sm italic">Resolve student support tickets and technical issues.</p>
         </div>
       </div>
 
-      <div className="glass-card rounded-[2rem] border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="glass-card rounded-2xl border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-hidden">
         <div className="p-8 border-b border-slate-50 flex flex-wrap items-center justify-between gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -186,13 +186,13 @@ const AdminSupportTickets = () => {
                 key={ticket.id}
                 layout
                 onClick={() => setSelectedTicket(ticket)}
-                className="bg-slate-50/50 border border-slate-100 rounded-3xl p-6 hover:bg-white hover:shadow-md transition-all group cursor-pointer"
+                className="bg-slate-50/50 border border-slate-100 rounded-2xl p-6 hover:bg-white hover:shadow-md transition-all group cursor-pointer"
               >
                 <div className="flex justify-between items-start mb-4">
-                  <div className={`px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${getPriorityColor(ticket.priority)}`}>
+                  <div className={`px-3 py-1 rounded-full text-[9px] font-medium tracking-widest uppercase ${getPriorityColor(ticket.priority)}`}>
                     {ticket.priority} Priority
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${
+                  <span className={`px-3 py-1 rounded-full text-[9px] font-medium tracking-widest uppercase ${
                     ticket.status === 'OPEN' ? 'bg-blue-100 text-blue-600' : 
                     ticket.status === 'IN_PROGRESS' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'
                   }`}>
@@ -200,12 +200,12 @@ const AdminSupportTickets = () => {
                   </span>
                 </div>
 
-                <h4 className="text-base font-bold text-slate-900 mb-2 truncate">{ticket.subject}</h4>
+                <h4 className="text-base font-semibold text-slate-900 mb-2 truncate">{ticket.subject}</h4>
                 <p className="text-xs text-slate-500 mb-6 line-clamp-2 italic leading-relaxed break-words">"{ticket.message}"</p>
 
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                    <span className="text-[10px] font-medium text-slate-400 flex items-center gap-1">
                       <User size={10} /> {ticket.name || 'Anonymous Student'}
                     </span>
                     <span className="text-[10px] text-slate-400 opacity-60">
@@ -243,7 +243,7 @@ const AdminSupportTickets = () => {
               <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Ticket className="text-blue-600" size={24} />
               </div>
-              <h3 className="text-lg font-bold text-slate-800 mb-1">All clear!</h3>
+              <h3 className="text-lg font-semibold text-slate-800 mb-1">All clear!</h3>
               <p className="text-slate-400 text-sm italic">There are no matching queries.</p>
             </div>
           )}
@@ -254,3 +254,5 @@ const AdminSupportTickets = () => {
 };
 
 export default AdminSupportTickets;
+
+

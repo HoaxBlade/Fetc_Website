@@ -67,7 +67,7 @@ const AdminDoubts = () => {
   });
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-[1600px] mx-auto">
       {/* Doubt Detail Modal */}
       <AnimatePresence>
         {selectedDoubt && (
@@ -79,16 +79,16 @@ const AdminDoubts = () => {
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.98, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 10 }}
-              className="relative w-full max-w-2xl bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60 flex flex-col max-h-[90vh]"
+              className="relative w-full max-w-2xl bg-white/95 backdrop-blur-3xl rounded-2xl shadow-2xl overflow-hidden border border-slate-200/60 flex flex-col max-h-[90vh]"
             >
               <div className="p-8 pb-4 border-b border-slate-100 flex justify-between items-start shrink-0">
                 <div>
-                   <span className={`w-fit px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase mb-3 inline-block ${
+                   <span className={`w-fit px-3 py-1 rounded-full text-[9px] font-medium tracking-widest uppercase mb-3 inline-block ${
                       selectedDoubt.status === 'OPEN' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'
                     }`}>
                       {selectedDoubt.status === 'OPEN' ? 'Pending Answer' : 'Answered'}
                    </span>
-                   <h2 className="text-2xl font-bold text-slate-900">{selectedDoubt.subject}</h2>
+                   <h2 className="text-2xl font-semibold text-slate-900">{selectedDoubt.subject}</h2>
                    <div className="flex items-center gap-4 mt-2 text-sm text-slate-500 font-medium">
                      <span className="flex items-center gap-1"><User size={14} /> {selectedDoubt.user_name || 'Student'}</span>
                      <span className="flex items-center gap-1"><Mail size={14} /> {selectedDoubt.user_email || 'No email'}</span>
@@ -101,7 +101,7 @@ const AdminDoubts = () => {
 
               <div className="p-8 overflow-y-auto flex-1 custom-scrollbar">
                 <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <h4 className="text-xs font-medium text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <MessageSquare size={14} /> Student's Doubt
                   </h4>
                   <p className="text-slate-700 leading-relaxed font-medium whitespace-pre-wrap">{selectedDoubt.description}</p>
@@ -121,7 +121,7 @@ const AdminDoubts = () => {
                             setAnswerInput(selectedDoubt.answer);
                             handleUpdate(selectedDoubt.id, 'OPEN'); // Reset to open to edit
                           }}
-                          className="text-indigo-600 text-xs font-bold hover:underline"
+                          className="text-indigo-600 text-xs font-medium hover:underline"
                         >
                           Edit Response
                         </button>
@@ -156,12 +156,12 @@ const AdminDoubts = () => {
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Doubts Portal</h1>
+          <h1 className="text-3xl font-semibold text-slate-900 tracking-tight mb-2">Doubts Portal</h1>
           <p className="text-slate-500 font-medium text-sm italic">Manage and answer academic questions from students.</p>
         </div>
       </div>
 
-      <div className="glass-card rounded-[2rem] border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="glass-card rounded-2xl border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-hidden">
         <div className="p-8 border-b border-slate-50 flex flex-wrap items-center justify-between gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -182,20 +182,20 @@ const AdminDoubts = () => {
                 key={doubt.id}
                 layout
                 onClick={() => setSelectedDoubt(doubt)}
-                className="bg-slate-50/50 border border-slate-100 rounded-3xl p-6 hover:bg-white hover:shadow-md transition-all group cursor-pointer"
+                className="bg-slate-50/50 border border-slate-100 rounded-2xl p-6 hover:bg-white hover:shadow-md transition-all group cursor-pointer"
               >
                 <div className="flex justify-between items-start mb-4">
-                  <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                  <span className="text-[10px] font-medium text-slate-400 flex items-center gap-1">
                     <User size={12} /> {doubt.user_name || 'Anonymous'}
                   </span>
-                  <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${
+                  <span className={`px-3 py-1 rounded-full text-[9px] font-medium tracking-widest uppercase ${
                     doubt.status === 'OPEN' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'
                   }`}>
                     {doubt.status === 'OPEN' ? 'Pending Answer' : 'Answered'}
                   </span>
                 </div>
 
-                <h4 className="text-base font-bold text-slate-900 mb-2 truncate">{doubt.subject}</h4>
+                <h4 className="text-base font-semibold text-slate-900 mb-2 truncate">{doubt.subject}</h4>
                 <p className="text-xs text-slate-500 mb-6 line-clamp-2 italic leading-relaxed break-words">{doubt.description}</p>
 
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100">
@@ -218,7 +218,7 @@ const AdminDoubts = () => {
               <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <HelpCircle className="text-indigo-600" size={24} />
               </div>
-              <h3 className="text-lg font-bold text-slate-800 mb-1">All clear!</h3>
+              <h3 className="text-lg font-semibold text-slate-800 mb-1">All clear!</h3>
               <p className="text-slate-400 text-sm italic">There are no academic doubts right now.</p>
             </div>
           )}
@@ -229,3 +229,5 @@ const AdminDoubts = () => {
 };
 
 export default AdminDoubts;
+
+
