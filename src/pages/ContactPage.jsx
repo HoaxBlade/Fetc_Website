@@ -23,6 +23,7 @@ const ContactPage = ({ bgTransparent = false, showMap = true, compact = false })
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     subject: "Course Related",
     message: "",
   });
@@ -45,7 +46,7 @@ const ContactPage = ({ bgTransparent = false, showMap = true, compact = false })
       const data = await response.json();
       if (data.success) {
         setIsSubmitted(true);
-        setFormData({ name: "", email: "", subject: "Course Related", message: "" });
+        setFormData({ name: "", email: "", phone: "", subject: "Course Related", message: "" });
         // Remove success message after 5 seconds
         setTimeout(() => setIsSubmitted(false), 5000);
       }
@@ -194,26 +195,47 @@ const ContactPage = ({ bgTransparent = false, showMap = true, compact = false })
               </div>
             </div>
 
-            <div className="space-y-2 group">
-              <label htmlFor="subject" className="text-sm font-semibold text-slate-700">Subject <span className="text-red-500">*</span></label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-brand-600 transition-colors">
-                  <FileText size={18} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2 group">
+                <label htmlFor="phone" className="text-sm font-semibold text-slate-700">Phone Number <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-brand-600 transition-colors">
+                    <Phone size={18} />
+                  </div>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600 transition-all hover:border-slate-300"
+                    placeholder="Enter phone number"
+                  />
                 </div>
-                <select
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  required
-                  className="w-full pl-11 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600 transition-all hover:border-slate-300 appearance-none font-medium text-slate-700 cursor-pointer"
-                >
-                  <option value="Course Related">Course Related</option>
-                  <option value="Study Abroad">Study Abroad</option>
-                  <option value="Other">Other</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+
+              <div className="space-y-2 group">
+                <label htmlFor="subject" className="text-sm font-semibold text-slate-700">Subject <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-brand-600 transition-colors">
+                    <FileText size={18} />
+                  </div>
+                  <select
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    required
+                    className="w-full pl-11 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600 transition-all hover:border-slate-300 appearance-none font-medium text-slate-700 cursor-pointer"
+                  >
+                    <option value="Course Related">Course Related</option>
+                    <option value="Study Abroad">Study Abroad</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                  </div>
                 </div>
               </div>
             </div>

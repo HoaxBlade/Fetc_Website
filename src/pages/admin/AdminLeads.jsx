@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserCheck, Search, Mail, Calendar, Loader2, CheckCircle, Clock, RotateCcw, Trash2, AlertTriangle, Edit } from 'lucide-react';
+import { UserCheck, Search, Mail, Calendar, Loader2, CheckCircle, Clock, RotateCcw, Trash2, AlertTriangle, Edit, Phone, MapPin } from 'lucide-react';
 
 const AdminLeads = () => {
   const navigate = useNavigate();
@@ -163,14 +163,27 @@ const AdminLeads = () => {
               {filteredLeads.map((lead) => (
                 <tr key={lead.id} className="bg-slate-50/50 rounded-2xl group hover:bg-white transition-all">
                   <td className="px-6 py-4 rounded-l-2xl">
-                    <div className="flex flex-col">
+                    <div className="flex flex-col gap-1">
                       <p className="text-sm font-semibold text-slate-800">{lead.name}</p>
-                      <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
-                        <Mail size={10} /> {lead.email}
-                      </p>
-                      <p className="text-[10px] text-slate-500 font-medium mt-1 flex items-center gap-1">
-                        <Calendar size={10} /> {formatDate(lead.created_at)}
-                      </p>
+                      
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-400">
+                        <span className="flex items-center gap-1"><Mail size={10} /> {lead.email}</span>
+                        {lead.phone && <span className="flex items-center gap-1"><Phone size={10} /> {lead.phone}</span>}
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-500">
+                        {lead.gender && (
+                          <span className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded text-[9px] font-bold uppercase tracking-wider">
+                            {lead.gender}
+                          </span>
+                        )}
+                        {lead.location && (
+                          <span className="flex items-center gap-1 text-[10px] font-medium text-slate-400">
+                            <MapPin size={10} className="text-slate-400" /> {lead.location}
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1"><Calendar size={10} /> {formatDate(lead.created_at)}</span>
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">

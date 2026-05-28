@@ -34,7 +34,39 @@ CREATE TABLE IF NOT EXISTS leads (
     subject VARCHAR(255),
     message TEXT,
     status VARCHAR(20) DEFAULT 'NEW',
+    first_name VARCHAR(255),
+    middle_name VARCHAR(255),
+    last_name VARCHAR(255),
+    dob DATE,
+    gender VARCHAR(50),
+    location VARCHAR(100),
+    address TEXT,
+    emergency_contact_name VARCHAR(255),
+    emergency_contact_phone VARCHAR(50),
+    emergency_contact_relation VARCHAR(100),
+    service VARCHAR(100),
+    country VARCHAR(255),
+    program VARCHAR(255),
+    visa_rejection VARCHAR(50),
+    travel_history VARCHAR(50),
+    exam_type VARCHAR(100),
+    ebd DATE,
+    anyspecificlocation TEXT,
+    payment VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2.5. Lead Documents Table (For onboarding files)
+CREATE TABLE IF NOT EXISTS lead_documents (
+    id SERIAL PRIMARY KEY,
+    lead_id INTEGER REFERENCES leads(id) ON DELETE CASCADE,
+    file_name VARCHAR(255) NOT NULL,
+    file_path TEXT NOT NULL,
+    document_type VARCHAR(100) NOT NULL,
+    status VARCHAR(50) DEFAULT 'Pending',
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (lead_id, document_type)
 );
 
 -- 3. Universities Table (To be implemented)

@@ -1024,12 +1024,12 @@ app.post('/api/v1/lead/:leadId/documents/:documentType/upload', leadMulterUpload
 
 // Lead Capture Route (Public)
 app.post('/api/leads', async (req, res) => {
-  const { name, email, phone, subject, message, userId } = req.body;
+  const { name, email, phone, subject, message, userId, gender, location } = req.body;
   try {
     // 1. Create Lead
     const leadResult = await db.query(
-      'INSERT INTO leads (name, email, phone, subject, message) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [name, email, phone, subject, message]
+      'INSERT INTO leads (name, email, phone, subject, message, gender, location) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [name, email, phone, subject, message, gender || null, location || null]
     );
 
     // 2. Create Ticket (Dual entry as requested)
