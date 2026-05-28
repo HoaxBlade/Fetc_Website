@@ -11,7 +11,7 @@ Ensure **PostgreSQL** is running on your machine.
 - Run: ` brew services start postgresql` OR open the Postgres.app if installed.
 
 ### On Windows:
-- Press `Win + R`, type `services.msc`, and press Enter.
+- Press `Win +R`, type `services.msc`, and press Enter.
 - Look for `postgresql-x64` (the version number), right-click it, and select **Start**.
 
 ---
