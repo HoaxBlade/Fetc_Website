@@ -155,7 +155,6 @@ const AdminLeads = () => {
               <tr className="text-slate-400 text-[10px] font-medium uppercase tracking-widest px-4">
                 <th className="px-6 pb-4">Lead Information</th>
                 <th className="px-6 pb-4">Area of Interest</th>
-                <th className="px-6 pb-4">Inquiry Message</th>
                 <th className="px-6 pb-4">Lead Status</th>
                 <th className="px-6 pb-4 text-right">Lead Actions</th>
               </tr>
@@ -176,9 +175,6 @@ const AdminLeads = () => {
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-xs font-medium text-slate-600">{lead.subject || "General Inquiry"}</span>
-                  </td>
-                  <td className="px-6 py-4 max-w-xs">
-                    <p className="text-[11px] text-slate-500 line-clamp-2 italic">{lead.message ? `"${lead.message}"` : <span className="text-slate-300">No message</span>}</p>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 text-[9px] font-medium rounded-full uppercase tracking-tighter ${
@@ -238,7 +234,7 @@ const AdminLeads = () => {
 
               {!isLoading && filteredLeads.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="px-6 py-20 text-center">
+                  <td colSpan="4" className="px-6 py-20 text-center">
                     <div className="flex flex-col items-center opacity-40">
                       <UserCheck size={32} className="text-slate-300 mb-3" />
                       <p className="text-sm font-bold italic text-slate-400">No leads found.</p>
