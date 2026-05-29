@@ -421,8 +421,8 @@ const AdminLeads = () => {
         body: JSON.stringify(newLeadForm)
       });
       const data = await response.json();
-      if (data.success && data.data && data.data.id) {
-        setCreatedLeadId(data.data.id);
+      if (data.success && data.data && (data.data.id || data.data._id)) {
+        setCreatedLeadId(data.data.id || data.data._id);
         setUploadedDocs([]);
         setActiveNewLeadTab(2);
         await fetchLeads();

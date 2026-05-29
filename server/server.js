@@ -686,7 +686,9 @@ app.get('/api/v1/lead/:id', async (req, res) => {
 app.post('/api/v1/lead/create', async (req, res) => {
   try {
     const rawBody = req.body;
+    console.log("RAW BODY RECEIVED:", rawBody);
     const body = camelToSnake(rawBody);
+    console.log("SNAKE BODY:", body);
 
     // Legacy support: concatenate name if missing but first/last exist
     let legacyName = body.name || '';
@@ -694,6 +696,7 @@ app.post('/api/v1/lead/create', async (req, res) => {
       legacyName = `${body.first_name || ''} ${body.last_name || ''}`.trim();
     }
     if (!legacyName) legacyName = 'Unnamed Lead';
+    body.name = legacyName;
 
     const columns = [
       'name', 'email', 'phone', 'first_name', 'middle_name', 'last_name', 
