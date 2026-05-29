@@ -4,6 +4,103 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserCheck, Search, Mail, Calendar, Loader2, CheckCircle, Clock, RotateCcw, Trash2, AlertTriangle, Edit, Phone, MapPin, Upload, Download, Plus, X } from 'lucide-react';
 
+const docFieldsByService = {
+  studyAbroad: [
+    { name: "passport", label: "Passport" },
+    { name: "passportPhotograph", label: "Passport sized Photograph" },
+    { name: "aadhaarCard", label: "Aadhaar Card" },
+    { name: "birthCertificate", label: "Copy of Birth Certificate" },
+    { name: "cv", label: "CV" },
+    { name: "parentsPassport", label: "Parent's Passport" },
+    { name: "itinerary", label: "Itinerary" },
+    { name: "visaCopy", label: "Visa Copy" },
+    { name: "tenthResult", label: "10th Result" },
+    { name: "tenthPassingCertificate", label: "10th Passing Certificate" },
+    { name: "eleventhResult", label: "11th Result (Semester wise, NIOS)" },
+    { name: "predictableMarksheet", label: "Predictable Marksheet" },
+    { name: "twelfthResult", label: "12th Result/Diploma" },
+    { name: "twelfthPassingCertificate", label: "12th Passing Certificate/Diploma" },
+    { name: "sop", label: "SOP" },
+    { name: "coverLetter", label: "Cover Letter" },
+    { name: "languageExamCertificate", label: "Language Exam Certificate" },
+    { name: "lorPrincipal", label: "LOR - Principal/HOD" },
+    { name: "lorProfessor1", label: "LOR - Professor 1" },
+    { name: "lorProfessor2", label: "LOR - Professor 2" },
+    { name: "bachelorsMarksheets", label: "Bachelor’s Marksheets (Min. 6)" },
+    { name: "predictableTranscript", label: "Predictable Transcript" },
+    { name: "transcript", label: "Transcript" },
+    { name: "bachelorsProvisionalCertificate", label: "Bachelor's Provisional Degree/Certificate" },
+    { name: "bachelorsDegree", label: "Bachelor's Degree" },
+    { name: "wes", label: "WES (if required)" },
+    { name: "internshipWorkExperience", label: "Internship/Work Experience" },
+    { name: "gap", label: "Gap Declaration" },
+    { name: "bankStatement", label: "Bank Statement (Min 6 Months)" },
+    { name: "bankManagerCertificate", label: "Bank Manager’s Certificate" },
+    { name: "itrs", label: "ITR 3 Years" },
+    { name: "caNetworth", label: "CA Networth" },
+    { name: "companyProof", label: "Company/Job/Farmer's Proof" },
+    { name: "sponsorDocs", label: "Sponsor Documents" },
+    { name: "loanSanctionLetter", label: "Loan Sanction Letter" },
+    { name: "otherDocumentsStudyAbroad", label: "Other Documents" }
+  ],
+  workpermit: [
+    { name: "passportWorkpermit", label: "Passport" },
+    { name: "passportPhotographWorkpermit", label: "Passport sized Photograph" },
+    { name: "aadhaarCardWorkpermit", label: "Aadhaar Card" },
+    { name: "panCardWorkpermit", label: "PAN Card" },
+    { name: "birthCertificateWorkpermit", label: "Copy of Birth Certificate" },
+    { name: "cvWorkpermit", label: "CV" },
+    { name: "travelHistoryWorkpermit", label: "Travel History" },
+    { name: "itineraryWorkpermit", label: "Itinerary" },
+    { name: "visaCopyWorkpermit", label: "Visa Copy" },
+    { name: "pccWorkpermit", label: "PCC" },
+    { name: "marriageCertificateWorkpermit", label: "Marriage Certificate" },
+    { name: "academicsWorkpermit", label: "Academic Documents" },
+    { name: "sopWorkpermit", label: "SOP" },
+    { name: "coverLetterWorkpermit", label: "Cover Letter" },
+    { name: "languageExamCertificateWorkpermit", label: "Language Exam Certificate" },
+    { name: "workExperienceWorkpermit", label: "Work Experience" },
+    { name: "gapWorkpermit", label: "Gap Declaration" },
+    { name: "nocWorkpermit", label: "NOC" },
+    { name: "bankStatementWorkpermit", label: "Bank Statement (Min 6 Months)" },
+    { name: "bankManagerCertificateWorkpermit", label: "Bank Manager’s Certificate" },
+    { name: "salarySlipWorkpermit", label: "Salary Slip" },
+    { name: "itrsWorkpermit", label: "ITR 3 Years/Form 16" },
+    { name: "caNetworthWorkpermit", label: "CA Networth" },
+    { name: "companyProofWorkpermit", label: "Company/Job/Farmer's Proof" },
+    { name: "otherDocumentsWorkpermit", label: "Other Documents" }
+  ],
+  touristVisa: [
+    { name: "passportTourist", label: "Passport" },
+    { name: "passportPhotographTourist", label: "Passport sized Photograph" },
+    { name: "aadhaarCardTourist", label: "Aadhaar Card" },
+    { name: "birthCertificateTourist", label: "Copy of Birth Certificate" },
+    { name: "cvTourist", label: "CV" },
+    { name: "travelHistoryTourist", label: "Travel History" },
+    { name: "itineraryTourist", label: "Itinerary" },
+    { name: "visaCopyTourist", label: "Visa Copy" },
+    { name: "marriageCertificateTourist", label: "Marriage Certificate" },
+    { name: "academicsTourist", label: "Academic Documents" },
+    { name: "coverLetterTourist", label: "Cover Letter" },
+    { name: "workExperienceTourist", label: "Work Experience" },
+    { name: "rejectionLetterTourist", label: "Rejection Letter (If Any)" },
+    { name: "nocTourist", label: "NOC" },
+    { name: "bankStatementsTourist", label: "Bank Statement (Min 6 Months)" },
+    { name: "bankManagerCertificateTourist", label: "Bank Manager’s Certificate" },
+    { name: "salarySlipTourist", label: "Salary Slip" },
+    { name: "itrsTourist", label: "ITR 3 Years/Form 16" },
+    { name: "caNetworthTourist", label: "CA Networth" },
+    { name: "companyProofTourist", label: "Company/Job/Farmer's Proof" },
+    { name: "sponsorDocsTourist", label: "Sponsor Documents" },
+    { name: "otherDocumentsTourist", label: "Other Documents" }
+  ],
+  examBooking: [
+    { name: "Govrmentid", label: "Government ID" },
+    { name: "passportExamBooking", label: "Passport" },
+    { name: "otherDocumentsExamBooking", label: "Other Documents" }
+  ]
+};
+
 const AdminLeads = () => {
   const navigate = useNavigate();
   const [leads, setLeads] = useState([]);
@@ -14,14 +111,34 @@ const AdminLeads = () => {
   const [endDate, setEndDate] = useState("");
   const [isNewLeadOpen, setIsNewLeadOpen] = useState(false);
   const [isNewLeadSubmitting, setIsNewLeadSubmitting] = useState(false);
+  const [activeNewLeadTab, setActiveNewLeadTab] = useState(0);
+  const [newLeadErrors, setNewLeadErrors] = useState({});
+  const [createdLeadId, setCreatedLeadId] = useState(null);
+  const [uploadingField, setUploadingField] = useState(null);
+  const [uploadedDocs, setUploadedDocs] = useState([]);
   const [newLeadForm, setNewLeadForm] = useState({
-    name: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    dob: "",
+    gender: "",
     email: "",
     phone: "",
-    gender: "",
     location: "",
-    subject: "Course Related",
-    message: ""
+    address: "",
+    emergencyContactName: "",
+    emergencyContactRelation: "",
+    emergencyContactPhone: "",
+    service: "",
+    country: "",
+    examType: "",
+    anyspecificlocation: "",
+    visaRejection: "",
+    travelHistory: "",
+    program: "",
+    status: "NEW",
+    payment: "",
+    ebd: ""
   });
 
   const fetchLeads = async () => {
@@ -205,35 +322,109 @@ const AdminLeads = () => {
     reader.readAsText(file);
   };
 
+  const validateNewLeadFields = (stageKey) => {
+    const errors = {};
+    if (stageKey === "leadGeneration") {
+      if (!newLeadForm.firstName) errors.firstName = "First name is required";
+      if (!newLeadForm.lastName) errors.lastName = "Last name is required";
+      if (!newLeadForm.gender) errors.gender = "Gender selection is required";
+      if (!newLeadForm.email || !/\S+@\S+\.\S+/.test(newLeadForm.email)) errors.email = "Valid email is required";
+      if (!newLeadForm.phone) errors.phone = "Phone number is required";
+      if (!newLeadForm.location) errors.location = "Office location is required";
+    }
+
+    if (stageKey === "enrollmentInfo") {
+      if (!newLeadForm.service) errors.service = "Service type is required";
+      if (["studyAbroad", "workpermit", "touristVisa"].includes(newLeadForm.service) && !newLeadForm.country) {
+        errors.country = "Country is required";
+      }
+      if (!newLeadForm.status) errors.status = "Lead conversion status is required";
+    }
+
+    setNewLeadErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const resetNewLeadModal = () => {
+    setIsNewLeadOpen(false);
+    setActiveNewLeadTab(0);
+    setNewLeadErrors({});
+    setCreatedLeadId(null);
+    setUploadedDocs([]);
+    setNewLeadForm({
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      dob: "",
+      gender: "",
+      email: "",
+      phone: "",
+      location: "",
+      address: "",
+      emergencyContactName: "",
+      emergencyContactRelation: "",
+      emergencyContactPhone: "",
+      service: "",
+      country: "",
+      examType: "",
+      anyspecificlocation: "",
+      visaRejection: "",
+      travelHistory: "",
+      program: "",
+      status: "NEW",
+      payment: "",
+      ebd: ""
+    });
+  };
+
+  const handleNewLeadFileUpload = async (e, fieldName) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 50 * 1024 * 1024) {
+      alert("File exceeds 50MB size limit.");
+      return;
+    }
+
+    setUploadingField(fieldName);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch((window.API_BASE || '') + `/api/v1/lead/${createdLeadId}/documents/${fieldName}/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setUploadedDocs(prev => [...prev.filter(d => d.documentType !== fieldName), data.document]);
+        alert(`${data.document.fileName} uploaded successfully!`);
+      } else {
+        throw new Error(data.message || "Upload failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed: " + err.message);
+    } finally {
+      setUploadingField(null);
+    }
+  };
+
   const handleCreateLead = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setIsNewLeadSubmitting(true);
     try {
-      const response = await fetch((window.API_BASE||'') + '/api/leads', {
+      const response = await fetch((window.API_BASE||'') + '/api/v1/lead/create', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: newLeadForm.name,
-          email: newLeadForm.email,
-          phone: newLeadForm.phone,
-          gender: newLeadForm.gender,
-          location: newLeadForm.location,
-          subject: newLeadForm.subject,
-          message: newLeadForm.message
-        })
+        body: JSON.stringify(newLeadForm)
       });
       const data = await response.json();
-      if (data.success) {
-        setIsNewLeadOpen(false);
-        setNewLeadForm({
-          name: "",
-          email: "",
-          phone: "",
-          gender: "",
-          location: "",
-          subject: "Course Related",
-          message: ""
-        });
+      if (data.success && data.data && data.data.id) {
+        setCreatedLeadId(data.data.id);
+        setUploadedDocs([]);
+        setActiveNewLeadTab(2);
         await fetchLeads();
       } else {
         alert("Failed to create lead: " + (data.message || "Unknown error"));
@@ -314,135 +505,562 @@ const AdminLeads = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => setIsNewLeadOpen(false)}
+                onClick={resetNewLeadModal}
                 className="fixed inset-0 bg-slate-900/60 backdrop-blur-md"
               />
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100"
+                className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100"
               >
+                {/* Header */}
                 <div className="p-8 border-b border-slate-100 flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">Create New Lead</h3>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Create New Lead</h3>
+                    <p className="text-xs text-slate-400 font-medium italic mt-1">Fill in the fields below to capture a new student lead.</p>
+                  </div>
                   <button 
-                    onClick={() => setIsNewLeadOpen(false)}
+                    onClick={resetNewLeadModal}
                     className="p-1.5 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-full transition-colors"
                   >
                     <X size={18} />
                   </button>
                 </div>
+
+                {/* Progress bar */}
+                <div className="relative my-6 max-w-2xl mx-auto px-8">
+                  <div className="absolute top-1/2 left-0 w-full h-[3px] bg-slate-100 -translate-y-1/2 rounded-full z-0" />
+                  <div 
+                    className="absolute top-1/2 left-0 h-[3px] bg-brand-600 -translate-y-1/2 rounded-full transition-all duration-500 z-0"
+                    style={{ width: `${(activeNewLeadTab / 2) * 100}%` }}
+                  />
+                  
+                  <div className="flex justify-between relative z-10">
+                    {[
+                      { key: "leadGeneration", label: "Lead Generation" },
+                      { key: "enrollmentInfo", label: "Enrollment Info" },
+                      { key: "documentation", label: "Documentation" }
+                    ].map((tab, idx) => {
+                      const isCompleted = idx < activeNewLeadTab;
+                      const isActive = idx === activeNewLeadTab;
+                      const isDisabled = idx === 2 && !createdLeadId;
+                      return (
+                        <button
+                          key={tab.key}
+                          type="button"
+                          disabled={isDisabled}
+                          onClick={() => {
+                            if (idx === 0) {
+                              setActiveNewLeadTab(0);
+                            } else if (idx === 1) {
+                              if (idx <= activeNewLeadTab || validateNewLeadFields("leadGeneration")) {
+                                setActiveNewLeadTab(1);
+                              }
+                            } else if (idx === 2) {
+                              if (createdLeadId) {
+                                setActiveNewLeadTab(2);
+                              }
+                            }
+                          }}
+                          className={`flex flex-col items-center gap-2 focus:outline-none ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+                        >
+                          <div 
+                            className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border-2 transition-all duration-300 ${
+                              isCompleted 
+                                ? "bg-emerald-500 border-emerald-500 text-white" 
+                                : isActive 
+                                ? "bg-brand-600 border-brand-600 text-white shadow-lg shadow-brand-100 scale-110" 
+                                : "bg-white border-slate-200 text-slate-400 hover:border-slate-300"
+                            }`}
+                          >
+                            {isCompleted ? "✓" : idx + 1}
+                          </div>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${isActive ? "text-brand-600 font-bold" : isCompleted ? "text-emerald-500" : "text-slate-400"}`}>
+                            {tab.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
                 
-                <form onSubmit={handleCreateLead} className="p-8 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Full Name *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="John Doe"
-                        value={newLeadForm.name}
-                        onChange={(e) => setNewLeadForm({ ...newLeadForm, name: e.target.value })}
-                        className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
-                      />
+                <form onSubmit={(e) => e.preventDefault()} className="p-8 space-y-6 max-h-[65vh] overflow-y-auto">
+                  {/* TAB 1: LEAD GENERATION */}
+                  {activeNewLeadTab === 0 && (
+                    <div className="space-y-6">
+                      <h4 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">👤 Lead Generation Details</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">First Name *</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. John"
+                            value={newLeadForm.firstName}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, firstName: e.target.value })}
+                            className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium ${newLeadErrors.firstName ? 'border-rose-400 ring-rose-400/5' : 'border-slate-200'}`}
+                          />
+                          {newLeadErrors.firstName && <span className="text-xs text-rose-500 font-semibold block">{newLeadErrors.firstName}</span>}
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Middle Name</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Kumar"
+                            value={newLeadForm.middleName}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, middleName: e.target.value })}
+                            className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Last Name *</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Doe"
+                            value={newLeadForm.lastName}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, lastName: e.target.value })}
+                            className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium ${newLeadErrors.lastName ? 'border-rose-400 ring-rose-400/5' : 'border-slate-200'}`}
+                          />
+                          {newLeadErrors.lastName && <span className="text-xs text-rose-500 font-semibold block">{newLeadErrors.lastName}</span>}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Date of Birth</label>
+                          <input
+                            type="date"
+                            value={newLeadForm.dob}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, dob: e.target.value })}
+                            className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Gender *</label>
+                          <select
+                            value={newLeadForm.gender}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, gender: e.target.value })}
+                            className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white ${newLeadErrors.gender ? 'border-rose-400 ring-rose-400/5' : 'border-slate-200'}`}
+                          >
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                          </select>
+                          {newLeadErrors.gender && <span className="text-xs text-rose-500 font-semibold block">{newLeadErrors.gender}</span>}
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email *</label>
+                          <input
+                            type="email"
+                            placeholder="john@example.com"
+                            value={newLeadForm.email}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, email: e.target.value })}
+                            className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium ${newLeadErrors.email ? 'border-rose-400 ring-rose-400/5' : 'border-slate-200'}`}
+                          />
+                          {newLeadErrors.email && <span className="text-xs text-rose-500 font-semibold block">{newLeadErrors.email}</span>}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Phone Number *</label>
+                          <input
+                            type="tel"
+                            placeholder="e.g. 9876543210"
+                            value={newLeadForm.phone}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, phone: e.target.value })}
+                            className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium ${newLeadErrors.phone ? 'border-rose-400 ring-rose-400/5' : 'border-slate-200'}`}
+                          />
+                          {newLeadErrors.phone && <span className="text-xs text-rose-500 font-semibold block">{newLeadErrors.phone}</span>}
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Office Location *</label>
+                          <select
+                            value={newLeadForm.location}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, location: e.target.value })}
+                            className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white ${newLeadErrors.location ? 'border-rose-400 ring-rose-400/5' : 'border-slate-200'}`}
+                          >
+                            <option value="">Select Location</option>
+                            <option value="Vesu">Vesu</option>
+                            <option value="Varachha">Varachha</option>
+                            <option value="Other">Other</option>
+                          </select>
+                          {newLeadErrors.location && <span className="text-xs text-rose-500 font-semibold block">{newLeadErrors.location}</span>}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Permanent Address</label>
+                        <textarea
+                          rows="2"
+                          placeholder="e.g. 123, Main Street, City, State"
+                          value={newLeadForm.address}
+                          onChange={(e) => setNewLeadForm({ ...newLeadForm, address: e.target.value })}
+                          className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white resize-none"
+                        />
+                      </div>
+
+                      <div className="border-t border-slate-100 pt-6">
+                        <h4 className="font-semibold text-slate-800 text-sm mb-4">Emergency Contact Information</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <div className="space-y-2">
+                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact Person Name</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Contact Person Name"
+                              value={newLeadForm.emergencyContactName}
+                              onChange={(e) => setNewLeadForm({ ...newLeadForm, emergencyContactName: e.target.value })}
+                              className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Relationship</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Parent, Sibling, Guardian"
+                              value={newLeadForm.emergencyContactRelation}
+                              onChange={(e) => setNewLeadForm({ ...newLeadForm, emergencyContactRelation: e.target.value })}
+                              className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Emergency Phone</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. 9876543210"
+                              value={newLeadForm.emergencyContactPhone}
+                              onChange={(e) => setNewLeadForm({ ...newLeadForm, emergencyContactPhone: e.target.value })}
+                              className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email Address *</label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="john@example.com"
-                        value={newLeadForm.email}
-                        onChange={(e) => setNewLeadForm({ ...newLeadForm, email: e.target.value })}
-                        className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
-                      />
+                  )}
+
+                  {/* TAB 2: ENROLLMENT INFO */}
+                  {activeNewLeadTab === 1 && (
+                    <div className="space-y-6">
+                      <h4 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">🎓 Course & Enrollment Details</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Service Selection *</label>
+                          <select
+                            value={newLeadForm.service}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, service: e.target.value, country: "", examType: "" })}
+                            className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white ${newLeadErrors.service ? 'border-rose-400 ring-rose-400/5' : 'border-slate-200'}`}
+                          >
+                            <option value="">Select Service</option>
+                            <option value="studyAbroad">Study Abroad</option>
+                            <option value="workpermit">Work Permit</option>
+                            <option value="touristVisa">Tourist Visa</option>
+                            <option value="examBooking">Exam Booking</option>
+                            <option value="training">Training Courses</option>
+                          </select>
+                          {newLeadErrors.service && <span className="text-xs text-rose-500 font-semibold block">{newLeadErrors.service}</span>}
+                        </div>
+
+                        {["studyAbroad", "workpermit", "touristVisa"].includes(newLeadForm.service) && (
+                          <div className="space-y-2">
+                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Target Country *</label>
+                            <select
+                              value={newLeadForm.country}
+                              onChange={(e) => setNewLeadForm({ ...newLeadForm, country: e.target.value })}
+                              className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white ${newLeadErrors.country ? 'border-rose-400 ring-rose-400/5' : 'border-slate-200'}`}
+                            >
+                              <option value="">Select Country</option>
+                              <option value="Canada">Canada</option>
+                              <option value="Germany">Germany</option>
+                              <option value="United Kingdom">United Kingdom</option>
+                              <option value="United States">United States</option>
+                              <option value="Australia">Australia</option>
+                              <option value="Europe">Europe</option>
+                              <option value="Other">Other</option>
+                            </select>
+                            {newLeadErrors.country && <span className="text-xs text-rose-500 font-semibold block">{newLeadErrors.country}</span>}
+                          </div>
+                        )}
+
+                        {["examBooking", "training"].includes(newLeadForm.service) && (
+                          <div className="space-y-2">
+                            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Exam / Training Course *</label>
+                            <input
+                              type="text"
+                              placeholder="IELTS, PTE, GRE, etc."
+                              value={newLeadForm.examType}
+                              onChange={(e) => setNewLeadForm({ ...newLeadForm, examType: e.target.value })}
+                              className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium ${newLeadErrors.examType ? 'border-rose-400 ring-rose-400/5' : 'border-slate-200'}`}
+                            />
+                            {newLeadErrors.examType && <span className="text-xs text-rose-500 font-semibold block">{newLeadErrors.examType}</span>}
+                          </div>
+                        )}
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Specific Target Location</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Munich, Toronto, London"
+                            value={newLeadForm.anyspecificlocation}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, anyspecificlocation: e.target.value })}
+                            className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Visa Rejections?</label>
+                          <select
+                            value={newLeadForm.visaRejection}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, visaRejection: e.target.value })}
+                            className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
+                          >
+                            <option value="">Select Option</option>
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Travel History?</label>
+                          <select
+                            value={newLeadForm.travelHistory}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, travelHistory: e.target.value })}
+                            className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
+                          >
+                            <option value="">Select Option</option>
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Academic Program / Course</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Science, Commerce, IT"
+                            value={newLeadForm.program}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, program: e.target.value })}
+                            className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Funnel Lead Status *</label>
+                          <select
+                            value={newLeadForm.status}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, status: e.target.value })}
+                            className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white ${newLeadErrors.status ? 'border-rose-400 ring-rose-400/5' : 'border-slate-200'}`}
+                          >
+                            <option value="NEW">Cold (NEW)</option>
+                            <option value="CONTACTED">Warm (CONTACTED)</option>
+                            <option value="CLOSED">Hot / Won (CLOSED)</option>
+                          </select>
+                          {newLeadErrors.status && <span className="text-xs text-rose-500 font-semibold block">{newLeadErrors.status}</span>}
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Payment Method</label>
+                          <select
+                            value={newLeadForm.payment}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, payment: e.target.value })}
+                            className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
+                          >
+                            <option value="">Select Method</option>
+                            <option value="Cash">Cash</option>
+                            <option value="UPI">UPI</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                            <option value="Card">Credit/Debit Card</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Expected Booking Date (EBD)</label>
+                          <input
+                            type="date"
+                            value={newLeadForm.ebd}
+                            onChange={(e) => setNewLeadForm({ ...newLeadForm, ebd: e.target.value })}
+                            className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Phone Number</label>
-                      <input
-                        type="tel"
-                        placeholder="Phone Number"
-                        value={newLeadForm.phone}
-                        onChange={(e) => setNewLeadForm({ ...newLeadForm, phone: e.target.value })}
-                        className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
-                      />
-                    </div>
+                  {/* TAB 3: DOCUMENTATION */}
+                  {activeNewLeadTab === 2 && (
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <h4 className="text-sm font-bold text-slate-800">📂 Upload Required Documents</h4>
+                        <span className="bg-brand-50 text-brand-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-brand-100">
+                          Lead ID: #{createdLeadId}
+                        </span>
+                      </div>
+                      
+                      <div className="bg-amber-50 border border-amber-200/60 rounded-2xl p-4 flex gap-3">
+                        <AlertTriangle className="text-amber-500 shrink-0 mt-0.5" size={18} />
+                        <div>
+                          <p className="text-xs font-bold text-amber-800">Files uploaded here are saved directly to this lead's profile.</p>
+                          <p className="text-[11px] text-amber-600/90 font-medium mt-0.5">Maximum file size allowed is 50MB. Supported formats: PDF, JPEG, PNG, DOCX.</p>
+                        </div>
+                      </div>
 
-                    <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Gender</label>
-                      <select
-                        value={newLeadForm.gender}
-                        onChange={(e) => setNewLeadForm({ ...newLeadForm, gender: e.target.value })}
-                        className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
-                      >
-                        <option value="">Select Gender</option>
-                        <option value="MALE">Male</option>
-                        <option value="FEMALE">Female</option>
-                        <option value="OTHER">Other</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Office Location</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Vesu, Surat"
-                        value={newLeadForm.location}
-                        onChange={(e) => setNewLeadForm({ ...newLeadForm, location: e.target.value })}
-                        className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Area of Interest / Service</label>
-                    <select
-                      value={newLeadForm.subject}
-                      onChange={(e) => setNewLeadForm({ ...newLeadForm, subject: e.target.value })}
-                      className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white"
-                    >
-                      <option value="Course Related">Course Related</option>
-                      <option value="Study Abroad">Study Abroad</option>
-                      <option value="General Inquiry">General Inquiry</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Enquiry details / Message</label>
-                    <textarea
-                      rows="3"
-                      placeholder="Add any specific details here..."
-                      value={newLeadForm.message}
-                      onChange={(e) => setNewLeadForm({ ...newLeadForm, message: e.target.value })}
-                      className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 font-medium text-slate-700 bg-white resize-none"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-                    <button 
-                      type="button"
-                      onClick={() => setIsNewLeadOpen(false)}
-                      className="px-6 py-3 bg-slate-50 text-slate-700 hover:bg-slate-100 rounded-xl font-medium text-sm transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      type="submit"
-                      disabled={isNewLeadSubmitting}
-                      className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-medium text-sm flex items-center gap-2 transition-all shadow-md shadow-brand-100"
-                    >
-                      {isNewLeadSubmitting ? (
-                        <>
-                          <Loader2 className="animate-spin" size={16} /> Creating...
-                        </>
+                      {(!newLeadForm.service || !(docFieldsByService[newLeadForm.service]?.length > 0)) ? (
+                        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                          <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4">
+                            <CheckCircle className="text-emerald-500" size={32} />
+                          </div>
+                          <h5 className="font-bold text-slate-800 text-sm">No Required Documents</h5>
+                          <p className="text-xs text-slate-400 max-w-sm mt-1">This lead has been successfully created. Click "Finish & Close" below to complete this wizard.</p>
+                        </div>
                       ) : (
-                        'Create Lead'
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[40vh] overflow-y-auto pr-2">
+                          {docFieldsByService[newLeadForm.service].map((field) => {
+                            const isUploading = uploadingField === field.name;
+                            const uploadedFile = uploadedDocs.find(d => d.documentType === field.name);
+                            
+                            return (
+                              <div 
+                                key={field.name}
+                                className={`p-4 rounded-2xl border transition-all ${
+                                  uploadedFile 
+                                    ? "bg-emerald-50/30 border-emerald-100 hover:bg-emerald-50/50" 
+                                    : isUploading 
+                                    ? "bg-slate-50/50 border-slate-200 animate-pulse" 
+                                    : "bg-slate-50/30 border-slate-100 hover:border-slate-200 hover:bg-white"
+                                }`}
+                              >
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="space-y-1">
+                                    <p className="text-xs font-semibold text-slate-700">{field.label}</p>
+                                    {uploadedFile ? (
+                                      <p className="text-[10px] text-emerald-600 font-medium flex items-center gap-1">
+                                        <CheckCircle size={10} /> {uploadedFile.fileName || "Uploaded"}
+                                      </p>
+                                    ) : isUploading ? (
+                                      <p className="text-[10px] text-brand-600 font-medium flex items-center gap-1">
+                                        <Loader2 size={10} className="animate-spin" /> Uploading...
+                                      </p>
+                                    ) : (
+                                      <p className="text-[10px] text-slate-400 font-medium italic">Not uploaded yet</p>
+                                    )}
+                                  </div>
+
+                                  {!uploadedFile && !isUploading && (
+                                    <label className="p-2 hover:bg-white border border-slate-200 hover:border-brand-300 rounded-xl cursor-pointer text-slate-400 hover:text-brand-600 transition-all flex items-center justify-center shrink-0">
+                                      <Upload size={14} />
+                                      <input 
+                                        type="file" 
+                                        className="hidden" 
+                                        onChange={(e) => handleNewLeadFileUpload(e, field.name)} 
+                                      />
+                                    </label>
+                                  )}
+
+                                  {uploadedFile && (
+                                    <div className="flex gap-2">
+                                      <a 
+                                        href={uploadedFile.filePath} 
+                                        target="_blank" 
+                                        rel="noreferrer"
+                                        className="p-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-xl text-xs font-semibold flex items-center justify-center transition-all"
+                                        title="View Document"
+                                      >
+                                        <Download size={14} />
+                                      </a>
+                                      <label className="p-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-400 hover:text-brand-600 rounded-xl cursor-pointer transition-all flex items-center justify-center">
+                                        <Upload size={14} />
+                                        <input 
+                                          type="file" 
+                                          className="hidden" 
+                                          onChange={(e) => handleNewLeadFileUpload(e, field.name)} 
+                                        />
+                                      </label>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       )}
-                    </button>
+                    </div>
+                  )}
+
+                  {/* Actions buttons */}
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                    {activeNewLeadTab === 0 && (
+                      <>
+                        <button 
+                          type="button"
+                          onClick={resetNewLeadModal}
+                          className="px-6 py-3 bg-slate-50 text-slate-700 hover:bg-slate-100 rounded-xl font-medium text-sm transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            if (validateNewLeadFields("leadGeneration")) {
+                              setActiveNewLeadTab(1);
+                            }
+                          }}
+                          className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-medium text-sm transition-all shadow-md shadow-brand-100"
+                        >
+                          Next: Enrollment Info
+                        </button>
+                      </>
+                    )}
+
+                    {activeNewLeadTab === 1 && (
+                      <>
+                        <button 
+                          type="button"
+                          onClick={() => setActiveNewLeadTab(0)}
+                          className="px-6 py-3 bg-slate-50 text-slate-700 hover:bg-slate-100 rounded-xl font-medium text-sm transition-colors"
+                        >
+                          Back
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            if (validateNewLeadFields("enrollmentInfo")) {
+                              handleCreateLead();
+                            }
+                          }}
+                          disabled={isNewLeadSubmitting}
+                          className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-medium text-sm flex items-center gap-2 transition-all shadow-md shadow-brand-100"
+                        >
+                          {isNewLeadSubmitting ? (
+                            <>
+                              <Loader2 className="animate-spin" size={16} /> Creating...
+                            </>
+                          ) : (
+                            'Create Lead'
+                          )}
+                        </button>
+                      </>
+                    )}
+
+                    {activeNewLeadTab === 2 && (
+                      <button 
+                        type="button"
+                        onClick={resetNewLeadModal}
+                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium text-sm transition-all shadow-md shadow-emerald-100 flex items-center gap-2"
+                      >
+                        <CheckCircle size={16} /> Finish & Close
+                      </button>
+                    )}
                   </div>
                 </form>
               </motion.div>
