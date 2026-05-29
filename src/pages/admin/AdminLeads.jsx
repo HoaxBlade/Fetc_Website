@@ -158,7 +158,7 @@ const AdminLeads = () => {
 
   const updateStatus = async (id, newStatus) => {
     try {
-      const response = await fetch(`/api/admin/leads/${id}`, {
+      const response = await fetch((window.API_BASE || '') + `/api/admin/leads/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
@@ -174,7 +174,7 @@ const AdminLeads = () => {
 
   const deleteLead = async (id) => {
     try {
-      const response = await fetch(`/api/admin/leads/${id}`, {
+      const response = await fetch((window.API_BASE || '') + `/api/admin/leads/${id}`, {
         method: 'DELETE',
       });
       const data = await response.json();
