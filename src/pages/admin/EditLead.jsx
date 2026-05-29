@@ -306,7 +306,7 @@ const EditLead = () => {
     const fetchLead = async () => {
       setIsFetching(true);
       try {
-        const res = await fetch(`/api/v1/lead/${id}`);
+        const res = await fetch((window.API_BASE || '') + `/api/v1/lead/${id}`);
         if (!res.ok) throw new Error('Lead not found');
         const data = await res.json();
         
@@ -355,7 +355,7 @@ const EditLead = () => {
 
     try {
       // Dynamic upload slot endpoint
-      const res = await fetch(`/api/v1/lead/${id}/documents/${fieldName}/upload`, {
+      const res = await fetch((window.API_BASE || '') + `/api/v1/lead/${id}/documents/${fieldName}/upload`, {
         method: 'POST',
         body: formData
       });
@@ -388,7 +388,7 @@ const EditLead = () => {
   // Admin document status changer
   const handleStatusChange = async (fieldName, newStatus) => {
     try {
-      const res = await fetch(`/api/v1/lead/${id}/documents/${fieldName}/status`, {
+      const res = await fetch((window.API_BASE || '') + `/api/v1/lead/${id}/documents/${fieldName}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
@@ -460,7 +460,7 @@ const EditLead = () => {
 
     setIsSaving(true);
     try {
-      const res = await fetch(`/api/v1/lead/${id}`, {
+      const res = await fetch((window.API_BASE || '') + `/api/v1/lead/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
