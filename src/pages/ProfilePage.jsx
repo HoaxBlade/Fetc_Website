@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   User, Edit2, Mail, Phone, Save, Loader2, X, Camera, Trash2
 } from 'lucide-react';
+import { getProfileImageUrl } from "../apiConfig";
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(() => 
@@ -366,7 +367,7 @@ const ProfilePage = () => {
 
                   {userData.profile_image ? (
                     <img 
-                      src={userData.profile_image} 
+                      src={getProfileImageUrl(userData.profile_image)} 
                       alt={userData.name}
                       className="w-full h-full object-cover"
                     />

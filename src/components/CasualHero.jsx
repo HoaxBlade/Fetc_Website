@@ -10,6 +10,19 @@ import banner3 from "../assets/logo/banner 3.png";
 
 const CasualHero = ({ content }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("user"));
+
+  useEffect(() => {
+    const checkLogin = () => {
+      setIsLoggedIn(!!localStorage.getItem("user"));
+    };
+    window.addEventListener("user-login", checkLogin);
+    window.addEventListener("user-logout", checkLogin);
+    return () => {
+      window.removeEventListener("user-login", checkLogin);
+      window.removeEventListener("user-logout", checkLogin);
+    };
+  }, []);
 
   const slides = [
     {
@@ -195,6 +208,15 @@ const CasualHero = ({ content }) => {
                 <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest leading-none">Success</p>
               </div>
             </div>
+            {isLoggedIn && (
+              <Link
+                to="/dashboard/doubts"
+                className="flex items-center justify-center gap-2.5 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-100/50 hover:shadow-emerald-200/50 hover:-translate-y-0.5 active:translate-y-0 transition-all text-xs uppercase tracking-wider relative overflow-hidden group"
+              >
+                <span>Documents Verification</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            )}
           </motion.div>
 
         </div>

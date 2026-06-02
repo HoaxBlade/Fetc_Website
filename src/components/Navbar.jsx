@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown, Menu, X, User, LayoutDashboard, LogOut, Settings } from "lucide-react";
 import { motion } from "framer-motion";
 import { navMenus } from "../data/siteData";
-import { getApiUrl } from "../apiConfig";
+import { getApiUrl, getProfileImageUrl } from "../apiConfig";
 import logo from "../assets/logo/FETC_FINAL LOGO-01_11 Version_Edit TM_PNG.png";
 
 function Navbar() {
@@ -159,7 +159,7 @@ function Navbar() {
               >
                 {currentUser && currentUser.profile_image ? (
                   <img 
-                    src={currentUser.profile_image} 
+                    src={getProfileImageUrl(currentUser.profile_image)} 
                     alt={currentUser.name} 
                     className="w-[22px] h-[22px] rounded-full object-cover" 
                   />
@@ -244,7 +244,7 @@ function Navbar() {
                       >
                         {currentUser && currentUser.profile_image ? (
                           <img 
-                            src={currentUser.profile_image} 
+                            src={getProfileImageUrl(currentUser.profile_image)} 
                             alt={currentUser.name} 
                             className="w-[20px] h-[20px] rounded-full object-cover" 
                           />

@@ -5,6 +5,7 @@ import {
   User, HelpCircle, Settings, LogOut, Menu, X,
   MessageCircle
 } from 'lucide-react';
+import { getProfileImageUrl } from "../../apiConfig";
 
 const UserLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -31,7 +32,7 @@ const UserLayout = () => {
     // { icon: ShoppingBag, label: "My Orders", path: "/dashboard/orders" },
     // { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
     { icon: HelpCircle, label: "Support", path: "/dashboard/support" },
-    { icon: MessageCircle, label: "Doubts", path: "/dashboard/doubts" },
+    { icon: MessageCircle, label: "Doubts & Verification", path: "/dashboard/doubts" },
     // { icon: ClipboardCheck, label: "Mock Test Remaining", path: "/dashboard/mock-tests" },
   ];
 
@@ -48,7 +49,7 @@ const UserLayout = () => {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-xl shadow-slate-200 shrink-0 overflow-hidden">
              {userData.profile_image ? (
-               <img src={userData.profile_image} alt={userData.name} className="w-full h-full object-cover" />
+               <img src={getProfileImageUrl(userData.profile_image)} alt={userData.name} className="w-full h-full object-cover" />
              ) : (
                <div className="w-full h-full bg-slate-900 flex items-center justify-center">
                  <User className="text-white" size={20} />

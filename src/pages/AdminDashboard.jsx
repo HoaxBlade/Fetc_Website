@@ -381,7 +381,7 @@ const AdminDashboard = () => {
             {[
               { label: "Invite Staff", icon: UserPlus, color: "bg-blue-500", path: "/admin/users" },
               { label: "Post News", icon: Zap, color: "bg-amber-500", path: "/admin/news-flash" },
-              { label: "Doubts Hub", icon: HelpCircle, color: "bg-purple-500", path: "/admin/doubts" },
+              { label: "Doubts & Verification", icon: HelpCircle, color: "bg-purple-500", path: "/admin/doubts" },
               { label: "Web Editor", icon: FileText, color: "bg-emerald-500", path: "/admin/pages" },
               { label: "Student Hub", icon: Users, color: "bg-indigo-500", path: "/admin/users" },
               { label: "Export Logs", icon: Download, color: "bg-slate-700", action: handleExportData }

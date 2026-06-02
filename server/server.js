@@ -306,7 +306,8 @@ app.post('/api/auth/login', async (req, res) => {
           role: user.role,
           phone: user.phone,
           bio: user.bio,
-          created_at: user.created_at
+          created_at: user.created_at,
+          profile_image: user.profile_image
         },
         token: "mock-jwt-token-fetc-" + user.id // We will add real JWT later
       });
@@ -679,6 +680,37 @@ app.get('/api/v1/lead/:id', async (req, res) => {
   } catch (err) {
     console.error('Fetch single lead v1 error:', err);
     res.status(500).json({ success: false, message: 'Server error fetching lead' });
+  }
+});
+
+// GET /api/v1/lead/email/:email - Get a single lead by email with their documents
+app.get('/api/v1/lead/email/:email', async (req, res) => {
+  const { email } = req.params;
+  try {
+    const leadRes = await db.query('SELECT * FROM leads WHERE email = $1', [email]);
+    if (leadRes.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Lead not found' });
+    }
+    
+    const lead = leadRes.rows[0];
+    const docsRes = await db.query('SELECT * FROM lead_documents WHERE lead_id = $1', [lead.id]);
+    const docs = docsRes.rows;
+    
+    const docMap = {};
+    docs.forEach(doc => {
+      docMap[doc.document_type] = doc.file_path;
+    });
+
+    const formattedLead = {
+      ...lead,
+      ...docMap,
+      documents: docs
+    };
+    
+    res.json(snakeToCamel(formattedLead));
+  } catch (err) {
+    console.error('Fetch single lead by email error:', err);
+    res.status(500).json({ success: false, message: 'Server error fetching lead by email' });
   }
 });
 
