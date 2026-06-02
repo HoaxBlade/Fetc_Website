@@ -156,7 +156,7 @@ const AdminDoubts = () => {
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900 tracking-tight mb-2">Doubts & Verification Portal</h1>
+          <h1 className="text-3xl font-semibold text-slate-900 tracking-tight mb-2">Doubts</h1>
           <p className="text-slate-500 font-medium text-sm italic">Manage and answer academic questions and verify student documents.</p>
         </div>
       </div>

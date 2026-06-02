@@ -171,10 +171,10 @@ const CasualHero = ({ content }) => {
             className="flex flex-wrap items-center justify-center lg:justify-start gap-4 relative z-10"
           >
             <Link
-              to="/contact"
+              to={isLoggedIn ? "/dashboard/doubts?tab=documentation" : "/contact"}
               className="group flex items-center justify-center gap-3 bg-brand-600 text-white font-bold px-10 py-4 rounded-full text-lg transition-all hover:bg-brand-700 hover:shadow-xl hover:-translate-y-1 active:translate-y-0"
             >
-              <span>{finalContent.buttonText}</span>
+              <span>{isLoggedIn ? "Start Enrollment" : finalContent.buttonText}</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
             </Link>
             
@@ -208,15 +208,6 @@ const CasualHero = ({ content }) => {
                 <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest leading-none">Success</p>
               </div>
             </div>
-            {isLoggedIn && (
-              <Link
-                to="/dashboard/doubts"
-                className="flex items-center justify-center gap-2.5 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-100/50 hover:shadow-emerald-200/50 hover:-translate-y-0.5 active:translate-y-0 transition-all text-xs uppercase tracking-wider relative overflow-hidden group"
-              >
-                <span>Documents Verification</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            )}
           </motion.div>
 
         </div>

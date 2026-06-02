@@ -46,7 +46,7 @@ const AdminLayout = () => {
     { icon: Zap, label: "News Flash", path: "/admin/news-flash" },
     { icon: Ticket, label: "Student Support", path: "/admin/support-tickets" },
     // { icon: FileText, label: "Invoice", path: "/admin/invoice" },
-    { icon: HelpCircle, label: "Doubts & Verification Portal", path: "/admin/doubts" },
+    { icon: HelpCircle, label: "Doubts", path: "/admin/doubts" },
 
     // { icon: BookOpen, label: "Interactive Guides", path: "/admin/guides" },
   ];

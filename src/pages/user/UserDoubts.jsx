@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useLocation } from 'react-router-dom';
 import { 
   Loader2, Plus, HelpCircle, CheckCircle2, FileText, Download, CheckCircle, 
   Clock, RotateCcw, AlertTriangle, ArrowRight, ArrowLeft, RefreshCw, Eye, 
@@ -111,9 +111,17 @@ const docFieldsByService = {
 
 function UserDoubts() {
   const { user } = useOutletContext();
+  const location = useLocation();
   
   // Tab states
   const [activeTab, setActiveTab] = useState("doubts"); // "doubts" or "documentation"
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("tab") === "documentation") {
+      setActiveTab("documentation");
+    }
+  }, [location.search]);
   
   // Doubts tab states
   const [doubts, setDoubts] = useState([]);
@@ -269,6 +277,21 @@ function UserDoubts() {
       if (["examBooking", "training"].includes(leadForm.service) && !leadForm.examType) {
         errors.examType = "Course/Exam title is required";
       }
+      if (!leadForm.visaRejection) {
+        errors.visaRejection = "Visa rejection answer is required";
+      }
+      if (!leadForm.travelHistory) {
+        errors.travelHistory = "Travel history answer is required";
+      }
+      if (!leadForm.program) {
+        errors.program = "Academic program / course is required";
+      }
+      if (!leadForm.ebd) {
+        errors.ebd = "Expected Booking Date is required";
+      }
+      if (!leadForm.payment) {
+        errors.payment = "Payment Method is required";
+      }
     }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -326,7 +349,11 @@ function UserDoubts() {
           ebd: formattedEbd
         });
         alert(isUpdate ? "Profile details updated successfully! 🎉" : "Enrollment profile registered! Proceed to documents. 📂");
-        setWizardTab(2); // take directly to document stage
+        if (wizardTab === 0) {
+          setWizardTab(1);
+        } else {
+          setWizardTab(2);
+        }
       } else {
         throw new Error(result.message || "Failed to save profile");
       }
@@ -612,7 +639,11 @@ function UserDoubts() {
                         else if (idx === 1) {
                           if (idx <= wizardTab || validateWizardFields(0)) setWizardTab(1);
                         } else if (idx === 2 && lead) {
-                          setWizardTab(2);
+                          if (validateWizardFields(0) && validateWizardFields(1)) {
+                            setWizardTab(2);
+                          } else {
+                            alert("Please fill all required fields in stages 1 & 2 before viewing Verification Docs.");
+                          }
                         }
                       }}
                       className={`flex flex-col items-center gap-2 focus:outline-none ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''}`}
@@ -644,7 +675,7 @@ function UserDoubts() {
               {wizardTab === 0 && (
                 <div className="space-y-6">
                   <h3 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-3 mb-6 flex items-center gap-2">
-                    <User size={18} className="text-indigo-600" /> 👤 Onboarding Profile (Personal Details)
+                    <User size={18} className="text-indigo-600" /> Onboarding Profile (Personal Details)
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
@@ -759,7 +790,7 @@ function UserDoubts() {
                   </div>
 
                   <div className="border-t border-slate-100 pt-6 mt-8">
-                    <h4 className="font-bold text-slate-800 text-sm mb-4">🚨 Emergency Contact Information</h4>
+                    <h4 className="font-bold text-slate-800 text-sm mb-4">Emergency Contact Information</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div>
                         <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Contact Person Name</label>
@@ -805,7 +836,7 @@ function UserDoubts() {
               {wizardTab === 1 && (
                 <div className="space-y-6">
                   <h3 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-3 mb-6 flex items-center gap-2">
-                    <BookOpen size={18} className="text-indigo-600" /> 🎓 Course & Program Enrollment details
+                    <BookOpen size={18} className="text-indigo-600" /> Course & Program Enrollment details
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
@@ -878,54 +909,57 @@ function UserDoubts() {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Visa Rejections?</label>
+                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Visa Rejections? *</label>
                       <select 
                         name="visaRejection" 
                         value={leadForm.visaRejection || ""} 
                         onChange={handleLeadFormChange}
-                        className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-100 font-semibold text-slate-700 bg-white cursor-pointer"
+                        className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-100 font-semibold text-slate-700 bg-white cursor-pointer ${formErrors.visaRejection ? 'border-rose-400' : 'border-slate-200'}`}
                       >
                         <option value="">Select Option</option>
                         <option value="No">No</option>
                         <option value="Yes">Yes</option>
                       </select>
+                      {formErrors.visaRejection && <span className="text-xs text-rose-500 font-semibold mt-1 block">{formErrors.visaRejection}</span>}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Travel History?</label>
+                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Travel History? *</label>
                       <select 
                         name="travelHistory" 
                         value={leadForm.travelHistory || ""} 
                         onChange={handleLeadFormChange}
-                        className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-100 font-semibold text-slate-700 bg-white cursor-pointer"
+                        className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-100 font-semibold text-slate-700 bg-white cursor-pointer ${formErrors.travelHistory ? 'border-rose-400' : 'border-slate-200'}`}
                       >
                         <option value="">Select Option</option>
                         <option value="No">No</option>
                         <option value="Yes">Yes</option>
                       </select>
+                      {formErrors.travelHistory && <span className="text-xs text-rose-500 font-semibold mt-1 block">{formErrors.travelHistory}</span>}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Academic Program / Course</label>
+                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Academic Program / Course *</label>
                       <input 
                         type="text" 
                         name="program" 
                         value={leadForm.program || ""} 
                         onChange={handleLeadFormChange}
-                        className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-100 font-semibold text-slate-700 bg-white" 
+                        className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-100 font-semibold text-slate-700 bg-white ${formErrors.program ? 'border-rose-400' : 'border-slate-200'}`} 
                         placeholder="e.g. Business Administration, IT"
                       />
+                      {formErrors.program && <span className="text-xs text-rose-500 font-semibold mt-1 block">{formErrors.program}</span>}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Payment Method</label>
+                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Payment Method *</label>
                       <select 
                         name="payment" 
                         value={leadForm.payment || ""} 
                         onChange={handleLeadFormChange}
-                        className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-100 font-semibold text-slate-700 bg-white cursor-pointer"
+                        className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-100 font-semibold text-slate-700 bg-white cursor-pointer ${formErrors.payment ? 'border-rose-400' : 'border-slate-200'}`}
                       >
                         <option value="">Select Method</option>
                         <option value="Cash">Cash</option>
@@ -933,17 +967,19 @@ function UserDoubts() {
                         <option value="Bank Transfer">Bank Transfer</option>
                         <option value="Card">Credit/Debit Card</option>
                       </select>
+                      {formErrors.payment && <span className="text-xs text-rose-500 font-semibold mt-1 block">{formErrors.payment}</span>}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Expected Booking Date (EBD)</label>
+                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Expected Booking Date (EBD) *</label>
                       <input 
                         type="date" 
                         name="ebd" 
-                        value={leadForm.ebd} 
+                        value={leadForm.ebd || ""} 
                         onChange={handleLeadFormChange} 
-                        className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-100 font-semibold text-slate-700 bg-white" 
+                        className={`w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-4 focus:ring-indigo-100 font-semibold text-slate-700 bg-white ${formErrors.ebd ? 'border-rose-400' : 'border-slate-200'}`} 
                       />
+                      {formErrors.ebd && <span className="text-xs text-rose-500 font-semibold mt-1 block">{formErrors.ebd}</span>}
                     </div>
                   </div>
                 </div>
