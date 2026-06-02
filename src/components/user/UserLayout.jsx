@@ -64,7 +64,7 @@ const UserLayout = () => {
       </div>
 
       <nav className="p-6 space-y-1.5 overflow-y-auto custom-scrollbar">
-        {sidebarItems.map((item, idx) => (
+        {sidebarItems.filter(item => !(item.path === "/dashboard/doubts" && userData?.role === "ADMIN")).map((item, idx) => (
           <NavLink
             key={idx}
             to={item.path}

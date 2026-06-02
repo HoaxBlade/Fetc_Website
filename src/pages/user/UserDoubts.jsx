@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useOutletContext, useLocation } from 'react-router-dom';
+import { useOutletContext, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Loader2, Plus, HelpCircle, CheckCircle2, FileText, Download, CheckCircle, 
   Clock, RotateCcw, AlertTriangle, ArrowRight, ArrowLeft, RefreshCw, Eye, 
@@ -112,6 +112,13 @@ const docFieldsByService = {
 function UserDoubts() {
   const { user } = useOutletContext();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && user.role === 'ADMIN') {
+      navigate('/admin/dashboard');
+    }
+  }, [user, navigate]);
   
   // Tab states
   const [activeTab, setActiveTab] = useState("doubts"); // "doubts" or "documentation"
