@@ -32,6 +32,7 @@ import ProfilePage from "./pages/ProfilePage";
 import StartJourneyPage from "./pages/StartJourneyPage";
 import UserSupport from "./pages/user/UserSupport";
 import UserDoubts from "./pages/user/UserDoubts";
+import UserVerification from "./pages/user/UserVerification";
 
 // Admin Imports
 import AdminLayout from "./components/admin/AdminLayout";
@@ -112,6 +113,7 @@ function AppContent() {
             <Route path="payments" element={<div className="p-8 text-slate-400 italic">Payments component coming soon...</div>} />
             <Route path="support" element={<UserSupport />} />
             <Route path="doubts" element={<UserDoubts />} />
+            <Route path="verification" element={<UserVerification />} />
             <Route path="mock-tests" element={<div className="p-8 text-slate-400 italic text-sm font-medium tracking-wide">Mock Test dashboard coming soon...</div>} />
           </Route>
 

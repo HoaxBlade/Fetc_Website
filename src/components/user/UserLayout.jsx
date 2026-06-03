@@ -3,7 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, HelpCircle, Settings, LogOut, Menu, X,
-  MessageCircle
+  MessageCircle, FileCheck
 } from 'lucide-react';
 import { getProfileImageUrl } from "../../apiConfig";
 
@@ -32,7 +32,8 @@ const UserLayout = () => {
     // { icon: ShoppingBag, label: "My Orders", path: "/dashboard/orders" },
     // { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
     { icon: HelpCircle, label: "Support", path: "/dashboard/support" },
-    { icon: MessageCircle, label: "Doubts & Verification", path: "/dashboard/doubts" },
+    { icon: MessageCircle, label: "Doubts", path: "/dashboard/doubts" },
+    { icon: FileCheck, label: "Document Verification Portal", path: "/dashboard/verification" },
     // { icon: ClipboardCheck, label: "Mock Test Remaining", path: "/dashboard/mock-tests" },
   ];
 
@@ -64,7 +65,7 @@ const UserLayout = () => {
       </div>
 
       <nav className="p-6 space-y-1.5 overflow-y-auto custom-scrollbar">
-        {sidebarItems.filter(item => !(item.path === "/dashboard/doubts" && userData?.role === "ADMIN")).map((item, idx) => (
+        {sidebarItems.filter(item => !((item.path === "/dashboard/doubts" || item.path === "/dashboard/verification") && userData?.role === "ADMIN")).map((item, idx) => (
           <NavLink
             key={idx}
             to={item.path}
