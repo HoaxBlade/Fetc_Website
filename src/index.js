@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-window.API_BASE = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
+window.API_BASE = (process.env.REACT_APP_API_URL || '').trim().replace(/\/$/, '');
 
 // Global fetch interceptor to bypass Ngrok browser warning
 const originalFetch = window.fetch;

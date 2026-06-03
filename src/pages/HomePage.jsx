@@ -179,7 +179,6 @@ function HomePage() {
           <ServiceMarqueeRow
             title={pageData?.careerAssessment?.title || "Find Your Path"}
             description={pageData?.careerAssessment?.description || "Not sure what to study? Our AI-powered analysis helps you discover your strengths and the perfect career to match."}
-            linkText={pageData?.careerAssessment?.linkText || "Get Your Result"}
             linkTarget="/career-assessment/behaviour-and-career-analysis"
             items={pageData?.careerAssessment?.items || careerCards}
             bgColor="bg-transparent"

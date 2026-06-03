@@ -2,7 +2,7 @@
 // This allows the frontend to point to a remote backend (like an Ngrok tunnel)
 // even when the frontend is deployed on Vercel/Netlify.
 
-const API_BASE = process.env.REACT_APP_API_URL || '';
+const API_BASE = (window.API_BASE || process.env.REACT_APP_API_URL || '').trim();
 
 // Helper to construct API URLs
 export const getApiUrl = (path) => {
