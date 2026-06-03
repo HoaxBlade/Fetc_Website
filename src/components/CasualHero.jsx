@@ -171,7 +171,7 @@ const CasualHero = ({ content }) => {
             className="flex flex-wrap items-center justify-center lg:justify-start gap-4 relative z-10"
           >
             <Link
-              to={isLoggedIn ? "/dashboard/doubts?tab=documentation" : "/contact"}
+              to={isLoggedIn ? "/dashboard/verification" : "/contact"}
               className="group flex items-center justify-center gap-3 bg-brand-600 text-white font-bold px-10 py-4 rounded-full text-lg transition-all hover:bg-brand-700 hover:shadow-xl hover:-translate-y-1 active:translate-y-0"
             >
               <span>{isLoggedIn ? "Start Enrollment" : finalContent.buttonText}</span>
