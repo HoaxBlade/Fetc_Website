@@ -4,6 +4,7 @@ import {
   User, Edit2, Mail, Phone, Save, Loader2, X, Camera, Trash2
 } from 'lucide-react';
 import { getProfileImageUrl } from "../apiConfig";
+import SafeImage from "../components/SafeImage";
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(() => 
@@ -366,7 +367,7 @@ const ProfilePage = () => {
                   ) : null}
 
                   {userData.profile_image ? (
-                    <img 
+                    <SafeImage 
                       src={getProfileImageUrl(userData.profile_image)} 
                       alt={userData.name}
                       className="w-full h-full object-cover"

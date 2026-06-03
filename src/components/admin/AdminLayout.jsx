@@ -7,6 +7,7 @@ import {
   ChevronLeft, ChevronRight, ClipboardList
 } from 'lucide-react';
 import { getProfileImageUrl } from "../../apiConfig";
+import SafeImage from "../SafeImage";
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -121,7 +122,7 @@ const AdminLayout = () => {
         <div className="flex items-center gap-3 w-full">
           <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-slate-100 border border-slate-200">
             {userData?.profile_image ? (
-              <img src={getProfileImageUrl(userData.profile_image)} alt={userData.name} className="w-full h-full object-cover" />
+              <SafeImage src={getProfileImageUrl(userData.profile_image)} alt={userData.name} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full bg-slate-900 flex items-center justify-center text-white font-medium text-sm">
                 {userData?.name ? userData.name[0].toUpperCase() : 'A'}

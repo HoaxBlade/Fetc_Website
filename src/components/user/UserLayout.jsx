@@ -6,6 +6,7 @@ import {
   MessageCircle, FileCheck
 } from 'lucide-react';
 import { getProfileImageUrl } from "../../apiConfig";
+import SafeImage from "../SafeImage";
 
 const UserLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -50,7 +51,7 @@ const UserLayout = () => {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-xl shadow-slate-200 shrink-0 overflow-hidden">
              {userData.profile_image ? (
-               <img src={getProfileImageUrl(userData.profile_image)} alt={userData.name} className="w-full h-full object-cover" />
+               <SafeImage src={getProfileImageUrl(userData.profile_image)} alt={userData.name} className="w-full h-full object-cover" />
              ) : (
                <div className="w-full h-full bg-slate-900 flex items-center justify-center">
                  <User className="text-white" size={20} />

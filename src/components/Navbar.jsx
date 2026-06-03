@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { navMenus } from "../data/siteData";
 import { getApiUrl, getProfileImageUrl } from "../apiConfig";
 import logo from "../assets/logo/FETC_FINAL LOGO-01_11 Version_Edit TM_PNG.png";
+import SafeImage from "./SafeImage";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -158,7 +159,7 @@ function Navbar() {
                 title="My Account"
               >
                 {currentUser && currentUser.profile_image ? (
-                  <img 
+                  <SafeImage 
                     src={getProfileImageUrl(currentUser.profile_image)} 
                     alt={currentUser.name} 
                     className="w-[22px] h-[22px] rounded-full object-cover" 
@@ -243,7 +244,7 @@ function Navbar() {
                         }
                       >
                         {currentUser && currentUser.profile_image ? (
-                          <img 
+                          <SafeImage 
                             src={getProfileImageUrl(currentUser.profile_image)} 
                             alt={currentUser.name} 
                             className="w-[20px] h-[20px] rounded-full object-cover" 
