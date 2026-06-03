@@ -567,14 +567,14 @@ function ServiceMarqueeRow({
 
         {/* Premium Split Header for Static Section */}
         <div className={`mb-16 grid grid-cols-1 gap-10 lg:gap-16 ${secondTitle ? 'lg:grid-cols-2 text-left' : 'items-center text-center'}`}>
-          <div className="relative flex flex-col">
+          <div className={`relative flex flex-col ${secondTitle ? '' : 'items-center'}`}>
             {secondTitle && (
               <div className="absolute -right-8 top-1/2 hidden h-24 w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-slate-200 to-transparent lg:block" />
             )}
             <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 md:text-5xl">
               {title}
             </h2>
-            <p className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-slate-500">
+            <p className={`mt-6 max-w-2xl text-lg font-medium leading-relaxed text-slate-500 ${secondTitle ? '' : 'mx-auto'}`}>
               {description}
             </p>
             {linkText && (
@@ -601,7 +601,7 @@ function ServiceMarqueeRow({
           )}
         </div>
         {isStatic ? (
-          <div className="grid w-full grid-cols-1 gap-8 lg:gap-12 md:grid-cols-2">
+          <div className={`grid w-full grid-cols-1 gap-8 lg:gap-12 ${items.length === 1 ? 'max-w-xl mx-auto' : 'md:grid-cols-2'}`}>
             {items.map((service, idx) => renderStaticCard(service, idx))}
           </div>
         ) : (

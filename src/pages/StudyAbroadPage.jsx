@@ -243,6 +243,69 @@ function StudyAbroadPage() {
           )}
         </div>
       )}
+
+      {/* Helpful Resources Section */}
+      <div className="mt-28 border-t border-slate-100 pt-20 pb-12">
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 mb-4 px-4 py-2 bg-brand-50 rounded-full">
+            <Download size={12} /> Resource Center
+          </span>
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+            Helpful <span className="bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent">Resources</span>
+          </h2>
+          <p className="mt-4 text-base text-slate-500 font-semibold leading-relaxed">
+            Essential downloads, roadmap guides, and checklists to plan and execute your study abroad journey seamlessly.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          {[
+            {
+              label: "Financial Planning Checklist",
+              description: "Plan your funds, tuition fees, and living cost estimates with this comprehensive tracking list.",
+              url: "https://drive.google.com/file/d/1wX99-y42WJNS8U8uAiS3xQzUrpiivcUM/view?usp=drive_link"
+            },
+            {
+              label: "Part time job and internships",
+              description: "Explore regulations, work hour limits, and potential job portals for international students.",
+              url: "https://drive.google.com/file/d/1iXz--uNuiuBBHnNv8yX3khWjzBhUspyG/view?usp=drive_link"
+            },
+            {
+              label: "Road Map Study Abroad",
+              description: "A complete step-by-step master plan tracing your timeline from exams to university intake.",
+              url: "https://drive.google.com/file/d/139BsYSsVSIPziOebKWNL8StFU7LGs6P3/view?usp=drive_link"
+            },
+            {
+              label: "Service Provider Agreement",
+              description: "Understand the terms of engagement and the transparent guarantees FETC offers.",
+              url: "https://drive.google.com/file/d/16RCN90tqMDusAexTX6L2fKCLu92XSZYh/view?usp=drive_link"
+            }
+          ].map((res, index) => (
+            <a
+              key={index}
+              href={res.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative bg-white border border-slate-100 rounded-[2rem] p-6 shadow-soft hover:shadow-[0_20px_50px_rgba(59,130,246,0.08)] hover:-translate-y-1 hover:border-brand-100 transition-all duration-500 flex flex-col justify-between"
+            >
+              <div>
+                <div className="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center text-brand-600 mb-6 group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white transition-all duration-500">
+                  <Download size={20} />
+                </div>
+                <h3 className="text-lg font-black text-slate-800 tracking-tight mb-2 group-hover:text-brand-600 transition-colors">
+                  {res.label}
+                </h3>
+                <p className="text-xs font-semibold text-slate-400 leading-relaxed mb-6">
+                  {res.description}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-brand-600 group-hover:text-indigo-600 transition-colors">
+                Download PDF &rarr;
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
     </main>
   );
 }
