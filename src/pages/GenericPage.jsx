@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, ArrowLeft, Globe, AlertCircle } from 'lucide-react';
+import { getAssetUrl } from '../apiConfig';
+import SafeImage from '../components/SafeImage';
 
 const GenericPage = () => {
   const params = useParams();
@@ -135,7 +137,7 @@ const GenericPage = () => {
                       <div className="flex-1 w-full">
                         <div className="relative group">
                           <div className="absolute inset-0 bg-brand-600/10 rounded-[3rem] translate-x-4 translate-y-4 -z-10 group-hover:translate-x-6 group-hover:translate-y-6 transition-transform" />
-                          <img src={section.image || 'https://via.placeholder.com/800x600'} alt={section.title} className="rounded-[3rem] shadow-2xl w-full object-cover aspect-video border-4 border-white" />
+                          <SafeImage src={getAssetUrl(section.image) || 'https://via.placeholder.com/800x600'} alt={section.title} className="rounded-[3rem] shadow-2xl w-full object-cover aspect-video border-4 border-white" />
                         </div>
                       </div>
                       <div className="flex-1">

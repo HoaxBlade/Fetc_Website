@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Loader2, Search, MapPin, Sparkles, Download, ChevronDown } from "lucide-react";
 import { countryData as STATIC_FALLBACKS } from "../data/siteData";
+import { getAssetUrl } from "../apiConfig";
+import SafeImage from "../components/SafeImage";
 
 function StudyAbroadPage() {
   const { country } = useParams();
@@ -195,8 +197,8 @@ function StudyAbroadPage() {
                 <div className="mb-10 flex h-32 w-full items-center justify-center relative p-4">
                    <div className="absolute inset-0 bg-slate-50/50 rounded-3xl -z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   {uni.image ? (
-                    <img
-                      src={uni.image}
+                    <SafeImage
+                      src={getAssetUrl(uni.image)}
                       alt={uni.name}
                       className="h-full w-full object-contain relative z-10 transition-transform duration-700 group-hover:scale-110"
                     />

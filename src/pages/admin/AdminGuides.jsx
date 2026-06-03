@@ -6,6 +6,9 @@ import {
   Save, Loader2, Sparkles, AlertCircle
 } from 'lucide-react';
 
+import { getAssetUrl } from '../../apiConfig';
+import SafeImage from '../../components/SafeImage';
+
 // --- SUB-COMPONENT: EDIT VIEW (Moved outside to prevent hook errors) ---
 const EditGuideView = ({ selectedGuide, setSelectedGuide, handleSaveGuide, handleDeleteGuide, isSaving }) => {
     const [isUpdatingPages, setIsUpdatingPages] = useState(false);
@@ -204,7 +207,7 @@ const EditGuideView = ({ selectedGuide, setSelectedGuide, handleSaveGuide, handl
                                             layout
                                             className="group relative aspect-[3/4] bg-slate-50 rounded-2xl overflow-hidden border border-slate-200"
                                         >
-                                            <img src={page.image_url} className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700" alt="" />
+                                            <SafeImage src={getAssetUrl(page.image_url)} className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700" alt="" />
                                             <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/60 to-transparent flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <span className="text-[10px] font-semibold text-white italic">P.{page.page_number}</span>
                                                 <button 

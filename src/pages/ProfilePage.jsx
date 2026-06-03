@@ -59,6 +59,7 @@ const ProfilePage = () => {
     };
 
     fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData.id, userData.email, isEditing]); // Added userData.email to dependencies
 
   const handleInputChange = (e) => {

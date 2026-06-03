@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { getApiUrl } from "../apiConfig";
 import CasualHero from "../components/CasualHero";
 import ServiceMarqueeRow from "../components/ServiceMarqueeRow";
 import WelcomeSection from "../components/WelcomeSection";

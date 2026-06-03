@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { getAssetUrl } from '../apiConfig';
+import SafeImage from './SafeImage';
 
 const GenericSection = ({ title, content, image, index }) => {
   if (!title && !content) return null;
@@ -21,7 +23,7 @@ const GenericSection = ({ title, content, image, index }) => {
               className={`relative ${index % 2 === 0 ? '' : 'lg:order-2'}`}
             >
                <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border border-slate-100">
-                  <img src={image} alt={title} className="w-full h-full object-cover min-h-[400px]" />
+                  <SafeImage src={getAssetUrl(image)} alt={title} className="w-full h-full object-cover min-h-[400px]" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent" />
                </div>
                {/* Decorative dots */}

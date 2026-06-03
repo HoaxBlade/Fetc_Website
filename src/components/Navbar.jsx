@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown, Menu, X, User, LayoutDashboard, LogOut, Settings } from "lucide-react";
 import { motion } from "framer-motion";
 import { navMenus } from "../data/siteData";
-import { getApiUrl, getProfileImageUrl } from "../apiConfig";
+import { getProfileImageUrl } from "../apiConfig";
 import logo from "../assets/logo/FETC_FINAL LOGO-01_11 Version_Edit TM_PNG.png";
 import SafeImage from "./SafeImage";
 
@@ -12,6 +12,7 @@ function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeMobileMenu, setActiveMobileMenu] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [dynamicPages, setDynamicPages] = useState([]);
 
   const fetchDynamicPages = async () => {

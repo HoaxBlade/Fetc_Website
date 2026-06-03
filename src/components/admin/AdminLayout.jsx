@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, FileText, Share2,
   Zap, Ticket, Menu, X, HelpCircle, LogOut,
-  ChevronLeft, ChevronRight, ClipboardList
+  ClipboardList
 } from 'lucide-react';
 import { getProfileImageUrl } from "../../apiConfig";
 import SafeImage from "../SafeImage";

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles } from 'lucide-react';
+import { getAssetUrl } from '../../apiConfig';
+import SafeImage from '../../components/SafeImage';
 
 const AdminPages = () => {
   const handleFileUpload = async (section, field, file, customSectionId = null, arrayIndex = null) => {
@@ -369,7 +371,7 @@ const AdminPages = () => {
       <div className="relative group aspect-video bg-white border border-slate-200 rounded-2xl overflow-hidden flex items-center justify-center">
         {value ? (
           <>
-            <img src={value} className="w-full h-full object-cover" alt="Banner" />
+            <SafeImage src={getAssetUrl(value)} className="w-full h-full object-cover" alt="Banner" />
             <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-3">
               <label className="p-3 bg-white text-slate-900 rounded-full cursor-pointer hover:bg-brand-50 transition-colors">
                 <Edit size={18} />
@@ -920,7 +922,7 @@ const AdminPages = () => {
                                 <div className="grid grid-cols-2 gap-4">
                                   {(selectedPage.content?.officeShowcase?.images || []).map((img, idx) => (
                                     <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-slate-100 group">
-                                      <img src={img} className="w-full h-full object-cover" alt="Showcase" />
+                                      <SafeImage src={getAssetUrl(img)} className="w-full h-full object-cover" alt="Showcase" />
                                       <button
                                         onClick={() => {
                                           const newImgs = selectedPage.content.officeShowcase.images.filter((_, i) => i !== idx);
@@ -1128,7 +1130,7 @@ const AdminPages = () => {
                                       <div className="relative group w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
                                         {uni.image ? (
                                           <>
-                                            <img src={uni.image} className="w-full h-full object-contain" alt="Logo" />
+                                            <SafeImage src={getAssetUrl(uni.image)} className="w-full h-full object-contain" alt="Logo" />
                                             <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
                                               <label className="p-1.5 bg-white text-slate-900 rounded-xl cursor-pointer shadow-xl">
                                                 <Plus size={12} />
@@ -1370,7 +1372,7 @@ const AdminPages = () => {
                               {(selectedPage.content?.images || []).map((img, idx) => (
                                 <div key={idx} className="group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
                                   <div className="relative aspect-[4/3] bg-slate-100 overflow-hidden">
-                                    <img src={img.src} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Gallery" />
+                                    <SafeImage src={getAssetUrl(img.src)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Gallery" />
                                     <button
                                       onClick={() => {
                                         const current = selectedPage.content.images.filter((_, i) => i !== idx);
@@ -1654,7 +1656,7 @@ const AdminPages = () => {
                                         <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-1">Section Image</label>
                                         <div className="relative group aspect-video bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl overflow-hidden flex flex-col items-center justify-center text-slate-400">
                                           {section.image ? (
-                                            <img src={section.image} className="w-full h-full object-cover" alt="Section" />
+                                            <SafeImage src={getAssetUrl(section.image)} className="w-full h-full object-cover" alt="Section" />
                                           ) : (
                                             <>
                                               <ImageIcon size={24} className="mb-2" />

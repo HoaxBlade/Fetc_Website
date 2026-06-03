@@ -53,4 +53,8 @@ export const getProfileImageUrl = (url) => {
   return url;
 };
 
+export const getAssetUrl = (url) => {
+  return getProfileImageUrl(url);
+};
+
 export default API_BASE;
