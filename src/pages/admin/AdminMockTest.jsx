@@ -1,32 +1,81 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { CheckSquare, Plus } from 'lucide-react';
+import { CheckSquare, Plus, Eye, Edit2, Trash2 } from 'lucide-react';
 
 const AdminMockTest = () => {
+  const mockTests = [
+    { title: 'ETS - TOEFL', price: '₹49', status: 'Published' },
+    { title: 'SFE - SELT', price: '₹49', status: 'Published' },
+    { title: 'Pearson Versant', price: '₹499', status: 'Published' }
+  ];
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-[1600px] mx-auto">
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">Mock Tests</h1>
-          <p className="text-slate-500 font-medium text-sm italic">Create and manage practice exams for students.</p>
+    <div className="max-w-[1600px] mx-auto">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-700">
+            <CheckSquare size={24} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">All Mock Tests</h1>
+          </div>
         </div>
-        <button className="flex items-center gap-2 bg-brand-600 text-white px-6 py-3 rounded-2xl font-medium text-sm hover:bg-brand-700 transition-all shadow-lg shadow-brand-200">
-          <Plus size={18} /> New Mock Test
-        </button>
+        <div className="flex items-center gap-2">
+          <button className="flex items-center gap-1.5 bg-white border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-medium text-xs hover:bg-slate-50 transition-all shadow-sm">
+            <Eye size={14} /> View Page
+          </button>
+          <button className="flex items-center gap-1.5 bg-slate-900 text-white px-4 py-2.5 rounded-xl font-medium text-xs hover:bg-slate-800 transition-all shadow-sm">
+            <Plus size={14} /> Create Mock Test
+          </button>
+        </div>
       </div>
 
-      <div className="bg-white/80 backdrop-blur-2xl rounded-2xl border border-white/100 shadow-soft overflow-hidden">
-        <div className="p-20 text-center">
-          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckSquare className="text-slate-400" size={24} />
-          </div>
-          <p className="text-slate-400 text-sm italic">No mock tests available yet.</p>
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto p-4">
+          <table className="w-full text-left border-separate border-spacing-y-2">
+            <thead>
+              <tr className="text-slate-400 text-[10px] font-semibold uppercase tracking-widest px-4">
+                <th className="px-6 pb-2">Title</th>
+                <th className="px-6 pb-2">Price</th>
+                <th className="px-6 pb-2">Status</th>
+                <th className="px-6 pb-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mockTests.map((test, index) => (
+                <tr key={index} className="bg-slate-50 rounded-xl">
+                  <td className="px-6 py-4 font-semibold text-xs text-slate-700 rounded-l-xl">
+                    {test.title}
+                  </td>
+                  <td className="px-6 py-4 text-xs text-slate-600 font-medium font-mono">
+                    {test.price}
+                  </td>
+                  <td className="px-6 py-4 text-xs">
+                    <span className="px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
+                      {test.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right rounded-r-xl">
+                    <div className="flex items-center justify-end gap-2">
+                      <button className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-all">
+                        <Edit2 size={14} />
+                      </button>
+                      <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="p-6 text-center border-t border-slate-50 text-slate-400 text-xs italic">
+          List of all mock tests
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
 export default AdminMockTest;
-
-

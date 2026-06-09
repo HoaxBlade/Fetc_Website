@@ -1821,106 +1821,93 @@ const AdminPages = () => {
         document.body
       )}
 
-      <div className="bg-slate-100/50 backdrop-blur-md rounded-2xl border border-slate-200/40 p-4 mb-16 flex flex-wrap items-center justify-between gap-6 shadow-sm">
-        <div className="flex gap-4 items-center flex-1 max-w-lg">
-          <div className="relative flex-1 group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-600 transition-all duration-300" />
-            <input
-              className="w-full pl-12 pr-6 py-3 bg-white/80 border border-slate-200/60 rounded-xl text-[13px] focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-400/50 transition-all font-medium text-slate-700 placeholder:text-slate-400"
-              placeholder="Search pages..."
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <input 
+              className="w-full pl-12 pr-6 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none font-medium" 
+              placeholder="Search by Title or Slug" 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-4 py-2 bg-white/80 border border-slate-200/60 rounded-xl shadow-xs">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-            <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">{pages.length} Pages</span>
-          </div>
           {isLoading && (
-            <div className="flex items-center gap-2 px-3 py-2">
-              <Loader2 className="animate-spin text-brand-600" size={14} />
+            <div className="flex items-center gap-2">
+              <Loader2 className="animate-spin text-brand-600" size={16} />
             </div>
           )}
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-40">
-        {searchTerm ? (
-          filteredPages.map((page) => (
-            <PageCard key={page.id} page={page} />
-          ))
-        ) : (
-          // Grouped Implementation
-          categories.map(cat => {
-            const pagesInCategory = pages.filter(p => getCategory(p.slug) === cat);
-            if (pagesInCategory.length === 0) return null;
-
-            // For "Main Pages", always show individual cards
-            if (cat === "Main Pages") {
-              return pagesInCategory.map(page => <PageCard key={page.id} page={page} />);
-            }
-
-            // For groupable categories, show ONE card
-            const selectedId = groupSelectedPageIds[cat] || pagesInCategory[0].id;
-            const activePage = pagesInCategory.find(p => p.id === selectedId) || pagesInCategory[0];
-
-            return (
-              <motion.div
-                key={cat}
-                whileHover={{ y: -4, scale: 1.01 }}
-                className="glass-card rounded-2xl p-8 transition-all cursor-pointer group relative active:scale-[0.99] z-10 border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)]"
-              >
-                <div className="flex justify-between items-start mb-8 relative z-10 mt-2">
-                  <div className="p-4 bg-slate-50 text-brand-600 rounded-xl border border-slate-100 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
-                    <FileText size={22} />
-                  </div>
-                  <div className="flex flex-col items-end gap-3">
-                    <span className={`text-[9px] font-medium uppercase tracking-widest px-3 py-1.5 rounded-xl border shadow-xs ${activePage.status === 'PUBLISHED' ? 'bg-emerald-400/5 text-emerald-600 border-emerald-400/20' : 'bg-amber-400/5 text-amber-600 border-amber-400/20'}`}>
-                      {activePage.status}
+        <div className="overflow-x-auto p-4">
+          <table className="w-full text-left border-separate border-spacing-y-2">
+            <thead>
+              <tr className="text-slate-400 text-[10px] font-semibold uppercase tracking-widest px-4">
+                <th className="px-6 pb-2">Title</th>
+                <th className="px-6 pb-2">Slug</th>
+                <th className="px-6 pb-2">Status</th>
+                <th className="px-6 pb-2">Updated On</th>
+                <th className="px-6 pb-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPages.map((page) => (
+                <tr key={page.id} className="bg-slate-50 rounded-xl">
+                  <td className="px-6 py-4 font-semibold text-xs text-slate-700 rounded-l-xl">
+                    {page.title}
+                  </td>
+                  <td className="px-6 py-4 text-xs text-slate-500 font-medium">
+                    {page.slug}
+                  </td>
+                  <td className="px-6 py-4 text-xs">
+                    <span className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg border ${
+                      page.status === 'PUBLISHED' 
+                        ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+                        : 'bg-amber-50 text-amber-600 border-amber-100'
+                    }`}>
+                      {page.status === 'PUBLISHED' ? 'Published' : 'Draft'}
                     </span>
-                  </div>
-                </div>
+                  </td>
+                  <td className="px-6 py-4 text-xs text-slate-500 font-medium">
+                    {formatDate(page.updated_at)}
+                  </td>
+                  <td className="px-6 py-4 text-right rounded-r-xl">
+                    <div className="flex items-center justify-end gap-2">
+                      <button 
+                        onClick={() => setSelectedPage(page)}
+                        className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                        title="Edit Page"
+                      >
+                        <Edit size={14} />
+                      </button>
+                      <a 
+                        href={page.slug.startsWith('/') ? page.slug : `/p/${page.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 text-slate-500 hover:bg-slate-50 rounded-lg transition-all inline-flex items-center"
+                        title="View Page"
+                      >
+                        <Globe size={14} />
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              ))}
 
-                <div className="mb-10 relative z-20">
-                  <h3 className="text-2xl font-semibold text-slate-800 mb-4 truncate tracking-tight">{cat}</h3>
-                  <CustomGroupSelector
-                    activePage={activePage}
-                    pages={pagesInCategory}
-                    onSelect={(id) => setGroupSelectedPageIds(prev => ({ ...prev, [cat]: id }))}
-                  />
-                </div>
+              {!isLoading && filteredPages.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="px-6 py-10 text-center text-slate-400 italic text-sm">
+                    No pages found matching your search.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-                <div className="flex items-center justify-between pt-6 border-t border-slate-100/60 relative z-10">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPage(activePage);
-                    }}
-                    className="group/btn flex items-center gap-2 text-[10px] font-medium uppercase tracking-wider text-brand-600 hover:text-brand-700 transition-colors"
-                  >
-                    Edit {activePage.title}
-                    <ChevronRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
-                  </button>
-                  <div className="flex items-center gap-2 text-[9px] font-medium text-slate-300 uppercase tracking-widest">
-                    {pagesInCategory.length} Pages
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })
-        )}
-
-        {!isLoading && filteredPages.length === 0 && (
-          <div className="col-span-full py-20 text-center">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
-              <Search size={24} />
-            </div>
-            <h3 className="text-lg font-semibold text-slate-800">No pages found</h3>
-            <p className="text-slate-400 text-sm">Try searching for something else.</p>
-          </div>
-        )}
+        <div className="p-6 text-center border-t border-slate-50 text-slate-400 text-xs italic">
+          List of all created pages
+        </div>
       </div>
     </motion.div>
   );

@@ -5,6 +5,7 @@ import {
   Navigate, 
   useLocation 
 } from "react-router-dom";
+import { MotionConfig } from "framer-motion";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import CareerAssessmentPage from "./pages/CareerAssessmentPage";
@@ -23,8 +24,8 @@ import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import RefundPage from "./pages/RefundPage";
 import GenericPage from "./pages/GenericPage";
+import MockTestsPage from "./pages/MockTestsPage";
 import ScrollToTop from "./components/ScrollToTop";
-import ScrollProgressBar from "./components/ScrollProgressBar";
 import NewsFlashBanner from "./components/NewsFlashBanner";
 // User Imports
 import UserLayout from "./components/user/UserLayout";
@@ -50,6 +51,7 @@ import AdminLeads from "./pages/admin/AdminLeads";
 import EditLead from "./pages/admin/EditLead";
 
 import AdminGuides from "./pages/admin/AdminGuides";
+import AdminPartners from "./pages/admin/AdminPartners";
 
 function AppContent() {
   const location = useLocation();
@@ -79,6 +81,7 @@ function AppContent() {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/refund" element={<RefundPage />} />
+          <Route path="/mock" element={<MockTestsPage />} />
           
           {/* Dynamic Catch-all Page Route */}
           <Route path="/p/*" element={<GenericPage />} />
@@ -101,6 +104,7 @@ function AppContent() {
             <Route path="leads" element={<AdminLeads />} />
             <Route path="leads/edit/:id" element={<EditLead />} />
 
+            <Route path="partner-list" element={<AdminPartners />} />
             <Route path="guides" element={<AdminGuides />} />
           </Route>
 
@@ -129,9 +133,10 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <ScrollProgressBar />
-      <ScrollToTop />
-      <AppContent />
+      <MotionConfig reducedMotion="always">
+        <ScrollToTop />
+        <AppContent />
+      </MotionConfig>
     </BrowserRouter>
   );
 }

@@ -14,37 +14,15 @@ html {
 
 body {
   margin: 0;
-  background: #fcfdfe; /* Slightly warmer white */
+  background: #fcfdfe;
+  /* Slightly warmer white */
   color: #1f2937;
   -webkit-overflow-scrolling: touch;
   /* Subtle global texture */
-  background-image: 
+  background-image:
     radial-gradient(#e2e8f0 0.5px, transparent 0.5px),
     linear-gradient(to bottom, #fcfdfe, #f8fbff);
   background-size: 24px 24px, 100% 100%;
-  /* Premium Custom Scrollbar */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
-}
-
-/* Premium Custom Scrollbar for Chrome, Safari, Edge, and Opera */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.35); /* Soft semi-transparent slate */
-  border-radius: 9999px;
-  transition: background-color 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.6); /* Slightly darker slate on hover */
 }
 
 * {
@@ -55,88 +33,113 @@ body {
   .animate-fade-in {
     animation: fadeIn 0.8s ease-out forwards;
   }
+
   .animate-slide-up {
     animation: slideUp 0.6s ease-out forwards;
   }
+
   .animate-zoom-in {
     animation: zoomIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
+
   .animate-shimmer {
     background-size: 200% auto;
     animation: shimmer 2s linear infinite;
   }
+
   .glass {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid #e2e8f0 !important;
   }
+
   .glass-dark {
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #0f172a !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid #1e293b !important;
   }
+
   .glass-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 
-      0 20px 50px rgba(0, 0, 0, 0.06),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.4);
-  }
-  .custom-scrollbar {
-    scroll-behavior: smooth;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
-  }
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.3);
-    border-radius: 9999px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(100, 116, 139, 0.5);
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
   }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes zoomIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes shimmer {
-  0% { background-position: 0% center; }
-  100% { background-position: 200% center; }
+  0% {
+    background-position: 0% center;
+  }
+
+  100% {
+    background-position: 0% center;
+  }
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: none !important;
 }
+
+/* Disable all transitions and animations globally except for loading animations, megaphone pulse, and the news ticker */
+*:not(.animate-spin):not(.loader):not(.animate-pulse):not(.news-ticker):not(.news-ticker *) {
+  transition: none !important;
+  animation: none !important;
+}

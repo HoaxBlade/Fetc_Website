@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { 
-  User, Edit2, Mail, Phone, Save, Loader2, X, Camera, Trash2
+  User, Edit2, Save, Loader2, X, Camera, Trash2
 } from 'lucide-react';
 import { getProfileImageUrl } from "../apiConfig";
 import SafeImage from "../components/SafeImage";
@@ -44,7 +43,6 @@ const ProfilePage = () => {
             });
           }
         } else if (response.status === 404) {
-          // User session is invalid/out-of-sync with DB. Log out gracefully!
           console.warn("User not found in database. Clearing session.");
           localStorage.removeItem('user');
           localStorage.removeItem('token');
@@ -60,7 +58,7 @@ const ProfilePage = () => {
 
     fetchProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userData.id, userData.email, isEditing]); // Added userData.email to dependencies
+  }, [userData.id, userData.email, isEditing]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -179,7 +177,7 @@ const ProfilePage = () => {
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true'
         },
-        body: JSON.stringify({ profile_image: null }) // Use null to clear it in DB
+        body: JSON.stringify({ profile_image: null })
       });
 
       const data = await response.json();
@@ -200,7 +198,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto p-4 md:p-6">
       <input 
         type="file"
         ref={fileInputRef}
@@ -209,161 +207,137 @@ const ProfilePage = () => {
         accept="image/*"
       />
 
-      <div className="flex items-center justify-between mb-12">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-        >
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-1">My Profile</h1>
-          <p className="text-slate-500 font-medium text-sm italic">Manage your digital identity and account settings.</p>
-        </motion.div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">My Profile</h1>
+          <p className="text-slate-500 text-xs">Manage your account information and preferences.</p>
+        </div>
         
         {!isEditing ? (
           <button 
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 bg-white/60 backdrop-blur-md border border-white/60 px-6 py-3 rounded-2xl font-bold text-slate-600 hover:bg-white hover:shadow-lg transition-all text-sm shadow-sm group"
+            className="flex items-center gap-1.5 bg-white border border-slate-200 px-4 py-2 rounded-xl font-medium text-slate-700 hover:bg-slate-50 transition-colors text-xs shadow-sm"
           >
-            <Edit2 size={16} className="group-hover:rotate-12 transition-transform" /> Edit Profile
+            <Edit2 size={14} /> Edit Profile
           </button>
         ) : (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button 
               onClick={() => setIsEditing(false)}
-              className="flex items-center gap-2 bg-white border border-slate-100 px-6 py-3 rounded-2xl font-bold text-slate-400 hover:text-slate-600 transition-all text-sm"
+              className="flex items-center gap-1.5 bg-white border border-slate-200 px-4 py-2 rounded-xl font-medium text-slate-500 hover:text-slate-700 transition-colors text-xs"
             >
-              <X size={16} /> Cancel
+              <X size={14} /> Cancel
             </button>
             <button 
               onClick={handleSave}
               disabled={isSaving}
-              className="flex items-center gap-2 bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-brand-600 transition-all text-sm shadow-xl active:scale-95 disabled:opacity-50"
+              className="flex items-center gap-1.5 bg-slate-900 text-white px-5 py-2 rounded-xl font-medium hover:bg-slate-800 transition-colors text-xs shadow-sm disabled:opacity-50"
             >
-              {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+              {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
               {isSaving ? "Saving..." : "Save Changes"}
             </button>
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
          {/* Left: Profile Details */}
-         <div className="lg:col-span-2 space-y-8">
-           <motion.div 
-             initial={{ opacity: 0, y: 20 }}
-             animate={{ opacity: 1, y: 0 }}
-             className="bg-white/70 backdrop-blur-xl p-10 rounded-[3rem] border border-white/80 shadow-soft relative overflow-hidden"
-           >
+         <div className="lg:col-span-2">
+           <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm relative">
              {isLoading && (
-               <div className="absolute inset-0 bg-white/40 backdrop-blur-sm z-10 flex items-center justify-center">
-                 <Loader2 className="animate-spin text-brand-600" size={32} />
+               <div className="absolute inset-0 bg-white/60 z-10 flex items-center justify-center rounded-2xl">
+                 <Loader2 className="animate-spin text-slate-700" size={24} />
                </div>
              )}
 
-             <div className="mb-10">
-               <h3 className="text-xl font-bold text-slate-900 mb-1 tracking-tight">Profile Details</h3>
-               <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest italic">Personal & System Information</p>
+             <div className="mb-6">
+               <h3 className="text-base font-bold text-slate-900">Profile Details</h3>
+               <p className="text-slate-400 text-[10px] uppercase font-semibold tracking-wider">Personal Information</p>
              </div>
 
-             <div className="space-y-8">
+             <div className="space-y-6">
                 {/* Full Name */}
-                <div className="space-y-2 group">
-                  <div className="flex items-center gap-2 mb-1">
-                    <User size={12} className="text-brand-600" />
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Full Name</label>
-                  </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Full Name</label>
                   {isEditing ? (
                     <input 
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full px-7 py-5 bg-white border border-brand-100 rounded-[1.5rem] text-slate-800 font-bold text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 transition-all outline-none"
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 text-xs focus:outline-none focus:border-slate-500 transition-colors outline-none"
                       placeholder="Your full name"
                     />
                   ) : (
-                    <p className="w-full px-7 py-5 bg-slate-50/50 border border-slate-100 rounded-[1.5rem] text-slate-800 font-bold text-sm group-hover:bg-white group-hover:border-brand-200 transition-all">
+                    <p className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-lg text-slate-800 text-xs font-semibold">
                       {userData.name}
                     </p>
                   )}
                 </div>
 
                 {/* Email - Always Read Only */}
-                <div className="space-y-2 group">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Mail size={12} className="text-brand-600" />
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Login Email</label>
-                  </div>
-                  <p className="w-full px-7 py-5 bg-slate-50/50 border border-slate-100 rounded-[1.5rem] text-slate-800 font-bold text-sm">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Login Email</label>
+                  <p className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-lg text-slate-800 text-xs font-semibold">
                     {userData.email}
                   </p>
                 </div>
 
                 {/* Phone Number */}
-                <div className="space-y-2 group">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Phone size={12} className="text-brand-600" />
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Phone Number</label>
-                  </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Phone Number</label>
                   {isEditing ? (
                     <input 
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full px-7 py-5 bg-white border border-brand-100 rounded-[1.5rem] text-slate-800 font-bold text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 transition-all outline-none"
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 text-xs focus:outline-none focus:border-slate-500 transition-colors outline-none"
                       placeholder="Your phone number"
                     />
                   ) : (
-                    <p className="w-full px-7 py-5 bg-slate-50/50 border border-slate-100 rounded-[1.5rem] text-slate-800 font-bold text-sm group-hover:bg-white group-hover:border-brand-200 transition-all">
+                    <p className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-lg text-slate-800 text-xs font-semibold">
                       {userData.phone || "Not provided"}
                     </p>
                   )}
                 </div>
 
                 {/* Bio */}
-                <div className="space-y-2 group">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Edit2 size={12} className="text-brand-600" />
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Bio</label>
-                  </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Bio</label>
                   {isEditing ? (
                     <textarea 
                       name="bio"
                       value={formData.bio}
                       onChange={handleInputChange}
-                      className="w-full px-7 py-5 bg-white border border-brand-100 rounded-[1.5rem] text-slate-800 font-bold text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 transition-all h-32 resize-none outline-none"
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 text-xs focus:outline-none focus:border-slate-500 transition-colors h-24 resize-none outline-none"
                       placeholder="Tell us about yourself..."
                     />
                   ) : (
-                    <p className={`w-full px-7 py-5 bg-slate-50/50 border border-slate-100 rounded-[1.5rem] text-slate-800 font-bold text-sm group-hover:bg-white group-hover:border-brand-200 transition-all ${!userData.bio ? 'italic text-slate-400 font-medium' : ''}`}>
+                    <p className={`w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-lg text-slate-800 text-xs font-semibold ${!userData.bio ? 'italic text-slate-400' : ''}`}>
                       {userData.bio || "No bio set yet."}
                     </p>
                   )}
                 </div>
              </div>
-           </motion.div>
+           </div>
          </div>
 
          {/* Right: Meta Info */}
-         <div className="space-y-8">
+         <div>
            {/* Profile Image */}
-           <motion.div 
-             initial={{ opacity: 0, scale: 0.9 }}
-             animate={{ opacity: 1, scale: 1 }}
-             transition={{ delay: 0.2 }}
-             className="bg-white/70 backdrop-blur-xl p-10 rounded-[3rem] border border-white/80 shadow-soft flex flex-col items-center"
-           >
-             <div className="w-full flex justify-between items-center mb-8">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Identity</p>
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-lg shadow-emerald-200" title="Profile Active" />
+           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
+             <div className="w-full flex justify-between items-center mb-6">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Identity</p>
+                <div className="w-2 h-2 bg-emerald-500 rounded-full" title="Profile Active" />
              </div>
              
-             <div className="flex flex-col items-center gap-4">
+             <div className="flex flex-col items-center gap-3">
                <div 
                  onClick={handleImageClick}
-                 className="w-36 h-36 rounded-full bg-slate-100 border-4 border-white shadow-2xl flex items-center justify-center group relative overflow-hidden transition-all hover:scale-105 duration-500 cursor-pointer"
+                 className="w-28 h-28 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center group relative overflow-hidden cursor-pointer"
                >
                   {isUploading ? (
-                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-20">
-                      <Loader2 size={32} className="animate-spin text-brand-600" />
+                    <div className="absolute inset-0 bg-white/60 flex items-center justify-center z-20">
+                      <Loader2 size={24} className="animate-spin text-slate-700" />
                     </div>
                   ) : null}
 
@@ -374,29 +348,29 @@ const ProfilePage = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <User size={72} className="text-slate-200" />
+                    <User size={48} className="text-slate-300" />
                   )}
                   
-                  <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                     <Camera size={24} className="text-white" />
+                  <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                     <Camera size={18} className="text-white" />
                   </div>
                </div>
 
                {userData.profile_image && (
                  <button 
                   onClick={handleRemoveImage}
-                  className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-red-500 transition-colors"
+                  className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-slate-400 hover:text-red-500 transition-colors"
                  >
-                   <Trash2 size={12} /> Remove Photo
+                   <Trash2 size={10} /> Remove Photo
                  </button>
                )}
              </div>
 
-             <p className="mt-8 text-sm font-bold text-slate-900 tracking-tight">{userData.name}</p>
-             <p className="text-[10px] font-bold text-slate-400 italic">
+             <p className="mt-4 text-sm font-bold text-slate-800">{userData.name}</p>
+             <p className="text-[10px] text-slate-400">
                Member since {userData.created_at ? new Date(userData.created_at).getFullYear() : '2024'}
              </p>
-           </motion.div>
+           </div>
          </div>
       </div>
     </div>

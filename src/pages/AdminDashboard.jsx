@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
   ShoppingBag, 
   UserPlus, Search, RotateCcw, Download, 
@@ -131,10 +130,7 @@ const AdminDashboard = () => {
     <div className="max-w-[1600px] mx-auto space-y-6">
       {/* Premium Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-        >
+        <div>
           <div className="flex items-center gap-2 text-slate-400 text-[10px] font-medium uppercase tracking-wider mb-1">
             <Clock size={12} />
             <span>Last sync: {new Date().toLocaleTimeString()}</span>
@@ -143,7 +139,7 @@ const AdminDashboard = () => {
             Admin Overview
             <span className="text-[10px] font-medium bg-brand-50 text-brand-600 px-2.5 py-0.5 rounded-full border border-brand-100/80">Live</span>
           </h1>
-        </motion.div>
+        </div>
         
         <div className="flex items-center gap-2">
           <button 
@@ -167,11 +163,8 @@ const AdminDashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {statCards.map((stat, idx) => (
-          <motion.div 
+          <div 
             key={idx}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.05 }}
             className={`group p-5 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer flex items-center justify-between relative overflow-hidden`}
           >
             {/* Standardized spacing for metric cards */}
@@ -195,7 +188,7 @@ const AdminDashboard = () => {
                 {stat.growth}
               </div>
             )}
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -203,9 +196,7 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Support & Inquiries - Tabs */}
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div 
           className="lg:col-span-2 p-5 bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden"
         >
           <div className="flex items-center justify-between mb-6">
@@ -279,12 +270,10 @@ const AdminDashboard = () => {
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
 
         {/* Activity Distribution - Chart */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
+        <div 
           className="lg:col-span-1 p-5 bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-col"
         >
           <div className="mb-4">
@@ -301,6 +290,7 @@ const AdminDashboard = () => {
                   outerRadius={60}
                   paddingAngle={6}
                   dataKey="value"
+                  isAnimationActive={false}
                 >
                   {ticketStatusData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
@@ -331,7 +321,7 @@ const AdminDashboard = () => {
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
       </div>
 
@@ -339,9 +329,7 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Recent Users List */}
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div 
           className="p-5 bg-white border border-slate-100 rounded-2xl shadow-sm"
         >
           <div className="flex items-center justify-between mb-5">
@@ -368,12 +356,10 @@ const AdminDashboard = () => {
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Quick Actions Panel */}
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div 
           className="p-5 bg-white border border-slate-100 rounded-2xl shadow-sm"
         >
           <h4 className="text-base font-semibold text-slate-900 tracking-tight mb-5">Quick Actions</h4>
@@ -398,7 +384,7 @@ const AdminDashboard = () => {
               </button>
             ))}
           </div>
-        </motion.div>
+        </div>
 
       </div>
     </div>

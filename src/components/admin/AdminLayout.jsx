@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, FileText, Share2,
   Zap, Ticket, Menu, X, HelpCircle, LogOut,
-  ClipboardList
+  ClipboardList, BookOpen, CheckSquare, Handshake
 } from 'lucide-react';
 import { getProfileImageUrl } from "../../apiConfig";
 import SafeImage from "../SafeImage";
@@ -13,7 +13,7 @@ const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isCollapsed = false;
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(() => 
+  const [userData, setUserData] = useState(() =>
     JSON.parse(localStorage.getItem('user') || '{"name":"Admin","role":"ADMIN"}')
   );
 
@@ -38,18 +38,17 @@ const AdminLayout = () => {
 
   const sidebarItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
-    { icon: ClipboardList, label: "Leads Dashboard", path: "/admin/leads" },
-    // { icon: BookOpen, label: "Courses", path: "/admin/courses" },
+    { icon: BookOpen, label: "Courses", path: "/admin/courses" },
     { icon: Users, label: "Users", path: "/admin/users" },
     { icon: FileText, label: "Pages", path: "/admin/pages" },
     { icon: Share2, label: "Posts", path: "/admin/posts" },
-    // { icon: CheckSquare, label: "Mock Test", path: "/admin/mock-test" },
+    { icon: CheckSquare, label: "Mock Test", path: "/admin/mock-test" },
     { icon: Zap, label: "News Flash", path: "/admin/news-flash" },
-    { icon: Ticket, label: "Student Support", path: "/admin/support-tickets" },
-    // { icon: FileText, label: "Invoice", path: "/admin/invoice" },
+    { icon: Ticket, label: "Support Tickets", path: "/admin/support-tickets" },
+    { icon: FileText, label: "Invoice", path: "/admin/invoice" },
+    { icon: ClipboardList, label: "Leads Dashboard", path: "/admin/leads" },
+    { icon: Handshake, label: "Partner List", path: "/admin/partner-list" },
     { icon: HelpCircle, label: "Doubts", path: "/admin/doubts" },
-
-    // { icon: BookOpen, label: "Interactive Guides", path: "/admin/guides" },
   ];
 
   const SidebarContent = () => (
@@ -82,30 +81,28 @@ const AdminLayout = () => {
             onClick={() => setIsSidebarOpen(false)}
             className={({ isActive }) => `
               group relative flex items-center rounded-xl transition-all duration-150 font-medium text-sm tracking-wide
-              ${isCollapsed 
-                ? 'justify-center w-11 h-11 mx-auto' 
+              ${isCollapsed
+                ? 'justify-center w-11 h-11 mx-auto'
                 : 'gap-3 px-3 py-2.5 mx-0 w-full'}
-              ${isActive 
-                ? 'bg-brand-50/70 text-brand-600' 
+              ${isActive
+                ? 'bg-brand-50/70 text-brand-600'
                 : 'text-slate-500 hover:bg-slate-50/50 hover:text-slate-800'}
             `}
             title={isCollapsed ? item.label : undefined}
           >
             {({ isActive }) => (
               <>
-                <item.icon 
-                  size={18} 
-                  className={`shrink-0 stroke-[2.2px] transition-transform duration-150 group-hover:scale-105 ${
-                    isActive ? "text-brand-600" : "text-slate-400 group-hover:text-slate-700"
-                  }`} 
+                <item.icon
+                  size={18}
+                  className={`shrink-0 stroke-[2.2px] transition-transform duration-150 group-hover:scale-105 ${isActive ? "text-brand-600" : "text-slate-400 group-hover:text-slate-700"
+                    }`}
                 />
                 {!isCollapsed && <span>{item.label}</span>}
                 {isActive && (
-                  <div className={`absolute bg-brand-600 rounded-full ${
-                    isCollapsed 
-                      ? 'right-1.5 top-3.5 bottom-3.5 w-1' 
+                  <div className={`absolute bg-brand-600 rounded-full ${isCollapsed
+                      ? 'right-1.5 top-3.5 bottom-3.5 w-1'
                       : 'right-0 top-1.5 bottom-1.5 w-1'
-                  }`} />
+                    }`} />
                 )}
               </>
             )}
@@ -114,11 +111,10 @@ const AdminLayout = () => {
       </div>
 
       {/* User Profile & Logout at bottom */}
-      <div className={`border-t border-slate-100 bg-white transition-all duration-300 ${
-        isCollapsed 
-          ? 'p-3 flex flex-col items-center gap-4' 
+      <div className={`border-t border-slate-100 bg-white transition-all duration-300 ${isCollapsed
+          ? 'p-3 flex flex-col items-center gap-4'
           : 'p-6 space-y-4'
-      }`}>
+        }`}>
         <div className="flex items-center gap-3 w-full">
           <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-slate-100 border border-slate-200">
             {userData?.profile_image ? (
@@ -136,9 +132,9 @@ const AdminLayout = () => {
             </div>
           )}
         </div>
-        
+
         {isCollapsed ? (
-          <button 
+          <button
             onClick={handleLogout}
             className="w-10 h-10 flex items-center justify-center border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all"
             title="Logout"
@@ -146,7 +142,7 @@ const AdminLayout = () => {
             <LogOut size={16} className="stroke-[2.2]" />
           </button>
         ) : (
-          <button 
+          <button
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all"
           >
@@ -176,10 +172,10 @@ const AdminLayout = () => {
           <Menu size={22} />
         </button>
         <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-md border border-slate-200 shadow-sm">
-           <div className="w-6 h-6 bg-slate-900 rounded flex items-center justify-center text-white">
-              <Zap size={12} />
-           </div>
-           <span className="text-xs font-semibold uppercase tracking-wider text-slate-900">Admin</span>
+          <div className="w-6 h-6 bg-slate-900 rounded flex items-center justify-center text-white">
+            <Zap size={12} />
+          </div>
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-900">Admin</span>
         </div>
       </div>
 
@@ -187,7 +183,7 @@ const AdminLayout = () => {
       <aside className={`hidden lg:flex flex-col h-[calc(100vh-80px)] sticky top-20 z-40 bg-white border-r border-slate-200 shrink-0 transition-all duration-300 ${isCollapsed ? 'w-[76px]' : 'w-[260px]'}`}>
         <div className="h-full flex flex-col relative">
           <SidebarContent />
-          
+
 
         </div>
       </aside>

@@ -281,6 +281,10 @@ export const navMenus = [
     path: "/career-assessment/behaviour-and-career-analysis",
   },
   {
+    label: "Mock Test",
+    path: "/mock",
+  },
+  {
     label: "Exam & Training",
     items: [
       { label: "SELT", path: "/exam-training/selt" },
