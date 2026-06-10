@@ -249,8 +249,8 @@ function CompanyProfilePage() {
         </div>
       </section>
       {/* 2a. About FETC – Partnership Intro */}
-      <section className="py-20 px-4 md:px-8 bg-slate-50/40 border-y border-slate-100">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <section className="py-12 px-4 md:px-8 bg-slate-50/40 border-y border-slate-100">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -292,9 +292,9 @@ function CompanyProfilePage() {
       </section>
 
       {/* 2b. Campus Visits */}
-      <section className="py-20 px-4 md:px-8 bg-white">
+      <section className="py-12 px-4 md:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 space-y-3">
+          <div className="text-center mb-8 space-y-2">
             <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 px-4 py-2 bg-brand-50 rounded-full border border-brand-100">
               Outreach
             </span>
@@ -342,8 +342,8 @@ function CompanyProfilePage() {
       </section>
 
       {/* 2c. Authorized Test Centre */}
-      <section className="py-20 px-4 md:px-8 bg-gradient-to-br from-brand-600 to-indigo-700">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <section className="py-12 px-4 md:px-8 bg-gradient-to-br from-brand-600 to-indigo-700">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -385,9 +385,9 @@ function CompanyProfilePage() {
       </section>
 
       {/* 2d. Partnership Agenda */}
-      <section className="py-20 px-4 md:px-8 bg-slate-50/40 border-y border-slate-100">
+      <section className="py-12 px-4 md:px-8 bg-slate-50/40 border-y border-slate-100">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 space-y-3">
+          <div className="text-center mb-8 space-y-2">
             <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 px-4 py-2 bg-indigo-50 rounded-full border border-indigo-100">
               Collaboration
             </span>
@@ -436,9 +436,9 @@ function CompanyProfilePage() {
       </section>
 
       {/* 2e. Faculty Benefits */}
-      <section className="py-20 px-4 md:px-8 bg-white">
+      <section className="py-12 px-4 md:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 space-y-3">
+          <div className="text-center mb-8 space-y-2">
             <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 px-4 py-2 bg-brand-50 rounded-full border border-brand-100">
               Faculty Growth
             </span>
@@ -481,49 +481,164 @@ function CompanyProfilePage() {
         </div>
       </section>
 
-      {/* 3. Team Banner Section */}
-      <section className="py-24 px-4 md:px-8 bg-white">
-        <div className="max-w-7xl mx-auto space-y-12">
+      {/* 2f. Career Pathway Section (Top-Notch Global Programs) */}
+      <section className="py-12 px-4 md:px-8 bg-slate-50/40 border-y border-slate-100">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="space-y-6"
+          >
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-500">Global Tech Education</span>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+              Top-Notch <span className="text-brand-600">Global Programs</span><br />
+              <span className="text-xl md:text-2xl text-slate-500 font-bold block mt-2">IT | Computing | Digital Technology</span>
+            </h2>
+            <div className="w-12 h-1 bg-brand-600 rounded-full" />
+            
+            <div className="bg-white rounded-3xl border border-slate-100 shadow-lg p-8 space-y-6">
+              <h3 className="text-xl font-black text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                <span className="text-brand-600 text-2xl">🚀</span> Career Pathway
+              </h3>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  "Software Developer/ Web Developer",
+                  "IT Support Specialist",
+                  "Network Engineer/ Cybersecurity Analyst",
+                  "Data Scientist/ Business Intelligence Analyst",
+                  "E-Commerce Manager",
+                  "Tech Project Manager"
+                ].map((pathway, idx) => (
+                  <motion.li
+                    key={idx}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.3, delay: idx * 0.05 }}
+                    className="flex items-center gap-2.5 text-slate-700 font-semibold text-sm"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-brand-600 shrink-0" />
+                    {pathway}
+                  </motion.li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="space-y-8 pl-0 lg:pl-12 relative"
+          >
+            <div className="mb-4">
+              <span className="text-xs font-black uppercase tracking-[0.2em] text-indigo-500">History & Background</span>
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-none mt-2">
+                Our <span className="text-indigo-600">Story</span>
+              </h2>
+            </div>
+
+            {/* Timeline */}
+            <div className="space-y-8 relative">
+              {/* Animated Travelling Arrow Path (Desktop Only) */}
+              <div className="hidden lg:block absolute left-7 top-6 bottom-6 w-[2px] bg-slate-200/60">
+                <motion.div
+                  className="absolute left-1/2 -translate-x-1/2 z-10 flex flex-col items-center"
+                  style={{ originY: 0 }}
+                  animate={{
+                    top: ["0%", "100%"]
+                  }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <div className="relative flex flex-col items-center">
+                    <span className="absolute inline-flex h-5 w-5 rounded-full bg-brand-400/50 opacity-75 animate-ping" />
+                    <div className="relative w-5 h-5 bg-brand-600 rounded-full flex items-center justify-center text-white shadow-[0_0_15px_rgba(37,99,235,0.8)] border border-white">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+
+              {TIMELINE.map((item, idx) => (
+                <motion.div
+                  key={item.year}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: idx * 0.1 }}
+                  className="relative flex gap-6 md:gap-8 group"
+                >
+                  <div className="flex flex-col items-center z-10">
+                    <div className="w-14 h-14 bg-white text-brand-600 rounded-2xl border border-slate-200 flex items-center justify-center font-black text-sm shadow-sm group-hover:bg-brand-600 group-hover:text-white group-hover:border-brand-600 transition-all duration-300">
+                      {item.year}
+                    </div>
+                  </div>
+
+                  <div className="flex-1 pb-4 border-b border-slate-100 last:border-b-0">
+                    <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-brand-600 transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-slate-500 text-sm font-medium leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 2g. Compacted Team Banner Section */}
+      <section className="py-12 px-4 md:px-8 bg-white">
+        <div className="max-w-7xl mx-auto space-y-6">
           <div className="max-w-3xl">
             <span className="text-xs font-black uppercase tracking-[0.2em] text-indigo-500">Our Pillars</span>
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none mt-3 mb-4">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-none mt-2 mb-3">
               The team <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">behind your success</span>
             </h2>
-            <p className="text-slate-500 font-medium leading-relaxed text-lg">
+            <p className="text-slate-500 font-medium leading-relaxed text-sm">
               Certified examiners, tech support teams, and counseling heads—our experts work in unison to provide an error-free, supportive testing and coaching environment.
             </p>
           </div>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative h-[450px] rounded-[3.5rem] overflow-hidden shadow-2xl border border-slate-100 group"
+            className="relative h-[300px] md:h-[380px] rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-100 group"
           >
             <img
               src={STORY_IMAGES.conference}
               alt="FETC Team and workspace"
               className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-[2000ms]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/10 to-transparent flex flex-col justify-end p-8 md:p-16">
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-300 mb-2">Collaboration & Quality</span>
-              <h3 className="text-white font-black text-3xl md:text-4xl tracking-tight leading-none mb-3">
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/30 to-transparent flex flex-col justify-end p-6 md:p-10">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-300 mb-1.5">Collaboration & Quality</span>
+              <h3 className="text-white font-black text-2xl md:text-3xl tracking-tight leading-none mb-2">
                 Be Great. Do Good. Learn Always.
               </h3>
-              <p className="text-white/70 max-w-xl font-medium text-sm leading-relaxed">
+              <p className="text-white/70 max-w-xl font-medium text-xs md:text-sm leading-relaxed">
                 Whether organizing mock tests or conducting staff alignment meetings in our conference halls, our core value remains the same: student success comes first.
               </p>
             </div>
           </motion.div>
-
         </div>
       </section>
 
       {/* 3. Certificates Section */}
-      <section className="py-20 px-4 md:px-8 bg-white">
+      <section className="py-12 px-4 md:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 space-y-3">
+          <div className="text-center mb-8 space-y-2">
             <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 px-4 py-2 bg-brand-50 rounded-full border border-brand-100">
               Accreditations
             </span>
