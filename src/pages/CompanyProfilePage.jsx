@@ -1,14 +1,14 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Building2, 
-  Users2, 
-  Award, 
-  MapPin, 
-  CheckCircle2, 
-  Calendar, 
-  ChevronRight, 
-  ArrowUpRight 
+import {
+  Building2,
+  Users2,
+  Award,
+  MapPin,
+  CheckCircle2,
+  Calendar,
+  ChevronRight,
+  ArrowUpRight
 } from "lucide-react";
 
 // Local images mapped from the public directory
@@ -188,7 +188,7 @@ function CompanyProfilePage() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFC] pb-24 text-slate-800 font-sans">
-      
+
       {/* 1. Hero Header Section */}
       <section className="relative pt-24 pb-16 px-4 md:px-8 overflow-hidden bg-white">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-brand-50/70 rounded-full blur-[130px] pointer-events-none" />
@@ -214,7 +214,7 @@ function CompanyProfilePage() {
           >
             Building Global Careers <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600">
-              Since 2024
+              Since 1999
             </span>
           </motion.h1>
 
@@ -248,90 +248,243 @@ function CompanyProfilePage() {
           </div>
         </div>
       </section>
-
-      {/* 2. Our Story Section (Asymmetrical Timeline Layout) */}
-      <section className="py-24 px-4 md:px-8 bg-slate-50/40 border-y border-slate-100">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-          
-          {/* Left Text */}
-          <div className="lg:col-span-5 space-y-6">
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-500">History & Background</span>
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none">
-              Our <span className="text-brand-600">Story</span>
+      {/* 2a. About FETC – Partnership Intro */}
+      <section className="py-20 px-4 md:px-8 bg-slate-50/40 border-y border-slate-100">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="space-y-5"
+          >
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-500">Our Partnership</span>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+              Expanding <span className="text-brand-600">Opportunities</span> Together
             </h2>
-            <div className="w-12 h-1 bg-brand-600 rounded-full my-4" />
+            <div className="w-12 h-1 bg-brand-600 rounded-full" />
             <p className="text-slate-600 font-medium leading-relaxed text-lg">
-              Founded in 2024 as a landmark project under Gina Abroad Pvt. Ltd., FETC emerged with a single goal: to simplify the journey of international education. By creating authorized, state-of-the-art digital assessment halls, we brought world-class standards right to Surat's student community.
+              We're excited to collaborate with R.H. Patel Institute of Technology to expand opportunities for your students and enhance faculty development. Our comprehensive approach combines international university partnerships, career counseling excellence, and certified training programs.
             </p>
             <p className="text-slate-500 font-medium leading-relaxed">
-              We started by integrating advanced computer systems tailored for major international tests like IELTS, PTE, and TOEFL, bridging the gap between local aspirations and global standards.
+              This partnership opens doors to global education while supporting your institution's growth and your students' success.
             </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="bg-white rounded-3xl border border-slate-100 shadow-lg p-8 space-y-5"
+          >
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 px-4 py-2 bg-indigo-50 rounded-full border border-indigo-100">
+              About Us
+            </span>
+            <h3 className="text-2xl font-black text-slate-900 leading-tight">
+              At FETC, We Offer Excellence in English Language Training
+            </h3>
+            <p className="text-slate-500 font-medium leading-relaxed">
+              We are dedicated to helping students and professionals achieve their dreams of studying, working, or settling abroad. We connect you with a world of opportunities through top-notch English language support, making your application process for international education and careers smooth and successful.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 2b. Campus Visits */}
+      <section className="py-20 px-4 md:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 space-y-3">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 px-4 py-2 bg-brand-50 rounded-full border border-brand-100">
+              Outreach
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none">
+              Campus <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">Visits</span>
+            </h2>
           </div>
-
-          {/* Right Timeline */}
-          <div className="lg:col-span-7 space-y-8 pl-0 lg:pl-12 relative">
-            {/* Animated Travelling Arrow Path (Desktop Only) */}
-            <div className="hidden lg:block absolute left-0 top-6 bottom-6 w-[2px] bg-slate-200/60">
-              {/* Travelling Arrow Indicator */}
-              <motion.div 
-                className="absolute left-1/2 -translate-x-1/2 z-10 flex flex-col items-center"
-                style={{ originY: 0 }}
-                animate={{
-                  top: ["0%", "100%"]
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                {/* Visual Arrow and Pulsing Ring */}
-                <div className="relative flex flex-col items-center">
-                  <span className="absolute inline-flex h-5 w-5 rounded-full bg-brand-400/50 opacity-75 animate-ping" />
-                  <div className="relative w-5 h-5 bg-brand-600 rounded-full flex items-center justify-center text-white shadow-[0_0_15px_rgba(37,99,235,0.8)] border border-white">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
-            {TIMELINE.map((item, idx) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: "🗓️",
+                tag: "First Visit",
+                title: "Bill Boozing – 3rd April 2026",
+                desc: "Curry College representative will visit your campus, sharing opportunities for American education."
+              },
+              {
+                icon: "🇬🇧",
+                tag: "Follow-Up Visits",
+                title: "UK University Representatives",
+                desc: "UK University Representatives will visit, showcasing British higher education options and pathways."
+              },
+              {
+                icon: "🌍",
+                tag: "Ongoing Access",
+                title: "Continued University Partnerships",
+                desc: "Continued university partnerships expanding your students' global education choices."
+              }
+            ].map((item, idx) => (
               <motion.div
-                key={item.year}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: idx * 0.1 }}
-                className="relative flex gap-6 md:gap-8 group"
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="bg-slate-50 border border-slate-100 rounded-3xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-400 space-y-4"
               >
-                {/* Timeline Year Ball */}
-                <div className="flex flex-col items-center">
-                  <div className="w-14 h-14 bg-white text-brand-600 rounded-2xl border border-slate-200 flex items-center justify-center font-black text-sm shadow-sm group-hover:bg-brand-600 group-hover:text-white group-hover:border-brand-600 transition-all duration-300">
-                    {item.year}
-                  </div>
-                </div>
-
-                <div className="flex-1 pb-8 border-b border-slate-100 last:border-b-0">
-                  <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-brand-600 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-slate-500 text-sm font-medium leading-relaxed">
-                    {item.desc}
-                  </p>
-                </div>
+                <div className="text-4xl">{item.icon}</div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-brand-600">{item.tag}</span>
+                <h3 className="text-lg font-black text-slate-900 leading-snug">{item.title}</h3>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
 
+      {/* 2c. Authorized Test Centre */}
+      <section className="py-20 px-4 md:px-8 bg-gradient-to-br from-brand-600 to-indigo-700">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="space-y-5"
+          >
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white/70 px-4 py-2 bg-white/10 rounded-full border border-white/20">
+              Official Certification
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
+              Authorized Test Centre
+            </h2>
+            <div className="w-12 h-1 bg-white/40 rounded-full" />
+            <p className="text-white/80 font-medium leading-relaxed text-lg">
+              FETC is proud to be the only Authorized ETS TOEFL Exam Centre in Gujarat, offering a dedicated location for essential language proficiency testing.
+            </p>
+          </motion.div>
+          <div className="grid grid-cols-1 gap-4">
+            {[
+              { icon: "🖥️", text: "Our centre is equipped with the latest technology and resources to provide a seamless and efficient testing experience." },
+              { icon: "🔒", text: "We maintain the highest standards of exam integrity and security, ensuring a professional environment for every candidate." },
+              { icon: "🏆", text: "With a proven track record of accommodating numerous exam stations, FETC excels in providing high-quality assessments for students and spouses aiming for opportunities in the UK." }
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 flex gap-4 items-start"
+              >
+                <span className="text-2xl shrink-0">{item.icon}</span>
+                <p className="text-white/85 text-sm font-medium leading-relaxed">{item.text}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 2d. Partnership Agenda */}
+      <section className="py-20 px-4 md:px-8 bg-slate-50/40 border-y border-slate-100">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 space-y-3">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 px-4 py-2 bg-indigo-50 rounded-full border border-indigo-100">
+              Collaboration
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none">
+              Agenda of Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">Partnership</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: "📜",
+                title: "Professional Training",
+                desc: "Certified TOEFL and SELT training programs for faculty members, enhancing teaching capabilities and career advancement opportunities."
+              },
+              {
+                icon: "🎯",
+                title: "Career Counselling",
+                desc: "Expert guidance helping students navigate career paths, university selections, and global opportunities with confidence."
+              },
+              {
+                icon: "🏫",
+                title: "University Visits",
+                desc: "Direct campus visits from international university representatives, providing students with firsthand information about study abroad options."
+              },
+              {
+                icon: "🎓",
+                title: "City College Birmingham (2+1)",
+                desc: "Explore your path to Accredited qualifications. Complete your first two years in India, pathway to abroad."
+              }
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="bg-white border border-slate-100 rounded-3xl p-7 hover:shadow-xl hover:-translate-y-1 transition-all duration-400 space-y-4 group"
+              >
+                <div className="w-12 h-12 bg-brand-50 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-brand-600 transition-colors duration-300">{item.icon}</div>
+                <h3 className="text-base font-black text-slate-900 leading-snug">{item.title}</h3>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 2e. Faculty Benefits */}
+      <section className="py-20 px-4 md:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 space-y-3">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 px-4 py-2 bg-brand-50 rounded-full border border-brand-100">
+              Faculty Growth
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none">
+              Benefits for Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">Faculty Members</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: "🏅",
+                title: "Certified Training Programs",
+                desc: "Official TOEFL and SELT certification training that enhances your teaching credentials and opens new career opportunities."
+              },
+              {
+                icon: "📈",
+                title: "Professional Development",
+                desc: "Stay current with international education standards and improve your ability to guide students toward global opportunities."
+              },
+              {
+                icon: "💰",
+                title: "Referral Incentives",
+                desc: "Earn referral incentives when your students enroll through our partnerships, creating additional income streams for dedicated faculty."
+              }
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="relative bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-3xl p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-400 space-y-4"
+              >
+                <div className="text-4xl">{item.icon}</div>
+                <h3 className="text-xl font-black text-slate-900">{item.title}</h3>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* 3. Team Banner Section */}
       <section className="py-24 px-4 md:px-8 bg-white">
         <div className="max-w-7xl mx-auto space-y-12">
-          
+
           <div className="max-w-3xl">
             <span className="text-xs font-black uppercase tracking-[0.2em] text-indigo-500">Our Pillars</span>
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none mt-3 mb-4">
@@ -367,16 +520,59 @@ function CompanyProfilePage() {
         </div>
       </section>
 
-      {/* 4. Bento/Story Grid Section (Merged Gallery) */}
+      {/* 3. Certificates Section */}
+      <section className="py-20 px-4 md:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 space-y-3">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 px-4 py-2 bg-brand-50 rounded-full border border-brand-100">
+              Accreditations
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none">
+              Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">Certifications</span>
+            </h2>
+            <p className="text-slate-500 font-medium max-w-xl mx-auto text-base">
+              Globally recognized credentials that back every examination and training program we deliver.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { src: "/assets/certificates/Screenshot 2026-06-10 111633.png", alt: "Certificate of Representation" },
+              { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "Appointment Certificate" },
+              { src: "/assets/certificates/Screenshot 2026-06-10 111719.png", alt: "Certificate of Attendance" },
+              { src: "/assets/certificates/Screenshot 2026-06-10 111730.png", alt: "ICEF Accredited Certificate" },
+            ].map((cert, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="group relative bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500"
+              >
+                <div className="w-full h-56 overflow-hidden bg-slate-50">
+                  <img
+                    src={cert.src}
+                    alt={cert.alt}
+                    className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-4 border-t border-slate-100">
+                  <p className="text-xs font-bold text-slate-600 text-center leading-snug">{cert.alt}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
       <section className="py-24 px-4 md:px-8 bg-slate-50/30 border-t border-slate-100">
         <div className="max-w-7xl mx-auto">
-          
+
           <div className="text-center mb-16 space-y-4">
             <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 px-4 py-2 bg-indigo-50 rounded-full border border-indigo-100">
               Campus Environment
             </span>
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none">
-              Explore Our <span className="text-brand-600">Team & Test Centres</span>
+              Explore Our <span className="text-brand-600">Team & Centres</span>
             </h2>
             <p className="text-slate-500 font-medium max-w-xl mx-auto text-base">
               A visual walkthrough of our high-tech examination halls, executive lounges, and academic spaces designed for your global journey.
@@ -388,11 +584,10 @@ function CompanyProfilePage() {
                 <button
                   key={tab}
                   onClick={() => handleTabChange(tab)}
-                  className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all ${
-                    activeTab === tab
+                  className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all ${activeTab === tab
                       ? "bg-brand-600 text-white shadow-lg shadow-brand-200"
                       : "bg-white text-slate-500 border border-slate-200/80 hover:bg-slate-50"
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>
