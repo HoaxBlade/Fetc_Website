@@ -57,9 +57,9 @@ const GALLERY_ITEMS = [
   },
   {
     src: STORY_IMAGES.vipCentre,
-    title: "Authorized Exam Centre",
-    category: "Labs",
-    desc: "Authorized premium examination facilities built to satisfy stringent global testing standards.",
+    title: "Authorised City College Birmingham Study Centre UK",
+    category: "Spaces",
+    desc: "FETC is proud to be an Authorised Study Centre for City College Birmingham, UK, offering accredited international pathways.",
     location: "Surat Vesu Branch"
   },
   {
@@ -331,49 +331,6 @@ function CompanyProfilePage() {
         </div>
       </section>
 
-      {/* 2c. Authorized Test Centre */}
-      <section className="py-12 px-4 md:px-8 bg-gradient-to-br from-brand-600 to-indigo-700">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="space-y-5"
-          >
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white/70 px-4 py-2 bg-white/10 rounded-full border border-white/20">
-              Official Certification
-            </span>
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
-              Authorized Test Centre
-            </h2>
-            <div className="w-12 h-1 bg-white/40 rounded-full" />
-            <p className="text-white/80 font-medium leading-relaxed text-lg">
-              FETC is proud to be the only Authorized ETS TOEFL Exam Centre in Gujarat, offering a dedicated location for essential language proficiency testing.
-            </p>
-          </motion.div>
-          <div className="grid grid-cols-1 gap-4">
-            {[
-              { icon: "🖥️", text: "Our centre is equipped with the latest technology and resources to provide a seamless and efficient testing experience." },
-              { icon: "🔒", text: "We maintain the highest standards of exam integrity and security, ensuring a professional environment for every candidate." },
-              { icon: "🏆", text: "With a proven track record of accommodating numerous exam stations, FETC excels in providing high-quality assessments for students and spouses aiming for opportunities in the UK." }
-            ].map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 flex gap-4 items-start"
-              >
-                <span className="text-2xl shrink-0">{item.icon}</span>
-                <p className="text-white/85 text-sm font-medium leading-relaxed">{item.text}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* 2d. Partnership Agenda */}
       <section className="py-12 px-4 md:px-8 bg-slate-50/40 border-y border-slate-100">
         <div className="max-w-7xl mx-auto">
@@ -483,7 +440,7 @@ function CompanyProfilePage() {
           >
             <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-500">Global Tech Education</span>
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-              Top-Notch <span className="text-brand-600">Global Programs</span><br />
+              Top-Notch <span className="text-brand-600">Skill Based Online Programs</span><br />
               <span className="text-xl md:text-2xl text-slate-500 font-bold block mt-2">IT | Computing | Digital Technology</span>
             </h2>
             <div className="w-12 h-1 bg-brand-600 rounded-full" />
@@ -564,7 +521,7 @@ function CompanyProfilePage() {
             className="relative h-[300px] md:h-[380px] rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-100 group"
           >
             <img
-              src={STORY_IMAGES.conference}
+              src="/assets/office-images/p6.jpeg"
               alt="FETC Team and workspace"
               className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-[2000ms]"
             />
@@ -598,7 +555,7 @@ function CompanyProfilePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { src: "/assets/certificates/Screenshot 2026-06-10 111633.png", alt: "Certificate of Representation" },
-              { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "Appointment Certificate" },
+              { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "City College Birmingham Appointment Letter" },
               { src: "/assets/certificates/Screenshot 2026-06-10 111719.png", alt: "Certificate of Attendance" },
               { src: "/assets/certificates/Screenshot 2026-06-10 111730.png", alt: "ICEF Accredited Certificate" },
             ].map((cert, idx) => (

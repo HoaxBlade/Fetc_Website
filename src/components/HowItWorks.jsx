@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MousePointer2, ClipboardCheck, PlaneTakeoff, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const HowItWorks = () => {
   const steps = [
@@ -101,10 +102,10 @@ const HowItWorks = () => {
                   </p>
 
                   {/* Arrow indicator */}
-                  <div className="flex items-center gap-2 text-slate-400 group-hover:text-brand-600 transition-colors">
+                  <Link to="/about/company-profile" className="flex items-center gap-2 text-slate-400 group-hover:text-brand-600 transition-colors w-fit">
                     <span className="text-[10px] font-bold uppercase tracking-widest">Learn More</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </div>
+                  </Link>
                 </div>
               </motion.div>
             ))}

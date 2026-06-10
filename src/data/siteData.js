@@ -264,6 +264,7 @@ export const navMenus = [
   },
   {
     label: "Study Abroad",
+    path: "/study-abroad",
     items: [
       { label: "United Kingdom", path: "/study-abroad/united-kingdom" },
       { label: "Europe", path: "/study-abroad/europe" },

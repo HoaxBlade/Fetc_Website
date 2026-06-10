@@ -20,6 +20,7 @@ import GalleryPage from "./pages/GalleryPage";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import StudyAbroadPage from "./pages/StudyAbroadPage";
+import StudyAbroadListingPage from "./pages/StudyAbroadListingPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import RefundPage from "./pages/RefundPage";
@@ -67,6 +68,7 @@ function AppContent() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/about/company-profile" element={<CompanyProfilePage />} />
+          <Route path="/study-abroad" element={<StudyAbroadListingPage />} />
           <Route path="/study-abroad/:country" element={<StudyAbroadPage />} />
           <Route path="/start-journey" element={<StartJourneyPage />} />
           <Route

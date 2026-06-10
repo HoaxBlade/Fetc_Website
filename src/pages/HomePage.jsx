@@ -139,9 +139,11 @@ function HomePage() {
         <div className="relative z-10 py-8 md:py-10">
           <ServiceMarqueeRow
             title={pageData?.examTraining?.title || "Ace Your Exams"}
-            description={pageData?.examTraining?.description || "From IELTS to PTE, we make exam prep feel like a breeze with expert coaching and real mock tests."}
+            description={pageData?.examTraining?.description || "We make exam prep feel like a breeze with expert coaching and real mock tests."}
             linkText={pageData?.examTraining?.linkText || "Check Courses"}
             linkTarget="/exam-training/idp-for-ielts"
+            secondLinkText="Mock Test"
+            secondLinkTarget="/mock"
             items={examCards}
             bgColor="bg-transparent"
             cardBg="bg-white shadow-[0_20px_50px_rgba(0,0,0,0.03)] border border-slate-50 rounded-[2.5rem]"

@@ -8,6 +8,8 @@ function ServiceMarqueeRow({
   description,
   linkText,
   linkTarget,
+  secondLinkText,
+  secondLinkTarget,
   items = [],
   bgColor = "bg-white",
   cardBg = "bg-[#F5F5F7]",
@@ -243,7 +245,7 @@ function ServiceMarqueeRow({
                 </div>
               )}
 
-              <div className="mt-10">
+              <div className="mt-10 flex flex-wrap gap-4">
                 <Link
                   to={items[activeIndex]?.path || linkTarget}
                   className={`group/cta relative inline-flex items-center justify-center rounded-full px-10 py-4 text-base font-bold text-white transition-all duration-300 hover:-translate-y-1 active:scale-95 overflow-hidden ${!reverse ? 'bg-gradient-to-r from-brand-600 to-blue-600 shadow-[0_8px_30px_rgba(13,94,183,0.3)] hover:shadow-[0_12px_40px_rgba(13,94,183,0.45)]' : 'bg-gradient-to-r from-teal-600 to-cyan-600 shadow-[0_8px_30px_rgba(13,148,136,0.3)] hover:shadow-[0_12px_40px_rgba(13,148,136,0.45)]'}`}
@@ -253,6 +255,15 @@ function ServiceMarqueeRow({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
                 </Link>
+
+                {secondLinkText && (
+                  <Link
+                    to={secondLinkTarget}
+                    className="flex items-center justify-center gap-2 px-8 py-4 bg-white/80 backdrop-blur-sm rounded-full font-bold text-slate-700 hover:bg-white border border-slate-200 shadow-sm transition-all hover:-translate-y-1 active:translate-y-0 text-base"
+                  >
+                    {secondLinkText}
+                  </Link>
+                )}
               </div>
             </div>
 
