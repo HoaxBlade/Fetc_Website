@@ -53,7 +53,8 @@ const mockTests = [
 
 export default function MockTestsPage() {
   const handleEnroll = (testName) => {
-    window.location.href = `/contact?subject=Enrollment in ${encodeURIComponent(testName)}`;
+    // Disabled redirect to contact us page for now
+    console.log(`Enroll requested for: ${testName}`);
   };
 
   return (

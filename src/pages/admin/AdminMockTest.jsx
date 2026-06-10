@@ -3,9 +3,14 @@ import { CheckSquare, Plus, Eye, Edit2, Trash2 } from 'lucide-react';
 
 const AdminMockTest = () => {
   const mockTests = [
-    { title: 'ETS - TOEFL', price: '₹49', status: 'Published' },
-    { title: 'SFE - SELT', price: '₹49', status: 'Published' },
-    { title: 'Pearson Versant', price: '₹499', status: 'Published' }
+    { title: "SELT (Secure English Language Test)", price: "₹49", status: "Published" },
+    { title: "IELTS Academic & General Training", price: "₹49", status: "Published" },
+    { title: "TOEFL iBT Practice", price: "₹49", status: "Published" },
+    { title: "PTE Academic Exam Prep", price: "₹49", status: "Published" },
+    { title: "SAT Prep Simulators", price: "₹49", status: "Published" },
+    { title: "GMAT Focus Edition Mock", price: "₹49", status: "Published" },
+    { title: "GRE General Test Simulator", price: "₹49", status: "Published" },
+    { title: "Pearson Versant Test Simulator", price: "₹499", status: "Published" }
   ];
 
   return (

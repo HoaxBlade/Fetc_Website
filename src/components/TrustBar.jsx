@@ -20,7 +20,7 @@ const TrustBar = ({ message }) => {
   const scrollingPartners = [...partners, ...partners, ...partners];
 
   return (
-    <div className="py-10 lg:py-8 bg-white/20 backdrop-blur-md border-y border-white/20 overflow-hidden relative">
+    <div className="py-6 lg:py-5 bg-white/20 backdrop-blur-md border-y border-white/20 overflow-hidden relative">
       {/* Subtle glow */}
       <div className="absolute inset-0 bg-gradient-to-r from-brand-50/10 via-transparent to-teal-50/10 pointer-events-none" />
 

@@ -72,7 +72,7 @@ const CasualHero = ({ content }) => {
   const finalContent = { ...defaultContent, ...content };
 
   return (
-    <section className="relative min-h-[75vh] lg:min-h-[85vh] flex items-center pt-24 pb-16 overflow-hidden bg-slate-50">
+    <section className="relative flex items-center pt-28 pb-10 overflow-hidden bg-slate-50">
       {/* Textured Background Grid */}
       <div 
         className="absolute inset-0 opacity-[0.02] pointer-events-none z-10" 
@@ -104,12 +104,12 @@ const CasualHero = ({ content }) => {
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 w-full flex justify-center lg:justify-start">
         {/* Beautiful Glassmorphic Box Behind Heading Content */}
-        <div className="max-w-[580px] w-full bg-white/55 backdrop-blur-xl p-6 md:p-10 rounded-[2.5rem] border border-white/80 shadow-[0_50px_100px_rgba(0,0,0,0.06)] space-y-8 text-center lg:text-left relative overflow-hidden">
+        <div className="max-w-[580px] w-full bg-white/55 backdrop-blur-xl p-6 md:p-8 rounded-[2.5rem] border border-white/80 shadow-[0_45px_90px_rgba(0,0,0,0.05)] space-y-5 text-center lg:text-left relative overflow-hidden">
           {/* Subtle light leak effect inside the box */}
           <div className="absolute -top-24 -left-24 w-48 h-48 bg-brand-200/10 rounded-full blur-[60px] pointer-events-none" />
 
           {/* Sparkles Badge & Interactive Field Switchers */}
-          <div className="space-y-4 relative z-10">
+          <div className="space-y-3 relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -168,11 +168,11 @@ const CasualHero = ({ content }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-wrap items-center justify-center lg:justify-start gap-4 relative z-10"
+            className="flex flex-wrap items-center justify-center lg:justify-start gap-3 relative z-10"
           >
             <Link
               to={isLoggedIn ? "/dashboard/verification" : "/contact"}
-              className="group flex items-center justify-center gap-3 bg-brand-600 text-white font-bold px-10 py-4 rounded-full text-lg transition-all hover:bg-brand-700 hover:shadow-xl hover:-translate-y-1 active:translate-y-0"
+              className="group flex items-center justify-center gap-3 bg-brand-600 text-white font-bold px-8 py-3.5 rounded-full text-base transition-all hover:bg-brand-700 hover:shadow-lg hover:-translate-y-1 active:translate-y-0"
             >
               <span>{isLoggedIn ? "Start Enrollment" : finalContent.buttonText}</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
@@ -180,7 +180,7 @@ const CasualHero = ({ content }) => {
             
             <Link
               to="/about/company-profile"
-              className="flex items-center justify-center gap-2 px-8 py-4 bg-white/80 backdrop-blur-sm rounded-full font-bold text-slate-700 hover:bg-white border border-slate-200 shadow-sm transition-all hover:-translate-y-1 active:translate-y-0"
+              className="flex items-center justify-center gap-2 px-6 py-3.5 bg-white/80 backdrop-blur-sm rounded-full font-bold text-slate-700 hover:bg-white border border-slate-200 shadow-sm transition-all hover:-translate-y-1 active:translate-y-0"
             >
               Our Story
             </Link>
@@ -191,7 +191,7 @@ const CasualHero = ({ content }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="pt-6 flex flex-wrap justify-center lg:justify-start gap-8 items-center border-t border-slate-200/60 mt-8 relative z-10"
+            className="pt-4 flex flex-wrap justify-center lg:justify-start gap-6 items-center border-t border-slate-200/60 mt-6 relative z-10"
           >
             <div className="flex items-center gap-2.5 text-slate-700 font-bold text-sm">
               <Users className="w-5 h-5 text-brand-600" />

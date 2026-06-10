@@ -190,7 +190,7 @@ function CompanyProfilePage() {
     <main className="min-h-screen bg-[#F8FAFC] pb-24 text-slate-800 font-sans">
 
       {/* 1. Hero Header Section */}
-      <section className="relative pt-24 pb-16 px-4 md:px-8 overflow-hidden bg-white">
+      <section className="relative pt-14 pb-10 px-4 md:px-8 overflow-hidden bg-white">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-brand-50/70 rounded-full blur-[130px] pointer-events-none" />
         <div className="absolute top-20 right-0 w-[450px] h-[300px] bg-indigo-50/60 rounded-full blur-[120px] pointer-events-none" />
 
@@ -200,7 +200,7 @@ function CompanyProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-600 mb-5 px-3 py-1.5 bg-brand-50 rounded-full border border-brand-100">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-600 mb-3 px-3 py-1.5 bg-brand-50 rounded-full border border-brand-100">
               About FETC
             </span>
           </motion.div>
@@ -209,7 +209,7 @@ function CompanyProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight text-balance mb-6"
+            className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight text-balance mb-4"
             style={{ lineHeight: "1.35" }}
           >
             Building Global Careers <br />
@@ -222,13 +222,13 @@ function CompanyProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed mb-16"
+            className="text-base md:text-lg text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed mb-8"
           >
             FETC is an authorized, state-of-the-art English examination and training center headquartered in Surat, Gujarat. We are a dream project under Gina Abroad Pvt. Ltd., empowering students with digital classrooms and authorized examination spaces.
           </motion.p>
 
           {/* Real-time Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-8 pt-8 border-t border-slate-100">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-8 pt-6 border-t border-slate-100">
             {STATS.map((stat, idx) => (
               <motion.div
                 key={stat.label}
