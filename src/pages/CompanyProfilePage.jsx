@@ -200,7 +200,7 @@ function CompanyProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-brand-600 mb-6 px-4 py-2 bg-brand-50 rounded-full border border-brand-100">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-600 mb-5 px-3 py-1.5 bg-brand-50 rounded-full border border-brand-100">
               About FETC
             </span>
           </motion.div>
@@ -209,11 +209,11 @@ function CompanyProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-7xl font-black text-slate-900 tracking-tight text-balance mb-8"
-            style={{ lineHeight: "1.45" }}
+            className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight text-balance mb-6"
+            style={{ lineHeight: "1.35" }}
           >
             Building Global Careers <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600 font-bold">
               Since 1999
             </span>
           </motion.h1>
