@@ -3,7 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { 
   User, HelpCircle, Settings, LogOut, Menu, X,
   MessageCircle, FileCheck, BookOpen, ShoppingBag,
-  CreditCard, ClipboardCheck, Brain
+  CreditCard, ClipboardCheck
 } from 'lucide-react';
 import { getProfileImageUrl } from "../../apiConfig";
 import SafeImage from "../SafeImage";
@@ -32,7 +32,6 @@ const UserLayout = () => {
     { icon: BookOpen, label: "My Courses", path: "/dashboard/courses" },
     { icon: ShoppingBag, label: "My Orders", path: "/dashboard/orders" },
     { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
-    { icon: Brain, label: "Career Assessment", path: "/career-assessment/behaviour-and-career-analysis" },
     { icon: HelpCircle, label: "Support", path: "/dashboard/support" },
     { icon: MessageCircle, label: "Doubts", path: "/dashboard/doubts" },
     { icon: FileCheck, label: "Document Verification Portal", path: "/dashboard/verification" },
