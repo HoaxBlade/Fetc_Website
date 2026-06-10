@@ -15,11 +15,51 @@ const runMigrations = async () => {
   try {
     console.log('Running auto-migrations...');
     
+    // Create users table if not exists
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        role VARCHAR(50) DEFAULT 'USER',
+        phone VARCHAR(20),
+        bio TEXT,
+        profile_image TEXT,
+        status VARCHAR(20) DEFAULT 'ACTIVE',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     // Users updates
     await db.query(`
       ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image TEXT;
     `);
+
+    // Seed default admin if not exists
+    const adminEmail = 'fetc2026@gmail.com';
+    const checkAdmin = await db.query('SELECT * FROM users WHERE email = $1', [adminEmail]);
+    if (checkAdmin.rows.length === 0) {
+      const hashedPassword = await bcrypt.hash('admin@12345', 10);
+      await db.query(
+        'INSERT INTO users (name, email, password, role, phone) VALUES ($1, $2, $3, $4, $5)',
+        ['Admin', adminEmail, hashedPassword, 'ADMIN', '9033347209']
+      );
+      console.log('Default Admin user created');
+    }
+
+    // Seed default user if not exists
+    const userEmail = 'user2026@gmail.com';
+    const checkUser = await db.query('SELECT * FROM users WHERE email = $1', [userEmail]);
+    if (checkUser.rows.length === 0) {
+      const hashedUserPassword = await bcrypt.hash('user@12345..', 10);
+      await db.query(
+        'INSERT INTO users (name, email, password, role, phone) VALUES ($1, $2, $3, $4, $5)',
+        ['Test User', userEmail, hashedUserPassword, 'USER', '9876543210']
+      );
+      console.log('Default Test User created');
+    }
 
     // Doubts table
     await db.query(`
@@ -73,17 +113,39 @@ const runMigrations = async () => {
       ALTER TABLE leads ADD COLUMN IF NOT EXISTS address TEXT;
       ALTER TABLE leads ADD COLUMN IF NOT EXISTS emergency_contact_name VARCHAR(255);
       ALTER TABLE leads ADD COLUMN IF NOT EXISTS emergency_contact_phone VARCHAR(50);
-      ALTER TABLE leads ADD COLUMN IF NOT EXISTS emergency_contact_relation VARCHAR(100);
-      ALTER TABLE leads ADD COLUMN IF NOT EXISTS service VARCHAR(100);
-      ALTER TABLE leads ADD COLUMN IF NOT EXISTS country VARCHAR(255);
-      ALTER TABLE leads ADD COLUMN IF NOT EXISTS program VARCHAR(255);
-      ALTER TABLE leads ADD COLUMN IF NOT EXISTS visa_rejection VARCHAR(50);
-      ALTER TABLE leads ADD COLUMN IF NOT EXISTS travel_history VARCHAR(50);
-      ALTER TABLE leads ADD COLUMN IF NOT EXISTS exam_type VARCHAR(100);
-      ALTER TABLE leads ADD COLUMN IF NOT EXISTS ebd DATE;
-      ALTER TABLE leads ADD COLUMN IF NOT EXISTS anyspecificlocation TEXT;
-      ALTER TABLE leads ADD COLUMN IF NOT EXISTS payment VARCHAR(100);
-    `);
+      ALTER TABLE tracks ADD COLUMN IF NOT EXISTS emergency_contact_relation VARCHAR(100);
+    `).catch(() => {}); // Catch in case of syntax or other minor execution errors, but we'll do individual columns below:
+    
+    // Let's run individual ADD COLUMN statements safely so that failure of one column does not block others:
+    const columnsToAdd = [
+      ['first_name', 'VARCHAR(255)'],
+      ['middle_name', 'VARCHAR(255)'],
+      ['last_name', 'VARCHAR(255)'],
+      ['dob', 'DATE'],
+      ['gender', 'VARCHAR(50)'],
+      ['location', 'VARCHAR(100)'],
+      ['address', 'TEXT'],
+      ['emergency_contact_name', 'VARCHAR(255)'],
+      ['emergency_contact_phone', 'VARCHAR(50)'],
+      ['emergency_contact_relation', 'VARCHAR(100)'],
+      ['service', 'VARCHAR(100)'],
+      ['country', 'VARCHAR(255)'],
+      ['program', 'VARCHAR(255)'],
+      ['visa_rejection', 'VARCHAR(50)'],
+      ['travel_history', 'VARCHAR(50)'],
+      ['exam_type', 'VARCHAR(100)'],
+      ['ebd', 'DATE'],
+      ['anyspecificlocation', 'TEXT'],
+      ['payment', 'VARCHAR(100)']
+    ];
+
+    for (const [col, type] of columnsToAdd) {
+      try {
+        await db.query(`ALTER TABLE leads ADD COLUMN IF NOT EXISTS ${col} ${type};`);
+      } catch (colErr) {
+        console.warn(`Could not add column ${col} to leads:`, colErr.message);
+      }
+    }
 
     // Create lead_documents table for premium file status tracking
     await db.query(`
@@ -153,6 +215,8 @@ const runMigrations = async () => {
         is_active BOOLEAN DEFAULT true,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+    await db.query(`
       CREATE TABLE IF NOT EXISTS guide_pages (
         id SERIAL PRIMARY KEY,
         guide_id INTEGER REFERENCES interactive_guides(id) ON DELETE CASCADE,
