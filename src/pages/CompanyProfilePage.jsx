@@ -34,19 +34,9 @@ const STATS = [
 
 const TIMELINE = [
   {
-    year: "2024",
+    year: "1999",
     title: "The Inception",
-    desc: "Launched FETC under Gina Abroad Pvt. Ltd. to deliver premium, authorized English examinations and training systems in Surat."
-  },
-  {
-    year: "2025",
-    title: "Infrastructure Expansion",
-    desc: "Opened our flagship tech-enabled testing lab and executive conference halls, standardizing computer-delivered assessments."
-  },
-  {
-    year: "2026",
-    title: "Becoming a Premier Hub",
-    desc: "Fully digitized the learning ecosystem, establishing FETC as Surat's largest and most trusted language examination center."
+    desc: "Specifically for exams and training and study abroad services this company has been formed under the umbrella of Ms. Bhumika Dilkhush proprietor of Gina Abroad."
   }
 ];
 
@@ -500,7 +490,7 @@ function CompanyProfilePage() {
             
             <div className="bg-white rounded-3xl border border-slate-100 shadow-lg p-8 space-y-6">
               <h3 className="text-xl font-black text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                <span className="text-brand-600 text-2xl">🚀</span> Career Pathway
+                Career Pathway
               </h3>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
@@ -541,58 +531,14 @@ function CompanyProfilePage() {
               </h2>
             </div>
 
-            {/* Timeline */}
-            <div className="space-y-8 relative">
-              {/* Animated Travelling Arrow Path (Desktop Only) */}
-              <div className="hidden lg:block absolute left-7 top-6 bottom-6 w-[2px] bg-slate-200/60">
-                <motion.div
-                  className="absolute left-1/2 -translate-x-1/2 z-10 flex flex-col items-center"
-                  style={{ originY: 0 }}
-                  animate={{
-                    top: ["0%", "100%"]
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <div className="relative flex flex-col items-center">
-                    <span className="absolute inline-flex h-5 w-5 rounded-full bg-brand-400/50 opacity-75 animate-ping" />
-                    <div className="relative w-5 h-5 bg-brand-600 rounded-full flex items-center justify-center text-white shadow-[0_0_15px_rgba(37,99,235,0.8)] border border-white">
-                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-
-              {TIMELINE.map((item, idx) => (
-                <motion.div
-                  key={item.year}
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: idx * 0.1 }}
-                  className="relative flex gap-6 md:gap-8 group"
-                >
-                  <div className="flex flex-col items-center z-10">
-                    <div className="w-14 h-14 bg-white text-brand-600 rounded-2xl border border-slate-200 flex items-center justify-center font-black text-sm shadow-sm group-hover:bg-brand-600 group-hover:text-white group-hover:border-brand-600 transition-all duration-300">
-                      {item.year}
-                    </div>
-                  </div>
-
-                  <div className="flex-1 pb-4 border-b border-slate-100 last:border-b-0">
-                    <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-brand-600 transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-slate-500 text-sm font-medium leading-relaxed">
-                      {item.desc}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
+            {/* Story Content Block */}
+            <div className="bg-white rounded-3xl border border-slate-100 shadow-lg p-8 space-y-4">
+              <h3 className="text-xl font-black text-slate-900 border-b border-slate-100 pb-3">
+                {TIMELINE[0].title}
+              </h3>
+              <p className="text-slate-600 font-semibold leading-relaxed text-sm md:text-base">
+                {TIMELINE[0].desc}
+              </p>
             </div>
           </motion.div>
         </div>
