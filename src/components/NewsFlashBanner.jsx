@@ -3,7 +3,11 @@ import { motion, MotionConfig } from 'framer-motion';
 import { Megaphone, X } from 'lucide-react';
 
 const NewsFlashBanner = () => {
-  const [news, setNews] = useState([]);
+  const [news, setNews] = useState([
+    { content: 'Upcoming Webinar: Study in UK 2026 - Register Now!', link: '/webinar' },
+    { content: 'New Intake open for USA Universities. Get 50% Scholarship!', link: '/study-abroad/usa' },
+    { content: 'FETC students achieve record 8.5 Band in IELTS!', link: '/success-stories' }
+  ]);
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {

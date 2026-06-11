@@ -135,7 +135,7 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <MotionConfig reducedMotion="always">
+      <MotionConfig reducedMotion="user">
         <ScrollToTop />
         <AppContent />
       </MotionConfig>
