@@ -11,6 +11,7 @@ import {
   ArrowUpRight,
   FileDown
 } from "lucide-react";
+import amazingTeamImg from "../assets/fetc-about-us/welcome-3.jpeg";
 
 const PROGRAM_DOWNLOADS = [
   {
@@ -649,9 +650,9 @@ function CompanyProfilePage() {
             className="relative h-[300px] md:h-[380px] rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-100 group"
           >
             <img
-              src="/assets/office-images/p6.jpeg"
+              src={amazingTeamImg}
               alt="FETC Team and workspace"
-              className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-[2000ms]"
+              className="w-full h-full object-cover object-[center_20%] group-hover:scale-[1.02] transition-transform duration-[2000ms]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/30 to-transparent flex flex-col justify-end p-6 md:p-10">
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-300 mb-1.5">Collaboration & Quality</span>
