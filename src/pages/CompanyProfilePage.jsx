@@ -8,8 +8,48 @@ import {
   CheckCircle2,
   Calendar,
   ChevronRight,
-  ArrowUpRight
+  ArrowUpRight,
+  FileDown
 } from "lucide-react";
+
+const PROGRAM_DOWNLOADS = [
+  {
+    name: "Business Management",
+    filename: "Business Management.pdf",
+    category: "Management",
+    icon: "💼"
+  },
+  {
+    name: "Diploma in Health & Social Care",
+    filename: "Diploma in Health & Social Care.pdf",
+    category: "Health & Social Care",
+    icon: "🏥"
+  },
+  {
+    name: "Diploma in IT - Web Design",
+    filename: "Diploma in Information Technology - Web Design.pdf",
+    category: "IT & Computing",
+    icon: "💻"
+  },
+  {
+    name: "Diploma in IT - E Commerce",
+    filename: "Diploma in IT - E Commerce F.pdf",
+    category: "IT & Computing",
+    icon: "🛒"
+  },
+  {
+    name: "Hospitality & Tourism Management",
+    filename: "Hospitality & Tourism Management.pdf",
+    category: "Hospitality",
+    icon: "🏨"
+  },
+  {
+    name: "Gina Abroad - British Degree Route",
+    filename: "Gina Abroad_Your-Smartest-Route-to-a-British-Degree.pdf",
+    category: "Academic Guide",
+    icon: "🇬🇧"
+  }
+];
 
 // Local images mapped from the public directory
 const STORY_IMAGES = {
@@ -160,6 +200,7 @@ const CATEGORIES = ["All", "Labs", "Spaces", "Events & News", "Exterior", "Works
 function CompanyProfilePage() {
   const [activeTab, setActiveTab] = useState("All");
   const [isChanging, setIsChanging] = useState(false);
+  const [isPlayingVideo, setIsPlayingVideo] = useState(false);
 
   const filteredGallery = useMemo(() => {
     if (activeTab === "All") return GALLERY_ITEMS;
@@ -430,7 +471,7 @@ function CompanyProfilePage() {
 
       {/* 2f. Career Pathway Section (Top-Notch Global Programs) */}
       <section className="py-12 px-4 md:px-8 bg-slate-50/40 border-y border-slate-100">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -497,8 +538,95 @@ function CompanyProfilePage() {
                 {TIMELINE[0].desc}
               </p>
             </div>
+
+            {/* Story Video Block */}
+            <div className="bg-white rounded-3xl border border-slate-100 shadow-lg p-6 space-y-4 overflow-hidden">
+              <h3 className="text-lg font-black text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                🎥 Inside FETC & Gina Abroad
+              </h3>
+              <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-900 shadow-inner group">
+                {!isPlayingVideo ? (
+                  <div 
+                    onClick={() => setIsPlayingVideo(true)}
+                    className="absolute inset-0 w-full h-full flex flex-col items-center justify-center cursor-pointer"
+                  >
+                    {/* Video poster overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-brand-900/40 to-slate-900/60 mix-blend-multiply transition-opacity group-hover:opacity-75" />
+                    <img 
+                      src="/assets/story-video-thumbnail.png" 
+                      alt="FETC Video Preview"
+                      className="absolute inset-0 w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-700"
+                    />
+                    
+                    {/* Play Button Icon */}
+                    <div className="relative z-10 w-16 h-16 bg-white/95 text-brand-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6 ml-1">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                    <span className="relative z-10 mt-3 text-xs font-black uppercase tracking-widest text-white drop-shadow-md">
+                      Watch Video Demo
+                    </span>
+                  </div>
+                ) : (
+                  <video 
+                    src="/assets/story-video.mp4" 
+                    controls 
+                    autoPlay 
+                    className="w-full h-full object-contain"
+                  />
+                )}
+              </div>
+            </div>
           </motion.div>
         </div>
+
+        {/* Program Curriculums & Guides (Full-Width Responsive Grid) */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="max-w-7xl mx-auto bg-white rounded-[2.5rem] border border-slate-100 shadow-lg p-8 md:p-10 mt-12 space-y-6"
+        >
+          <h3 className="text-2xl font-black text-slate-900 border-b border-slate-100 pb-4 flex items-center gap-2">
+            📂 Program Curriculums & Guides
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {PROGRAM_DOWNLOADS.map((prog, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: idx * 0.05 }}
+                className="flex items-center justify-between p-4 bg-slate-50 hover:bg-brand-50/20 hover:border-brand-100 rounded-2xl border border-slate-100 transition-all duration-300 group"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border border-slate-100 group-hover:scale-110 transition-transform">
+                    {prog.icon}
+                  </span>
+                  <div>
+                    <h4 className="font-bold text-slate-800 text-sm leading-snug group-hover:text-brand-600 transition-colors">
+                      {prog.name}
+                    </h4>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      {prog.category}
+                    </span>
+                  </div>
+                </div>
+                <a
+                  href={`/assets/certificates/${prog.filename}`}
+                  download={prog.filename}
+                  className="p-2.5 bg-brand-50 hover:bg-brand-600 text-brand-600 hover:text-white rounded-xl border border-brand-100 transition-all flex items-center gap-1.5 text-xs font-bold shrink-0"
+                >
+                  <FileDown size={14} />
+                  <span>PDF</span>
+                </a>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </section>
 
       {/* 2g. Compacted Team Banner Section */}

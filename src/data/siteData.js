@@ -287,6 +287,7 @@ export const navMenus = [
   },
   {
     label: "Exam & Training",
+    path: "/exam-training",
     items: [
       { label: "SELT", path: "/exam-training/selt" },
       { label: "GRE & GMAT", path: "/exam-training/gre-gmat" },

@@ -108,7 +108,7 @@ function HomePage() {
             title={pageData?.studyAbroad?.title || "Explore the World"}
             description={pageData?.studyAbroad?.description || "Pick your dream destination and let us handle the boring stuff. We've helped thousands of students settle in over 10+ countries."}
             linkText={pageData?.studyAbroad?.linkText || "Start My Adventure"}
-            linkTarget="/study-abroad/united-kingdom"
+            linkTarget="/study-abroad"
             items={studyAbroadCards}
             bgColor="bg-transparent"
             cardBg="bg-white shadow-[0_20px_50px_rgba(0,0,0,0.03)] border border-slate-50 rounded-[2.5rem]"
@@ -141,7 +141,7 @@ function HomePage() {
             title={pageData?.examTraining?.title || "Ace Your Exams"}
             description={pageData?.examTraining?.description || "We make exam prep feel like a breeze with expert coaching and real mock tests."}
             linkText={pageData?.examTraining?.linkText || "Check Courses"}
-            linkTarget="/exam-training/idp-for-ielts"
+            linkTarget="/exam-training"
             secondLinkText="Mock Test"
             secondLinkTarget="/mock"
             items={examCards}

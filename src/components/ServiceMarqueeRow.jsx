@@ -247,7 +247,7 @@ function ServiceMarqueeRow({
 
               <div className="mt-10 flex flex-wrap gap-4">
                 <Link
-                  to={items[activeIndex]?.path || linkTarget}
+                  to={linkTarget}
                   className={`group/cta relative inline-flex items-center justify-center rounded-full px-10 py-4 text-base font-bold text-white transition-all duration-300 hover:-translate-y-1 active:scale-95 overflow-hidden ${!reverse ? 'bg-gradient-to-r from-brand-600 to-blue-600 shadow-[0_8px_30px_rgba(13,94,183,0.3)] hover:shadow-[0_12px_40px_rgba(13,94,183,0.45)]' : 'bg-gradient-to-r from-teal-600 to-cyan-600 shadow-[0_8px_30px_rgba(13,148,136,0.3)] hover:shadow-[0_12px_40px_rgba(13,148,136,0.45)]'}`}
                 >
                   <span className="relative z-10">{linkText}</span>
