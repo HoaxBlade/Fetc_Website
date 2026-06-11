@@ -152,7 +152,7 @@ const Hero = ({ content: propsContent }) => {
               className="flex flex-wrap items-center justify-center lg:justify-start gap-6"
             >
               <Link
-                to="/contact"
+                to="/career-assessment/behaviour-and-career-analysis"
                 className="group inline-flex items-center gap-3 bg-slate-900 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-500 hover:bg-brand-600 hover:shadow-[0_20px_50px_rgba(13,94,183,0.3)] hover:-translate-y-1.5"
               >
                 <span>{content.buttonText}</span>
