@@ -274,7 +274,7 @@ const countries = {
   "europe": {
     name: "Europe",
     image: "/assets/countries/europe.png",
-    description: "Explore affordable and high-quality education options across Europe with multicultural learning environments and career pathways.",
+    description: "Explore affordable and high-quality education options across Europe with multicultural learning environments and career pathways. Now offering MBBS programs in Italy, Hungary, and Slovakia.",
     universities: [
       { name: "Aix Marseille Universite", link: "https://www.univ-amu.fr/", image: pathPrefix + "EUROPE/Aix Marseille Universite, France.jpg", exclusive: false },
       { name: "Berlin School of Business and Innovation", link: "https://www.berlinsbi.com/", image: pathPrefix + "EUROPE/Berlin School of Business and Innovation_Germany.png", exclusive: false },

@@ -95,13 +95,13 @@ const ContactCTA = () => {
                   {
                     icon: PhoneCall,
                     label: "Call Us Directly",
-                    value: "+91-8854347201",
+                    value: "+91-9033347201",
                     gradient: "from-brand-500 to-blue-500"
                   },
                   {
                     icon: Mail,
                     label: "Email Support",
-                    value: "consult@fetc.in",
+                    value: "info@fetc.in",
                     gradient: "from-teal-500 to-emerald-500"
                   },
                   {

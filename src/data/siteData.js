@@ -30,7 +30,7 @@ export const countryData = {
     flag: "https://flagcdn.com/w80/eu.png",
     image: europeImg,
     description:
-      "Explore affordable and high-quality education options across Europe with multicultural learning environments and career pathways.",
+      "Explore affordable and high-quality education options across Europe with multicultural learning environments and career pathways. Now offering MBBS programs in Italy, Hungary, and Slovakia.",
     universities: [
       ...allUniversities.europe.filter(u => !u.name.includes("Ireland")),
       { name: "ILA", image: null, link: "https://www.ilamilan.com/", exclusive: true }

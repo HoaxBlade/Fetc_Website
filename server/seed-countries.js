@@ -47,7 +47,7 @@ const countryData = {
   europe: {
     name: "Europe",
     image: "/api/placeholder/800/600",
-    description: "Explore affordable and high-quality education options across Europe with multicultural learning environments and career pathways.",
+    description: "Explore affordable and high-quality education options across Europe with multicultural learning environments and career pathways. Now offering MBBS programs in Italy, Hungary, and Slovakia.",
     universities: [
       { name: "ILA", link: "https://www.ilamilan.com/", exclusive: true, ranking: "Expert Training", location: "Milan" }
     ],

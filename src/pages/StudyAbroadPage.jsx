@@ -181,7 +181,7 @@ function StudyAbroadPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {pageData.universities
-              .filter(uni => uni.name.toLowerCase().includes(searchQuery.toLowerCase()))
+              .filter(uni => !uni.name.toLowerCase().includes("mbbs") && uni.name.toLowerCase().includes(searchQuery.toLowerCase()))
               .map((uni, idx) => (
               <Link
                 key={idx}
@@ -236,11 +236,220 @@ function StudyAbroadPage() {
             ))}
           </div>
           
-          {pageData.universities.filter(uni => uni.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+          {pageData.universities.filter(uni => !uni.name.toLowerCase().includes("mbbs") && uni.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
             <div className="py-20 text-center">
                <p className="text-slate-400 font-bold italic">No universities match your search...</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* MBBS Section (Only for Europe) */}
+      {country === "europe" && (
+        <div className="mt-28 border-t border-slate-100 pt-20">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 mb-4 px-4 py-2 bg-brand-50 rounded-full">
+              <Sparkles size={12} className="text-amber-400" /> Medical Education
+            </span>
+            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+              Study <span className="bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent">MBBS in Europe</span>
+            </h2>
+            <p className="mt-4 text-base text-slate-500 font-semibold leading-relaxed">
+              Explore premier destinations in Europe offering globally recognized medical programs with state-of-the-art infrastructure. Download brochures and guides below.
+            </p>
+          </div>
+
+          <div className="max-w-6xl mx-auto space-y-12">
+            {[
+              {
+                country: "Italy",
+                flag: "https://flagcdn.com/w160/it.png",
+                university: "Top Public Medical Universities",
+                tagline: "DSU Scholarships & World-Class Education",
+                pdfs: [],
+                details: (
+                  <div className="space-y-4 text-slate-600 text-sm leading-relaxed">
+                    <p className="font-bold text-slate-800 text-base">Why Study in Italy?</p>
+                    <ul className="list-disc pl-5 space-y-2">
+                      <li><strong>English-Medium Programs:</strong> Numerous top-tier public universities offer MBBS completely in English.</li>
+                      <li><strong>World-Ranked Education:</strong> Medical degrees are recognized globally, including WHO, NMC, GMC &amp; UK.</li>
+                      <li><strong>Low Tuition Fees:</strong> Public university fees range from just €500 to €4,000 per year.</li>
+                      <li><strong>DSU Scholarship:</strong> Up to 100% scholarship from 1st year onwards, covering tuition, accommodation, and meal allowance.</li>
+                      <li><strong>IMAT Entrance Exam:</strong> Unified admission exam required for public medical schools.</li>
+                    </ul>
+                  </div>
+                )
+              },
+              {
+                country: "Hungary",
+                flag: "https://flagcdn.com/w160/hu.png",
+                university: "University of Pécs",
+                tagline: "The Oldest University in Hungary",
+                pdfs: [],
+                details: (
+                  <div className="space-y-4 text-slate-600 text-sm leading-relaxed">
+                    <div>
+                      <p className="font-bold text-slate-800 text-base">General Medicine (MBBS Equivalent)</p>
+                      <p className="text-brand-600 font-bold">Duration: 6 Years</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="font-bold text-slate-800">Why Choose Pécs?</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>EU-Recognized Degree</li>
+                          <li>UK Career Pathway Available</li>
+                          <li>Premium Clinical Exposure</li>
+                          <li>Practice Across Multiple European Countries</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-800">Fee Structure</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Application &amp; Entrance Exam Fee: 500 Euros</li>
+                          <li>Tuition Fee: 16,900 Euros per Year (Approx.)</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-50">
+                      <div>
+                        <p className="font-bold text-slate-800">Scholarship Opportunity</p>
+                        <p className="text-green-600 font-bold">Up to 100% Scholarship from 2nd Year Onwards*</p>
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-800">Other Programs Available</p>
+                        <p className="text-xs">Dentistry, Pharmacy, MSc Biotechnology, BSc Biotechnology</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              },
+              {
+                country: "Slovakia",
+                flag: "https://flagcdn.com/w160/sk.png",
+                university: "Comenius University",
+                tagline: "Build a Global Medical Career",
+                pdfs: [],
+                details: (
+                  <div className="space-y-4 text-slate-600 text-sm leading-relaxed">
+                    <div>
+                      <p className="font-bold text-slate-800 text-base">MBBS Program</p>
+                      <p className="text-brand-600 font-bold">Duration: 6 Years</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="font-bold text-slate-800">Key Advantages</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Strong Hospital-Based Clinical Training</li>
+                          <li>Career Opportunities in Germany, France, Finland &amp; UK</li>
+                          <li>PR-Friendly Destination</li>
+                          <li>Excellent International Career Prospects</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-800">Fee Structure</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Application Fee: 70 Euros</li>
+                          <li>Tuition Fee: 11,500 Euros per Year</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-50">
+                      <div>
+                        <p className="font-bold text-slate-800">Scholarship Opportunity</p>
+                        <p className="text-green-600 font-bold">Up to 50% Scholarship from 2nd Year Onwards*</p>
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-800">Career Potential</p>
+                        <p className="text-xs">Average Medical Professional Salary: <strong>€80,000–€90,000 per Year*</strong> (dependent on country, licensing, specialization &amp; experience)</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              },
+              {
+                country: "Czech Republic",
+                flag: "https://flagcdn.com/w160/cz.png",
+                university: "University of Ostrava",
+                tagline: "Study Medicine in the Heart of Europe",
+                pdfs: [],
+                details: (
+                  <div className="space-y-4 text-slate-600 text-sm leading-relaxed">
+                    <div>
+                      <p className="font-bold text-slate-800 text-base">Medicine Program</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="font-bold text-slate-800">Why Students Choose Ostrava</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Multiple Teaching Hospitals</li>
+                          <li>Career Opportunities in Germany, France, Finland &amp; UK</li>
+                          <li>International Mobility &amp; Recognition</li>
+                          <li>PR &amp; Settlement Opportunities</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-800">Fee Structure</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Application Fee: 80 Euros</li>
+                          <li>Tuition Fee: 12,000 Euros per Year</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )
+              }
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-1 lg:grid-cols-3 gap-8 bg-white border border-slate-100 rounded-[2.5rem] p-8 md:p-10 shadow-soft hover:shadow-[0_30px_60px_rgba(59,130,246,0.06)] hover:-translate-y-1 transition-all duration-500"
+              >
+                {/* Left side: Country Box */}
+                <div className="col-span-1 flex flex-col justify-between items-center text-center p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 min-h-[250px] lg:min-h-auto">
+                  <div className="w-full">
+                    <div className="mb-4 h-24 w-full flex items-center justify-center relative overflow-hidden">
+                      <img
+                        src={item.flag}
+                        alt={`${item.country} Flag`}
+                        className="h-16 w-auto object-contain rounded-xl shadow-md"
+                      />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900 leading-tight">
+                      MBBS in {item.country}
+                    </h3>
+                    <p className="text-brand-600 font-bold text-xs mt-2 uppercase tracking-wider">
+                      {item.university}
+                    </p>
+                    <p className="text-slate-400 text-[10px] font-semibold mt-1">
+                      {item.tagline}
+                    </p>
+                  </div>
+
+                  {item.pdfs && item.pdfs.length > 0 && (
+                    <div className="w-full mt-6 space-y-2">
+                      {item.pdfs.map((pdf, pIdx) => (
+                        <a
+                          key={pIdx}
+                          href={pdf.url}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold py-3 px-4 shadow-md transition-all duration-300 active:scale-95"
+                        >
+                          <Download size={14} />
+                          {pdf.label}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Right side: Detailed Information */}
+                <div className="col-span-2 flex flex-col justify-center px-2 lg:px-4">
+                  {item.details}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -259,7 +468,28 @@ function StudyAbroadPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {[
+          {(country === "europe" ? [
+            {
+              label: "Free Education in Italy",
+              description: "Learn how you can study in Italy with zero tuition fees under various scholarship schemes.",
+              url: "/Free Education in Italy.pdf"
+            },
+            {
+              label: "Study Medicine in Europe",
+              description: "A comprehensive guide to studying MBBS/MD in top European medical universities.",
+              url: "/STUDY Medicine in Europe.pdf"
+            },
+            {
+              label: "Financial Planning Checklist",
+              description: "Plan your funds, tuition fees, and living cost estimates with this comprehensive tracking list.",
+              url: "https://drive.google.com/file/d/1wX99-y42WJNS8U8uAiS3xQzUrpiivcUM/view?usp=drive_link"
+            },
+            {
+              label: "Road Map Study Abroad",
+              description: "A complete step-by-step master plan tracing your timeline from exams to university intake.",
+              url: "https://drive.google.com/file/d/139BsYSsVSIPziOebKWNL8StFU7LGs6P3/view?usp=drive_link"
+            }
+          ] : [
             {
               label: "Financial Planning Checklist",
               description: "Plan your funds, tuition fees, and living cost estimates with this comprehensive tracking list.",
@@ -280,7 +510,7 @@ function StudyAbroadPage() {
               description: "Understand the terms of engagement and the transparent guarantees FETC offers.",
               url: "https://drive.google.com/file/d/16RCN90tqMDusAexTX6L2fKCLu92XSZYh/view?usp=drive_link"
             }
-          ].map((res, index) => (
+          ]).map((res, index) => (
             <a
               key={index}
               href={res.url}
