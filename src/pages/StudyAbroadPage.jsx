@@ -263,7 +263,7 @@ function StudyAbroadPage() {
             {[
               {
                 country: "Italy",
-                flag: "https://flagcdn.com/w160/it.png",
+                flag: "/assets/countries/italy.jpeg",
                 university: "Top Public Medical Universities",
                 tagline: "DSU Scholarships & World-Class Education",
                 pdfs: [],
@@ -282,7 +282,7 @@ function StudyAbroadPage() {
               },
               {
                 country: "Hungary",
-                flag: "https://flagcdn.com/w160/hu.png",
+                flag: "/assets/countries/hungary.jpeg",
                 university: "University of Pécs",
                 tagline: "The Oldest University in Hungary",
                 pdfs: [],
@@ -298,7 +298,6 @@ function StudyAbroadPage() {
                         <ul className="list-disc pl-5 space-y-1">
                           <li>EU-Recognized Degree</li>
                           <li>UK Career Pathway Available</li>
-                          <li>Premium Clinical Exposure</li>
                           <li>Practice Across Multiple European Countries</li>
                         </ul>
                       </div>
@@ -325,7 +324,7 @@ function StudyAbroadPage() {
               },
               {
                 country: "Slovakia",
-                flag: "https://flagcdn.com/w160/sk.png",
+                flag: "/assets/countries/slovakia.jpeg",
                 university: "Comenius University",
                 tagline: "Build a Global Medical Career",
                 pdfs: [],
@@ -368,7 +367,7 @@ function StudyAbroadPage() {
               },
               {
                 country: "Czech Republic",
-                flag: "https://flagcdn.com/w160/cz.png",
+                flag: "/assets/countries/czech-republic.png",
                 university: "University of Ostrava",
                 tagline: "Study Medicine in the Heart of Europe",
                 pdfs: [],
