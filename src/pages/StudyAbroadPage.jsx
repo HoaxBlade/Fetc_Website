@@ -266,7 +266,12 @@ function StudyAbroadPage() {
                 flag: "/assets/countries/italy.jpeg",
                 university: "Top Public Medical Universities",
                 tagline: "DSU Scholarships & World-Class Education",
-                pdfs: [],
+                pdfs: [
+                  {
+                    label: "Free Education in Italy",
+                    url: "/AA.pdf"
+                  }
+                ],
                 details: (
                   <div className="space-y-4 text-slate-600 text-sm leading-relaxed">
                     <p className="font-bold text-slate-800 text-base">Why Study in Italy?</p>
@@ -471,7 +476,7 @@ function StudyAbroadPage() {
             {
               label: "Free Education in Italy",
               description: "Learn how you can study in Italy with zero tuition fees under various scholarship schemes.",
-              url: "/Free Education in Italy.pdf"
+              url: "/AA.pdf"
             },
             {
               label: "Study Medicine in Europe",
