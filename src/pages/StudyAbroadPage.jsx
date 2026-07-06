@@ -405,11 +405,11 @@ function StudyAbroadPage() {
                 {/* Left side: Country Box */}
                 <div className="col-span-1 flex flex-col justify-between items-center text-center p-6 bg-slate-50/50 rounded-3xl border border-slate-100/50 min-h-[250px] lg:min-h-auto">
                   <div className="w-full">
-                    <div className="mb-4 h-24 w-full flex items-center justify-center relative overflow-hidden">
+                    <div className="mb-4 h-40 w-full flex items-center justify-center relative overflow-hidden">
                       <img
                         src={item.flag}
                         alt={`${item.country} Flag`}
-                        className="h-16 w-auto object-contain rounded-xl shadow-md"
+                        className="h-32 w-auto object-contain rounded-xl shadow-md transition-transform duration-500 group-hover:scale-110"
                       />
                     </div>
                     <h3 className="text-2xl font-black text-slate-900 leading-tight">
