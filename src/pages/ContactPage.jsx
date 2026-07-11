@@ -102,7 +102,7 @@ const ContactPage = ({ bgTransparent = false, showMap = true, compact = false })
                 <div>
                   <h4 className="font-semibold text-lg">Call Us</h4>
                   <p className="text-sm text-brand-100 mt-1">
-                    {pageData?.contactDetails?.phone?.number || "+91-9033347201"}
+                    {pageData?.contactDetails?.phone?.number || "+91-9033347200 to 09"}
                   </p>
                 </div>
               </div>

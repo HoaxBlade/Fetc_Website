@@ -403,11 +403,16 @@ app.patch('/api/users/profile/:id', async (req, res) => {
     const values = [identifierParam]; // $1 is the identifier
     let index = 2;
 
-    const allowedFields = ['name', 'phone', 'bio', 'profile_image'];
+    const allowedFields = ['name', 'phone', 'bio', 'profile_image', 'profile_details'];
     for (const field of allowedFields) {
       if (req.body[field] !== undefined) {
         fields.push(`${field} = $${index}`);
-        values.push(req.body[field]);
+        // If field is profile_details, make sure it's saved as object/JSON string/JSONB
+        if (field === 'profile_details') {
+          values.push(typeof req.body[field] === 'string' ? req.body[field] : JSON.stringify(req.body[field]));
+        } else {
+          values.push(req.body[field]);
+        }
         index++;
       }
     }
@@ -416,7 +421,7 @@ app.patch('/api/users/profile/:id', async (req, res) => {
       return res.status(400).json({ success: false, message: 'No fields to update' });
     }
 
-    const queryText = `UPDATE users SET ${fields.join(', ')} WHERE ${identifierQuery} RETURNING id, name, email, role, phone, bio, created_at, profile_image`;
+    const queryText = `UPDATE users SET ${fields.join(', ')} WHERE ${identifierQuery} RETURNING id, name, email, role, phone, bio, created_at, profile_image, profile_details`;
 
     const result = await db.query(queryText, values);
     
@@ -438,14 +443,14 @@ app.get('/api/users/profile/:id', async (req, res) => {
     let result;
     if (isNaN(parseInt(id)) && id.includes('@')) {
       result = await db.query(
-        'SELECT id, name, email, role, phone, bio, created_at, profile_image FROM users WHERE email = $1',
+        'SELECT id, name, email, role, phone, bio, created_at, profile_image, profile_details FROM users WHERE email = $1',
         [id]
       );
     } else if (isNaN(parseInt(id))) {
       return res.status(400).json({ success: false, message: 'Invalid user identifier' });
     } else {
       result = await db.query(
-        'SELECT id, name, email, role, phone, bio, created_at, profile_image FROM users WHERE id = $1',
+        'SELECT id, name, email, role, phone, bio, created_at, profile_image, profile_details FROM users WHERE id = $1',
         [parseInt(id)]
       );
     }

@@ -203,6 +203,34 @@ const EditLead = () => {
 
   const [form, setForm] = useState(initialForm);
 
+  const studyAbroadSections = [
+    {
+      title: "General Verification",
+      fields: [
+        "passport", "passportPhotograph", "aadhaarCard", "birthCertificate", 
+        "cv", "parentsPassport", "itinerary", "visaCopy", "sop", "coverLetter", 
+        "otherDocumentsStudyAbroad"
+      ]
+    },
+    {
+      title: "Education Documents",
+      fields: [
+        "tenthResult", "tenthPassingCertificate", "eleventhResult", "predictableMarksheet", 
+        "twelfthResult", "twelfthPassingCertificate", "languageExamCertificate", 
+        "lorPrincipal", "lorProfessor1", "lorProfessor2", "bachelorsMarksheets", 
+        "predictableTranscript", "transcript", "bachelorsProvisionalCertificate", 
+        "bachelorsDegree", "wes", "internshipWorkExperience", "gap"
+      ]
+    },
+    {
+      title: "Financial Documents",
+      fields: [
+        "bankStatement", "bankManagerCertificate", "itrs", "caNetworth", 
+        "companyProof", "sponsorDocs", "loanSanctionLetter"
+      ]
+    }
+  ];
+
   // Document slots mapping per service
   const docFieldsByService = {
     studyAbroad: [
@@ -931,89 +959,75 @@ const EditLead = () => {
                         <p className="font-bold text-sm text-slate-500 mb-1">No Documents Required</p>
                         <p className="text-xs text-slate-400">Selected service ("{form.service}") does not require any document verification.</p>
                       </div>
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                        {documentSlots.map((field) => {
-                          const existingDoc = Array.isArray(form.documents)
-                            ? form.documents.find(d => d.documentType === field.name)
-                            : null;
-                          const fileUrl = existingDoc ? existingDoc.filePath : form[field.name];
-                          const status = existingDoc ? existingDoc.status : (fileUrl ? "Uploaded" : "Empty");
+                    ) : (() => {
+                      const renderSlotCard = (field) => {
+                        const existingDoc = Array.isArray(form.documents)
+                          ? form.documents.find(d => d.documentType === field.name)
+                          : null;
+                        const fileUrl = existingDoc ? existingDoc.filePath : form[field.name];
+                        const status = existingDoc ? existingDoc.status : (fileUrl ? "Uploaded" : "Empty");
 
-                          return (
-                            <div 
-                              key={field.name}
-                              className={`p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between gap-4 ${
-                                status === 'Verified' 
-                                  ? 'bg-emerald-50/30 border-emerald-100 hover:bg-emerald-50/50' 
-                                  : status === 'Rejected' 
-                                  ? 'bg-rose-50/30 border-rose-100 hover:bg-rose-50/50' 
-                                  : status === 'Pending' 
-                                  ? 'bg-amber-50/30 border-amber-100 hover:bg-amber-50/50'
-                                  : 'bg-slate-50/50 border-slate-100 hover:bg-slate-50'
-                              }`}
-                            >
-                              <div className="flex justify-between items-start">
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="text-sm font-semibold text-slate-800 flex items-center gap-2 leading-none">
-                                    {status === "Verified" && <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />}
-                                    {status === "Rejected" && <XCircle className="w-4 h-4 text-rose-500 shrink-0" />}
-                                    {status === "Pending" && <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />}
-                                    {field.label}
-                                  </h4>
-                                  
-                                  {fileUrl ? (
-                                    <p className="text-[10px] text-slate-400 font-medium mt-2 truncate flex items-center gap-1.5">
-                                      <FileText size={10} className="text-slate-400 shrink-0" />
-                                      {existingDoc?.fileName || "uploaded-document"}
-                                    </p>
-                                  ) : (
-                                    <p className="text-[10px] text-slate-400 font-medium italic mt-2">No file uploaded.</p>
-                                  )}
-                                </div>
-
-                                <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-md shrink-0 ${
-                                  status === 'Verified' 
-                                    ? 'bg-emerald-100 text-emerald-700' 
-                                    : status === 'Rejected' 
-                                    ? 'bg-rose-100 text-rose-700' 
-                                    : status === 'Pending' 
-                                    ? 'bg-amber-100 text-amber-700'
-                                    : 'bg-slate-200 text-slate-500'
-                                }`}>
-                                  {status}
-                                </span>
+                        return (
+                          <div 
+                            key={field.name}
+                            className={`p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between gap-4 ${
+                              status === 'Verified' 
+                                ? 'bg-emerald-50/30 border-emerald-100 hover:bg-emerald-50/50' 
+                                : status === 'Rejected' 
+                                ? 'bg-rose-50/30 border-rose-100 hover:bg-rose-50/50' 
+                                : status === 'Pending' 
+                                ? 'bg-amber-50/30 border-amber-100 hover:bg-amber-50/50'
+                                : 'bg-slate-50/50 border-slate-100 hover:bg-slate-50'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1 min-w-0">
+                                <h4 className="text-sm font-semibold text-slate-800 flex items-center gap-2 leading-none">
+                                  {status === "Verified" && <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />}
+                                  {status === "Rejected" && <XCircle className="w-4 h-4 text-rose-500 shrink-0" />}
+                                  {status === "Pending" && <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />}
+                                  {field.label}
+                                </h4>
+                                
+                                {fileUrl ? (
+                                  <p className="text-[10px] text-slate-400 font-medium mt-2 truncate flex items-center gap-1.5">
+                                    <FileText size={10} className="text-slate-400 shrink-0" />
+                                    {existingDoc?.fileName || "uploaded-document"}
+                                  </p>
+                                ) : (
+                                  <p className="text-[10px] text-slate-400 font-medium italic mt-2">No file uploaded.</p>
+                                )}
                               </div>
 
-                              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100/60 pt-3">
-                                <div className="flex gap-2">
-                                  {fileUrl ? (
-                                    <>
-                                      <a 
-                                        href={fileUrl} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="p-2 bg-white hover:bg-slate-50 text-slate-600 rounded-xl border border-slate-100 flex items-center gap-1 text-[11px] font-semibold transition-colors"
-                                      >
-                                        <Download size={12} /> Get File
-                                      </a>
+                              <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-md shrink-0 ${
+                                status === 'Verified' 
+                                  ? 'bg-emerald-100 text-emerald-700' 
+                                  : status === 'Rejected' 
+                                  ? 'bg-rose-100 text-rose-700' 
+                                  : status === 'Pending' 
+                                  ? 'bg-amber-100 text-amber-700'
+                                  : 'bg-slate-200 text-slate-500'
+                              }`}>
+                                {status}
+                              </span>
+                            </div>
 
-                                      <label className="p-2 bg-white hover:bg-slate-50 text-slate-600 rounded-xl border border-slate-100 flex items-center gap-1 text-[11px] font-semibold cursor-pointer transition-colors">
-                                        <RefreshCw size={12} className={uploadingField === field.name ? 'animate-spin' : ''} />
-                                        Replace
-                                        <input 
-                                          type="file" 
-                                          accept="application/pdf,image/jpeg,image/png,image/webp,video/mp4,audio/mp3"
-                                          onChange={(e) => handleFileUpload(e, field.name)}
-                                          disabled={uploadingField !== null}
-                                          className="hidden" 
-                                        />
-                                      </label>
-                                    </>
-                                  ) : (
-                                    <label className="p-2.5 bg-brand-600 text-white rounded-xl flex items-center gap-1.5 text-[11px] font-bold cursor-pointer transition-colors hover:bg-brand-700 shadow-sm shadow-brand-100">
-                                      <Loader2 size={12} className={uploadingField === field.name ? 'animate-spin' : 'hidden'} />
-                                      {uploadingField === field.name ? 'Uploading...' : 'Upload File'}
+                            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100/60 pt-3">
+                              <div className="flex gap-2">
+                                {fileUrl ? (
+                                  <>
+                                    <a 
+                                      href={fileUrl} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="p-2 bg-white hover:bg-slate-50 text-slate-600 rounded-xl border border-slate-100 flex items-center gap-1 text-[11px] font-semibold transition-colors"
+                                    >
+                                      <Download size={12} /> Get File
+                                    </a>
+
+                                    <label className="p-2 bg-white hover:bg-slate-50 text-slate-600 rounded-xl border border-slate-100 flex items-center gap-1 text-[11px] font-semibold cursor-pointer transition-colors">
+                                      <RefreshCw size={12} className={uploadingField === field.name ? 'animate-spin' : ''} />
+                                      Replace
                                       <input 
                                         type="file" 
                                         accept="application/pdf,image/jpeg,image/png,image/webp,video/mp4,audio/mp3"
@@ -1022,36 +1036,87 @@ const EditLead = () => {
                                         className="hidden" 
                                       />
                                     </label>
-                                  )}
-                                </div>
-
-                                {fileUrl && (
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[10px] font-semibold text-slate-400 mr-1">Verify:</span>
-                                    <select 
-                                      value={status} 
-                                      onChange={(e) => handleStatusChange(field.name, e.target.value)}
-                                      className={`text-[10px] font-bold rounded-xl p-1.5 pr-6 border transition-all appearance-none bg-no-repeat bg-[length:12px_12px] bg-[right_6px_center] cursor-pointer ${
-                                        status === 'Verified' 
-                                          ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/25' 
-                                          : status === 'Rejected' 
-                                          ? 'bg-rose-500/10 text-rose-600 border-rose-500/25'
-                                          : 'bg-amber-500/10 text-amber-600 border-amber-500/25'
-                                      }`}
-                                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")` }}
-                                    >
-                                      <option value="Pending">Pending</option>
-                                      <option value="Verified">Verified</option>
-                                      <option value="Rejected">Rejected</option>
-                                    </select>
-                                  </div>
+                                  </>
+                                ) : (
+                                  <label className="p-2.5 bg-brand-600 text-white rounded-xl flex items-center gap-1.5 text-[11px] font-bold cursor-pointer transition-colors hover:bg-brand-700 shadow-sm shadow-brand-100">
+                                    <Loader2 size={12} className={uploadingField === field.name ? 'animate-spin' : 'hidden'} />
+                                    {uploadingField === field.name ? 'Uploading...' : 'Upload File'}
+                                    <input 
+                                      type="file" 
+                                      accept="application/pdf,image/jpeg,image/png,image/webp,video/mp4,audio/mp3"
+                                      onChange={(e) => handleFileUpload(e, field.name)}
+                                      disabled={uploadingField !== null}
+                                      className="hidden" 
+                                    />
+                                  </label>
                                 )}
                               </div>
+
+                              {fileUrl && (
+                                <div className="flex items-center gap-1">
+                                  <span className="text-[10px] font-semibold text-slate-400 mr-1">Verify:</span>
+                                  <select 
+                                    value={status} 
+                                    onChange={(e) => handleStatusChange(field.name, e.target.value)}
+                                    className={`text-[10px] font-bold rounded-xl p-1.5 pr-6 border transition-all appearance-none bg-no-repeat bg-[length:12px_12px] bg-[right_6px_center] cursor-pointer ${
+                                      status === 'Verified' 
+                                        ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/25' 
+                                        : status === 'Rejected' 
+                                        ? 'bg-rose-500/10 text-rose-600 border-rose-500/25'
+                                        : 'bg-amber-500/10 text-amber-600 border-amber-500/25'
+                                    }`}
+                                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")` }}
+                                  >
+                                    <option value="Pending">Pending</option>
+                                    <option value="Verified">Verified</option>
+                                    <option value="Rejected">Rejected</option>
+                                  </select>
+                                </div>
+                              )}
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                          </div>
+                        );
+                      };
+
+                      if (form.service === 'studyAbroad') {
+                        return (
+                          <div className="space-y-10 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                            {studyAbroadSections.map((section) => {
+                              const sectionFields = documentSlots.filter(f => section.fields.includes(f.name));
+                              const uploadedCount = sectionFields.filter(f => {
+                                const doc = Array.isArray(form.documents)
+                                  ? form.documents.find(d => d.documentType === f.name)
+                                  : null;
+                                return doc ? doc.filePath : form[f.name];
+                              }).length;
+
+                              return (
+                                <div key={section.title} className="space-y-4">
+                                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                                    <h4 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                      <span className="w-1.5 h-3.5 bg-brand-600 rounded-full inline-block"></span>
+                                      {section.title}
+                                      <span className="text-xs text-slate-400 font-semibold normal-case tracking-normal">
+                                        ({uploadedCount} of {sectionFields.length} uploaded)
+                                      </span>
+                                    </h4>
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {sectionFields.map(renderSlotCard)}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                          {documentSlots.map(renderSlotCard)}
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
               </>

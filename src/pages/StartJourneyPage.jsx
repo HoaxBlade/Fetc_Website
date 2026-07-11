@@ -86,7 +86,7 @@ const StartJourneyPage = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">Quick Support</h4>
-                  <p className="text-sm text-brand-100 mt-1">+91-9033347201</p>
+                  <p className="text-sm text-brand-100 mt-1">+91-9033347200 to 09</p>
                 </div>
               </div>
             </div>
