@@ -8,9 +8,10 @@ import {
   CheckCircle2, ArrowRight, LayoutGrid, Loader2,
   Award, Activity, TrendingUp, Building2,
   MessageSquare, HeartPulse, Cog, Shield, Map, Focus,
-  Layers, Check
+  Layers, Check, X, Mail, User, Phone, Send
 } from 'lucide-react';
-import ContactPage from "./ContactPage";
+import { motion, AnimatePresence } from 'framer-motion';
+// import ContactPage from "./ContactPage";
 
 // --- Extracted Data ---
 const VAK_DATA = [
@@ -86,6 +87,50 @@ const CustomTooltip = ({ active, payload, label }) => {
 export default function CareerAssessmentPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [isLoading, setIsLoading] = useState(true);
+
+  // Modal Inquiry states
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalFormData, setModalFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [modalIsSubmitting, setModalIsSubmitting] = useState(false);
+  const [modalIsSubmitted, setModalIsSubmitted] = useState(false);
+
+  const handleModalChange = (e) => {
+    setModalFormData({ ...modalFormData, [e.target.name]: e.target.value });
+  };
+
+  const handleModalSubmit = async (e) => {
+    e.preventDefault();
+    setModalIsSubmitting(true);
+    try {
+      const response = await fetch((window.API_BASE||'') + '/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...modalFormData,
+          subject: "Career Assessment Inquiry"
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setModalIsSubmitted(true);
+        setModalFormData({ name: "", email: "", phone: "", message: "" });
+        setTimeout(() => {
+          setModalIsSubmitted(false);
+          setIsModalOpen(false);
+        }, 3000);
+      }
+    } catch (err) {
+      console.error('Submission failed:', err);
+      alert('Failed to send message. Please try again later.');
+    } finally {
+      setModalIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -203,9 +248,12 @@ export default function CareerAssessmentPage() {
                       <button onClick={() => setActiveTab('competencies')} className="px-6 py-3 bg-white text-slate-900 text-sm font-bold rounded-xl shadow-sm inline-flex items-center gap-2 w-fit">
                         View Matrix Data <ArrowRight size={18} />
                       </button>
-                      <a href="http://compasnow.com/newOnlineTest.jsp" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-blue-600/30 backdrop-blur-md border border-white/20 text-white text-sm font-bold rounded-xl shadow-sm hover:bg-blue-600/50 transition-all inline-flex items-center gap-2 w-fit">
+                      <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="px-6 py-3 bg-blue-600/30 backdrop-blur-md border border-white/20 text-white text-sm font-bold rounded-xl shadow-sm hover:bg-blue-600/50 transition-all inline-flex items-center gap-2 w-fit"
+                      >
                         Start Online Test <ArrowRight size={18} />
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -422,24 +470,182 @@ export default function CareerAssessmentPage() {
               </p>
             </div>
             
-            <a 
-              href="http://compasnow.com/newOnlineTest.jsp" 
-              target="_blank" 
-              rel="noopener noreferrer"
+            <button 
+              onClick={() => setIsModalOpen(true)}
               className="group relative px-10 py-5 bg-white text-blue-700 rounded-[2rem] font-black text-sm tracking-widest uppercase shadow-xl hover:shadow-2xl flex items-center gap-3 overflow-hidden"
             >
               <span className="relative z-10">Start Assessment</span>
               <Compass size={20} className="relative z-10" />
-            </a>
+            </button>
           </div>
         </div>
 
         {/* --- CONTACT SEGMENT (Now parallel and perfectly spaced) --- */}
+        {/*
         <div className="w-full">
           <ContactPage bgTransparent={true} showMap={false} compact={true} />
         </div>
+        */}
 
       </div>
+
+      {/* Premium Modal Popup */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsModalOpen(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+
+            {/* Modal Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="relative w-full max-w-2xl bg-white rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-10"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-6 right-6 p-2 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors"
+                aria-label="Close modal"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="p-8 md:p-10">
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold text-slate-800">Start Your Assessment</h3>
+                  <p className="text-slate-500 mt-1">Fill out the form below to begin your career evaluation.</p>
+                </div>
+
+                {modalIsSubmitted && (
+                  <div className="mb-8 p-4 bg-green-50 text-green-700 rounded-xl border border-green-200 flex items-center gap-3">
+                    <div className="bg-green-100 p-1.5 rounded-full shrink-0 text-green-600">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold">Assessment request submitted!</h4>
+                      <p className="text-sm text-green-600 mt-0.5">We will get in touch shortly to start your assessment.</p>
+                    </div>
+                  </div>
+                )}
+
+                <form onSubmit={handleModalSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2 group">
+                      <label htmlFor="modal-name" className="text-sm font-semibold text-slate-700">Full Name <span className="text-red-500">*</span></label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                          <User size={18} />
+                        </div>
+                        <input
+                          type="text"
+                          id="modal-name"
+                          name="name"
+                          value={modalFormData.name}
+                          onChange={handleModalChange}
+                          required
+                          className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all hover:border-slate-300"
+                          placeholder="John Doe"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 group">
+                      <label htmlFor="modal-email" className="text-sm font-semibold text-slate-700">Email Address <span className="text-red-500">*</span></label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                          <Mail size={18} />
+                        </div>
+                        <input
+                          type="email"
+                          id="modal-email"
+                          name="email"
+                          value={modalFormData.email}
+                          onChange={handleModalChange}
+                          required
+                          className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all hover:border-slate-300"
+                          placeholder="john@example.com"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 group">
+                    <label htmlFor="modal-phone" className="text-sm font-semibold text-slate-700">Phone Number <span className="text-red-500">*</span></label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                        <Phone size={18} />
+                      </div>
+                      <input
+                        type="tel"
+                        id="modal-phone"
+                        name="phone"
+                        value={modalFormData.phone}
+                        onChange={handleModalChange}
+                        required
+                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all hover:border-slate-300"
+                        placeholder="Enter phone number"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 group">
+                    <label htmlFor="modal-message" className="text-sm font-semibold text-slate-700">Your Message <span className="text-red-500">*</span></label>
+                    <div className="relative">
+                      <div className="absolute top-4 left-4 pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                        <MessageSquare size={18} />
+                      </div>
+                      <textarea
+                        id="modal-message"
+                        name="message"
+                        value={modalFormData.message}
+                        onChange={handleModalChange}
+                        required
+                        rows="4"
+                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all hover:border-slate-300 resize-none"
+                        placeholder="How can we help you?"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={modalIsSubmitting}
+                    className={`w-full py-4 px-6 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all mt-4 ${
+                      modalIsSubmitting ? "bg-blue-600/70 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg active:scale-[0.99] hover:-translate-y-0.5"
+                    }`}
+                  >
+                    {modalIsSubmitting ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <Send size={18} className="transform -rotate-12 group-hover:rotate-0 transition-transform" />
+                        Start Assessment
+                      </>
+                    )}
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

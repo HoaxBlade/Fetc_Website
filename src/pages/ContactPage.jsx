@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { User, Mail, FileText, MessageSquare, Send, MapPin, Phone, Mail as MailIcon } from "lucide-react";
+import { User, Mail, FileText, MessageSquare, Send, MapPin, Phone, Mail as MailIcon, Calendar } from "lucide-react";
 
 const ContactPage = ({ bgTransparent = false, showMap = true, compact = false }) => {
   const [pageData, setPageData] = useState(null);
@@ -25,6 +25,7 @@ const ContactPage = ({ bgTransparent = false, showMap = true, compact = false })
     email: "",
     phone: "",
     subject: "Course Related",
+    bookingDate: "",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,15 +39,22 @@ const ContactPage = ({ bgTransparent = false, showMap = true, compact = false })
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      const submissionData = {
+        ...formData,
+        message: formData.bookingDate 
+          ? `${formData.message}\n\n[Booking Date Requested: ${formData.bookingDate}]` 
+          : formData.message
+      };
+
       const response = await fetch((window.API_BASE||'') + '/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submissionData),
       });
       const data = await response.json();
       if (data.success) {
         setIsSubmitted(true);
-        setFormData({ name: "", email: "", phone: "", subject: "Course Related", message: "" });
+        setFormData({ name: "", email: "", phone: "", subject: "Course Related", bookingDate: "", message: "" });
         // Remove success message after 5 seconds
         setTimeout(() => setIsSubmitted(false), 5000);
       }
@@ -195,7 +203,7 @@ const ContactPage = ({ bgTransparent = false, showMap = true, compact = false })
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2 group">
                 <label htmlFor="phone" className="text-sm font-semibold text-slate-700">Phone Number <span className="text-red-500">*</span></label>
                 <div className="relative">
@@ -236,6 +244,23 @@ const ContactPage = ({ bgTransparent = false, showMap = true, compact = false })
                   <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                   </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 group">
+                <label htmlFor="bookingDate" className="text-sm font-semibold text-slate-700">Booking Date</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-brand-600 transition-colors">
+                    <Calendar size={18} />
+                  </div>
+                  <input
+                    type="date"
+                    id="bookingDate"
+                    name="bookingDate"
+                    value={formData.bookingDate}
+                    onChange={handleChange}
+                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600 transition-all hover:border-slate-300 font-medium text-slate-700 cursor-pointer"
+                  />
                 </div>
               </div>
             </div>

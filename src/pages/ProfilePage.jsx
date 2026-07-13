@@ -281,32 +281,22 @@ const ProfilePage = () => {
     }
   };
 
-  const renderRow = (label, name) => {
+  const renderInputBlock = (label, name, placeholder = "-") => {
     const value = formData.profile_details?.[name] || "";
     return (
-      <tr key={name} className="border border-slate-400">
-        <td className="w-1/2 border border-slate-400 bg-white p-2 text-xs font-bold text-slate-800">
-          {label}
-        </td>
-        <td className="w-1/2 border border-slate-400 bg-white p-2 text-xs text-slate-800">
-          <input
-            type="text"
-            name={name}
-            value={value}
-            onChange={handleDetailChange}
-            placeholder="-"
-            className="w-full px-2 py-1 border border-slate-200 rounded text-xs bg-slate-50 focus:bg-white focus:border-brand-500 focus:outline-none transition-colors"
-          />
-        </td>
-      </tr>
+      <div key={name} className="space-y-1">
+        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</label>
+        <input
+          type="text"
+          name={name}
+          value={value}
+          onChange={handleDetailChange}
+          placeholder={placeholder}
+          className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 text-xs focus:outline-none focus:border-slate-500 transition-colors outline-none"
+        />
+      </div>
     );
   };
-
-  const renderSeparator = () => (
-    <tr className="bg-[#ffff00] h-6 border border-slate-400">
-      <td colSpan="2" className="border border-slate-400"></td>
-    </tr>
-  );
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6">
@@ -452,151 +442,189 @@ const ProfilePage = () => {
          </div>
       </div>
 
-      {/* Dynamic Profile Tables */}
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Side: General Details & Test Scores */}
-        <div className="space-y-6">
-          <div className="overflow-x-auto bg-white border border-slate-200 rounded-2xl shadow-sm p-4 md:p-6">
-            <table className="border-collapse border border-slate-400 w-full">
-              <thead>
-                <tr className="bg-[#ffff00] border border-slate-400">
-                  <th colSpan="2" className="border border-slate-400 p-2.5 text-xs font-bold text-slate-900 text-center uppercase tracking-wide">
-                    General Details
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {renderRow("Candidate Name", "candidateName")}
-                {renderRow("Age of Candidate", "ageOfCandidate")}
-                {renderRow("Date of Birth", "dob")}
-                {renderRow("Student Phone", "studentPhone")}
-                {renderRow("Student Email", "studentEmail")}
-                {renderRow("Any Budget for Studying Abroad", "budget")}
-                {renderRow("Choose Subject and Interest", "subjectInterest")}
-                {renderRow("Choose Country", "country")}
-                {renderRow("Any State Preference", "statePreference")}
-                {renderRow("Any City Preference", "cityPreference")}
-              </tbody>
-            </table>
+      {/* Dynamic Profile Sections */}
+      <div className="mt-8 space-y-8">
+        {/* Upper Row: General Details & Test Scores side by side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          {/* General Details Card */}
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 md:p-8">
+            <div className="mb-6">
+              <h3 className="text-base font-bold text-slate-900">General Details</h3>
+              <p className="text-slate-400 text-[10px] uppercase font-semibold tracking-wider">Candidate info & preferences</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {renderInputBlock("Candidate Name", "candidateName")}
+              {renderInputBlock("Age of Candidate", "ageOfCandidate")}
+              {renderInputBlock("Date of Birth", "dob", "YYYY-MM-DD")}
+              {renderInputBlock("Student Phone", "studentPhone")}
+              {renderInputBlock("Student Email", "studentEmail")}
+              {renderInputBlock("Any Budget for Studying Abroad", "budget")}
+              {renderInputBlock("Choose Subject and Interest", "subjectInterest")}
+              {renderInputBlock("Choose Country", "country")}
+              {renderInputBlock("Any State Preference", "statePreference")}
+              {renderInputBlock("Any City Preference", "cityPreference")}
+            </div>
+
+            {/* Current Status */}
+            <div className="mt-6 pt-6 border-t border-slate-100">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Current Status</label>
+              <input
+                type="text"
+                name="currentStatus"
+                value={formData.profile_details?.currentStatus || ""}
+                onChange={handleDetailChange}
+                placeholder="Enter current status..."
+                className="w-full mt-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-500 transition-colors outline-none"
+              />
+            </div>
           </div>
 
-          <div className="overflow-x-auto bg-white border border-slate-200 rounded-2xl shadow-sm p-4 md:p-6">
-            <table className="border-collapse border border-slate-400 w-full">
-              <tbody>
-                {renderRow("Test Scores", "testScores")}
-                {renderRow("TOEFL Score", "toeflScore")}
-                {renderRow("Toefl mock score", "toeflMock")}
-                {renderRow("Toefl test date", "toeflDate")}
-                
-                {renderSeparator()}
-                
-                {renderRow("IELTS Score", "ieltsScore")}
-                {renderRow("IELTS mock score", "ieltsMock")}
-                {renderRow("IELTS Date", "ieltsDate")}
-                
-                {renderSeparator()}
-                
-                {renderRow("GRE Score", "greScore")}
-                {renderRow("GRE Mock score", "greMock")}
-                {renderRow("GRE Date", "greDate")}
-                
-                {renderSeparator()}
-                
-                {renderRow("GMAT Score", "gmatScore")}
-                {renderRow("GMAT mock score", "gmatMock")}
-                {renderRow("GMAT Date", "gmatDate")}
-                
-                {renderSeparator()}
-                
-                {renderRow("SAT Score", "satScore")}
-                {renderRow("SAT mock score", "satMock")}
-                {renderRow("SAT date", "satDate")}
-              </tbody>
-            </table>
+          {/* Test Scores Card */}
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 md:p-8">
+            <div className="mb-6">
+              <h3 className="text-base font-bold text-slate-900">Test Scores</h3>
+              <p className="text-slate-400 text-[10px] uppercase font-semibold tracking-wider">Standardized exam results</p>
+            </div>
 
-            {/* Current Status Section */}
-            <table className="border-collapse border border-slate-400 w-full mt-4">
-              <tbody>
-                <tr className="border border-slate-400">
-                  <td className="w-1/2 border border-slate-400 bg-white p-2 text-xs font-bold text-slate-800 text-center">
-                    Current Status -
-                  </td>
-                  <td className="w-1/2 border border-slate-400 bg-[#ffff00] p-2 text-xs text-black font-bold">
-                    <input
-                      type="text"
-                      name="currentStatus"
-                      value={formData.profile_details?.currentStatus || ""}
-                      onChange={handleDetailChange}
-                      placeholder="-"
-                      className="w-full px-2 py-1 border border-slate-300 rounded text-xs bg-[#ffff00] text-black font-bold focus:bg-white focus:text-slate-900 focus:outline-none"
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="space-y-6">
+              {/* TOEFL */}
+              <div>
+                <h4 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider pb-1 border-b border-slate-100">TOEFL</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {renderInputBlock("TOEFL Score", "toeflScore")}
+                  {renderInputBlock("Mock Score", "toeflMock")}
+                  {renderInputBlock("Test Date", "toeflDate")}
+                </div>
+              </div>
+
+              {/* IELTS */}
+              <div className="pt-4 border-t border-slate-100">
+                <h4 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider pb-1 border-b border-slate-100">IELTS</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {renderInputBlock("IELTS Score", "ieltsScore")}
+                  {renderInputBlock("Mock Score", "ieltsMock")}
+                  {renderInputBlock("IELTS Date", "ieltsDate")}
+                </div>
+              </div>
+
+              {/* GRE */}
+              <div className="pt-4 border-t border-slate-100">
+                <h4 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider pb-1 border-b border-slate-100">GRE</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {renderInputBlock("GRE Score", "greScore")}
+                  {renderInputBlock("Mock Score", "greMock")}
+                  {renderInputBlock("GRE Date", "greDate")}
+                </div>
+              </div>
+
+              {/* GMAT */}
+              <div className="pt-4 border-t border-slate-100">
+                <h4 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider pb-1 border-b border-slate-100">GMAT</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {renderInputBlock("GMAT Score", "gmatScore")}
+                  {renderInputBlock("Mock Score", "gmatMock")}
+                  {renderInputBlock("GMAT Date", "gmatDate")}
+                </div>
+              </div>
+
+              {/* SAT */}
+              <div className="pt-4 border-t border-slate-100">
+                <h4 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider pb-1 border-b border-slate-100">SAT</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {renderInputBlock("SAT Score", "satScore")}
+                  {renderInputBlock("Mock Score", "satMock")}
+                  {renderInputBlock("SAT Date", "satDate")}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Right Side: Academics */}
-        <div className="space-y-6">
-          <div className="overflow-x-auto bg-white border border-slate-200 rounded-2xl shadow-sm p-4 md:p-6">
-            <table className="border-collapse border border-slate-400 w-full">
-              <thead>
-                <tr className="bg-[#ffff00] border border-slate-400">
-                  <th colSpan="2" className="border border-slate-400 p-2.5 text-xs font-bold text-slate-900 text-center uppercase tracking-wide">
-                    Academics
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {renderRow("10th", "passingYear10th")}
-                {renderRow("Passing Year for 10th", "passingYear10thYear")}
-                {renderRow("School name", "schoolName10th")}
+        {/* Lower Row: Academics below them */}
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 md:p-8">
+          <div className="mb-6">
+            <h3 className="text-base font-bold text-slate-900">Academics</h3>
+            <p className="text-slate-400 text-[10px] uppercase font-semibold tracking-wider">Educational history</p>
+          </div>
 
-                {renderSeparator()}
+          <div className="space-y-6">
+            {/* 10th */}
+            <div>
+              <h4 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider pb-1 border-b border-slate-100">10th Standard</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {renderInputBlock("10th Score", "passingYear10th")}
+                {renderInputBlock("Passing Year", "passingYear10thYear")}
+                {renderInputBlock("School Name", "schoolName10th")}
+              </div>
+            </div>
 
-                {renderRow("12th", "passingYear12th")}
-                {renderRow("Passing Year for 12th", "passingYear12thYear")}
-                {renderRow("Stream (Science/Comm/Arts)", "stream12th")}
-                {renderRow("School name", "schoolName12th")}
+            {/* 12th */}
+            <div className="pt-4 border-t border-slate-100">
+              <h4 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider pb-1 border-b border-slate-100">12th Standard</h4>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {renderInputBlock("12th Score", "passingYear12th")}
+                {renderInputBlock("Passing Year", "passingYear12thYear")}
+                {renderInputBlock("Stream", "stream12th")}
+                {renderInputBlock("School Name", "schoolName12th")}
+              </div>
+            </div>
 
-                {renderSeparator()}
+            {/* Diploma */}
+            <div className="pt-4 border-t border-slate-100">
+              <h4 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider pb-1 border-b border-slate-100">Diploma</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {renderInputBlock("Diploma Score", "passingYearDiploma")}
+                {renderInputBlock("Passing Year", "passingYearDiplomaYear")}
+                {renderInputBlock("Diploma Name", "diplomaName")}
+                {renderInputBlock("Awarding Body", "awardingBodyDiploma")}
+                {renderInputBlock("Duration", "durationDiploma")}
+              </div>
+            </div>
 
-                {renderRow("Diploma", "passingYearDiploma")}
-                {renderRow("Passing Year for Diploma", "passingYearDiplomaYear")}
-                {renderRow("Diploma Name", "diplomaName")}
-                {renderRow("Awarding Body of Diploma", "awardingBodyDiploma")}
-                {renderRow("Duration of Diploma", "durationDiploma")}
+            {/* Bachelors */}
+            <div className="pt-4 border-t border-slate-100">
+              <h4 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider pb-1 border-b border-slate-100">Bachelors</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {renderInputBlock("Bachelors Score", "passingYearBachelors")}
+                {renderInputBlock("Passing Year", "passingYearBachelorsYear")}
+                {renderInputBlock("Degree Name", "degreeNameBachelors")}
+                {renderInputBlock("College Name", "collegeNameBachelors")}
+                {renderInputBlock("University Name", "universityNameBachelors")}
+                {renderInputBlock("Duration of Course", "durationBachelors")}
+                <div className="md:col-span-3">
+                  {renderInputBlock("Backlogs (If any)", "backlogsBachelors")}
+                </div>
+              </div>
+            </div>
 
-                {renderSeparator()}
+            {/* PG Diploma */}
+            <div className="pt-4 border-t border-slate-100">
+              <h4 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider pb-1 border-b border-slate-100">PG Diploma</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {renderInputBlock("PG Diploma Score", "passingYearPgDiploma")}
+                {renderInputBlock("Passing Year", "passingYearPgDiplomaYear")}
+                {renderInputBlock("PG Diploma Name", "pgDiplomaName")}
+                {renderInputBlock("Awarding Body", "awardingBodyPgDiploma")}
+                {renderInputBlock("Duration of Course", "durationPgDiploma")}
+              </div>
+            </div>
 
-                {renderRow("Bachelors", "passingYearBachelors")}
-                {renderRow("Passing Year for Bachelors", "passingYearBachelorsYear")}
-                {renderRow("Degree Name", "degreeNameBachelors")}
-                {renderRow("College Name", "collegeNameBachelors")}
-                {renderRow("University Name", "universityNameBachelors")}
-                {renderRow("Duration of Course", "durationBachelors")}
-                {renderRow("Backlogs of Subjects - Provide Subject names (If any)", "backlogsBachelors")}
-
-                {renderSeparator()}
-
-                {renderRow("PG Diploma", "passingYearPgDiploma")}
-                {renderRow("Passing Year for PG Diploma", "passingYearPgDiplomaYear")}
-                {renderRow("PG Diploma Name", "pgDiplomaName")}
-                {renderRow("Awarding Body of PG Diploma", "awardingBodyPgDiploma")}
-                {renderRow("Duration of Diploma", "durationPgDiploma")}
-
-                {renderSeparator()}
-
-                {renderRow("Masters", "passingYearMasters")}
-                {renderRow("Passing Year for Masters", "passingYearMastersYear")}
-                {renderRow("Degree Name", "degreeNameMasters")}
-                {renderRow("College Name", "collegeNameMasters")}
-                {renderRow("University Name", "universityNameMasters")}
-                {renderRow("Duration of Course", "durationMasters")}
-                {renderRow("Backlogs of Subjects - Provide Subject names (If any)", "backlogsMasters")}
-              </tbody>
-            </table>
+            {/* Masters */}
+            <div className="pt-4 border-t border-slate-100">
+              <h4 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider pb-1 border-b border-slate-100">Masters</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {renderInputBlock("Masters Score", "passingYearMasters")}
+                {renderInputBlock("Passing Year", "passingYearMastersYear")}
+                {renderInputBlock("Degree Name", "degreeNameMasters")}
+                {renderInputBlock("College Name", "collegeNameMasters")}
+                {renderInputBlock("University Name", "universityNameMasters")}
+                {renderInputBlock("Duration of Course", "durationMasters")}
+                <div className="md:col-span-3">
+                  {renderInputBlock("Backlogs (If any)", "backlogsMasters")}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
