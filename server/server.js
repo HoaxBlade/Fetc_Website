@@ -688,6 +688,52 @@ const camelToSnake = (obj) => {
   return n;
 };
 
+const triggerCheerioWorkflow = async (lead) => {
+  const triggerUrl = process.env.CHEERIO_TRIGGER_URL;
+  const apiKey = process.env.API_KEY;
+
+  if (!triggerUrl) {
+    console.warn('[Cheerio AI] Warning: CHEERIO_TRIGGER_URL is not configured in .env file.');
+    return;
+  }
+
+  try {
+    const payload = {
+      name: lead.name || 'Unnamed Lead',
+      email: lead.email || '',
+      phone: lead.phone || '',
+      subject: lead.subject || 'New Web Enquiry',
+      message: lead.message || ''
+    };
+
+    console.log('[Cheerio AI] Triggering workflow automation with payload:', payload);
+
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+
+    if (apiKey) {
+      headers['Authorization'] = `Bearer ${apiKey}`;
+      headers['x-api-key'] = apiKey;
+    }
+
+    const response = await fetch(triggerUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const responseText = await response.text().catch(() => '');
+      console.error(`[Cheerio AI] HTTP Error response (${response.status}): ${responseText}`);
+    } else {
+      console.log('[Cheerio AI] Workflow triggered successfully.');
+    }
+  } catch (err) {
+    console.error('[Cheerio AI] Error triggering workflow:', err);
+  }
+};
+
 // GET /api/v1/lead/allleads - Get all leads with their documents populated
 app.get('/api/v1/lead/allleads', async (req, res) => {
   try {
@@ -865,6 +911,9 @@ app.post('/api/v1/lead/create', async (req, res) => {
       ...docMap,
       documents: docs
     };
+
+    // Trigger Cheerio AI Workflow
+    await triggerCheerioWorkflow(newLead);
 
     res.status(201).json({ success: true, data: snakeToCamel(finalLead) });
   } catch (err) {
@@ -1141,6 +1190,9 @@ app.post('/api/leads', async (req, res) => {
       'INSERT INTO tickets (user_id, name, email, subject, message, priority) VALUES ($1, $2, $3, $4, $5, $6)',
       [userId || null, name, email, subject, message, 'HIGH']
     );
+
+    // 3. Trigger Cheerio AI Workflow
+    await triggerCheerioWorkflow(leadResult.rows[0]);
 
     res.json({ success: true, lead: leadResult.rows[0] });
   } catch (err) {
