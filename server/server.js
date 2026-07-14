@@ -339,6 +339,15 @@ app.post('/api/auth/signup', async (req, res) => {
       [name, email, hashedPassword, 'USER', phone]
     );
 
+    // Trigger Cheerio AI Workflow for signup
+    await triggerCheerioWorkflow({
+      name,
+      email,
+      phone,
+      subject: 'New User Signup',
+      message: `A new user account was registered with email: ${email} and phone: ${phone || 'N/A'}`
+    });
+
     res.status(201).json({ success: true, message: 'Account created successfully!' });
   } catch (err) {
     console.error('Signup error:', err);
@@ -579,6 +588,15 @@ app.post('/api/admin/users/invite', async (req, res) => {
       console.error('❌ Failed to send invitation email:', mailErr.message);
       // We still return success:true because the user was created in the DB
     }
+
+    // Trigger Cheerio AI Workflow for admin user invitation
+    await triggerCheerioWorkflow({
+      name,
+      email,
+      phone,
+      subject: 'New User Invitation (Admin)',
+      message: `Admin invited a user with role: ${role || 'N/A'}`
+    });
 
     res.status(201).json({ success: true, message: 'User invited and account created!' });
   } catch (err) {
@@ -912,8 +930,10 @@ app.post('/api/v1/lead/create', async (req, res) => {
       documents: docs
     };
 
-    // Trigger Cheerio AI Workflow
-    await triggerCheerioWorkflow(newLead);
+    // Trigger Cheerio AI Workflow (except for Career Assessment)
+    if (newLead.subject !== 'Career Assessment Inquiry') {
+      await triggerCheerioWorkflow(newLead);
+    }
 
     res.status(201).json({ success: true, data: snakeToCamel(finalLead) });
   } catch (err) {
@@ -1191,8 +1211,10 @@ app.post('/api/leads', async (req, res) => {
       [userId || null, name, email, subject, message, 'HIGH']
     );
 
-    // 3. Trigger Cheerio AI Workflow
-    await triggerCheerioWorkflow(leadResult.rows[0]);
+    // 3. Trigger Cheerio AI Workflow (except for Career Assessment)
+    if (subject !== 'Career Assessment Inquiry') {
+      await triggerCheerioWorkflow(leadResult.rows[0]);
+    }
 
     res.json({ success: true, lead: leadResult.rows[0] });
   } catch (err) {
@@ -1333,7 +1355,28 @@ app.post('/api/doubts', async (req, res) => {
       'INSERT INTO doubts (user_id, subject, description) VALUES ($1, $2, $3) RETURNING *',
       [userId, subject, description]
     );
-    res.status(201).json({ success: true, doubt: result.rows[0] });
+    const doubt = result.rows[0];
+
+    // Trigger Cheerio AI Workflow with user details
+    if (userId) {
+      try {
+        const userRes = await db.query('SELECT name, email, phone FROM users WHERE id = $1', [userId]);
+        if (userRes.rows.length > 0) {
+          const user = userRes.rows[0];
+          await triggerCheerioWorkflow({
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            subject: `Doubt Asked: ${subject}`,
+            message: description
+          });
+        }
+      } catch (userErr) {
+        console.error('Error fetching user for doubt trigger:', userErr);
+      }
+    }
+
+    res.status(201).json({ success: true, doubt });
   } catch (err) {
     console.error('Create doubt error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
