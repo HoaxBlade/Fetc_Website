@@ -4,6 +4,23 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// Disable right-click context menu
+document.addEventListener("contextmenu", (e) => {
+  e.preventDefault();
+});
+
+// Disable common inspect and source-view keyboard shortcuts
+document.addEventListener("keydown", (e) => {
+  if (
+    e.key === "F12" ||
+    (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "i" || e.key === "J" || e.key === "j" || e.key === "C" || e.key === "c")) ||
+    (e.ctrlKey && (e.key === "U" || e.key === "u"))
+  ) {
+    e.preventDefault();
+  }
+});
+
+
 window.API_BASE = (process.env.REACT_APP_API_URL || '').trim().replace(/\/$/, '');
 
 // Global fetch interceptor to bypass Ngrok browser warning
