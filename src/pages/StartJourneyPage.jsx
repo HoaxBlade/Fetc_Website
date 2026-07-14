@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { User, Mail, FileText, MessageSquare, Send, MapPin, Phone, Plane } from "lucide-react";
+import { User, Mail, FileText, MessageSquare, Send, MapPin, Phone, Plane, Calendar } from "lucide-react";
 
 const StartJourneyPage = () => {
   const location = useLocation();
@@ -12,6 +12,7 @@ const StartJourneyPage = () => {
     email: "",
     phone: "",
     subject: `Study Abroad Enquiry - ${country}`,
+    bookingDate: "",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,11 +26,18 @@ const StartJourneyPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      const submissionData = {
+        ...formData,
+        message: formData.bookingDate 
+          ? `${formData.message}\n\n[Booking Date Requested: ${formData.bookingDate}]` 
+          : formData.message
+      };
+
       // Backend /api/leads already creates both leads and tickets now
       const response = await fetch((window.API_BASE||'') + '/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submissionData),
       });
       const data = await response.json();
       if (data.success) {
@@ -39,6 +47,7 @@ const StartJourneyPage = () => {
             email: "", 
             phone: "", 
             subject: `Study Abroad Enquiry - ${country}`, 
+            bookingDate: "",
             message: "" 
         });
         setTimeout(() => setIsSubmitted(false), 5000);
@@ -160,7 +169,7 @@ const StartJourneyPage = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2 group">
                 <label className="text-sm font-semibold text-slate-700">Phone Number <span className="text-red-500">*</span></label>
                 <div className="relative">
@@ -190,6 +199,22 @@ const StartJourneyPage = () => {
                     type="text"
                     value="Study Abroad Journey"
                     className="w-full pl-11 pr-4 py-3.5 bg-slate-100 border border-slate-200 rounded-xl text-sm font-bold text-slate-600"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2 group">
+                <label className="text-sm font-semibold text-slate-700">Preferred Date</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-brand-600 transition-colors">
+                    <Calendar size={18} />
+                  </div>
+                  <input
+                    type="date"
+                    name="bookingDate"
+                    value={formData.bookingDate}
+                    onChange={handleChange}
+                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600 transition-all hover:border-slate-300 font-medium text-slate-700 cursor-pointer"
                   />
                 </div>
               </div>
