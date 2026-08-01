@@ -28,6 +28,7 @@ import GenericPage from "./pages/GenericPage";
 import MockTestsPage from "./pages/MockTestsPage";
 import ScrollToTop from "./components/ScrollToTop";
 import NewsFlashBanner from "./components/NewsFlashBanner";
+import WhatsAppWidget from "./components/WhatsAppWidget";
 // User Imports
 import UserLayout from "./components/user/UserLayout";
 import ProfilePage from "./pages/ProfilePage";
@@ -128,6 +129,7 @@ function AppContent() {
         </Routes>
       </main>
       {!isAdminPath && <Footer />}
+      {!isAdminPath && <WhatsAppWidget />}
     </div>
   );
 }
