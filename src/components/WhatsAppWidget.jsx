@@ -1,7 +1,7 @@
 import React from 'react';
 
 const WhatsAppWidget = () => {
-  // Replace with your Cheerio WhatsApp Business Number (e.g. 919033347209 or 919876543210)
+  // Replace with your Cheerio WhatsApp Business Number (e.g. 919033347209)
   const phoneNumber = process.env.REACT_APP_WHATSAPP_NUMBER || "919033347209"; 
   
   // Trigger text set in Cheerio AI Workflow
