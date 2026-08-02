@@ -1,7 +1,7 @@
 const db = require('./db');
 
 const initialPageData = [
-  // 1. HOME PAGE
+  // 1. HOME PAGE - Exact word-for-word text matching live website components
   {
     slug: '/',
     title: 'Home',
@@ -11,65 +11,143 @@ const initialPageData = [
     seo_description: 'Empowering students with digital classrooms, official IELTS/PTE training, and international university admissions.',
     content: {
       hero: {
-        badge: "Your Global Education Partner",
+        badge: "Your Future, Simplified ✨",
         bgImage: "",
-        subtitle: "Unlock a world of opportunities with top-tier test prep, university admissions, and visa guidance.",
-        titleMain: "Shape Your Future with",
-        buttonText: "Start Assessment",
-        titleHighlight: "Global Education"
+        titleMain: "Dream Big. We'll",
+        titleHighlight: "Handle the Rest.",
+        subtitle: "Forget the stress of paperwork. We make your journey to international education smooth, fun, and totally achievable.",
+        buttonText: "Start Enrollment"
       },
       trustBar: {
-        message: "Trusted by 100+ Global Universities & 10k+ Students Worldwide"
+        message: "WORKING WITH 100+ AMAZING UNIVERSITIES TO GET YOU THERE"
       },
       studyAbroad: {
         title: "Explore the World",
+        badgeText: "Global Vibes",
         description: "Pick your dream destination and let us handle the boring stuff. We've helped thousands of students settle in over 10+ countries.",
         linkText: "Start My Adventure",
-        badgeText: "Global Vibes",
         stats: [
           { value: "100+", label: "Universities" },
           { value: "10+", label: "Destinations" },
           { value: "98%", label: "Visa Success" }
         ]
       },
-      examTraining: {
-        title: "Ace Your Exams",
-        description: "We make exam prep feel like a breeze with expert coaching and real mock tests.",
-        linkText: "Check Courses",
-        badgeText: "Score Booster",
-        stats: [
-          { value: "15k+", label: "Students Trained" },
-          { value: "8.5", label: "Max IELTS Band" },
-          { value: "99%", label: "Satisfaction Rate" }
-        ]
-      },
-      careerAssessment: {
-        title: "Career Assessment",
-        description: "Discover your perfect professional path with our highly tailored behavioral and occupational analysis.",
-        linkText: "Start Assessment"
-      },
       features: {
         sectionTitle: "Why Students Love Us",
         sectionSubtitle: "We're not your typical consultants. We care about your journey as much as you do.",
         items: [
           {
-            title: "1-on-1 Guidance",
-            desc: "Personalized support every step of the way, from course selection to visa approval."
+            title: "Friendly Mentors",
+            desc: "Learn from people who have been there. Our mentors are here to guide you, not just lecture you.",
+            metric: "50+",
+            label: "Elite Mentors"
           },
           {
-            title: "Certified Trainers",
-            desc: "Learn from top-scoring IELTS and PTE experts with years of teaching experience."
+            title: "98% Visa Success",
+            desc: "We've got visa processing down to a science. Relax, we've done this thousands of times.",
+            metric: "98%",
+            label: "Approval Rate"
           },
           {
-            title: "High Success Rate",
-            desc: "Proven track record of getting students into their dream universities abroad."
+            title: "Real Result Boost",
+            desc: "Our AI-powered mock tests show you exactly where to improve so you can ace your exams.",
+            metric: "2+",
+            label: "Band Increase"
+          },
+          {
+            title: "Global Reach",
+            desc: "From London to Sydney, we have partners all over the world waiting to welcome you.",
+            metric: "10+",
+            label: "Countries"
           }
+        ]
+      },
+      examTraining: {
+        title: "Ace Your Exams",
+        badgeText: "Top Coaching",
+        description: "We make exam prep feel like a breeze with expert coaching and real mock tests.",
+        linkText: "Check Courses",
+        stats: [
+          { value: "100%", label: "Result Boost" },
+          { value: "200+", label: "Mock Tests" },
+          { value: "Expert", label: "1-on-1 Mentors" }
+        ]
+      },
+      howItWorks: {
+        badgeText: "Your Success Blueprint",
+        title: "How We Get You There",
+        subtitle: "A proven 3-step process that has helped 5,000+ students achieve their global education dreams.",
+        steps: [
+          {
+            number: "01",
+            title: "Discovery Call",
+            desc: "Connect with our senior experts to map out your ambitions, evaluate your profile, and build a personalized roadmap."
+          },
+          {
+            number: "02",
+            title: "Strategic Training",
+            desc: "Enroll in our high-precision prep programs — IELTS, PTE, TOEFL — with AI-driven mock tests and 1-on-1 mentoring."
+          },
+          {
+            number: "03",
+            title: "Arrival & Success",
+            desc: "Secure your visa, finalize admissions, and begin your international journey with end-to-end post-landing support."
+          }
+        ]
+      },
+      careerAssessment: {
+        title: "Find Your Path",
+        badgeText: "Smart Career",
+        description: "Not sure what to study? Our AI-powered analysis helps you discover your strengths and the perfect career to match."
+      },
+      welcomeSection: {
+        badge: "Together with Gina Abroad",
+        title: "Why Choose FETC?",
+        subtitle: "We're more than just consultants. We're your friends on this big journey, making sure every step—from exams to your new dorm—is as easy as it should be.",
+        highlights: [
+          "Learning That Fits You",
+          "Smart AI Mock Tests",
+          "Stress-Free Visa Help",
+          "Support Even After You Land"
+        ],
+        cards: [
+          {
+            title: "Learn Your Way",
+            desc: "Casual, fun, and super effective language training with mentors who actually care.",
+            tag: "Learning"
+          },
+          {
+            title: "Testing Made Easy",
+            desc: "We're an official center for all the big exams. We'll help you ace them without the stress.",
+            tag: "Testing"
+          },
+          {
+            title: "Go Anywhere",
+            desc: "10+ countries, hundreds of universities. We'll help you find the one that feels like home.",
+            tag: "Global"
+          },
+          {
+            title: "Smart Futures",
+            desc: "Our AI helps you figure out what you're naturally good at, so you pick the right career.",
+            tag: "AI Powered"
+          }
+        ]
+      },
+      contactCTA: {
+        badge: "Let's Connect",
+        title: "Ready to Start Your Global Chapter?",
+        subtitle: "Schedule your one-on-one session with our senior experts today. Your success story begins with a single conversation.",
+        contacts: [
+          { label: "Call Us Directly", value: "+91-9033347200 to 09" },
+          { label: "Email Support", value: "info@fetc.in" },
+          { label: "Visit Our Centre", value: "Surat, Gujarat, India" },
+          { label: "Working Hours", value: "Mon – Sat, 9AM – 7PM" }
         ]
       }
     }
   },
 
-  // 2. COMPANY PROFILE / ABOUT US
+  // 2. COMPANY PROFILE / ABOUT US - Exact word-for-word text
   {
     slug: '/about/company-profile',
     title: 'Company Profile',
@@ -197,7 +275,7 @@ const initialPageData = [
     }
   },
 
-  // 3. CONTACT US PAGE
+  // 3. CONTACT US PAGE - Exact word-for-word text
   {
     slug: '/contact',
     title: 'Contact Us',
@@ -211,7 +289,7 @@ const initialPageData = [
         subtitle: "Located in Surat, Gujarat. Drop by for a coffee and chat about your future."
       },
       infoSection: {
-        title: "Get in Touch",
+        title: "Get In Touch With Us",
         description: "Have questions about our courses, study abroad programs, or anything else? We'd love to hear from you."
       },
       workingHours: {
@@ -219,14 +297,14 @@ const initialPageData = [
         timing: "Monday - Saturday: 9:00 AM - 7:00 PM"
       },
       contactDetails: {
-        address: "Surat, Gujarat, India",
-        phone: "+91 98765 43210",
+        address: "2nd floor, 239, Roongta Signature\nNr. Shyam Mandir Vesu\nSurat - 395007",
+        phone: "+91 9033347200",
         email: "info@fetc.in"
       }
     }
   },
 
-  // 4. FAQ PAGE
+  // 4. FAQ PAGE - Exact word-for-word text
   {
     slug: '/faq',
     title: 'Frequently Asked Questions',
@@ -319,7 +397,7 @@ const initialPageData = [
     }
   },
 
-  // 5. TERMS AND CONDITIONS
+  // 5. TERMS AND CONDITIONS - Exact word-for-word text
   {
     slug: '/terms',
     title: 'Terms and Conditions',
@@ -370,7 +448,7 @@ const initialPageData = [
     }
   },
 
-  // 6. PRIVACY POLICY
+  // 6. PRIVACY POLICY - Exact word-for-word text
   {
     slug: '/privacy',
     title: 'Privacy Policy',
@@ -417,7 +495,7 @@ const initialPageData = [
     }
   },
 
-  // 7. REFUND POLICY
+  // 7. REFUND POLICY - Exact word-for-word text
   {
     slug: '/refund',
     title: 'Refund Policy',
@@ -444,7 +522,7 @@ const initialPageData = [
     }
   },
 
-  // 8. CAREER ASSESSMENT
+  // 8. CAREER ASSESSMENT - Exact word-for-word text
   {
     slug: '/career-assessment/behaviour-and-career-analysis',
     title: 'Behaviour and Career Analysis',
@@ -508,7 +586,7 @@ const initialPageData = [
   }
 ];
 
-// DYNAMICALLY ADD ALL STUDY ABROAD COUNTRY PAGES
+// DYNAMICALLY ADD ALL STUDY ABROAD COUNTRY PAGES WORD-FOR-WORD
 const countries = [
   {
     slug: "united-kingdom",
@@ -602,7 +680,7 @@ countries.forEach(country => {
   });
 });
 
-// DYNAMICALLY ADD ALL EXAM TRAINING PAGES
+// DYNAMICALLY ADD ALL EXAM TRAINING PAGES WORD-FOR-WORD
 const exams = [
   {
     slug: "selt",
@@ -742,7 +820,7 @@ exams.forEach(exam => {
 });
 
 async function seedPages() {
-  console.log("🌱 Starting Exact 100% Word-for-Word Page Content Seeder...");
+  console.log("🌱 Starting 100% Comprehensive Word-for-Word Page Content Seeder...");
   try {
     for (const page of initialPageData) {
       const existing = await db.query('SELECT id FROM pages WHERE slug = $1', [page.slug]);
@@ -758,12 +836,12 @@ async function seedPages() {
         await db.query(
           `INSERT INTO pages (slug, title, status, nav_visibility, seo_title, seo_description, content)
            VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-          [page.slug, page.title, page.status, page.nav_visibility, page.seo_title, page.seo_description, JSON.stringify(page.content)]
+          [page.title, page.status, page.nav_visibility, page.seo_title, page.seo_description, JSON.stringify(page.content)]
         );
         console.log(`✨ Inserted page: ${page.slug} (${page.title})`);
       }
     }
-    console.log(`\n🎉 Seeding completed successfully! Processed ${initialPageData.length} total pages with exact word-for-word text and emojis.`);
+    console.log(`\n🎉 Seeding completed successfully! Processed ${initialPageData.length} total pages with 100% exact text, headings, badges, and emojis.`);
   } catch (err) {
     console.error("❌ Seeding error:", err);
   } finally {
