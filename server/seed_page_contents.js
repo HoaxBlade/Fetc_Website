@@ -836,7 +836,7 @@ async function seedPages() {
         await db.query(
           `INSERT INTO pages (slug, title, status, nav_visibility, seo_title, seo_description, content)
            VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-          [page.title, page.status, page.nav_visibility, page.seo_title, page.seo_description, JSON.stringify(page.content)]
+          [page.slug, page.title, page.status, page.nav_visibility, page.seo_title, page.seo_description, JSON.stringify(page.content)]
         );
         console.log(`✨ Inserted page: ${page.slug} (${page.title})`);
       }
