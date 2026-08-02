@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles } from 'lucide-react';
+import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send } from 'lucide-react';
 import { getAssetUrl } from '../../apiConfig';
 import SafeImage from '../../components/SafeImage';
 
@@ -690,6 +690,171 @@ const AdminPages = () => {
                             </div>
                           </div>
 
+                          {/* 5. Features Grid Section */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <Sparkles size={18} className="text-brand-600" /> 5. Features Grid (Why Students Love Us)
+                            </h3>
+                            <div className="space-y-4">
+                              <div>
+                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Section Title</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.features?.sectionTitle || ""}
+                                  onChange={(e) => handleContentChange('features', 'sectionTitle', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Subtitle</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.features?.sectionSubtitle || ""}
+                                  onChange={(e) => handleContentChange('features', 'sectionSubtitle', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 6. How It Works Section */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <CheckCircle2 size={18} className="text-brand-600" /> 6. How It Works (Blueprint)
+                            </h3>
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Section Title</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.howItWorks?.title || ""}
+                                    onChange={(e) => handleContentChange('howItWorks', 'title', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.howItWorks?.badgeText || ""}
+                                    onChange={(e) => handleContentChange('howItWorks', 'badgeText', e.target.value)}
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Subtitle</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.howItWorks?.subtitle || ""}
+                                  onChange={(e) => handleContentChange('howItWorks', 'subtitle', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 7. Career Assessment Section */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <Compass size={18} className="text-brand-600" /> 7. Career Assessment Section
+                            </h3>
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Section Title</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.careerAssessment?.title || ""}
+                                    onChange={(e) => handleContentChange('careerAssessment', 'title', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.careerAssessment?.badgeText || ""}
+                                    onChange={(e) => handleContentChange('careerAssessment', 'badgeText', e.target.value)}
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.careerAssessment?.description || ""}
+                                  onChange={(e) => handleContentChange('careerAssessment', 'description', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 8. Welcome Section */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <Info size={18} className="text-brand-600" /> 8. Welcome / Why Choose Us Section
+                            </h3>
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Section Title</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.welcomeSection?.title || ""}
+                                    onChange={(e) => handleContentChange('welcomeSection', 'title', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.welcomeSection?.badge || ""}
+                                    onChange={(e) => handleContentChange('welcomeSection', 'badge', e.target.value)}
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Subtitle</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.welcomeSection?.subtitle || ""}
+                                  onChange={(e) => handleContentChange('welcomeSection', 'subtitle', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 9. Contact CTA Section */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <Send size={18} className="text-brand-600" /> 9. Contact Call-To-Action (CTA)
+                            </h3>
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">CTA Title</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.contactCTA?.title || ""}
+                                    onChange={(e) => handleContentChange('contactCTA', 'title', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
+                                  <input
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                    value={selectedPage.content?.contactCTA?.badge || ""}
+                                    onChange={(e) => handleContentChange('contactCTA', 'badge', e.target.value)}
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Subtitle</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.contactCTA?.subtitle || ""}
+                                  onChange={(e) => handleContentChange('contactCTA', 'subtitle', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
                           {/* 7. Custom Sections Builder */}
                           <div className="pt-10 border-t border-slate-100">
                             <div className="flex items-center justify-between mb-8">
@@ -1081,7 +1246,7 @@ const AdminPages = () => {
                       )}
 
                       {/* 4. STUDY ABROAD / COUNTRY EDITOR */}
-                      {selectedPage.slug?.toLowerCase().startsWith('/study-abroad/') && (
+                      {(selectedPage.slug?.toLowerCase() === '/study-abroad' || selectedPage.slug?.toLowerCase().startsWith('/study-abroad/')) && (
                         <div className="space-y-6 pb-20">
                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
                             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
@@ -1230,7 +1395,7 @@ const AdminPages = () => {
                       )}
 
                       {/* 5. EXAM & TRAINING EDITOR */}
-                      {selectedPage.slug?.toLowerCase().startsWith('/exam-training/') && (
+                      {(selectedPage.slug?.toLowerCase() === '/exam-training' || selectedPage.slug?.toLowerCase().startsWith('/exam-training/')) && (
                         <div className="space-y-6 pb-20">
                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
                             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
@@ -1633,7 +1798,7 @@ const AdminPages = () => {
                       )}
 
                       {/* DYNAMIC SECTION EDITOR FOR GENERIC PAGES */}
-                      {selectedPage.slug !== '/' && selectedPage.slug !== '/about/company-profile' && selectedPage.slug.toLowerCase() !== '/contact' && !selectedPage.slug.startsWith('/study-abroad/') && !selectedPage.slug.startsWith('/exam-training/') && selectedPage.slug !== '/gallery' && !selectedPage.slug.includes('career-assessment') && selectedPage.slug !== '/terms' && selectedPage.slug !== '/privacy' && selectedPage.slug !== '/refund' && selectedPage.slug !== '/faq' && (
+                      {selectedPage.slug !== '/' && selectedPage.slug !== '/about/company-profile' && selectedPage.slug !== '/about' && selectedPage.slug.toLowerCase() !== '/contact' && selectedPage.slug.toLowerCase() !== '/study-abroad' && !selectedPage.slug.toLowerCase().startsWith('/study-abroad/') && selectedPage.slug.toLowerCase() !== '/exam-training' && !selectedPage.slug.toLowerCase().startsWith('/exam-training/') && selectedPage.slug !== '/gallery' && !selectedPage.slug.includes('career-assessment') && selectedPage.slug !== '/terms' && selectedPage.slug !== '/privacy' && selectedPage.slug !== '/refund' && selectedPage.slug !== '/faq' && (
                         <div className="space-y-8 pb-20">
                           <div className="bg-brand-50/50 p-8 rounded-2xl border border-brand-100 flex items-center justify-between gap-6">
                             <div>
