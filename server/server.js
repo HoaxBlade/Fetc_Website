@@ -1604,6 +1604,21 @@ app.patch('/api/admin/pages/:id', async (req, res) => {
   }
 });
 
+// DELETE /api/admin/pages/:id - Delete a page from Page Manager
+app.delete('/api/admin/pages/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await db.query('DELETE FROM pages WHERE id = $1 RETURNING *', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Page not found' });
+    }
+    res.json({ success: true, message: 'Page deleted successfully' });
+  } catch (err) {
+    console.error('Delete page error:', err);
+    res.status(500).json({ success: false, message: 'Database error deleting page' });
+  }
+});
+
 // GET /api/nav-pages - List all pages for navbar/footer
 app.get('/api/nav-pages', async (req, res) => {
   const { target } = req.query; // 'navbar' or 'footer'

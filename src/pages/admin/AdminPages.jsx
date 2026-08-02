@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send } from 'lucide-react';
+import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle } from 'lucide-react';
 import { getAssetUrl } from '../../apiConfig';
 import SafeImage from '../../components/SafeImage';
 
@@ -57,6 +57,26 @@ const AdminPages = () => {
   const [newPageData, setNewPageData] = useState({ title: "", slug: "" });
   const [activeTab, setActiveTab] = useState("settings"); // "settings" or "content"
   const [isSaving, setIsSaving] = useState(false);
+  const [deleteConfirmPageId, setDeleteConfirmPageId] = useState(null);
+
+  const handleDeletePage = async (id) => {
+    try {
+      const response = await fetch((window.API_BASE || "") + `/api/admin/pages/${id}`, {
+        method: 'DELETE',
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setPages(prev => prev.filter(p => p.id !== id));
+        if (selectedPage?.id === id) {
+          setSelectedPage(null);
+        }
+        setDeleteConfirmPageId(null);
+      }
+    } catch (err) {
+      console.error('Failed to delete page:', err);
+    }
+  };
 
   const categories = ["Main Pages", "Study Abroad", "Exams & Training", "Assessment", "Other"];
   const [groupSelectedPageIds, setGroupSelectedPageIds] = useState({});
@@ -540,6 +560,17 @@ const AdminPages = () => {
                             />
                           </div>
                         </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Danger Zone</span>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteConfirmPageId(selectedPage.id)}
+                          className="px-4 py-2.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl text-xs font-bold transition-all flex items-center gap-2"
+                        >
+                          <Trash2 size={14} /> Delete Page Permanently
+                        </button>
                       </div>
                     </div>
                   ) : (
@@ -2089,6 +2120,13 @@ const AdminPages = () => {
                       >
                         <Globe size={14} />
                       </a>
+                      <button
+                        onClick={() => setDeleteConfirmPageId(page.id)}
+                        className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                        title="Delete Page"
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -2109,6 +2147,55 @@ const AdminPages = () => {
           List of all created pages
         </div>
       </div>
+
+      {/* Delete Page Confirmation Modal */}
+      {deleteConfirmPageId && typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setDeleteConfirmPageId(null)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-100 z-[20001]"
+            >
+              <div className="flex items-center gap-3 text-rose-600">
+                <div className="p-3 bg-rose-50 rounded-2xl">
+                  <AlertCircle size={28} />
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-slate-900">Delete Page?</h4>
+                  <p className="text-xs text-slate-400 font-medium">Permanent Action</p>
+                </div>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                Are you sure you want to delete this page from your website? This will remove the page entry permanently.
+              </p>
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  onClick={() => setDeleteConfirmPageId(null)}
+                  className="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-200 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeletePage(deleteConfirmPageId)}
+                  className="px-5 py-2.5 bg-rose-600 text-white rounded-xl text-xs font-bold hover:bg-rose-700 transition-all shadow-lg shadow-rose-200"
+                >
+                  Delete Permanently
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        </AnimatePresence>,
+        document.body
+      )}
     </motion.div>
   );
 };
