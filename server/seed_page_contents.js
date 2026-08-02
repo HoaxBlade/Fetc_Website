@@ -149,6 +149,132 @@ const initialPageData = [
 
   // 2. COMPANY PROFILE / ABOUT US - Exact word-for-word text
   {
+    slug: '/about',
+    title: 'Company Profile',
+    status: 'PUBLISHED',
+    nav_visibility: 'navbar',
+    seo_title: 'About FETC | Foreign English Tests Capital',
+    seo_description: 'Learn about FETC, an authorized English examination and training center headquartered in Surat, Gujarat under Gina Abroad Pvt. Ltd.',
+    content: {
+      hero: {
+        badge: "About FETC",
+        title: "Building Global Careers",
+        titleHighlight: "Since 1999",
+        description: "FETC is an authorized, state-of-the-art English examination and training center headquartered in Surat, Gujarat. We are a dream project under Gina Abroad Pvt. Ltd., empowering students with digital classrooms and authorized examination spaces."
+      },
+      stats: [
+        { value: "27+", label: "Years of Industry Experience" },
+        { value: "5,000+", label: "Candidates Trained" },
+        { value: "5+", label: "State-of-the-art Centres" },
+        { value: "15+", label: "Countries Served" },
+        { value: "100%", label: "Tech-enabled Testing Labs" }
+      ],
+      aboutUs: {
+        partnershipTag: "Our Partnership",
+        partnershipTitle: "Expanding Opportunities Together",
+        partnershipDesc1: "We're excited to collaborate with R.H. Patel Institute of Technology to expand opportunities for your students and enhance faculty development. Our comprehensive approach combines international university partnerships, career counseling excellence, and certified training programs.",
+        partnershipDesc2: "This partnership opens doors to global education while supporting your institution's growth and your students' success.",
+        aboutUsTag: "About Us",
+        aboutUsTitle: "At FETC, We Offer Excellence in English Language Training",
+        aboutUsDesc: "We are dedicated to helping students and professionals achieve their dreams of studying, working, or settling abroad. We connect you with a world of opportunities through top-notch English language support, making your application process for international education and careers smooth and successful."
+      },
+      campusVisits: [
+        {
+          icon: "🗓️",
+          tag: "First Visit",
+          title: "Bill Boozing – 3rd April 2026",
+          desc: "Curry College representative will visit your campus, sharing opportunities for American education."
+        },
+        {
+          icon: "🇬🇧",
+          tag: "Follow-Up Visits",
+          title: "UK University Representatives",
+          desc: "UK University Representatives will visit, showcasing British higher education options and pathways."
+        },
+        {
+          icon: "🌍",
+          tag: "Ongoing Access",
+          title: "Continued University Partnerships",
+          desc: "Continued university partnerships expanding your students' global education choices."
+        }
+      ],
+      agenda: [
+        {
+          icon: "📜",
+          title: "Professional Training",
+          desc: "Certified TOEFL and SELT training programs for faculty members, enhancing teaching capabilities and career advancement opportunities."
+        },
+        {
+          icon: "🎯",
+          title: "Career Counselling",
+          desc: "Expert guidance helping students navigate career paths, university selections, and global opportunities with confidence."
+        },
+        {
+          icon: "🏫",
+          title: "University Visits",
+          desc: "Direct campus visits from international university representatives, providing students with firsthand information about study abroad options."
+        },
+        {
+          icon: "🎓",
+          title: "City College Birmingham (2+1)",
+          desc: "Explore your path to Accredited qualifications. Complete your first two years in India, pathway to abroad."
+        }
+      ],
+      facultyBenefits: [
+        {
+          icon: "🏅",
+          title: "Certified Training Programs",
+          desc: "Official TOEFL and SELT certification training that enhances your teaching credentials and opens new career opportunities."
+        },
+        {
+          icon: "📈",
+          title: "Professional Development",
+          desc: "Stay current with international education standards and improve your ability to guide students toward global opportunities."
+        },
+        {
+          icon: "💰",
+          title: "Referral Incentives",
+          desc: "Earn referral incentives when your students enroll through our partnerships, creating additional income streams for dedicated faculty."
+        }
+      ],
+      globalPrograms: {
+        tag: "Global Tech Education",
+        title: "Top-Notch Skill Based Online Programs",
+        subtitle: "IT | Computing | Digital Technology",
+        pathways: [
+          "Software Developer/ Web Developer",
+          "IT Support Specialist",
+          "Network Engineer/ Cybersecurity Analyst",
+          "Data Scientist/ Business Intelligence Analyst",
+          "E-Commerce Manager",
+          "Tech Project Manager"
+        ]
+      },
+      directorsNote: {
+        title: "Our Story",
+        timelineYear: "1999",
+        timelineTitle: "The Inception",
+        timelineDesc: "Specifically for exams and training and study abroad services this company has been formed under the umbrella of Ms. Bhumika Dilkhush proprietor of Gina Abroad.",
+        quote: "Be Great. Do Good. Learn Always.",
+        message: "Whether organizing mock tests or conducting staff alignment meetings in our conference halls, our core value remains the same: student success comes first."
+      },
+      programDownloads: [
+        { name: "Business Management", filename: "Business Management.pdf", category: "Management", icon: "💼" },
+        { name: "Diploma in Health & Social Care", filename: "Diploma in Health & Social Care.pdf", category: "Health & Social Care", icon: "🏥" },
+        { name: "Diploma in IT - Web Design", filename: "Diploma in Information Technology - Web Design.pdf", category: "IT & Computing", icon: "💻" },
+        { name: "Diploma in IT - E Commerce", filename: "Diploma in IT - E Commerce F.pdf", category: "IT & Computing", icon: "🛒" },
+        { name: "Hospitality & Tourism Management", filename: "Hospitality & Tourism Management.pdf", category: "Hospitality", icon: "🏨" },
+        { name: "Gina Abroad - British Degree Route", filename: "Gina Abroad_Your-Smartest-Route-to-a-British-Degree.pdf", category: "Academic Guide", icon: "🇬🇧" }
+      ],
+      accreditations: [
+        { src: "/assets/certificates/Screenshot 2026-06-10 111633.png", alt: "Certificate of Representation" },
+        { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "City College Birmingham Appointment Letter" },
+        { src: "/assets/certificates/Screenshot 2026-06-10 111719.png", alt: "Certificate of Attendance" },
+        { src: "/assets/certificates/Screenshot 2026-06-10 111730.png", alt: "ICEF Accredited Certificate" }
+      ]
+    }
+  },
+  {
     slug: '/about/company-profile',
     title: 'Company Profile',
     status: 'PUBLISHED',

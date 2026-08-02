@@ -762,7 +762,7 @@ const AdminPages = () => {
                       )}
 
                       {/* 2. COMPANY PROFILE EDITOR */}
-                      {selectedPage.slug === '/about/company-profile' && (
+                      {(selectedPage.slug?.toLowerCase() === '/about/company-profile' || selectedPage.slug?.toLowerCase() === '/about' || selectedPage.slug?.toLowerCase() === '/about/') && (
                         <div className="space-y-6 pb-20">
                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
                             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
