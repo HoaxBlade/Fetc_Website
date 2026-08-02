@@ -1,4 +1,4 @@
-const db = require('./db');
+const db = require('../../db');
 const bcrypt = require('bcrypt');
 
 const initDb = async () => {
@@ -6,7 +6,7 @@ const initDb = async () => {
     // Read and Execute Schema
     const fs = require('fs');
     const path = require('path');
-    const schema = fs.readFileSync(path.join(__dirname, 'db', 'schema.sql'), 'utf8');
+    const schema = fs.readFileSync(path.join(__dirname, '../../db', 'schema.sql'), 'utf8');
     await db.query(schema);
     console.log('Database schema applied successfully');
 
