@@ -1320,6 +1320,40 @@ app.get('/api/partners', async (req, res) => {
   }
 });
 
+// DELETE /api/partners/:id - Delete partner application
+app.delete('/api/partners/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await db.query('DELETE FROM partners WHERE id = $1 RETURNING *', [parseInt(id)]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Partner application not found' });
+    }
+    res.json({ success: true, message: 'Partner application deleted successfully' });
+  } catch (err) {
+    console.error('Delete partner error:', err);
+    res.status(500).json({ success: false, message: 'Database error deleting partner' });
+  }
+});
+
+// PATCH /api/partners/:id/status - Update partner application status
+app.patch('/api/partners/:id/status', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    const result = await db.query(
+      'UPDATE partners SET status = $1 WHERE id = $2 RETURNING *',
+      [status, parseInt(id)]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Partner application not found' });
+    }
+    res.json({ success: true, partner: result.rows[0] });
+  } catch (err) {
+    console.error('Update partner status error:', err);
+    res.status(500).json({ success: false, message: 'Database error updating status' });
+  }
+});
+
 // Admin Tickets List Route
 app.get('/api/admin/tickets', async (req, res) => {
   try {
