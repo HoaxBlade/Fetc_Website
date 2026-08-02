@@ -918,6 +918,57 @@ countries.forEach(country => {
   });
 });
 
+// MAIN STUDY ABROAD LISTING PAGE
+initialPageData.push({
+  slug: "/study-abroad",
+  title: "Study Abroad Destinations",
+  status: 'PUBLISHED',
+  nav_visibility: 'navbar',
+  seo_title: "Study Abroad Destinations | Overseas Education | FETC",
+  seo_description: "We've helped thousands of students settle in over 10+ countries. Pick your dream destination and let us handle admissions, visa prep, and landing guidelines.",
+  content: {
+    hero: {
+      badge: "Explore the World",
+      title: "Choose Your Study Destination",
+      description: "We've helped thousands of students settle in over 10+ countries. Pick your dream destination and let us handle the admissions, visa preparation, and landing guidelines."
+    }
+  }
+});
+
+// MAIN EXAM TRAINING LISTING PAGE
+initialPageData.push({
+  slug: "/exam-training",
+  title: "Master Your Standardized Exams",
+  status: 'PUBLISHED',
+  nav_visibility: 'navbar',
+  seo_title: "Master Your Standardized Exams | SELT, IELTS, TOEFL, GRE, GMAT, SAT | FETC",
+  seo_description: "Access top-tier language training, computer-based mock modules, and expert mentors. Achieve the target score you need to study, work, or live abroad.",
+  content: {
+    hero: {
+      badge: "Accredited Prep Programs",
+      title: "Master Your Standardized Exams",
+      description: "Access top-tier language training, computer-based mock modules, and expert mentors. Achieve the target score you need to study, work, or live abroad."
+    }
+  }
+});
+
+// GALLERY PAGE
+initialPageData.push({
+  slug: "/gallery",
+  title: "Visual Portfolio & Gallery",
+  status: 'PUBLISHED',
+  nav_visibility: 'footer',
+  seo_title: "Visual Portfolio & Campus Moments | FETC",
+  seo_description: "A glimpse into our events, student achievements, and campus moments.",
+  content: {
+    hero: {
+      badge: "Visual Portfolio",
+      title: "Our Moments & Milestones",
+      description: "A glimpse into our events, student achievements, and campus moments."
+    }
+  }
+});
+
 // DYNAMICALLY ADD ALL EXAM TRAINING PAGES WORD-FOR-WORD
 const exams = [
   {
