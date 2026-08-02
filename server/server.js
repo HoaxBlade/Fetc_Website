@@ -1223,6 +1223,103 @@ app.post('/api/leads', async (req, res) => {
   }
 });
 
+// POST /api/partners - Save partner form application
+app.post('/api/partners', async (req, res) => {
+  const {
+    fullName,
+    email,
+    phone,
+    organizationName,
+    organizationWebsite,
+    partnershipTypes,
+    otherTypeDetail,
+    organizationDescription,
+    whyPartner,
+    preferredCommunication,
+    candidatesSent,
+    additionalComments
+  } = req.body;
+
+  try {
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS partners (
+        id SERIAL PRIMARY KEY,
+        full_name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(100) NOT NULL,
+        organization_name VARCHAR(255),
+        organization_website VARCHAR(255),
+        partnership_types JSONB,
+        other_type_detail TEXT,
+        organization_description TEXT,
+        why_partner TEXT,
+        preferred_communication VARCHAR(50),
+        candidates_sent VARCHAR(100),
+        additional_comments TEXT,
+        status VARCHAR(50) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    const result = await db.query(
+      `INSERT INTO partners (
+        full_name, email, phone, organization_name, organization_website,
+        partnership_types, other_type_detail, organization_description, why_partner,
+        preferred_communication, candidates_sent, additional_comments
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
+      [
+        fullName,
+        email,
+        phone,
+        organizationName || null,
+        organizationWebsite || null,
+        JSON.stringify(partnershipTypes || []),
+        otherTypeDetail || null,
+        organizationDescription || null,
+        whyPartner || null,
+        preferredCommunication || 'Email',
+        candidatesSent || null,
+        additionalComments || null
+      ]
+    );
+
+    res.status(201).json({ success: true, partner: result.rows[0] });
+  } catch (err) {
+    console.error('Save partner inquiry error:', err);
+    res.status(500).json({ success: false, message: 'Database error saving partner application' });
+  }
+});
+
+// GET /api/partners - Fetch all partners for admin
+app.get('/api/partners', async (req, res) => {
+  try {
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS partners (
+        id SERIAL PRIMARY KEY,
+        full_name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(100) NOT NULL,
+        organization_name VARCHAR(255),
+        organization_website VARCHAR(255),
+        partnership_types JSONB,
+        other_type_detail TEXT,
+        organization_description TEXT,
+        why_partner TEXT,
+        preferred_communication VARCHAR(50),
+        candidates_sent VARCHAR(100),
+        additional_comments TEXT,
+        status VARCHAR(50) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    const result = await db.query('SELECT * FROM partners ORDER BY created_at DESC');
+    res.json({ success: true, partners: result.rows });
+  } catch (err) {
+    console.error('Fetch partners error:', err);
+    res.status(500).json({ success: false, message: 'Database error fetching partners' });
+  }
+});
+
 // Admin Tickets List Route
 app.get('/api/admin/tickets', async (req, res) => {
   try {

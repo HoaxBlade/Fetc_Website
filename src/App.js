@@ -24,6 +24,7 @@ import StudyAbroadListingPage from "./pages/StudyAbroadListingPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import RefundPage from "./pages/RefundPage";
+import BecomePartnerPage from "./pages/BecomePartnerPage";
 import GenericPage from "./pages/GenericPage";
 import MockTestsPage from "./pages/MockTestsPage";
 import ScrollToTop from "./components/ScrollToTop";
@@ -67,6 +68,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/become-partner" element={<BecomePartnerPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/about/company-profile" element={<CompanyProfilePage />} />
           <Route path="/study-abroad" element={<StudyAbroadListingPage />} />

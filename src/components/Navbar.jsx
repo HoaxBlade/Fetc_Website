@@ -163,7 +163,16 @@ function Navbar() {
             </nav>
           )}
 
-          <div className={`hidden md:block pl-4 ml-1 ${!location.pathname.startsWith('/admin') ? "border-l border-slate-200" : ""}`}>
+          {!currentUser && !location.pathname.startsWith('/admin') && (
+            <Link
+              to="/become-partner"
+              className="hidden sm:inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-brand-600 border border-brand-200 rounded-xl hover:bg-brand-600 hover:text-white hover:border-brand-600 transition-all duration-300 shadow-sm active:scale-95 whitespace-nowrap"
+            >
+              Become Partner
+            </Link>
+          )}
+
+          <div className={`hidden md:block pl-3 ml-1 ${!location.pathname.startsWith('/admin') ? "border-l border-slate-200" : ""}`}>
             <div className="group relative flex items-center h-full">
               <NavLink 
                 to={!currentUser ? "/my-account" : currentUser.role === "ADMIN" ? "/admin/dashboard" : "/dashboard/profile"}
@@ -242,6 +251,15 @@ function Navbar() {
         >
 
         <div className="space-y-2 px-4 py-4">
+          {!currentUser && (
+            <Link
+              to="/become-partner"
+              onClick={() => setMobileOpen(false)}
+              className="block w-full text-center px-4 py-2.5 text-xs font-bold text-brand-600 border border-brand-200 rounded-xl hover:bg-brand-600 hover:text-white transition-colors mb-3 shadow-sm"
+            >
+              Become Partner
+            </Link>
+          )}
           {navMenus.map((menu) => {
             if (!menu.items) {
               return (
