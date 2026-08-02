@@ -991,8 +991,17 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-medium text-slate-300 uppercase tracking-tight block">Address Lines (One per line)</label>
                                 <textarea
                                   className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-medium text-slate-600 h-24 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.contactDetails?.address?.lines?.join('\n') || ""}
-                                  onChange={(e) => handleContentChange('contactDetails', 'address', { ...selectedPage.content.contactDetails.address, lines: e.target.value.split('\n') })}
+                                  value={Array.isArray(selectedPage.content?.contactDetails?.address?.lines)
+                                    ? selectedPage.content.contactDetails.address.lines.join('\n')
+                                    : (typeof selectedPage.content?.contactDetails?.address === 'string'
+                                        ? selectedPage.content.contactDetails.address
+                                        : "")}
+                                  onChange={(e) => {
+                                    const currentAddressObj = typeof selectedPage.content?.contactDetails?.address === 'object' && selectedPage.content?.contactDetails?.address !== null
+                                      ? selectedPage.content.contactDetails.address
+                                      : {};
+                                    handleContentChange('contactDetails', 'address', { ...currentAddressObj, lines: e.target.value.split('\n') });
+                                  }}
                                 />
                               </div>
                               <div className="grid grid-cols-2 gap-4">
@@ -1000,16 +1009,26 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Phone Number</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.contactDetails?.phone?.number || ""}
-                                    onChange={(e) => handleContentChange('contactDetails', 'phone', { ...selectedPage.content.contactDetails.phone, number: e.target.value })}
+                                    value={typeof selectedPage.content?.contactDetails?.phone === 'object' ? selectedPage.content.contactDetails.phone?.number || "" : (typeof selectedPage.content?.contactDetails?.phone === 'string' ? selectedPage.content.contactDetails.phone : "")}
+                                    onChange={(e) => {
+                                      const currentPhoneObj = typeof selectedPage.content?.contactDetails?.phone === 'object' && selectedPage.content?.contactDetails?.phone !== null
+                                        ? selectedPage.content.contactDetails.phone
+                                        : {};
+                                      handleContentChange('contactDetails', 'phone', { ...currentPhoneObj, number: e.target.value });
+                                    }}
                                   />
                                 </div>
                                 <div>
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Email Address</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.contactDetails?.email?.address || ""}
-                                    onChange={(e) => handleContentChange('contactDetails', 'email', { ...selectedPage.content.contactDetails.email, address: e.target.value })}
+                                    value={typeof selectedPage.content?.contactDetails?.email === 'object' ? selectedPage.content.contactDetails.email?.address || "" : (typeof selectedPage.content?.contactDetails?.email === 'string' ? selectedPage.content.contactDetails.email : "")}
+                                    onChange={(e) => {
+                                      const currentEmailObj = typeof selectedPage.content?.contactDetails?.email === 'object' && selectedPage.content?.contactDetails?.email !== null
+                                        ? selectedPage.content.contactDetails.email
+                                        : {};
+                                      handleContentChange('contactDetails', 'email', { ...currentEmailObj, address: e.target.value });
+                                    }}
                                   />
                                 </div>
                               </div>
@@ -1062,7 +1081,7 @@ const AdminPages = () => {
                       )}
 
                       {/* 4. STUDY ABROAD / COUNTRY EDITOR */}
-                      {selectedPage.slug.startsWith('/study-abroad/') && (
+                      {selectedPage.slug?.toLowerCase().startsWith('/study-abroad/') && (
                         <div className="space-y-6 pb-20">
                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
                             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
@@ -1205,7 +1224,7 @@ const AdminPages = () => {
                       )}
 
                       {/* 5. EXAM & TRAINING EDITOR */}
-                      {selectedPage.slug.startsWith('/exam-training/') && (
+                      {selectedPage.slug?.toLowerCase().startsWith('/exam-training/') && (
                         <div className="space-y-6 pb-20">
                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
                             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
@@ -1347,7 +1366,7 @@ const AdminPages = () => {
                       )}
 
                       {/* 6. GALLERY EDITOR */}
-                      {selectedPage.slug === '/gallery' && (
+                      {(selectedPage.slug?.toLowerCase() === '/gallery' || selectedPage.slug?.toLowerCase() === '/gallery/') && (
                         <div className="space-y-6 pb-20">
                           <div className="p-8 bg-slate-50 rounded-2xl border border-slate-100">
                             <div className="flex items-center justify-between mb-10">
@@ -1426,7 +1445,7 @@ const AdminPages = () => {
                       )}
 
                       {/* 7. CAREER EDITOR */}
-                      {selectedPage.slug.includes('career-assessment') && (
+                      {selectedPage.slug?.toLowerCase().includes('career-assessment') && (
                         <div className="space-y-6 pb-20">
                           <div className="p-8 bg-slate-50 rounded-2xl border border-slate-100">
                             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
@@ -1463,7 +1482,7 @@ const AdminPages = () => {
                       )}
 
                       {/* 8. POLICY EDITOR (Terms, Privacy, Refund) */}
-                      {(selectedPage.slug === '/terms' || selectedPage.slug === '/privacy' || selectedPage.slug === '/refund') && (
+                      {(selectedPage.slug?.toLowerCase() === '/terms' || selectedPage.slug?.toLowerCase() === '/privacy' || selectedPage.slug?.toLowerCase() === '/refund') && (
                         <div className="space-y-6 pb-20">
                           <div className="p-8 bg-slate-50 rounded-2xl border border-slate-100">
                             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
@@ -1536,7 +1555,7 @@ const AdminPages = () => {
                       )}
 
                       {/* 9. FAQ EDITOR */}
-                      {selectedPage.slug === '/faq' && (
+                      {(selectedPage.slug?.toLowerCase() === '/faq' || selectedPage.slug?.toLowerCase() === '/faq/') && (
                         <div className="space-y-6 pb-20">
                           <div className="p-8 bg-slate-50 rounded-2xl border border-slate-100">
                             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
@@ -1556,14 +1575,15 @@ const AdminPages = () => {
                                 </button>
                               </div>
 
-                              <div className="space-y-4">
-                                {(selectedPage.content?.faqs || []).map((faq, idx) => (
+                               <div className="space-y-4">
+                                {(selectedPage.content?.faqs || (selectedPage.content?.sections ? selectedPage.content.sections.flatMap(s => s.faqs || []) : [])).map((faq, idx) => (
                                   <div key={idx} className="p-6 bg-white border border-slate-200 rounded-2xl relative group shadow-sm overflow-hidden">
                                     <div className="absolute top-0 left-0 w-1 h-full bg-brand-600" />
                                     <button
                                       onClick={() => {
-                                        const current = selectedPage.content.faqs.filter((_, i) => i !== idx);
-                                        handleContentChange(null, 'faqs', current);
+                                        const current = selectedPage.content?.faqs || (selectedPage.content?.sections ? selectedPage.content.sections.flatMap(s => s.faqs || []) : []);
+                                        const updated = current.filter((_, i) => i !== idx);
+                                        handleContentChange(null, 'faqs', updated);
                                       }}
                                       className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
                                     >
@@ -1571,20 +1591,20 @@ const AdminPages = () => {
                                     </button>
                                     <input
                                       className="w-full bg-transparent border-none p-0 text-base font-semibold text-slate-900 focus:ring-0 mb-3"
-                                      value={faq.question}
+                                      value={faq.question || ""}
                                       onChange={(e) => {
-                                        const current = [...selectedPage.content.faqs];
-                                        current[idx].question = e.target.value;
+                                        const current = [...(selectedPage.content?.faqs || (selectedPage.content?.sections ? selectedPage.content.sections.flatMap(s => s.faqs || []) : []))];
+                                        current[idx] = { ...current[idx], question: e.target.value };
                                         handleContentChange(null, 'faqs', current);
                                       }}
                                       placeholder="Question?"
                                     />
                                     <textarea
                                       className="w-full bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm font-medium text-slate-600 h-24 resize-none focus:border-brand-200 outline-none transition-colors"
-                                      value={faq.answer}
+                                      value={faq.answer || ""}
                                       onChange={(e) => {
-                                        const current = [...selectedPage.content.faqs];
-                                        current[idx].answer = e.target.value;
+                                        const current = [...(selectedPage.content?.faqs || (selectedPage.content?.sections ? selectedPage.content.sections.flatMap(s => s.faqs || []) : []))];
+                                        current[idx] = { ...current[idx], answer: e.target.value };
                                         handleContentChange(null, 'faqs', current);
                                       }}
                                       placeholder="Answer the question..."

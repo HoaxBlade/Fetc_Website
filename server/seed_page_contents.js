@@ -258,6 +258,26 @@ const initialPageData = [
         quote: "Be Great. Do Good. Learn Always.",
         message: "Whether organizing mock tests or conducting staff alignment meetings in our conference halls, our core value remains the same: student success comes first."
       },
+      visionSection: {
+        badge: "OUR PILLARS",
+        titlePrefix: "The team",
+        titleHighlight: "behind your success",
+        values: [
+          { icon: "Target", title: "Student-First Counseling", desc: "Certified examiners, tech support teams, and counseling heads work in unison to provide an error-free, supportive testing and coaching environment." },
+          { icon: "Lightbulb", title: "Testing Excellence", desc: "State-of-the-art computer labs with authorized examination space under Gina Abroad Pvt. Ltd." },
+          { icon: "Compass", title: "Global Opportunities", desc: "Direct university tie-ups and official representation across UK, USA, Europe, Canada, Australia, and more." }
+        ]
+      },
+      officeShowcase: {
+        title: "Our Certifications & Testing Facilities",
+        description: "Globally recognized credentials that back every examination and counseling process.",
+        images: [
+          "/assets/certificates/Screenshot 2026-06-10 111633.png",
+          "/assets/certificates/Screenshot 2026-06-10 111657.png",
+          "/assets/certificates/Screenshot 2026-06-10 111719.png",
+          "/assets/certificates/Screenshot 2026-06-10 111730.png"
+        ]
+      },
       programDownloads: [
         { name: "Business Management", filename: "Business Management.pdf", category: "Management", icon: "💼" },
         { name: "Diploma in Health & Social Care", filename: "Diploma in Health & Social Care.pdf", category: "Health & Social Care", icon: "🏥" },
@@ -384,6 +404,26 @@ const initialPageData = [
         quote: "Be Great. Do Good. Learn Always.",
         message: "Whether organizing mock tests or conducting staff alignment meetings in our conference halls, our core value remains the same: student success comes first."
       },
+      visionSection: {
+        badge: "OUR PILLARS",
+        titlePrefix: "The team",
+        titleHighlight: "behind your success",
+        values: [
+          { icon: "Target", title: "Student-First Counseling", desc: "Certified examiners, tech support teams, and counseling heads work in unison to provide an error-free, supportive testing and coaching environment." },
+          { icon: "Lightbulb", title: "Testing Excellence", desc: "State-of-the-art computer labs with authorized examination space under Gina Abroad Pvt. Ltd." },
+          { icon: "Compass", title: "Global Opportunities", desc: "Direct university tie-ups and official representation across UK, USA, Europe, Canada, Australia, and more." }
+        ]
+      },
+      officeShowcase: {
+        title: "Our Certifications & Testing Facilities",
+        description: "Globally recognized credentials that back every examination and counseling process.",
+        images: [
+          "/assets/certificates/Screenshot 2026-06-10 111633.png",
+          "/assets/certificates/Screenshot 2026-06-10 111657.png",
+          "/assets/certificates/Screenshot 2026-06-10 111719.png",
+          "/assets/certificates/Screenshot 2026-06-10 111730.png"
+        ]
+      },
       programDownloads: [
         { name: "Business Management", filename: "Business Management.pdf", category: "Management", icon: "💼" },
         { name: "Diploma in Health & Social Care", filename: "Diploma in Health & Social Care.pdf", category: "Health & Social Care", icon: "🏥" },
@@ -412,7 +452,8 @@ const initialPageData = [
     content: {
       mapSection: {
         title: "Visit Our Head Office",
-        subtitle: "Located in Surat, Gujarat. Drop by for a coffee and chat about your future."
+        subtitle: "Located in Surat, Gujarat. Drop by for a coffee and chat about your future.",
+        mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3721.218556637389!2d72.76615557602058!3d21.1437!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be0532454645281%3A0xcb1b689b91e5e01c!2sRoongta%20Signature!5e0!3m2!1sen!2sin!4v1718000000000!5m2!1sen!2sin"
       },
       infoSection: {
         title: "Get In Touch With Us",
@@ -420,12 +461,24 @@ const initialPageData = [
       },
       workingHours: {
         title: "Working Hours",
+        weekdays: "Mon - Sat: 9:00 AM - 7:00 PM",
+        sunday: "Sunday: Closed",
         timing: "Monday - Saturday: 9:00 AM - 7:00 PM"
       },
       contactDetails: {
-        address: "2nd floor, 239, Roongta Signature\nNr. Shyam Mandir Vesu\nSurat - 395007",
-        phone: "+91 9033347200",
-        email: "info@fetc.in"
+        address: {
+          lines: [
+            "2nd floor, 239, Roongta Signature",
+            "Nr. Shyam Mandir Vesu",
+            "Surat - 395007"
+          ]
+        },
+        phone: {
+          number: "+91 9033347200"
+        },
+        email: {
+          address: "info@fetc.in"
+        }
       }
     }
   },
@@ -441,6 +494,60 @@ const initialPageData = [
     content: {
       title: "Frequently Asked Questions",
       subtitle: "Find answers to common questions about our services, study abroad programs, and examination preparation below.",
+      faqs: [
+        {
+          question: "What services do you offer?",
+          answer: "We provide comprehensive study abroad services including, counselling, university selection, application assistance, visa processing, pre-departure orientation, and post-arrival support."
+        },
+        {
+          question: "Why should I choose your consultancy over others?",
+          answer: "Our consultancy boasts a high success rate, personalized guidance from experienced advisors, and partnerships with top universities worldwide. We also offer ongoing support throughout your study abroad journey."
+        },
+        {
+          question: "How do I start the application process?",
+          answer: "Begin by scheduling a consultation with one of our advisors. We will assess your academic background, financial background, career goals, and preferences to help you select suitable programs and universities."
+        },
+        {
+          question: "What documents are required for the application?",
+          answer: "Typically, you will need your academic transcripts, financials, a statement of purpose, letters of recommendation, a resume, standardized test scores (if applicable), and proof of language proficiency."
+        },
+        {
+          question: "Do you assist with writing the Statement of Purpose (SOP) and essays?",
+          answer: "Yes, we only write the SOPs. Students just need to provide craft compelling SOPs and essays that reflect your strengths and aspirations."
+        },
+        {
+          question: "How much does studying abroad cost?",
+          answer: "Costs vary depending on the country, university, and program. They include tuition fees, accommodation, living expenses, insurance, and travel costs. We can provide detailed estimates during your consultation."
+        },
+        {
+          question: "Are there scholarships or financial aid available?",
+          answer: "Yes, many universities offer scholarships and financial aid. We can assist you in identifying and applying for these opportunities to help reduce your expenses."
+        },
+        {
+          question: "Do you charge for your services?",
+          answer: "Yes, we charge a fee for our services, which covers the personalized support and expertise we provide throughout the application and visa process. Detailed fee information can be provided during your initial consultation."
+        },
+        {
+          question: "How do you assist with the visa application process?",
+          answer: "We provide step-by-step guidance on visa requirements, help you prepare the necessary documentation, and conduct mock visa interviews to ensure you are well-prepared."
+        },
+        {
+          question: "What if my visa application is denied?",
+          answer: "Firstly, we have 99% of visa ratio. In case, if your visa application is denied, we will analyze the reasons for denial, assist in addressing any issues, and guide you through the reapplication process."
+        },
+        {
+          question: "Can you help me choose the right program and university?",
+          answer: "Absolutely! Our advisors have extensive knowledge of programs and universities worldwide and will help match your interests, curriculam, and career goals with the right options."
+        },
+        {
+          question: "How far in advance should I start the application process?",
+          answer: "It’s best to start the application process at least 06-12 months before your intended start date to ensure ample time for research, test preparation, application submission, financials check and visa processing."
+        },
+        {
+          question: "Can you help with applications for both undergraduate and postgraduate programs?",
+          answer: "Yes, we assist with applications for undergraduate, postgraduate, and doctoral programs across various fields of study."
+        }
+      ],
       sections: [
         {
           category: "1. General Information",
