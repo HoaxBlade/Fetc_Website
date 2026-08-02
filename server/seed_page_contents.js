@@ -902,6 +902,11 @@ countries.forEach(country => {
     seo_title: `Study in ${country.name} | Universities & Visa Guidance | FETC`,
     seo_description: country.description,
     content: {
+      name: country.name,
+      description: country.description,
+      image: country.image,
+      flag: country.flag,
+      sopLinks: country.sopLinks || [],
       hero: {
         title: `Study in ${country.name}`,
         flag: country.flag,
@@ -1040,6 +1045,10 @@ exams.forEach(exam => {
     seo_title: `${exam.name} Preparation & Coaching | FETC`,
     seo_description: exam.description,
     content: {
+      name: exam.name,
+      shortLabel: exam.shortLabel,
+      description: exam.description,
+      fullDescription: exam.fullDescription,
       hero: {
         title: exam.name,
         shortLabel: exam.shortLabel,

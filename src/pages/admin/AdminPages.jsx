@@ -1091,23 +1091,29 @@ const AdminPages = () => {
                               <ImageUploader
                                 section="content"
                                 field="image"
-                                value={selectedPage.content?.image}
+                                value={selectedPage.content?.image || selectedPage.content?.hero?.image}
                                 label="Hero Banner Image"
                               />
                               <div>
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Country Name</label>
                                 <input
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.name || ""}
-                                  onChange={(e) => handleContentChange(null, 'name', e.target.value)}
+                                  value={selectedPage.content?.name || selectedPage.content?.hero?.title || ""}
+                                  onChange={(e) => {
+                                    handleContentChange(null, 'name', e.target.value);
+                                    handleContentChange('hero', 'title', e.target.value);
+                                  }}
                                 />
                               </div>
                               <div>
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Short Description</label>
                                 <textarea
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.description || ""}
-                                  onChange={(e) => handleContentChange(null, 'description', e.target.value)}
+                                  value={selectedPage.content?.description || selectedPage.content?.hero?.description || ""}
+                                  onChange={(e) => {
+                                    handleContentChange(null, 'description', e.target.value);
+                                    handleContentChange('hero', 'description', e.target.value);
+                                  }}
                                 />
                               </div>
                             </div>
@@ -1235,16 +1241,22 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Exam Name (e.g. IDP for IELTS)</label>
                                 <input
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.name || ""}
-                                  onChange={(e) => handleContentChange(null, 'name', e.target.value)}
+                                  value={selectedPage.content?.name || selectedPage.content?.hero?.title || ""}
+                                  onChange={(e) => {
+                                    handleContentChange(null, 'name', e.target.value);
+                                    handleContentChange('hero', 'title', e.target.value);
+                                  }}
                                 />
                               </div>
                               <div>
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Short Description (Summary)</label>
                                 <textarea
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.description || ""}
-                                  onChange={(e) => handleContentChange(null, 'description', e.target.value)}
+                                  value={selectedPage.content?.description || selectedPage.content?.hero?.description || ""}
+                                  onChange={(e) => {
+                                    handleContentChange(null, 'description', e.target.value);
+                                    handleContentChange('hero', 'description', e.target.value);
+                                  }}
                                   placeholder="A short summary for lists..."
                                 />
                               </div>
@@ -1252,8 +1264,11 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-semibold text-brand-600 uppercase tracking-tight mb-1 block">Full Rich Content (Detailed Story)</label>
                                 <textarea
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-64 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.fullDescription || ""}
-                                  onChange={(e) => handleContentChange(null, 'fullDescription', e.target.value)}
+                                  value={selectedPage.content?.fullDescription || selectedPage.content?.hero?.fullDescription || ""}
+                                  onChange={(e) => {
+                                    handleContentChange(null, 'fullDescription', e.target.value);
+                                    handleContentChange('hero', 'fullDescription', e.target.value);
+                                  }}
                                   placeholder="Add the full detailed story here..."
                                 />
                               </div>
