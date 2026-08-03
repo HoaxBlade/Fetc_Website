@@ -2,7 +2,7 @@ const { Pool } = require('pg');
 const path = require('path');
 const fs = require('fs');
 
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 // Force-disable SSL certificate validation
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';

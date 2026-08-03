@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const db = require('./db');
+const db = require('../../db');
 
 const pathPrefix = "/assets/office-images/";
-const officeImagesDir = path.join(__dirname, '..', 'public', 'assets', 'office-images');
+const officeImagesDir = path.join(__dirname, '../../../public/assets/office-images');
 
 async function seed() {
   console.log('Starting automatic gallery seeding...');

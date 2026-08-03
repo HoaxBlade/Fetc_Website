@@ -1,7 +1,7 @@
 const { Client } = require('pg');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 const client = new Client({
   user: process.env.DB_USER,
@@ -393,7 +393,7 @@ const mainPages = {
   }
 };
 
-const db = require('./db');
+const db = require('../../db');
 
 async function seed(externalDb) {
   const database = externalDb || db;

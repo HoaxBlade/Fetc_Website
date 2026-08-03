@@ -42,6 +42,7 @@ const BecomePartnerPage = () => {
     'Study Abroad Consultancy',
     'Visitor Visa Services',
     'English Language Teaching',
+    'Work Permit Services',
     'Other'
   ];
 

@@ -1,4 +1,4 @@
-const db = require('./db');
+const db = require('../../db');
 
 const initialPageData = [
   // 1. HOME PAGE - Exact word-for-word text matching live website components
