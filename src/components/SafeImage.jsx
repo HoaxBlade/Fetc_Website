@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
-const SafeImage = ({ src, alt, className, fallback = '', ...props }) => {
-  const [imgSrc, setImgSrc] = useState('');
+const DEFAULT_FALLBACK = "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60";
+
+const SafeImage = ({ src, alt, className, fallback = DEFAULT_FALLBACK, ...props }) => {
+  const activeFallback = fallback || DEFAULT_FALLBACK;
+  const [imgSrc, setImgSrc] = useState(src || activeFallback);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
+    setHasError(false);
     if (!src) {
-      setImgSrc(fallback);
+      setImgSrc(activeFallback);
       return;
     }
 
@@ -34,7 +39,7 @@ const SafeImage = ({ src, alt, className, fallback = '', ...props }) => {
       } catch (err) {
         console.error("Error loading secure image:", err);
         if (active) {
-          setImgSrc(src); // Fallback to raw URL if fetch fails
+          setImgSrc(src);
         }
       }
     };
@@ -47,18 +52,21 @@ const SafeImage = ({ src, alt, className, fallback = '', ...props }) => {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [src, fallback]);
+  }, [src, activeFallback]);
+
+  const handleError = () => {
+    if (!hasError) {
+      setHasError(true);
+      setImgSrc(activeFallback);
+    }
+  };
 
   return (
     <img 
-      src={imgSrc || fallback || src} 
-      alt={alt} 
+      src={imgSrc || activeFallback} 
+      alt={alt || 'Image'} 
       className={className} 
-      onError={(e) => {
-        if (fallback && imgSrc !== fallback) {
-          setImgSrc(fallback);
-        }
-      }}
+      onError={handleError}
       {...props} 
     />
   );

@@ -1,49 +1,60 @@
-import { ArrowRight, ShieldCheck, Award, Users } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowRight, ShieldCheck, Award, Users, Loader2 } from 'lucide-react';
+import { getAssetUrl } from '../apiConfig';
+import SafeImage from '../components/SafeImage';
 
-const mockTests = [
+const DEFAULT_MOCK_TESTS = [
   {
+    id: 'd1',
     name: "SELT (Secure English Language Test)",
     description: "Official mock exam for UKVI, study, work, and immigration requirements.",
     price: "₹49",
     image: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800&auto=format&fit=crop&q=60"
   },
   {
+    id: 'd2',
     name: "IELTS Academic & General Training",
     description: "Complete practice tests for Listening, Reading, Writing, and Speaking modules.",
     price: "₹49",
     image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60"
   },
   {
+    id: 'd3',
     name: "TOEFL iBT Practice",
     description: "Full-length internet-based tests modeled directly on the ETS syllabus.",
     price: "₹49",
     image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60"
   },
   {
+    id: 'd4',
     name: "PTE Academic Exam Prep",
     description: "AI-scored simulated exams aligned with official Pearson guidelines.",
     price: "₹49",
     image: "https://images.unsplash.com/photo-1510070112810-d4e9a46d9e91?w=800&auto=format&fit=crop&q=60"
   },
   {
+    id: 'd5',
     name: "SAT Prep Simulators",
     description: "Adaptive testing pattern mirroring the digital Scholastic Assessment Test.",
     price: "₹49",
     image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&auto=format&fit=crop&q=60"
   },
   {
+    id: 'd6',
     name: "GMAT Focus Edition Mock",
     description: "Quantitative Reasoning, Verbal Reasoning, and Data Insights simulators.",
     price: "₹49",
     image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&auto=format&fit=crop&q=60"
   },
   {
+    id: 'd7',
     name: "GRE General Test Simulator",
     description: "Analytical Writing, Verbal Reasoning, and Quantitative Reasoning sections.",
     price: "₹49",
     image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=60"
   },
   {
+    id: 'd8',
     name: "Pearson Versant Test Simulator",
     description: "Simulated speaking and writing assessment with auto-scoring metrics.",
     price: "₹499",
@@ -52,8 +63,34 @@ const mockTests = [
 ];
 
 export default function MockTestsPage() {
+  const [tests, setTests] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMockTests = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch((window.API_BASE || '') + '/api/mock-tests', {
+          headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
+        const data = await response.json();
+        if (data.success && data.mockTests && data.mockTests.length > 0) {
+          setTests(data.mockTests);
+        } else {
+          setTests(DEFAULT_MOCK_TESTS);
+        }
+      } catch (err) {
+        console.error('Failed to fetch mock tests for public page:', err);
+        setTests(DEFAULT_MOCK_TESTS);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMockTests();
+  }, []);
+
   const handleEnroll = (testName) => {
-    // Disabled redirect to contact us page for now
     console.log(`Enroll requested for: ${testName}`);
   };
 
@@ -75,44 +112,56 @@ export default function MockTestsPage() {
         </div>
 
         {/* Grid of Mock Tests */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {mockTests.map((test, index) => (
-            <div 
-              key={index} 
-              className="bg-white rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full"
-            >
-              <div className="h-48 overflow-hidden relative bg-slate-100">
-                <img 
-                  src={test.image} 
-                  alt={test.name} 
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                  onError={(e) => {
-                    e.target.src = "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60";
-                  }}
-                />
-                <span className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-slate-200/50 text-blue-700 font-extrabold text-sm shadow-sm">
-                  {test.price}
-                </span>
-              </div>
-              <div className="p-6 flex-grow flex flex-col justify-between">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-2 leading-snug">
-                    {test.name}
-                  </h3>
-                  <p className="text-sm text-slate-500 font-medium leading-relaxed mb-6">
-                    {test.description}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleEnroll(test.name)}
-                  className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold text-xs tracking-wider uppercase transition-colors shadow-sm inline-flex items-center justify-center gap-2"
+        {isLoading ? (
+          <div className="py-20 text-center flex flex-col items-center justify-center">
+            <Loader2 className="w-10 h-10 text-brand-600 animate-spin mb-3" />
+            <p className="text-slate-500 font-bold text-sm">Loading Available Mock Tests...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {tests.map((test, index) => {
+              const testTitle = test.title || test.name || "Mock Test";
+              const testDesc = test.content || test.description || "Official practice module.";
+              const testPrice = test.price || "₹49";
+              const rawImage = test.image_url || test.image;
+              const testImage = rawImage ? getAssetUrl(rawImage) : "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60";
+
+              return (
+                <div 
+                  key={test.id || index} 
+                  className="bg-white rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full group"
                 >
-                  Request Access <ArrowRight size={14} />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+                  <div className="h-48 overflow-hidden relative bg-slate-100">
+                    <SafeImage
+                      src={testImage} 
+                      alt={testTitle} 
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <span className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-slate-200/50 text-blue-700 font-extrabold text-sm shadow-sm">
+                      {testPrice}
+                    </span>
+                  </div>
+                  <div className="p-6 flex-grow flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-800 mb-2 leading-snug">
+                        {testTitle}
+                      </h3>
+                      <p className="text-sm text-slate-500 font-medium leading-relaxed mb-6 whitespace-pre-line">
+                        {testDesc}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleEnroll(testTitle)}
+                      className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold text-xs tracking-wider uppercase transition-colors shadow-sm inline-flex items-center justify-center gap-2"
+                    >
+                      Request Access <ArrowRight size={14} />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Feature Highlights */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 bg-white rounded-3xl border border-slate-200/80 p-8 md:p-12 mb-16 shadow-sm">

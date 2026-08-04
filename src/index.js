@@ -20,8 +20,15 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-
-window.API_BASE = (process.env.REACT_APP_API_URL || '').trim().replace(/\/$/, '');
+// Configure API base URL automatically for local dev backend (port 5001) or production env
+const envApi = (process.env.REACT_APP_API_URL || '').trim().replace(/\/$/, '');
+if (envApi) {
+  window.API_BASE = envApi;
+} else if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+  window.API_BASE = 'http://localhost:5001';
+} else {
+  window.API_BASE = '';
+}
 
 // Global fetch interceptor to bypass Ngrok browser warning
 const originalFetch = window.fetch;
@@ -29,7 +36,7 @@ window.fetch = async (...args) => {
   let [resource, config] = args;
   
   // If hitting the ngrok tunnel, add the bypass header
-  if (typeof resource === 'string' && (resource.includes('ngrok-free.app') || resource.includes('ngrok-free.dev'))) {
+  if (typeof resource === 'string' && (resource.includes('ngrok-free.app') || resource.includes('ngrok-free.dev') || resource.includes('ngrok'))) {
     config = config || {};
     config.headers = {
       ...config.headers,

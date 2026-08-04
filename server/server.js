@@ -226,6 +226,47 @@ const runMigrations = async () => {
       );
     `);
 
+    // Mock Tests table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS mock_tests (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        price VARCHAR(50) DEFAULT '₹49',
+        status VARCHAR(50) DEFAULT 'Published',
+        content TEXT,
+        image_url TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      ALTER TABLE mock_tests ADD COLUMN IF NOT EXISTS content TEXT;
+      ALTER TABLE mock_tests ADD COLUMN IF NOT EXISTS image_url TEXT;
+    `).catch(() => {});
+
+    // Seed default mock tests if table is empty
+    try {
+      const checkMocks = await db.query('SELECT COUNT(*) FROM mock_tests');
+      if (parseInt(checkMocks.rows[0].count) === 0) {
+        const defaultMocks = [
+          ['SELT (Secure English Language Test)', '₹49', 'Published', 'Official mock exam for UKVI, study, work, and immigration requirements.', 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800&auto=format&fit=crop&q=60'],
+          ['IELTS Academic & General Training', '₹49', 'Published', 'Complete practice tests for Listening, Reading, Writing, and Speaking modules.', 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60'],
+          ['TOEFL iBT Practice', '₹49', 'Published', 'Full-length internet-based tests modeled directly on the ETS syllabus.', 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60'],
+          ['PTE Academic Exam Prep', '₹49', 'Published', 'AI-scored simulated exams aligned with official Pearson guidelines.', 'https://images.unsplash.com/photo-1510070112810-d4e9a46d9e91?w=800&auto=format&fit=crop&q=60'],
+          ['SAT Prep Simulators', '₹49', 'Published', 'Adaptive testing pattern mirroring the digital Scholastic Assessment Test.', 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&auto=format&fit=crop&q=60'],
+          ['GMAT Focus Edition Mock', '₹49', 'Published', 'Quantitative Reasoning, Verbal Reasoning, and Data Insights simulators.', 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&auto=format&fit=crop&q=60'],
+          ['GRE General Test Simulator', '₹49', 'Published', 'Analytical Writing, Verbal Reasoning, and Quantitative Reasoning sections.', 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=60'],
+          ['Pearson Versant Test Simulator', '₹499', 'Published', 'Simulated speaking and writing assessment with auto-scoring metrics.', 'https://images.unsplash.com/photo-1472289065668-ce650ac443d2?w=800&auto=format&fit=crop&q=60']
+        ];
+        for (const [mTitle, mPrice, mStatus, mContent, mImg] of defaultMocks) {
+          await db.query(
+            'INSERT INTO mock_tests (title, price, status, content, image_url) VALUES ($1, $2, $3, $4, $5)',
+            [mTitle, mPrice, mStatus, mContent, mImg]
+          );
+        }
+        console.log('Default mock tests seeded into DB');
+      }
+    } catch (seedErr) {
+      console.warn('Mock tests seeding warning:', seedErr.message);
+    }
+
     console.log('✅ All migrations completed successfully');
   } catch (err) {
     console.error('❌ Migration error:', err);
@@ -270,8 +311,13 @@ try {
   console.warn('⚠️ Could not create uploads directory (expected on Vercel):', err.message);
 }
 
-// Static folder for uploaded images
-app.use('/uploads', express.static(uploadDir));
+// Static folder for uploaded images with CORS enabled
+app.use('/uploads', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, ngrok-skip-browser-warning');
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+}, express.static(uploadDir));
 
 // Static folder for project assets (fallback)
 app.use('/assets', express.static(path.join(__dirname, '../public/assets')));
@@ -289,25 +335,42 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
   fileFilter: (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png|webp|gif/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-    if (mimetype && extname) return cb(null, true);
-    cb(new Error("Only images are allowed!"));
+    if (file.mimetype.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif|svg|avif|bmp)$/i.test(file.originalname)) {
+      return cb(null, true);
+    }
+    cb(new Error('Only image files (JPG, PNG, WEBP, GIF, SVG) are allowed!'));
   }
 });
 
-// Photo Upload Route
-app.post('/api/admin/upload', upload.single('image'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ success: false, message: 'No file uploaded' });
-  }
-  
-  // Return the URL to the uploaded file
-  const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-  res.json({ success: true, url: fileUrl });
+// Photo Upload Routes with graceful error handling
+app.post('/api/admin/upload', (req, res) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      console.error('Multer upload error:', err);
+      return res.status(400).json({ success: false, message: err.message || 'Image upload failed' });
+    }
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+    const fileUrl = `/uploads/${req.file.filename}`;
+    res.json({ success: true, url: fileUrl });
+  });
+});
+
+app.post('/api/upload', (req, res) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      console.error('Multer upload error:', err);
+      return res.status(400).json({ success: false, message: err.message || 'Image upload failed' });
+    }
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+    const fileUrl = `/uploads/${req.file.filename}`;
+    res.json({ success: true, url: fileUrl });
+  });
 });
 
 // Health Check
@@ -1895,6 +1958,78 @@ app.delete('/api/admin/guides/:id', async (req, res) => {
         console.error('Error deleting guide:', err);
         res.status(500).json({ success: false, message: 'Server error' });
     }
+});
+
+// --- Mock Tests API ---
+// Public endpoint for /mock page (User side)
+app.get('/api/mock-tests', async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM mock_tests WHERE status = 'Published' OR status IS NULL ORDER BY id ASC");
+    res.json({ success: true, mockTests: result.rows });
+  } catch (err) {
+    console.error('Fetch public mock tests error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Admin endpoints
+app.get('/api/admin/mock-tests', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM mock_tests ORDER BY id ASC');
+    res.json({ success: true, mockTests: result.rows });
+  } catch (err) {
+    console.error('Fetch mock tests error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.post('/api/admin/mock-tests', async (req, res) => {
+  const { title, price, status, content, image_url } = req.body;
+  try {
+    const result = await db.query(
+      'INSERT INTO mock_tests (title, price, status, content, image_url) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [title, price || '₹49', status || 'Published', content || null, image_url || null]
+    );
+    res.status(201).json({ success: true, mockTest: result.rows[0] });
+  } catch (err) {
+    console.error('Create mock test error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.patch('/api/admin/mock-tests/:id', async (req, res) => {
+  const { id } = req.params;
+  const { title, price, status, content, image_url } = req.body;
+  try {
+    const result = await db.query(
+      `UPDATE mock_tests 
+       SET title = COALESCE($1, title), 
+           price = COALESCE($2, price), 
+           status = COALESCE($3, status),
+           content = COALESCE($4, content),
+           image_url = COALESCE($5, image_url)
+       WHERE id = $6 RETURNING *`,
+      [title, price, status, content, image_url, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Mock test not found' });
+    }
+    res.json({ success: true, mockTest: result.rows[0] });
+  } catch (err) {
+    console.error('Update mock test error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.delete('/api/admin/mock-tests/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query('DELETE FROM mock_tests WHERE id = $1', [id]);
+    res.json({ success: true, message: 'Mock test deleted' });
+  } catch (err) {
+    console.error('Delete mock test error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
 });
 
 // Export the app for Vercel serverless functions
