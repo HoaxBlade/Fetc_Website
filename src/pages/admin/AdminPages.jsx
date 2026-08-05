@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle } from 'lucide-react';
-import { getAssetUrl } from '../../apiConfig';
+import { getAssetUrl, getApiUrl } from '../../apiConfig';
 import SafeImage from '../../components/SafeImage';
 
 const AdminPages = () => {
@@ -11,7 +11,7 @@ const AdminPages = () => {
     formData.append('image', file);
 
     try {
-      const response = await fetch((window.API_BASE || "") + '/api/admin/upload', {
+      const response = await fetch(getApiUrl('/api/admin/upload'), {
         method: 'POST',
         headers: { 'ngrok-skip-browser-warning': 'true' },
         body: formData,
@@ -61,7 +61,7 @@ const AdminPages = () => {
 
   const handleDeletePage = async (id) => {
     try {
-      const response = await fetch((window.API_BASE || "") + `/api/admin/pages/${id}`, {
+      const response = await fetch(getApiUrl(`/api/admin/pages/${id}`), {
         method: 'DELETE',
         headers: { 'ngrok-skip-browser-warning': 'true' }
       });
@@ -92,7 +92,7 @@ const AdminPages = () => {
   const fetchPages = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch((window.API_BASE || "") + '/api/admin/pages', {
+      const response = await fetch(getApiUrl('/api/admin/pages'), {
         headers: { 'ngrok-skip-browser-warning': 'true' }
       });
       const data = await response.json();
@@ -132,7 +132,7 @@ const AdminPages = () => {
     }
 
     try {
-      const response = await fetch((window.API_BASE || "") + `/api/admin/pages/${id}`, {
+      const response = await fetch(getApiUrl(`/api/admin/pages/${id}`), {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
@@ -167,7 +167,7 @@ const AdminPages = () => {
     if (!newPageData.title || !newPageData.slug) return;
     setIsSaving(true);
     try {
-      const response = await fetch((window.API_BASE || "") + '/api/admin/pages', {
+      const response = await fetch(getApiUrl('/api/admin/pages'), {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -1906,7 +1906,7 @@ const AdminPages = () => {
                                                   if (file) {
                                                     const formData = new FormData();
                                                     formData.append('image', file);
-                                                    fetch((window.API_BASE||'') + '/api/admin/upload', { method: 'POST', body: formData })
+                                                    fetch(getApiUrl('/api/admin/upload'), { method: 'POST', body: formData })
                                                       .then(res => res.json())
                                                       .then(data => data.success && updateSection(idx, 'image', data.url));
                                                   }
