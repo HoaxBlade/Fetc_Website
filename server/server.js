@@ -2438,6 +2438,139 @@ app.delete(['/api/v1/invoice/:invoiceNo', '/api/admin/invoices/:invoiceNo'], asy
   }
 });
 
+// Helper to ensure courses table exists & seeds default courses
+const ensureCoursesTable = async () => {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS courses (
+      id SERIAL PRIMARY KEY,
+      course_id VARCHAR(100) UNIQUE NOT NULL,
+      title VARCHAR(255) NOT NULL,
+      description TEXT,
+      category VARCHAR(100) DEFAULT 'Exam Prep',
+      price DECIMAL(10, 2) DEFAULT 0.00,
+      duration VARCHAR(100) DEFAULT '4 Weeks',
+      level VARCHAR(50) DEFAULT 'Intermediate',
+      status VARCHAR(50) DEFAULT 'ACTIVE',
+      students_count INT DEFAULT 0,
+      thumbnail VARCHAR(500),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  const countResult = await db.query(`SELECT COUNT(*) FROM courses`);
+  if (parseInt(countResult.rows[0].count) === 0) {
+    const initialCourses = [
+      ['IELTS_MASTERCLASS', 'IELTS Academic Masterclass', 'Comprehensive 8-week IELTS training with live mock feedback.', 'Language Exam', 14999, '8 Weeks', 'All Levels', 'ACTIVE', 48],
+      ['TOEFL_IBT_PREP', 'TOEFL iBT Intensive Training', 'Complete speaking, writing, and listening practice with experts.', 'Language Exam', 12999, '6 Weeks', 'Intermediate', 'ACTIVE', 32],
+      ['PTE_ACADEMIC', 'PTE Academic FastTrack', 'AI-assisted scoring practice and strategies for high bands.', 'Language Exam', 9999, '4 Weeks', 'Intermediate', 'ACTIVE', 27],
+      ['GRE_QUANT_VERBAL', 'GRE Quant & Verbal Success', 'High-score strategy drills, practice tests, and math refresher.', 'Graduate Exam', 18999, '10 Weeks', 'Advanced', 'ACTIVE', 54],
+      ['GMAT_FOCUS_EDITION', 'GMAT Focus Edition Training', 'Data insights, problem-solving, and verbal reasoning mastery.', 'Graduate Exam', 21999, '12 Weeks', 'Advanced', 'ACTIVE', 19],
+      ['SAT_DIGITAL_PREP', 'SAT Digital Preparation Course', 'Module-based adaptive prep for high school study abroad applicants.', 'Undergrad Exam', 11999, '6 Weeks', 'Beginner', 'ACTIVE', 41]
+    ];
+
+    for (const c of initialCourses) {
+      await db.query(`
+        INSERT INTO courses (course_id, title, description, category, price, duration, level, status, students_count)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        ON CONFLICT (course_id) DO NOTHING
+      `, c);
+    }
+  }
+};
+
+// GET all courses
+app.get(['/api/v1/course/all', '/api/admin/courses'], async (req, res) => {
+  try {
+    await ensureCoursesTable();
+    const { search, category } = req.query;
+    let query = `SELECT * FROM courses ORDER BY id ASC`;
+    let queryParams = [];
+
+    if (search && search.trim()) {
+      query = `SELECT * FROM courses WHERE title ILIKE $1 OR description ILIKE $1 OR course_id ILIKE $1 ORDER BY id ASC`;
+      queryParams = [`%${search.trim()}%`];
+    }
+
+    const result = await db.query(query, queryParams);
+    const courses = result.rows.map(row => ({
+      id: row.id,
+      courseId: row.course_id,
+      title: row.title,
+      description: row.description,
+      category: row.category,
+      price: parseFloat(row.price),
+      duration: row.duration,
+      level: row.level,
+      status: row.status,
+      studentsCount: row.students_count,
+      createdAt: row.created_at
+    }));
+
+    res.json({ success: true, courses, total: courses.length });
+  } catch (err) {
+    console.error('Fetch courses error:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch courses' });
+  }
+});
+
+// POST create or update course
+app.post(['/api/v1/course/create', '/api/admin/courses'], async (req, res) => {
+  try {
+    await ensureCoursesTable();
+    const { courseId, title, description, category, price, duration, level, status } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ success: false, message: 'Title is required' });
+    }
+
+    const slugId = courseId || title.toUpperCase().replace(/[^A_Z0-9]/g, '_');
+
+    const query = `
+      INSERT INTO courses (course_id, title, description, category, price, duration, level, status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ON CONFLICT (course_id) DO UPDATE SET
+        title = EXCLUDED.title,
+        description = EXCLUDED.description,
+        category = EXCLUDED.category,
+        price = EXCLUDED.price,
+        duration = EXCLUDED.duration,
+        level = EXCLUDED.level,
+        status = EXCLUDED.status
+      RETURNING *
+    `;
+
+    const values = [
+      slugId,
+      title,
+      description || '',
+      category || 'General',
+      parseFloat(price || 0),
+      duration || '4 Weeks',
+      level || 'All Levels',
+      status || 'ACTIVE'
+    ];
+
+    const result = await db.query(query, values);
+    res.json({ success: true, message: 'Course saved successfully', course: result.rows[0] });
+  } catch (err) {
+    console.error('Save course error:', err);
+    res.status(500).json({ success: false, message: err.message || 'Failed to save course' });
+  }
+});
+
+// DELETE course
+app.delete(['/api/v1/course/:id', '/api/admin/courses/:id'], async (req, res) => {
+  try {
+    await ensureCoursesTable();
+    const { id } = req.params;
+    await db.query(`DELETE FROM courses WHERE id = $1 OR course_id = $1`, [id]);
+    res.json({ success: true, message: 'Course deleted successfully' });
+  } catch (err) {
+    console.error('Delete course error:', err);
+    res.status(500).json({ success: false, message: 'Failed to delete course' });
+  }
+});
+
 // Export the app for Vercel serverless functions
 module.exports = app;
 
