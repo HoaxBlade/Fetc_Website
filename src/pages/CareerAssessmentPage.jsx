@@ -11,6 +11,7 @@ import {
   Layers, Check, X, Mail, User, Phone, Send, Calendar, CreditCard, ShieldCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getApiUrl } from '../apiConfig';
 // import ContactPage from "./ContactPage";
 
 // --- Extracted Data ---
@@ -111,7 +112,7 @@ export default function CareerAssessmentPage() {
     e.preventDefault();
     setModalIsSubmitting(true);
     try {
-      await fetch((window.API_BASE||'') + '/api/leads', {
+      await fetch(getApiUrl('/api/leads'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -143,10 +144,11 @@ export default function CareerAssessmentPage() {
         name: modalFormData.name.trim(),
         email: modalFormData.email.trim(),
         productType: 'MOCK_TEST',
+        amount: 1,
       };
 
-      // Always point to production gateway backend for payment initialization
-      const targetUrl = 'https://fetc.in/api/v1/order/initiate-payment';
+      // Point to API backend endpoint for payment initialization
+      const targetUrl = getApiUrl('/api/v1/order/initiate-payment');
       const response = await fetch(targetUrl, {
         method: 'POST',
         headers,
@@ -175,7 +177,7 @@ export default function CareerAssessmentPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch((window.API_BASE||'') + '/api/pages/career-assessment/behaviour-and-career-analysis')
+    fetch(getApiUrl('/api/pages/career-assessment/behaviour-and-career-analysis'))
       .then(res => res.json())
       .catch(err => console.error('Failed to fetch career data:', err))
       .finally(() => setIsLoading(false));
@@ -724,7 +726,7 @@ export default function CareerAssessmentPage() {
                 <div className="bg-blue-50/70 border border-blue-100 rounded-xl p-4 flex items-center justify-between">
                   <div>
                     <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">Total Amount</span>
-                    <div className="text-2xl font-extrabold text-slate-900">₹1,000 <span className="text-xs font-normal text-slate-500">INR</span></div>
+                    <div className="text-2xl font-extrabold text-slate-900">₹1 <span className="text-xs font-normal text-slate-500">INR</span></div>
                   </div>
                   <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                     Online Test Access
@@ -769,7 +771,7 @@ export default function CareerAssessmentPage() {
                     ) : (
                       <>
                         <CreditCard size={18} />
-                        <span>Pay ₹1,000 & Start Assessment</span>
+                        <span>Pay ₹1 & Start Assessment</span>
                       </>
                     )}
                   </button>

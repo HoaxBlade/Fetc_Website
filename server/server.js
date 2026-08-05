@@ -6,6 +6,7 @@ const db = require('./db');
 const bcrypt = require('bcrypt');
 
 const app = express();
+const crypto = require('crypto');
 const PORT = process.env.PORT || 5000;
 const multer = require('multer');
 const fs = require('fs');
@@ -2029,6 +2030,151 @@ app.delete('/api/admin/mock-tests/:id', async (req, res) => {
   } catch (err) {
     console.error('Delete mock test error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// -----------------------------------------------------------------------------
+// PHONEPE PAYMENT GATEWAY API
+// -----------------------------------------------------------------------------
+
+// POST /api/v1/order/initiate-payment - PhonePe Payment Gateway Initiation
+app.post('/api/v1/order/initiate-payment', async (req, res) => {
+  try {
+    const { name, email, phone, courseId, productType, amount } = req.body;
+
+    const merchantId = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT';
+    const saltKey = process.env.PHONEPE_SALT_KEY || '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
+    const saltIndex = process.env.PHONEPE_SALT_INDEX || '1';
+    const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox';
+    const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
+
+    const merchantTransactionId = `MT_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    const paymentAmount = amount !== undefined ? parseInt(amount) * 100 : 100; // Default ₹1 (100 paise)
+
+    const payload = {
+      merchantId,
+      merchantTransactionId,
+      merchantUserId: `MUID_${(phone || '1234567890').replace(/\D/g, '')}`,
+      amount: paymentAmount,
+      redirectUrl: `${backendUrl}/api/v1/order/payment-callback?transactionId=${merchantTransactionId}`,
+      redirectMode: 'POST',
+      callbackUrl: `${backendUrl}/api/v1/order/payment-callback?transactionId=${merchantTransactionId}`,
+      mobileNumber: (phone || '9999999999').replace(/\D/g, ''),
+      paymentInstrument: {
+        type: 'PAY_PAGE'
+      }
+    };
+
+    // Auto-create orders table if not exists
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS orders (
+        id SERIAL PRIMARY KEY,
+        merchant_transaction_id VARCHAR(255) UNIQUE NOT NULL,
+        name VARCHAR(255),
+        email VARCHAR(255),
+        phone VARCHAR(100),
+        course_id VARCHAR(100),
+        product_type VARCHAR(100),
+        amount INT NOT NULL,
+        status VARCHAR(50) DEFAULT 'PENDING',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await db.query(
+      `INSERT INTO orders (merchant_transaction_id, name, email, phone, course_id, product_type, amount, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDING')`,
+      [merchantTransactionId, name, email, phone, courseId, productType, paymentAmount / 100]
+    );
+
+    const bufferObj = Buffer.from(JSON.stringify(payload), 'utf8');
+    const base64Payload = bufferObj.toString('base64');
+
+    const stringToHash = base64Payload + '/pg/v1/pay' + saltKey;
+    const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
+    const checksum = `${sha256}###${saltIndex}`;
+
+    const response = await fetch(`${hostUrl}/pg/v1/pay`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-VERIFY': checksum,
+        'accept': 'application/json'
+      },
+      body: JSON.stringify({ request: base64Payload })
+    });
+
+    const responseData = await response.json();
+    console.log('PhonePe API Response:', responseData);
+
+    if (responseData.success && responseData.data?.instrumentResponse?.redirectInfo?.url) {
+      const redirectUrl = responseData.data.instrumentResponse.redirectInfo.url;
+      res.json({ success: true, redirectUrl, merchantTransactionId });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: responseData.message || 'Payment initiation failed with gateway',
+        data: responseData
+      });
+    }
+  } catch (err) {
+    console.error('Initiate payment error:', err);
+    res.status(500).json({ success: false, message: 'Server error initiating payment: ' + err.message });
+  }
+});
+
+// POST /api/v1/order/payment-callback - PhonePe Callback & Redirect
+app.post('/api/v1/order/payment-callback', async (req, res) => {
+  const { transactionId } = req.query;
+  const body = req.body;
+  console.log('Payment Callback Received:', transactionId, body);
+
+  try {
+    if (transactionId) {
+      const code = body.code || 'PAYMENT_SUCCESS';
+      const status = code === 'PAYMENT_SUCCESS' ? 'SUCCESS' : 'FAILED';
+      
+      await db.query(
+        'UPDATE orders SET status = $1 WHERE merchant_transaction_id = $2',
+        [status, transactionId]
+      );
+    }
+  } catch (err) {
+    console.error('Payment callback handling error:', err);
+  }
+
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  res.redirect(`${frontendUrl}/my-account?paymentStatus=success&tx=${transactionId || ''}`);
+});
+
+// GET /api/v1/order/status/:transactionId - Check PhonePe transaction status
+app.get('/api/v1/order/status/:transactionId', async (req, res) => {
+  const { transactionId } = req.params;
+  try {
+    const merchantId = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT';
+    const saltKey = process.env.PHONEPE_SALT_KEY || '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
+    const saltIndex = process.env.PHONEPE_SALT_INDEX || '1';
+    const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox';
+
+    const stringToHash = `/pg/v1/status/${merchantId}/${transactionId}` + saltKey;
+    const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
+    const checksum = `${sha256}###${saltIndex}`;
+
+    const response = await fetch(`${hostUrl}/pg/v1/status/${merchantId}/${transactionId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-VERIFY': checksum,
+        'X-MERCHANT-ID': merchantId,
+        'accept': 'application/json'
+      }
+    });
+
+    const responseData = await response.json();
+    res.json({ success: true, data: responseData });
+  } catch (err) {
+    console.error('Check status error:', err);
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
