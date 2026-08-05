@@ -2178,6 +2178,72 @@ app.get('/api/v1/order/status/:transactionId', async (req, res) => {
   }
 });
 
+// GET /api/v1/order/user-orders - Fetch orders for logged-in user
+app.get('/api/v1/order/user-orders', async (req, res) => {
+  const { email, phone } = req.query;
+  try {
+    // Ensure table exists
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS orders (
+        id SERIAL PRIMARY KEY,
+        merchant_transaction_id VARCHAR(255) UNIQUE NOT NULL,
+        name VARCHAR(255),
+        email VARCHAR(255),
+        phone VARCHAR(100),
+        course_id VARCHAR(100),
+        product_type VARCHAR(100),
+        amount INT NOT NULL,
+        status VARCHAR(50) DEFAULT 'PENDING',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    let result;
+    if (email && phone) {
+      result = await db.query(
+        'SELECT id, merchant_transaction_id as "transactionId", merchant_transaction_id as "_id", name, email, phone, course_id as "courseId", product_type as "productType", amount, status, created_at as "createdAt" FROM orders WHERE LOWER(email) = LOWER($1) OR phone = $2 ORDER BY id DESC',
+        [email, phone]
+      );
+    } else if (email) {
+      result = await db.query(
+        'SELECT id, merchant_transaction_id as "transactionId", merchant_transaction_id as "_id", name, email, phone, course_id as "courseId", product_type as "productType", amount, status, created_at as "createdAt" FROM orders WHERE LOWER(email) = LOWER($1) ORDER BY id DESC',
+        [email]
+      );
+    } else if (phone) {
+      result = await db.query(
+        'SELECT id, merchant_transaction_id as "transactionId", merchant_transaction_id as "_id", name, email, phone, course_id as "courseId", product_type as "productType", amount, status, created_at as "createdAt" FROM orders WHERE phone = $1 ORDER BY id DESC',
+        [phone]
+      );
+    } else {
+      result = await db.query(
+        'SELECT id, merchant_transaction_id as "transactionId", merchant_transaction_id as "_id", name, email, phone, course_id as "courseId", product_type as "productType", amount, status, created_at as "createdAt" FROM orders ORDER BY id DESC LIMIT 50'
+      );
+    }
+
+    res.json({
+      success: true,
+      orders: result.rows,
+      transactions: result.rows
+    });
+  } catch (err) {
+    console.error('Fetch user orders error:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch user orders', error: err.message });
+  }
+});
+
+// GET /api/v1/order/all-orders - Admin fetch all orders
+app.get('/api/v1/order/all-orders', async (req, res) => {
+  try {
+    const result = await db.query(
+      'SELECT id, merchant_transaction_id as "transactionId", merchant_transaction_id as "_id", name, email, phone, course_id as "courseId", product_type as "productType", amount, status, created_at as "createdAt" FROM orders ORDER BY id DESC'
+    );
+    res.json({ success: true, orders: result.rows });
+  } catch (err) {
+    console.error('Fetch all orders error:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch all orders' });
+  }
+});
+
 // Export the app for Vercel serverless functions
 module.exports = app;
 

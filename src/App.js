@@ -37,6 +37,7 @@ import StartJourneyPage from "./pages/StartJourneyPage";
 import UserSupport from "./pages/user/UserSupport";
 import UserDoubts from "./pages/user/UserDoubts";
 import UserVerification from "./pages/user/UserVerification";
+import UserPayments from "./pages/user/UserPayments";
 
 // Admin Imports
 import AdminLayout from "./components/admin/AdminLayout";
@@ -118,8 +119,8 @@ function AppContent() {
             <Route index element={<Navigate to="profile" replace />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="courses" element={<div className="p-8 text-slate-400 italic">My Courses component coming soon...</div>} />
-            <Route path="orders" element={<div className="p-8 text-slate-400 italic">My Orders component coming soon...</div>} />
-            <Route path="payments" element={<div className="p-8 text-slate-400 italic">Payments component coming soon...</div>} />
+            <Route path="orders" element={<UserPayments />} />
+            <Route path="payments" element={<UserPayments />} />
             <Route path="support" element={<UserSupport />} />
             <Route path="doubts" element={<UserDoubts />} />
             <Route path="verification" element={<UserVerification />} />
