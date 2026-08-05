@@ -2244,6 +2244,200 @@ app.get('/api/v1/order/all-orders', async (req, res) => {
   }
 });
 
+// Helper to ensure invoices table exists
+const ensureInvoicesTable = async () => {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS invoices (
+      id SERIAL PRIMARY KEY,
+      invoice_no VARCHAR(100) UNIQUE NOT NULL,
+      invoice_date DATE NOT NULL DEFAULT CURRENT_DATE,
+      payment_method VARCHAR(100) DEFAULT 'Cash',
+      upi_ref VARCHAR(255),
+      bill_to JSONB NOT NULL,
+      items JSONB NOT NULL,
+      subtotal DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+      sgst DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+      cgst DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+      total DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+};
+
+// GET next invoice number
+app.get(['/api/v1/invoice/next-no', '/api/admin/invoices/next-no'], async (req, res) => {
+  try {
+    await ensureInvoicesTable();
+    const result = await db.query(`SELECT COUNT(*), COALESCE(MAX(id), 0) as max_id FROM invoices`);
+    const nextId = parseInt(result.rows[0].max_id || 0) + 1;
+    const formattedInvoiceNo = `INV-${String(nextId).padStart(3, '0')}`;
+    res.json({ success: true, invoiceNo: formattedInvoiceNo });
+  } catch (err) {
+    console.error('Fetch next invoice no error:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch next invoice number' });
+  }
+});
+
+// GET all invoices
+app.get(['/api/v1/invoice/all', '/api/admin/invoices'], async (req, res) => {
+  try {
+    await ensureInvoicesTable();
+    const { search } = req.query;
+    let query = `SELECT * FROM invoices ORDER BY id DESC`;
+    let queryParams = [];
+
+    if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`;
+      query = `
+        SELECT * FROM invoices 
+        WHERE invoice_no ILIKE $1 
+           OR bill_to->>'clientName' ILIKE $1 
+           OR bill_to->>'companyName' ILIKE $1 
+        ORDER BY id DESC
+      `;
+      queryParams = [searchTerm];
+    }
+
+    const result = await db.query(query, queryParams);
+    
+    // Map rows to match frontend schema expected fields
+    const invoices = result.rows.map(row => ({
+      id: row.id,
+      invoiceNo: row.invoice_no,
+      invoiceDate: row.invoice_date,
+      paymentMethod: row.payment_method,
+      upiRef: row.upi_ref,
+      billTo: typeof row.bill_to === 'string' ? JSON.parse(row.bill_to) : row.bill_to,
+      items: typeof row.items === 'string' ? JSON.parse(row.items) : row.items,
+      subtotal: parseFloat(row.subtotal),
+      sgst: parseFloat(row.sgst),
+      cgst: parseFloat(row.cgst),
+      total: parseFloat(row.total),
+      createdAt: row.created_at
+    }));
+
+    res.json({ success: true, invoices });
+  } catch (err) {
+    console.error('Fetch invoices error:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch invoices' });
+  }
+});
+
+// GET single invoice
+app.get(['/api/v1/invoice/:invoiceNo', '/api/admin/invoices/:invoiceNo'], async (req, res) => {
+  try {
+    await ensureInvoicesTable();
+    const { invoiceNo } = req.params;
+    const result = await db.query(`SELECT * FROM invoices WHERE invoice_no = $1`, [invoiceNo]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Invoice not found' });
+    }
+
+    const row = result.rows[0];
+    const invoice = {
+      id: row.id,
+      invoiceNo: row.invoice_no,
+      invoiceDate: row.invoice_date,
+      paymentMethod: row.payment_method,
+      upiRef: row.upi_ref,
+      billTo: typeof row.bill_to === 'string' ? JSON.parse(row.bill_to) : row.bill_to,
+      items: typeof row.items === 'string' ? JSON.parse(row.items) : row.items,
+      subtotal: parseFloat(row.subtotal),
+      sgst: parseFloat(row.sgst),
+      cgst: parseFloat(row.cgst),
+      total: parseFloat(row.total),
+      createdAt: row.created_at
+    };
+
+    res.json({ success: true, invoice });
+  } catch (err) {
+    console.error('Fetch invoice error:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch invoice details' });
+  }
+});
+
+// POST create invoice
+app.post(['/api/v1/invoice/create', '/api/admin/invoices'], async (req, res) => {
+  try {
+    await ensureInvoicesTable();
+    
+    // Parse body parameters (supports JSON or multipart form fields)
+    let body = req.body;
+    if (typeof body.billTo === 'string') {
+      try { body.billTo = JSON.parse(body.billTo); } catch(e){}
+    }
+    if (typeof body.items === 'string') {
+      try { body.items = JSON.parse(body.items); } catch(e){}
+    }
+
+    const {
+      invoiceNo,
+      invoiceDate,
+      paymentMethod,
+      upiRef,
+      billTo,
+      items,
+      subtotal,
+      sgst,
+      cgst,
+      total
+    } = body;
+
+    if (!invoiceNo) {
+      return res.status(400).json({ success: false, message: 'Invoice number is required' });
+    }
+
+    const query = `
+      INSERT INTO invoices (invoice_no, invoice_date, payment_method, upi_ref, bill_to, items, subtotal, sgst, cgst, total)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      ON CONFLICT (invoice_no) DO UPDATE SET
+        invoice_date = EXCLUDED.invoice_date,
+        payment_method = EXCLUDED.payment_method,
+        upi_ref = EXCLUDED.upi_ref,
+        bill_to = EXCLUDED.bill_to,
+        items = EXCLUDED.items,
+        subtotal = EXCLUDED.subtotal,
+        sgst = EXCLUDED.sgst,
+        cgst = EXCLUDED.cgst,
+        total = EXCLUDED.total
+      RETURNING *
+    `;
+
+    const values = [
+      invoiceNo,
+      invoiceDate || new Date().toISOString().split('T')[0],
+      paymentMethod || 'Cash',
+      upiRef || '',
+      JSON.stringify(billTo || {}),
+      JSON.stringify(items || []),
+      parseFloat(subtotal || 0),
+      parseFloat(sgst || 0),
+      parseFloat(cgst || 0),
+      parseFloat(total || 0)
+    ];
+
+    const result = await db.query(query, values);
+    res.json({ success: true, message: 'Invoice saved successfully', invoice: result.rows[0] });
+  } catch (err) {
+    console.error('Create invoice error:', err);
+    res.status(500).json({ success: false, message: err.message || 'Failed to save invoice' });
+  }
+});
+
+// DELETE invoice
+app.delete(['/api/v1/invoice/:invoiceNo', '/api/admin/invoices/:invoiceNo'], async (req, res) => {
+  try {
+    await ensureInvoicesTable();
+    const { invoiceNo } = req.params;
+    await db.query(`DELETE FROM invoices WHERE invoice_no = $1`, [invoiceNo]);
+    res.json({ success: true, message: 'Invoice deleted successfully' });
+  } catch (err) {
+    console.error('Delete invoice error:', err);
+    res.status(500).json({ success: false, message: 'Failed to delete invoice' });
+  }
+});
+
 // Export the app for Vercel serverless functions
 module.exports = app;
 
