@@ -859,6 +859,22 @@ app.get('/api/v1/lead/:id', async (req, res) => {
     }
     
     const lead = leadRes.rows[0];
+
+    // If first_name is empty but name exists, derive first_name/middle_name/last_name
+    if ((!lead.first_name || !lead.first_name.trim()) && lead.name && lead.name.trim()) {
+      const parts = lead.name.trim().split(/\s+/);
+      if (parts.length === 1) {
+        lead.first_name = parts[0];
+      } else if (parts.length === 2) {
+        lead.first_name = parts[0];
+        lead.last_name = parts[1];
+      } else if (parts.length >= 3) {
+        lead.first_name = parts[0];
+        lead.middle_name = parts.slice(1, -1).join(' ');
+        lead.last_name = parts[parts.length - 1];
+      }
+    }
+
     const docsRes = await db.query('SELECT * FROM lead_documents WHERE lead_id = $1', [lead.id]);
     const docs = docsRes.rows;
     
@@ -890,6 +906,21 @@ app.get('/api/v1/lead/email/:email', async (req, res) => {
     }
     
     const lead = leadRes.rows[0];
+
+    if ((!lead.first_name || !lead.first_name.trim()) && lead.name && lead.name.trim()) {
+      const parts = lead.name.trim().split(/\s+/);
+      if (parts.length === 1) {
+        lead.first_name = parts[0];
+      } else if (parts.length === 2) {
+        lead.first_name = parts[0];
+        lead.last_name = parts[1];
+      } else if (parts.length >= 3) {
+        lead.first_name = parts[0];
+        lead.middle_name = parts.slice(1, -1).join(' ');
+        lead.last_name = parts[parts.length - 1];
+      }
+    }
+
     const docsRes = await db.query('SELECT * FROM lead_documents WHERE lead_id = $1', [lead.id]);
     const docs = docsRes.rows;
     

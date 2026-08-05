@@ -5,6 +5,7 @@ import {
   FileText, Loader2, ArrowLeft, ArrowRight, Save, RefreshCw, 
   Download, CheckCircle, XCircle, AlertCircle, Calendar, Eye, ShieldAlert 
 } from 'lucide-react';
+import { getApiUrl } from '../../apiConfig';
 
 const CustomDatePicker = ({ name, value, onChange, placeholder, error }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -334,17 +335,45 @@ const EditLead = () => {
     const fetchLead = async () => {
       setIsFetching(true);
       try {
-        const res = await fetch((window.API_BASE || '') + `/api/v1/lead/${id}`);
+        const res = await fetch(getApiUrl(`/api/v1/lead/${id}`));
         if (!res.ok) throw new Error('Lead not found');
         const data = await res.json();
         
-        // Normalize DOB to YYYY-MM-DD
+        // Normalize DOB & EBD to YYYY-MM-DD
         const formattedDob = data.dob ? new Date(data.dob).toISOString().split('T')[0] : "";
         const formattedEbd = data.ebd ? new Date(data.ebd).toISOString().split('T')[0] : "";
+
+        // If firstName is missing but full name is present, derive firstName/middleName/lastName
+        let firstName = data.firstName || "";
+        let middleName = data.middleName || "";
+        let lastName = data.lastName || "";
+
+        if (!firstName.trim() && data.name && data.name.trim()) {
+          const parts = data.name.trim().split(/\s+/);
+          if (parts.length === 1) {
+            firstName = parts[0];
+          } else if (parts.length === 2) {
+            firstName = parts[0];
+            lastName = parts[1];
+          } else if (parts.length >= 3) {
+            firstName = parts[0];
+            middleName = parts.slice(1, -1).join(' ');
+            lastName = parts[parts.length - 1];
+          }
+        }
+
+        // Normalize gender string (male/female/other)
+        let gender = (data.gender || "").toLowerCase();
+        if (gender === 'm') gender = 'male';
+        if (gender === 'f') gender = 'female';
 
         setForm({
           ...initialForm,
           ...data,
+          firstName,
+          middleName,
+          lastName,
+          gender,
           dob: formattedDob,
           ebd: formattedEbd
         });
@@ -358,7 +387,7 @@ const EditLead = () => {
     };
 
     if (id) fetchLead();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -488,7 +517,7 @@ const EditLead = () => {
 
     setIsSaving(true);
     try {
-      const res = await fetch((window.API_BASE || '') + `/api/v1/lead/${id}`, {
+      const res = await fetch(getApiUrl(`/api/v1/lead/${id}`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
