@@ -8,7 +8,7 @@ import {
   CheckCircle2, ArrowRight, LayoutGrid, Loader2,
   Award, Activity, TrendingUp, Building2,
   MessageSquare, HeartPulse, Cog, Shield, Map, Focus,
-  Layers, Check, X, Mail, User, Phone, Send
+  Layers, Check, X, Mail, User, Phone, Send, Calendar, CreditCard, ShieldCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 // import ContactPage from "./ContactPage";
@@ -94,10 +94,14 @@ export default function CareerAssessmentPage() {
     name: "",
     email: "",
     phone: "",
-    message: "",
+    date: "",
   });
   const [modalIsSubmitting, setModalIsSubmitting] = useState(false);
   const [modalIsSubmitted, setModalIsSubmitted] = useState(false);
+
+  // Payment Checkout Modal State
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [isRedirectingPayment, setIsRedirectingPayment] = useState(false);
 
   const handleModalChange = (e) => {
     setModalFormData({ ...modalFormData, [e.target.name]: e.target.value });
@@ -107,7 +111,7 @@ export default function CareerAssessmentPage() {
     e.preventDefault();
     setModalIsSubmitting(true);
     try {
-      const response = await fetch((window.API_BASE||'') + '/api/leads', {
+      await fetch((window.API_BASE||'') + '/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -115,20 +119,57 @@ export default function CareerAssessmentPage() {
           subject: "Career Assessment Inquiry"
         }),
       });
-      const data = await response.json();
-      if (data.success) {
-        setModalIsSubmitted(true);
-        setModalFormData({ name: "", email: "", phone: "", message: "" });
-        setTimeout(() => {
-          setModalIsSubmitted(false);
-          setIsModalOpen(false);
-        }, 3000);
-      }
     } catch (err) {
-      console.error('Submission failed:', err);
-      alert('Failed to send message. Please try again later.');
+      console.error('Lead submission notice:', err);
     } finally {
       setModalIsSubmitting(false);
+      setIsModalOpen(false);
+      setShowPaymentModal(true);
+    }
+  };
+
+  const handlePayNow = async () => {
+    try {
+      setIsRedirectingPayment(true);
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const payload = {
+        phone: modalFormData.phone.replace(/\D/g, ''),
+        courseId: 'CAREER_ASSESSMENT',
+        name: modalFormData.name.trim(),
+        email: modalFormData.email.trim(),
+        productType: 'MOCK_TEST',
+      };
+
+      // Always point to production gateway backend for payment initialization
+      const targetUrl = 'https://fetc.in/api/v1/order/initiate-payment';
+      const response = await fetch(targetUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      });
+
+      const res = await response.json();
+      console.log('Payment Gateway Response:', res);
+
+      const redirectUrl = res?.redirectUrl || res?.data?.redirectUrl;
+
+      if (!redirectUrl) {
+        setIsRedirectingPayment(false);
+        const errorMsg = res?.message || res?.error || res?.data?.message || 'Gateway URL not returned by server.';
+        alert(`Payment Error: ${errorMsg}`);
+        return;
+      }
+
+      window.location.href = redirectUrl;
+    } catch (error) {
+      console.error('Payment Error:', error);
+      setIsRedirectingPayment(false);
+      alert(`Payment Error: ${error.message || 'Failed to connect to payment gateway.'}`);
     }
   };
 
@@ -600,20 +641,19 @@ export default function CareerAssessmentPage() {
                   </div>
 
                   <div className="space-y-2 group">
-                    <label htmlFor="modal-message" className="text-sm font-semibold text-slate-700">Your Message <span className="text-red-500">*</span></label>
+                    <label htmlFor="modal-date" className="text-sm font-semibold text-slate-700">Select Date <span className="text-red-500">*</span></label>
                     <div className="relative">
-                      <div className="absolute top-4 left-4 pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
-                        <MessageSquare size={18} />
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                        <Calendar size={18} />
                       </div>
-                      <textarea
-                        id="modal-message"
-                        name="message"
-                        value={modalFormData.message}
+                      <input
+                        type="date"
+                        id="modal-date"
+                        name="date"
+                        value={modalFormData.date}
                         onChange={handleModalChange}
                         required
-                        rows="4"
-                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all hover:border-slate-300 resize-none"
-                        placeholder="How can we help you?"
+                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all hover:border-slate-300"
                       />
                     </div>
                   </div>
@@ -641,6 +681,109 @@ export default function CareerAssessmentPage() {
                     )}
                   </button>
                 </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* PAYMENT CHECKOUT MODAL */}
+        {showPaymentModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowPaymentModal(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-white rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.2)] border border-slate-100 overflow-hidden z-10"
+            >
+              {/* Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white relative">
+                <button
+                  onClick={() => setShowPaymentModal(false)}
+                  disabled={isRedirectingPayment}
+                  className="absolute top-4 right-4 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-1.5 transition"
+                >
+                  <X size={18} />
+                </button>
+                <div className="flex items-center gap-2 mb-1">
+                  <CreditCard size={20} className="text-blue-200" />
+                  <span className="text-xs uppercase tracking-wider font-semibold text-blue-200">Assessment Checkout</span>
+                </div>
+                <h3 className="text-xl font-bold text-white">Career Assessment Fee</h3>
+                <p className="text-blue-100 text-xs mt-1">Competency Mapping & Direction Tool</p>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 space-y-5">
+                <div className="bg-blue-50/70 border border-blue-100 rounded-xl p-4 flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">Total Amount</span>
+                    <div className="text-2xl font-extrabold text-slate-900">₹1,000 <span className="text-xs font-normal text-slate-500">INR</span></div>
+                  </div>
+                  <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+                    Online Test Access
+                  </div>
+                </div>
+
+                <div className="space-y-2 border-t border-b border-slate-100 py-3 text-sm">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Candidate:</span>
+                    <span className="font-semibold text-slate-900">{modalFormData.name}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Email:</span>
+                    <span className="font-semibold text-slate-900 truncate max-w-[200px]">{modalFormData.email}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Phone:</span>
+                    <span className="font-semibold text-slate-900">{modalFormData.phone}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Selected Date:</span>
+                    <span className="font-semibold text-slate-900">{modalFormData.date}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-xs text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-100">
+                  <ShieldCheck size={16} className="shrink-0 text-emerald-600" />
+                  <span>100% Encrypted & Secure Payment Gateway</span>
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <button
+                    onClick={handlePayNow}
+                    disabled={isRedirectingPayment}
+                    className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all active:scale-[0.99] disabled:opacity-75"
+                  >
+                    {isRedirectingPayment ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin" />
+                        <span>Connecting Gateway...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard size={18} />
+                        <span>Pay ₹1,000 & Start Assessment</span>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowPaymentModal(false);
+                      setIsModalOpen(true);
+                    }}
+                    disabled={isRedirectingPayment}
+                    className="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition"
+                  >
+                    Back to Form
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
