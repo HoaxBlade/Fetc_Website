@@ -2065,36 +2065,51 @@ app.delete('/api/admin/mock-tests/:id', async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
-// PHONEPE PAYMENT GATEWAY API
+// PHONEPE PAYMENT GATEWAY API (V2 OAuth Standard)
 // -----------------------------------------------------------------------------
+
+let phonepeTokenCache = { token: null, expiresAt: 0 };
+
+async function getPhonePeAccessToken() {
+  const now = Date.now();
+  if (phonepeTokenCache.token && phonepeTokenCache.expiresAt > now + 60000) {
+    return phonepeTokenCache.token;
+  }
+
+  const clientId = process.env.PHONEPE_CLIENT_ID || 'SU2502131735384315436172';
+  const secret = process.env.PHONEPE_CLIENT_SECRET || '452f2c6a-42a9-4271-82d7-d35c842b0136';
+  const authUrl = process.env.PHONEPE_AUTH_URL || 'https://api.phonepe.com/apis/identity-manager/v1/oauth/token';
+
+  const params = new URLSearchParams();
+  params.append('client_id', clientId);
+  params.append('client_secret', secret);
+  params.append('grant_type', 'client_credentials');
+
+  const response = await fetch(authUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params.toString()
+  });
+
+  const data = await response.json();
+  if (data.access_token) {
+    phonepeTokenCache.token = data.access_token;
+    phonepeTokenCache.expiresAt = now + ((data.expires_in || 3600) * 1000);
+    return data.access_token;
+  }
+  throw new Error(data.message || data.error || 'Failed to authenticate with PhonePe');
+}
 
 // POST /api/v1/order/initiate-payment - PhonePe Payment Gateway Initiation
 app.post('/api/v1/order/initiate-payment', async (req, res) => {
   try {
     const { name, email, phone, courseId, productType, amount } = req.body;
 
-    const merchantId = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT';
-    const saltKey = process.env.PHONEPE_SALT_KEY || '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
-    const saltIndex = process.env.PHONEPE_SALT_INDEX || '1';
-    const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox';
     const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
+    const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api.phonepe.com/apis/pg';
 
-    const merchantTransactionId = `MT_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    const merchantOrderId = `ORD_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
     const paymentAmount = amount !== undefined ? parseInt(amount) * 100 : 100; // Default ₹1 (100 paise)
-
-    const payload = {
-      merchantId,
-      merchantTransactionId,
-      merchantUserId: `MUID_${(phone || '1234567890').replace(/\D/g, '')}`,
-      amount: paymentAmount,
-      redirectUrl: `${backendUrl}/api/v1/order/payment-callback?transactionId=${merchantTransactionId}`,
-      redirectMode: 'POST',
-      callbackUrl: `${backendUrl}/api/v1/order/payment-callback?transactionId=${merchantTransactionId}`,
-      mobileNumber: (phone || '9999999999').replace(/\D/g, ''),
-      paymentInstrument: {
-        type: 'PAY_PAGE'
-      }
-    };
 
     // Auto-create orders table if not exists
     await db.query(`
@@ -2115,32 +2130,43 @@ app.post('/api/v1/order/initiate-payment', async (req, res) => {
     await db.query(
       `INSERT INTO orders (merchant_transaction_id, name, email, phone, course_id, product_type, amount, status)
        VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDING')`,
-      [merchantTransactionId, name, email, phone, courseId, productType, paymentAmount / 100]
+      [merchantOrderId, name, email, phone, courseId, productType, paymentAmount / 100]
     );
 
-    const bufferObj = Buffer.from(JSON.stringify(payload), 'utf8');
-    const base64Payload = bufferObj.toString('base64');
+    const token = await getPhonePeAccessToken();
+    const payload = {
+      merchantOrderId,
+      amount: paymentAmount,
+      expireAfter: 1200,
+      paymentFlow: {
+        type: 'PG_CHECKOUT',
+        message: productType ? `Payment for ${productType}` : 'Payment for Course',
+        merchantUrls: {
+          redirectUrl: `${backendUrl}/api/v1/order/payment-callback?transactionId=${merchantOrderId}`
+        }
+      }
+    };
 
-    const stringToHash = base64Payload + '/pg/v1/pay' + saltKey;
-    const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
-    const checksum = `${sha256}###${saltIndex}`;
+    const payEndpoint = `${hostUrl}/checkout/v2/pay`;
+    console.log('Initiating PhonePe Payment at:', payEndpoint);
 
-    const response = await fetch(`${hostUrl}/pg/v1/pay`, {
+    const response = await fetch(payEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-VERIFY': checksum,
+        'Authorization': `O-Bearer ${token}`,
         'accept': 'application/json'
       },
-      body: JSON.stringify({ request: base64Payload })
+      body: JSON.stringify(payload)
     });
 
     const responseData = await response.json();
     console.log('PhonePe API Response:', responseData);
 
-    if (responseData.success && responseData.data?.instrumentResponse?.redirectInfo?.url) {
-      const redirectUrl = responseData.data.instrumentResponse.redirectInfo.url;
-      res.json({ success: true, redirectUrl, merchantTransactionId });
+    const redirectUrl = responseData.redirectUrl || responseData.data?.redirectUrl || responseData.data?.instrumentResponse?.redirectInfo?.url;
+
+    if (redirectUrl) {
+      res.json({ success: true, redirectUrl, merchantTransactionId: merchantOrderId, orderId: responseData.orderId });
     } else {
       res.status(400).json({
         success: false,
@@ -2154,21 +2180,49 @@ app.post('/api/v1/order/initiate-payment', async (req, res) => {
   }
 });
 
-// POST /api/v1/order/payment-callback - PhonePe Callback & Redirect
-app.post('/api/v1/order/payment-callback', async (req, res) => {
-  const { transactionId } = req.query;
-  const body = req.body;
-  console.log('Payment Callback Received:', transactionId, body);
+// POST & GET /api/v1/order/payment-callback - PhonePe Callback & Redirect
+const handlePaymentCallback = async (req, res) => {
+  const transactionId = req.query.transactionId || req.body?.transactionId || req.body?.merchantOrderId;
+  console.log('Payment Callback Received:', transactionId, 'Query:', req.query, 'Body:', req.body);
 
   try {
     if (transactionId) {
-      const code = body.code || 'PAYMENT_SUCCESS';
-      const status = code === 'PAYMENT_SUCCESS' ? 'SUCCESS' : 'FAILED';
-      
-      await db.query(
-        'UPDATE orders SET status = $1 WHERE merchant_transaction_id = $2',
-        [status, transactionId]
-      );
+      try {
+        const token = await getPhonePeAccessToken();
+        const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api.phonepe.com/apis/pg';
+        const statusRes = await fetch(`${hostUrl}/checkout/v2/order/${transactionId}/status`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `O-Bearer ${token}`,
+            'accept': 'application/json'
+          }
+        });
+        const statusData = await statusRes.json();
+        console.log('Status Check Result on Callback:', statusData);
+        
+        const state = (statusData.state || statusData.code || '').toUpperCase();
+        let finalStatus = 'PENDING';
+        if (state === 'COMPLETED' || state === 'SUCCESS' || state === 'PAYMENT_SUCCESS') {
+          finalStatus = 'SUCCESS';
+        } else if (state === 'FAILED' || state === 'PAYMENT_ERROR' || state === 'DECLINED') {
+          finalStatus = 'FAILED';
+        }
+
+        if (finalStatus !== 'PENDING') {
+          await db.query(
+            'UPDATE orders SET status = $1 WHERE merchant_transaction_id = $2',
+            [finalStatus, transactionId]
+          );
+        }
+      } catch (stErr) {
+        console.error('Callback status query error:', stErr);
+        const code = req.body?.code || 'PAYMENT_SUCCESS';
+        const status = code === 'PAYMENT_SUCCESS' ? 'SUCCESS' : 'FAILED';
+        await db.query(
+          'UPDATE orders SET status = $1 WHERE merchant_transaction_id = $2',
+          [status, transactionId]
+        );
+      }
     }
   } catch (err) {
     console.error('Payment callback handling error:', err);
@@ -2176,32 +2230,35 @@ app.post('/api/v1/order/payment-callback', async (req, res) => {
 
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   res.redirect(`${frontendUrl}/my-account?paymentStatus=success&tx=${transactionId || ''}`);
-});
+};
+
+app.post('/api/v1/order/payment-callback', handlePaymentCallback);
+app.get('/api/v1/order/payment-callback', handlePaymentCallback);
 
 // GET /api/v1/order/status/:transactionId - Check PhonePe transaction status
 app.get('/api/v1/order/status/:transactionId', async (req, res) => {
   const { transactionId } = req.params;
   try {
-    const merchantId = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT';
-    const saltKey = process.env.PHONEPE_SALT_KEY || '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
-    const saltIndex = process.env.PHONEPE_SALT_INDEX || '1';
-    const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox';
+    const token = await getPhonePeAccessToken();
+    const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api.phonepe.com/apis/pg';
 
-    const stringToHash = `/pg/v1/status/${merchantId}/${transactionId}` + saltKey;
-    const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
-    const checksum = `${sha256}###${saltIndex}`;
-
-    const response = await fetch(`${hostUrl}/pg/v1/status/${merchantId}/${transactionId}`, {
+    const response = await fetch(`${hostUrl}/checkout/v2/order/${transactionId}/status`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'X-VERIFY': checksum,
-        'X-MERCHANT-ID': merchantId,
+        'Authorization': `O-Bearer ${token}`,
         'accept': 'application/json'
       }
     });
 
     const responseData = await response.json();
+    
+    const state = (responseData.state || responseData.code || '').toUpperCase();
+    if (state === 'COMPLETED' || state === 'SUCCESS') {
+      await db.query('UPDATE orders SET status = $1 WHERE merchant_transaction_id = $2', ['SUCCESS', transactionId]);
+    } else if (state === 'FAILED') {
+      await db.query('UPDATE orders SET status = $1 WHERE merchant_transaction_id = $2', ['FAILED', transactionId]);
+    }
+
     res.json({ success: true, data: responseData });
   } catch (err) {
     console.error('Check status error:', err);
