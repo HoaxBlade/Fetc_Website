@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CheckSquare, Plus, Eye, Edit2, Trash2, Loader2, X, Check, Image as ImageIcon, Upload } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getAssetUrl } from '../../apiConfig';
@@ -282,15 +283,30 @@ const AdminMockTest = () => {
       </div>
 
       {/* CREATE MODAL */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-slate-100 my-8 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-slate-900">Create New Mock Test</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
-                <X size={20} />
-              </button>
-            </div>
+      <AnimatePresence>
+        {showAddModal && (
+          <div className="fixed inset-0 z-35 flex items-center justify-center p-4 overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setShowAddModal(false)}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-slate-100 my-auto z-50 transform-gpu"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-900">Create New Mock Test</h3>
+                <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-50 transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">Title</label>
@@ -383,20 +399,36 @@ const AdminMockTest = () => {
                 <Check size={16} /> Save Mock Test
               </button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
+      </AnimatePresence>
 
       {/* EDIT MODAL */}
-      {editingTest && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-slate-100 my-8 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-slate-900">Edit Mock Test</h3>
-              <button onClick={() => setEditingTest(null)} className="text-slate-400 hover:text-slate-600">
-                <X size={20} />
-              </button>
-            </div>
+      <AnimatePresence>
+        {editingTest && (
+          <div className="fixed inset-0 z-35 flex items-center justify-center p-4 overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setEditingTest(null)}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-slate-100 my-auto z-50 transform-gpu"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-900">Edit Mock Test</h3>
+                <button onClick={() => setEditingTest(null)} className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-50 transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">Title</label>
@@ -487,9 +519,10 @@ const AdminMockTest = () => {
                 <Check size={16} /> Save Changes
               </button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
+      </AnimatePresence>
     </div>
   );
 };

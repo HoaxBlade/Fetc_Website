@@ -8,8 +8,10 @@ import {
 } from 'lucide-react';
 import { getProfileImageUrl } from "../../apiConfig";
 import SafeImage from "../SafeImage";
+import { useGlobalModalScrollLock } from "../../hooks/useScrollLock";
 
 const AdminLayout = () => {
+  useGlobalModalScrollLock();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isCollapsed = false;
   const navigate = useNavigate();
@@ -52,27 +54,27 @@ const AdminLayout = () => {
   ];
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full overflow-hidden bg-white">
+    <div className="flex flex-col h-full overflow-hidden bg-white/95 backdrop-blur-md border-r border-slate-200/70 shadow-xs">
       {/* Brand Header */}
-      <div className={`h-[68px] flex items-center justify-between border-b border-slate-100 ${isCollapsed ? 'justify-center px-4' : 'px-6'}`}>
+      <div className={`h-[64px] flex items-center justify-between border-b border-slate-100 ${isCollapsed ? 'justify-center px-4' : 'px-5'}`}>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center shrink-0">
-            <Zap className="text-white" size={15} />
+          <div className="w-8 h-8 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shrink-0 shadow-sm shadow-blue-500/20">
+            <Zap className="text-white fill-white/20" size={16} />
           </div>
           {!isCollapsed && (
             <div className="leading-none">
-              <h2 className="text-base font-semibold text-slate-800 tracking-tight">FETC</h2>
-              <span className="text-[9px] font-medium text-slate-400 tracking-[0.12em] uppercase leading-none mt-0.5 block">Admin Portal</span>
+              <h2 className="text-sm font-bold text-slate-800 tracking-tight">FETC</h2>
+              <span className="text-[10px] font-semibold text-slate-400 tracking-[0.1em] uppercase leading-none mt-0.5 block">Admin Portal</span>
             </div>
           )}
         </div>
-        <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-all">
+        <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100/60 rounded-xl transition-all">
           <X size={18} />
         </button>
       </div>
 
       {/* Menu Navigation */}
-      <div className={`flex-1 overflow-y-auto py-4 space-y-1.5 custom-scrollbar transition-all duration-300 ${isCollapsed ? 'px-2' : 'px-3'}`}>
+      <div className={`flex-1 overflow-y-auto py-3 space-y-1 custom-scrollbar transition-all duration-300 ${isCollapsed ? 'px-2' : 'px-3'}`}>
         {sidebarItems.map((item, idx) => (
           <NavLink
             key={idx}
@@ -80,13 +82,13 @@ const AdminLayout = () => {
             end={item.path === "/admin"}
             onClick={() => setIsSidebarOpen(false)}
             className={({ isActive }) => `
-              group relative flex items-center rounded-xl transition-all duration-150 font-medium text-sm tracking-wide
+              group relative flex items-center rounded-xl transition-all duration-200 font-medium text-[13.5px] leading-tight
               ${isCollapsed
-                ? 'justify-center w-11 h-11 mx-auto'
-                : 'gap-3 px-3 py-2.5 mx-0 w-full'}
+                ? 'justify-center w-10 h-10 mx-auto'
+                : 'gap-3 px-3.5 py-2.5 mx-0 w-full'}
               ${isActive
-                ? 'bg-brand-50/70 text-brand-600'
-                : 'text-slate-500 hover:bg-slate-50/50 hover:text-slate-800'}
+                ? 'bg-blue-50/90 text-blue-600 font-semibold shadow-xs'
+                : 'text-slate-600 hover:bg-slate-100/60 hover:text-slate-900'}
             `}
             title={isCollapsed ? item.label : undefined}
           >
@@ -94,14 +96,15 @@ const AdminLayout = () => {
               <>
                 <item.icon
                   size={18}
-                  className={`shrink-0 stroke-[2.2px] transition-transform duration-150 group-hover:scale-105 ${isActive ? "text-brand-600" : "text-slate-400 group-hover:text-slate-700"
-                    }`}
+                  className={`shrink-0 stroke-[1.8px] transition-transform duration-200 group-hover:scale-105 ${
+                    isActive ? "text-blue-600 stroke-[2.2px]" : "text-slate-400 group-hover:text-slate-600"
+                  }`}
                 />
                 {!isCollapsed && <span>{item.label}</span>}
                 {isActive && (
-                  <div className={`absolute bg-brand-600 rounded-full ${isCollapsed
-                      ? 'right-1.5 top-3.5 bottom-3.5 w-1'
-                      : 'right-0 top-1.5 bottom-1.5 w-1'
+                  <div className={`absolute bg-blue-600 rounded-full ${isCollapsed
+                      ? 'right-1 top-2 bottom-2 w-1'
+                      : 'left-0 top-2 bottom-2 w-1 rounded-r-full'
                     }`} />
                 )}
               </>
@@ -111,23 +114,23 @@ const AdminLayout = () => {
       </div>
 
       {/* User Profile & Logout at bottom */}
-      <div className={`border-t border-slate-100 bg-white transition-all duration-300 ${isCollapsed
-          ? 'p-3 flex flex-col items-center gap-4'
-          : 'p-6 space-y-4'
+      <div className={`border-t border-slate-100/80 bg-slate-50/50 transition-all duration-300 ${isCollapsed
+          ? 'p-3 flex flex-col items-center gap-3'
+          : 'p-4 space-y-3'
         }`}>
         <div className="flex items-center gap-3 w-full">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-slate-100 border border-slate-200">
+          <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-white border border-slate-200/80 shadow-xs">
             {userData?.profile_image ? (
               <SafeImage src={getProfileImageUrl(userData.profile_image)} alt={userData.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full bg-slate-900 flex items-center justify-center text-white font-medium text-sm">
+              <div className="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-semibold text-xs">
                 {userData?.name ? userData.name[0].toUpperCase() : 'A'}
               </div>
             )}
           </div>
           {!isCollapsed && (
             <div className="overflow-hidden">
-              <h4 className="text-sm font-medium text-slate-800 truncate leading-snug">{userData?.name || "Admin User"}</h4>
+              <h4 className="text-xs font-semibold text-slate-800 truncate leading-snug">{userData?.name || "Admin User"}</h4>
               <span className="text-[10px] font-medium text-slate-400 capitalize tracking-wider">{userData?.role?.toLowerCase() || "admin"} user</span>
             </div>
           )}
@@ -136,17 +139,17 @@ const AdminLayout = () => {
         {isCollapsed ? (
           <button
             onClick={handleLogout}
-            className="w-10 h-10 flex items-center justify-center border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all"
+            className="w-9 h-9 flex items-center justify-center border border-slate-200/80 rounded-xl text-slate-500 hover:bg-white hover:text-slate-800 transition-all shadow-xs"
             title="Logout"
           >
-            <LogOut size={16} className="stroke-[2.2]" />
+            <LogOut size={15} className="stroke-[1.8]" />
           </button>
         ) : (
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all"
+            className="w-full flex items-center justify-center gap-2 px-3.5 py-2 bg-white border border-slate-200/80 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/60 transition-all shadow-xs"
           >
-            <LogOut size={14} className="stroke-[2.2]" />
+            <LogOut size={14} className="stroke-[1.8]" />
             LOGOUT
           </button>
         )}

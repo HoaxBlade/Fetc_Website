@@ -190,19 +190,21 @@ const AdminNewsFlash = () => {
       {/* Modal Editor */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-35 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setIsModalOpen(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu"
             />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.98, y: 10 }}
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98, y: 10 }}
-              className="relative w-full max-w-xl bg-white/95 backdrop-blur-3xl rounded-2xl shadow-2xl overflow-hidden border border-slate-200/60"
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-100 z-50 my-auto transform-gpu"
             >
               <div className="p-8 md:p-10">
                 <div className="flex justify-between items-center mb-8">

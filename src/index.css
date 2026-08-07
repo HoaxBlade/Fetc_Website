@@ -134,12 +134,11 @@ body {
   }
 }
 
-.animate-float {
-  animation: none !important;
+/* Smooth layout stability and prevent scrollbar layout shift */
+html {
+  scrollbar-gutter: stable;
 }
 
-/* Disable all transitions and animations globally except for loading animations, megaphone pulse, and the news ticker */
-*:not(.animate-spin):not(.loader):not(.animate-pulse):not(.news-ticker):not(.news-ticker *) {
-  transition: none !important;
-  animation: none !important;
+body.modal-open {
+  overflow: hidden !important;
 }

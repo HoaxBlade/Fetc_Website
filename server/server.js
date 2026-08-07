@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 5000;
 const multer = require('multer');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
+const whatsappService = require('./services/whatsappService');
 
 const runMigrations = async () => {
   try {
@@ -1028,6 +1029,88 @@ app.post('/api/v1/lead/create', async (req, res) => {
     // Trigger Cheerio AI Workflow (except for Career Assessment)
     if (newLead.subject !== 'Career Assessment Inquiry') {
       await triggerCheerioWorkflow(newLead);
+    }
+
+    // Send email notification to info@fetc.in
+    try {
+      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        // Compile document links
+        let docsHtml = '';
+        if (docs.length > 0) {
+          docsHtml = docs.map(doc => {
+            const label = doc.document_type.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            return `<li><strong>${label}:</strong> <a href="${doc.file_path}">${doc.file_name}</a></li>`;
+          }).join('');
+        } else {
+          docsHtml = '<li>No documents uploaded.</li>';
+        }
+
+        const mailOptions = {
+          from: `"FETC System" <${process.env.EMAIL_USER}>`,
+          to: 'info@fetc.in',
+          subject: `New Lead Registration: ${finalLead.name || 'Unnamed'}`,
+          html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
+              <h2 style="color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">New Lead Submitted</h2>
+              
+              <h3 style="color: #1e293b; margin-top: 20px;">1. General Details</h3>
+              <ul style="color: #334155; line-height: 1.6;">
+                <li><strong>Name:</strong> ${finalLead.name || 'N/A'}</li>
+                <li><strong>Email:</strong> ${finalLead.email || 'N/A'}</li>
+                <li><strong>Phone:</strong> ${finalLead.phone || 'N/A'}</li>
+                <li><strong>Date of Birth:</strong> ${finalLead.dob ? new Date(finalLead.dob).toLocaleDateString() : 'N/A'}</li>
+                <li><strong>Gender:</strong> ${finalLead.gender || 'N/A'}</li>
+                <li><strong>Location:</strong> ${finalLead.location || 'N/A'}</li>
+                <li><strong>Address:</strong> ${finalLead.address || 'N/A'}</li>
+                <li><strong>Emergency Contact Name:</strong> ${finalLead.emergency_contact_name || 'N/A'}</li>
+                <li><strong>Emergency Contact Relation:</strong> ${finalLead.emergency_contact_relation || 'N/A'}</li>
+                <li><strong>Emergency Contact Phone:</strong> ${finalLead.emergency_contact_phone || 'N/A'}</li>
+              </ul>
+              
+              <h3 style="color: #1e293b; margin-top: 20px;">2. Test Scores</h3>
+              <ul style="color: #334155; line-height: 1.6;">
+                <li><strong>Exam Type:</strong> ${finalLead.exam_type || 'N/A'}</li>
+                <li><strong>Exam Booking Date (EBD):</strong> ${finalLead.ebd ? new Date(finalLead.ebd).toLocaleDateString() : 'N/A'}</li>
+                <li><strong>Specific Location Preference:</strong> ${finalLead.anyspecificlocation || 'N/A'}</li>
+              </ul>
+              
+              <h3 style="color: #1e293b; margin-top: 20px;">3. Academics & Enrollment</h3>
+              <ul style="color: #334155; line-height: 1.6;">
+                <li><strong>Requested Service:</strong> ${finalLead.service || 'N/A'}</li>
+                <li><strong>Preferred Country:</strong> ${finalLead.country || 'N/A'}</li>
+                <li><strong>Preferred Program:</strong> ${finalLead.program || 'N/A'}</li>
+                <li><strong>Visa Rejection History:</strong> ${finalLead.visa_rejection || 'N/A'}</li>
+                <li><strong>Travel History:</strong> ${finalLead.travel_history || 'N/A'}</li>
+                <li><strong>Payment Method:</strong> ${finalLead.payment || 'N/A'}</li>
+              </ul>
+              
+              <h3 style="color: #1e293b; margin-top: 20px;">4. Academic & Supporting Documents</h3>
+              <ul style="color: #334155; line-height: 1.6;">
+                ${docsHtml}
+              </ul>
+              
+              <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
+              <p style="color: #94a3b8; font-size: 12px; text-align: center;">This is an automated notification from Foreign English Test Capital (FETC).</p>
+            </div>
+          `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`✅ Lead notification email sent to info@fetc.in`);
+      } else {
+        console.warn(`⚠️ EMAIL_USER/PASS not set. Lead email notification skipped.`);
+      }
+    } catch (mailErr) {
+      console.error('❌ Failed to send lead notification email:', mailErr.message);
+    }
+
+    // Trigger WhatsApp welcome message if phone exists
+    if (finalLead.phone) {
+      try {
+        await whatsappService.sendWelcomeTemplate(finalLead.phone, finalLead.first_name || finalLead.name || 'Student');
+      } catch (waErr) {
+        console.error('❌ Failed to trigger welcome WhatsApp message:', waErr.message);
+      }
     }
 
     res.status(201).json({ success: true, data: snakeToCamel(finalLead) });
@@ -2076,8 +2159,12 @@ async function getPhonePeAccessToken() {
     return phonepeTokenCache.token;
   }
 
-  const clientId = process.env.PHONEPE_CLIENT_ID || 'SU2502131735384315436172';
-  const secret = process.env.PHONEPE_CLIENT_SECRET || '452f2c6a-42a9-4271-82d7-d35c842b0136';
+  const clientId = process.env.PHONEPE_CLIENT_ID;
+  const secret = process.env.PHONEPE_CLIENT_SECRET;
+  if (!clientId || !secret) {
+    throw new Error('PHONEPE_CLIENT_ID or PHONEPE_CLIENT_SECRET not configured in .env');
+  }
+
   const authUrl = process.env.PHONEPE_AUTH_URL || 'https://api.phonepe.com/apis/identity-manager/v1/oauth/token';
 
   const params = new URLSearchParams();
@@ -2091,7 +2178,14 @@ async function getPhonePeAccessToken() {
     body: params.toString()
   });
 
-  const data = await response.json();
+  const text = await response.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    throw new Error(`PhonePe Auth error (${response.status}): ${text.substring(0, 100)}`);
+  }
+
   if (data.access_token) {
     phonepeTokenCache.token = data.access_token;
     phonepeTokenCache.expiresAt = now + ((data.expires_in || 3600) * 1000);
@@ -2103,13 +2197,12 @@ async function getPhonePeAccessToken() {
 // POST /api/v1/order/initiate-payment - PhonePe Payment Gateway Initiation
 app.post('/api/v1/order/initiate-payment', async (req, res) => {
   try {
-    const { name, email, phone, courseId, productType, amount } = req.body;
+    const { name, email, phone, courseId, productType, amount, returnUrl } = req.body;
 
     const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
-    const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api.phonepe.com/apis/pg';
-
+    const originUrl = returnUrl || req.get('referer');
     const merchantOrderId = `ORD_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-    const paymentAmount = amount !== undefined ? parseInt(amount) * 100 : 100; // Default ₹1 (100 paise)
+    const paymentAmount = amount !== undefined ? Math.round(parseFloat(amount) * 100) : 100; // Default ₹1 (100 paise)
 
     // Auto-create orders table if not exists
     await db.query(`
@@ -2123,50 +2216,108 @@ app.post('/api/v1/order/initiate-payment', async (req, res) => {
         product_type VARCHAR(100),
         amount INT NOT NULL,
         status VARCHAR(50) DEFAULT 'PENDING',
+        return_url VARCHAR(1000),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
 
+    // Ensure return_url column exists
+    try {
+      await db.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS return_url VARCHAR(1000)`);
+    } catch (e) {}
+
     await db.query(
-      `INSERT INTO orders (merchant_transaction_id, name, email, phone, course_id, product_type, amount, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDING')`,
-      [merchantOrderId, name, email, phone, courseId, productType, paymentAmount / 100]
+      `INSERT INTO orders (merchant_transaction_id, name, email, phone, course_id, product_type, amount, status, return_url)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDING', $8)`,
+      [merchantOrderId, name, email, phone || '9999999999', courseId || 'COURSE', productType || 'course', paymentAmount / 100, originUrl]
     );
 
-    const token = await getPhonePeAccessToken();
-    const payload = {
-      merchantOrderId,
-      amount: paymentAmount,
-      expireAfter: 1200,
-      paymentFlow: {
-        type: 'PG_CHECKOUT',
-        message: productType ? `Payment for ${productType}` : 'Payment for Course',
-        merchantUrls: {
-          redirectUrl: `${backendUrl}/api/v1/order/payment-callback?transactionId=${merchantOrderId}`
+    const redirectCallbackUrl = `${backendUrl}/api/v1/order/payment-callback?transactionId=${merchantOrderId}${originUrl ? `&originUrl=${encodeURIComponent(originUrl)}` : ''}`;
+
+    // 1. Try V2 OAuth flow if PHONEPE_CLIENT_ID is provided
+    if (process.env.PHONEPE_CLIENT_ID && process.env.PHONEPE_CLIENT_SECRET) {
+      try {
+        const token = await getPhonePeAccessToken();
+        const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api.phonepe.com/apis/pg';
+        const payload = {
+          merchantOrderId,
+          amount: paymentAmount,
+          expireAfter: 1200,
+          paymentFlow: {
+            type: 'PG_CHECKOUT',
+            message: productType ? `Payment for ${productType}` : 'Payment for Course',
+            merchantUrls: {
+              redirectUrl: redirectCallbackUrl
+            }
+          }
+        };
+
+        const response = await fetch(`${hostUrl}/checkout/v2/pay`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `O-Bearer ${token}`,
+            'accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const responseData = await response.json();
+        console.log('PhonePe V2 API Response:', responseData);
+
+        const redirectUrl = responseData.redirectUrl || responseData.data?.redirectUrl || responseData.data?.instrumentResponse?.redirectInfo?.url;
+        if (redirectUrl) {
+          return res.json({ success: true, redirectUrl, merchantTransactionId: merchantOrderId, orderId: responseData.orderId });
         }
+      } catch (v2Err) {
+        console.warn('PhonePe V2 flow failed, falling back to V1 checksum flow:', v2Err.message);
+      }
+    }
+
+    // 2. PhonePe Standard V1 Host Flow (Salt Key + SHA256 Checksum for QR generation)
+    const merchantId = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT';
+    const saltKey = process.env.PHONEPE_SALT_KEY || '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
+    const saltIndex = process.env.PHONEPE_SALT_INDEX || '1';
+    const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox';
+
+    const payload = {
+      merchantId: merchantId,
+      merchantTransactionId: merchantOrderId,
+      merchantUserId: `MUID_${Date.now()}`,
+      amount: paymentAmount,
+      redirectUrl: redirectCallbackUrl,
+      redirectMode: 'REDIRECT',
+      callbackUrl: redirectCallbackUrl,
+      mobileNumber: phone ? phone.replace(/\D/g, '') : '9999999999',
+      paymentInstrument: {
+        type: 'PAY_PAGE'
       }
     };
 
-    const payEndpoint = `${hostUrl}/checkout/v2/pay`;
-    console.log('Initiating PhonePe Payment at:', payEndpoint);
+    const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
+    const stringToSign = base64Payload + '/pg/v1/pay' + saltKey;
+    const sha256 = crypto.createHash('sha256').update(stringToSign).digest('hex');
+    const checksum = `${sha256}###${saltIndex}`;
 
-    const response = await fetch(payEndpoint, {
+    console.log('Initiating PhonePe V1 Standard Pay at:', `${hostUrl}/pg/v1/pay`);
+
+    const response = await fetch(`${hostUrl}/pg/v1/pay`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `O-Bearer ${token}`,
+        'X-VERIFY': checksum,
         'accept': 'application/json'
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ request: base64Payload })
     });
 
     const responseData = await response.json();
-    console.log('PhonePe API Response:', responseData);
+    console.log('PhonePe V1 API Response:', responseData);
 
-    const redirectUrl = responseData.redirectUrl || responseData.data?.redirectUrl || responseData.data?.instrumentResponse?.redirectInfo?.url;
+    const redirectUrl = responseData.data?.instrumentResponse?.redirectInfo?.url || responseData.data?.redirectUrl || responseData.redirectUrl;
 
-    if (redirectUrl) {
-      res.json({ success: true, redirectUrl, merchantTransactionId: merchantOrderId, orderId: responseData.orderId });
+    if (responseData.success && redirectUrl) {
+      res.json({ success: true, redirectUrl, merchantTransactionId: merchantOrderId });
     } else {
       res.status(400).json({
         success: false,
@@ -2183,44 +2334,63 @@ app.post('/api/v1/order/initiate-payment', async (req, res) => {
 // POST & GET /api/v1/order/payment-callback - PhonePe Callback & Redirect
 const handlePaymentCallback = async (req, res) => {
   const transactionId = req.query.transactionId || req.body?.transactionId || req.body?.merchantOrderId;
+  const queryOriginUrl = req.query.originUrl || req.body?.originUrl;
   console.log('Payment Callback Received:', transactionId, 'Query:', req.query, 'Body:', req.body);
+
+  let finalStatus = 'PENDING';
+  let savedReturnUrl = queryOriginUrl;
 
   try {
     if (transactionId) {
+      // Query saved order in DB
       try {
-        const token = await getPhonePeAccessToken();
-        const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api.phonepe.com/apis/pg';
-        const statusRes = await fetch(`${hostUrl}/checkout/v2/order/${transactionId}/status`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `O-Bearer ${token}`,
-            'accept': 'application/json'
+        const orderRes = await db.query('SELECT return_url, status FROM orders WHERE merchant_transaction_id = $1', [transactionId]);
+        if (orderRes.rows.length > 0) {
+          if (!savedReturnUrl && orderRes.rows[0].return_url) {
+            savedReturnUrl = orderRes.rows[0].return_url;
           }
-        });
-        const statusData = await statusRes.json();
-        console.log('Status Check Result on Callback:', statusData);
-        
-        const state = (statusData.state || statusData.code || '').toUpperCase();
-        let finalStatus = 'PENDING';
-        if (state === 'COMPLETED' || state === 'SUCCESS' || state === 'PAYMENT_SUCCESS') {
-          finalStatus = 'SUCCESS';
-        } else if (state === 'FAILED' || state === 'PAYMENT_ERROR' || state === 'DECLINED') {
-          finalStatus = 'FAILED';
         }
+      } catch (dbErr) {
+        console.warn('DB query error on callback:', dbErr.message);
+      }
 
-        if (finalStatus !== 'PENDING') {
-          await db.query(
-            'UPDATE orders SET status = $1 WHERE merchant_transaction_id = $2',
-            [finalStatus, transactionId]
-          );
+      // Check status via gateway
+      try {
+        if (process.env.PHONEPE_CLIENT_ID && process.env.PHONEPE_CLIENT_SECRET) {
+          const token = await getPhonePeAccessToken();
+          const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api.phonepe.com/apis/pg';
+          const statusRes = await fetch(`${hostUrl}/checkout/v2/order/${transactionId}/status`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `O-Bearer ${token}`,
+              'accept': 'application/json'
+            }
+          });
+          const statusData = await statusRes.json();
+          const state = (statusData.state || statusData.code || '').toUpperCase();
+          if (state === 'COMPLETED' || state === 'SUCCESS' || state === 'PAYMENT_SUCCESS') {
+            finalStatus = 'SUCCESS';
+          } else if (state === 'FAILED' || state === 'PAYMENT_ERROR' || state === 'DECLINED' || state === 'CANCELLED') {
+            finalStatus = 'FAILED';
+          }
         }
       } catch (stErr) {
-        console.error('Callback status query error:', stErr);
-        const code = req.body?.code || 'PAYMENT_SUCCESS';
-        const status = code === 'PAYMENT_SUCCESS' ? 'SUCCESS' : 'FAILED';
+        console.warn('Callback status check fallback:', stErr.message);
+      }
+
+      if (finalStatus === 'PENDING') {
+        const code = (req.body?.code || req.query?.code || '').toUpperCase();
+        if (code === 'PAYMENT_SUCCESS' || code === 'SUCCESS') {
+          finalStatus = 'SUCCESS';
+        } else if (code.includes('CANCEL') || code.includes('FAIL') || code.includes('DECLINE') || code.includes('ERROR')) {
+          finalStatus = 'FAILED';
+        }
+      }
+
+      if (finalStatus !== 'PENDING') {
         await db.query(
           'UPDATE orders SET status = $1 WHERE merchant_transaction_id = $2',
-          [status, transactionId]
+          [finalStatus, transactionId]
         );
       }
     }
@@ -2229,7 +2399,20 @@ const handlePaymentCallback = async (req, res) => {
   }
 
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-  res.redirect(`${frontendUrl}/my-account?paymentStatus=success&tx=${transactionId || ''}`);
+  const isSuccess = finalStatus === 'SUCCESS';
+
+  if (savedReturnUrl) {
+    try {
+      const urlObj = new URL(savedReturnUrl, frontendUrl);
+      urlObj.searchParams.set('paymentStatus', isSuccess ? 'success' : 'cancelled');
+      if (transactionId) urlObj.searchParams.set('tx', transactionId);
+      return res.redirect(urlObj.toString());
+    } catch (uErr) {
+      console.warn('Invalid savedReturnUrl:', savedReturnUrl);
+    }
+  }
+
+  res.redirect(`${frontendUrl}/my-account?paymentStatus=${isSuccess ? 'success' : 'cancelled'}&tx=${transactionId || ''}`);
 };
 
 app.post('/api/v1/order/payment-callback', handlePaymentCallback);

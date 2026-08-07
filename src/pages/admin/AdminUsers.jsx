@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Users, UserPlus, Search, Mail, MoreVertical, Loader2, X, ChevronRight, Trash2, Edit2, Shield } from 'lucide-react';
 
 const AdminUsers = () => {
@@ -148,19 +148,24 @@ const AdminUsers = () => {
       </div>
 
       {/* Invite User Modal */}
-      {isInviteModalOpen && (
-        <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-            onClick={() => setIsInviteModalOpen(false)}
-          />
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="relative w-full max-w-md bg-white/95 backdrop-blur-3xl rounded-2xl shadow-2xl p-8 overflow-hidden border border-slate-200/60"
-          >
+      <AnimatePresence>
+        {isInviteModalOpen && (
+          <div className="fixed inset-0 z-[35] flex items-center justify-center p-4 overflow-y-auto">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu"
+              onClick={() => setIsInviteModalOpen(false)}
+            />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 overflow-hidden border border-slate-100 z-50 my-auto transform-gpu"
+            >
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h3 className="text-xl font-semibold text-slate-800">Invite New User</h3>
@@ -249,18 +254,26 @@ const AdminUsers = () => {
           </motion.div>
         </div>
       )}
+      </AnimatePresence>
       {/* Edit User Modal */}
-      {editingUser && (
-        <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-            onClick={() => setEditingUser(null)}
-          />
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-            className="relative w-full max-w-md bg-white/95 backdrop-blur-3xl rounded-2xl shadow-2xl p-8 overflow-hidden border border-slate-200/60"
-          >
+      <AnimatePresence>
+        {editingUser && (
+          <div className="fixed inset-0 z-[35] flex items-center justify-center p-4 overflow-y-auto">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu"
+              onClick={() => setEditingUser(null)}
+            />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 15 }} 
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 overflow-hidden border border-slate-100 z-50 my-auto transform-gpu"
+            >
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h3 className="text-xl font-semibold text-slate-800">Edit User Info</h3>
@@ -292,19 +305,27 @@ const AdminUsers = () => {
           </motion.div>
         </div>
       )}
+      </AnimatePresence>
 
       {/* Change Role Modal */}
-      {roleEditingUser && (
-        <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-            onClick={() => setRoleEditingUser(null)}
-          />
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-            className="relative w-full max-w-sm bg-white/95 backdrop-blur-3xl rounded-2xl shadow-2xl p-8 overflow-hidden border border-slate-200/60"
-          >
+      <AnimatePresence>
+        {roleEditingUser && (
+          <div className="fixed inset-0 z-[35] flex items-center justify-center p-4 overflow-y-auto">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu"
+              onClick={() => setRoleEditingUser(null)}
+            />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 15 }} 
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8 overflow-hidden border border-slate-100 z-50 my-auto transform-gpu"
+            >
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h3 className="text-xl font-semibold text-slate-800">Change Role</h3>
@@ -353,6 +374,7 @@ const AdminUsers = () => {
           </motion.div>
         </div>
       )}
+      </AnimatePresence>
 
       <div className="glass-card rounded-2xl border-slate-200/60 shadow-[0_12px_24px_rgba(0,0,0,0.03)] overflow-visible">
         <div className="p-8 border-b border-slate-50 flex flex-wrap items-center justify-between gap-4">

@@ -28,5 +28,7 @@ yarn-error.log*
 
 # server local files
 /server/node_modules/
+/server/.env
+/server/uploads/
 
 .vercel

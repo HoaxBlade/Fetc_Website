@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getApiUrl } from '../apiConfig';
+import { useNavigate } from 'react-router-dom';
+import { useScrollLock } from '../hooks/useScrollLock';
 // import ContactPage from "./ContactPage";
 
 // --- Extracted Data ---
@@ -86,6 +88,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function CareerAssessmentPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -104,12 +107,24 @@ export default function CareerAssessmentPage() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isRedirectingPayment, setIsRedirectingPayment] = useState(false);
 
+  // Lock body scroll when any modal is open & prevent scrollbar layout shift
+  useScrollLock(isModalOpen || showPaymentModal);
+
   const handleModalChange = (e) => {
     setModalFormData({ ...modalFormData, [e.target.name]: e.target.value });
   };
 
   const handleModalSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if user is logged in
+    const user = localStorage.getItem("user");
+    if (!user) {
+      alert("Please login first to start the assessment.");
+      navigate("/login");
+      return;
+    }
+
     setModalIsSubmitting(true);
     try {
       await fetch(getApiUrl('/api/leads'), {
@@ -145,6 +160,7 @@ export default function CareerAssessmentPage() {
         email: modalFormData.email.trim(),
         productType: 'MOCK_TEST',
         amount: 1,
+        returnUrl: window.location.href,
       };
 
       // Point to API backend endpoint for payment initialization
@@ -535,23 +551,24 @@ export default function CareerAssessmentPage() {
       {/* Premium Modal Popup */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             {/* Backdrop overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setIsModalOpen(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transform-gpu"
             />
 
             {/* Modal Card */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: "spring", duration: 0.5 }}
-              className="relative w-full max-w-2xl bg-white rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-10"
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-2xl bg-white rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-10 my-auto transform-gpu"
             >
               {/* Close Button */}
               <button
@@ -690,19 +707,21 @@ export default function CareerAssessmentPage() {
 
         {/* PAYMENT CHECKOUT MODAL */}
         {showPaymentModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setShowPaymentModal(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transform-gpu"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.2)] border border-slate-100 overflow-hidden z-10"
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-md bg-white rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.2)] border border-slate-100 overflow-hidden z-10 my-auto transform-gpu"
             >
               {/* Header */}
               <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white relative">

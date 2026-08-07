@@ -83,9 +83,11 @@ function Navbar() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={`sticky top-0 z-[2000] transition-all duration-300 ${
-        scrolled 
-          ? "bg-white/80 backdrop-blur-xl border-b border-slate-200 shadow-sm py-1" 
-          : "bg-transparent border-b border-transparent py-3"
+        location.pathname.startsWith('/admin')
+          ? "bg-white border-b border-slate-200/80 shadow-xs py-2"
+          : scrolled 
+            ? "bg-white/80 backdrop-blur-xl border-b border-slate-200 shadow-sm py-1" 
+            : "bg-transparent border-b border-transparent py-3"
       }`}
     >
       <div className={`mx-auto flex items-center justify-between transition-all duration-300 ${

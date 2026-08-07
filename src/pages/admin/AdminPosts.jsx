@@ -147,75 +147,74 @@ const AdminPosts = () => {
       </div>
 
       {/* Custom Creation Modal */}
-      {typeof document !== 'undefined' && createPortal(
-        <AnimatePresence>
-          {showCreateModal && (
-            <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowCreateModal(false)}
-                className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-md bg-white rounded-[3rem] shadow-2xl overflow-hidden p-10"
-              >
-                <div className="text-center mb-8">
-                  <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Plus size={32} />
-                  </div>
-                  <h2 className="text-2xl font-semibold text-slate-900">New Blog Post</h2>
-                  <p className="text-xs text-slate-400 font-medium uppercase tracking-widest mt-1">Share a new story</p>
+      <AnimatePresence>
+        {showCreateModal && (
+          <div className="fixed inset-0 z-[35] flex items-center justify-center p-4 overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setShowCreateModal(false)}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden p-8 border border-slate-100 z-50 my-auto transform-gpu"
+            >
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Plus size={32} />
                 </div>
+                <h2 className="text-2xl font-semibold text-slate-900">New Blog Post</h2>
+                <p className="text-xs text-slate-400 font-medium uppercase tracking-widest mt-1">Share a new story</p>
+              </div>
 
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-1">Post Title</label>
-                    <input
-                      autoFocus
-                      placeholder="e.g. 10 Tips for IELTS Success"
-                      className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium text-slate-700"
-                      value={newPostData.title}
-                      onChange={(e) => setNewPostData({ ...newPostData, title: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-1">URL Slug</label>
-                    <input
-                      placeholder="/blog/tips-for-ielts"
-                      className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium text-slate-500"
-                      value={newPostData.slug}
-                      onChange={(e) => setNewPostData({ ...newPostData, slug: e.target.value })}
-                    />
-                  </div>
-                  
-                  <div className="pt-4 flex gap-3">
-                    <button 
-                      onClick={() => setShowCreateModal(false)}
-                      className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-medium text-xs hover:bg-slate-200 transition-all"
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      onClick={handleFinalCreate}
-                      disabled={isSaving || !newPostData.title || !newPostData.slug}
-                      className="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-medium text-xs hover:bg-brand-600 transition-all shadow-xl shadow-slate-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                      {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-                      {isSaving ? "Creating..." : "Create Post"}
-                    </button>
-                  </div>
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-1">Post Title</label>
+                  <input
+                    autoFocus
+                    placeholder="e.g. 10 Tips for IELTS Success"
+                    className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium text-slate-700"
+                    value={newPostData.title}
+                    onChange={(e) => setNewPostData({ ...newPostData, title: e.target.value })}
+                  />
                 </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-1">URL Slug</label>
+                  <input
+                    placeholder="/blog/tips-for-ielts"
+                    className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-brand-600/5 focus:border-brand-300 transition-all font-medium text-slate-500"
+                    value={newPostData.slug}
+                    onChange={(e) => setNewPostData({ ...newPostData, slug: e.target.value })}
+                  />
+                </div>
+                
+                <div className="pt-4 flex gap-3">
+                  <button 
+                    onClick={() => setShowCreateModal(false)}
+                    className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-medium text-xs hover:bg-slate-200 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={handleFinalCreate}
+                    disabled={isSaving || !newPostData.title || !newPostData.slug}
+                    className="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-medium text-xs hover:bg-brand-600 transition-all shadow-xl shadow-slate-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+                    {isSaving ? "Creating..." : "Create Post"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
