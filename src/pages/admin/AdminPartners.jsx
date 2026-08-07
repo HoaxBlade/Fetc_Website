@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Handshake, 
   Eye, 
@@ -226,9 +227,9 @@ const AdminPartners = () => {
       </div>
 
       {/* Delete Confirmation Dialog */}
-      {deleteConfirmId && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-100">
+      {deleteConfirmId && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100 z-[100000]">
             <div className="flex items-center gap-3 text-red-600">
               <AlertCircle size={24} />
               <h4 className="text-lg font-bold text-slate-900">Delete Partner Request?</h4>
@@ -251,15 +252,16 @@ const AdminPartners = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Full Details Modal */}
-      {selectedPartner && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-8 space-y-6 shadow-2xl max-h-[92vh] overflow-y-auto border border-slate-100">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+      {selectedPartner && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+          <div className="relative bg-white rounded-3xl max-w-3xl w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden border border-slate-100 z-[100000]">
+            {/* Modal Header (Fixed at Top) */}
+            <div className="p-6 sm:p-8 pb-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
               <div>
                 <span className="text-[10px] font-extrabold uppercase tracking-widest text-brand-600 block mb-1">
                   Partner Application #{selectedPartner.id}
@@ -269,14 +271,14 @@ const AdminPartners = () => {
               </div>
               <button 
                 onClick={() => setSelectedPartner(null)}
-                className="w-9 h-9 bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 rounded-full flex items-center justify-center transition-colors font-bold"
+                className="w-10 h-10 bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 rounded-full flex items-center justify-center transition-colors font-bold shrink-0"
               >
-                <X size={18} />
+                <X size={20} />
               </button>
             </div>
 
-            {/* Modal Content: Grid of 100% Full Details */}
-            <div className="space-y-6">
+            {/* Modal Content (Scrollable Body) */}
+            <div className="p-6 sm:p-8 overflow-y-auto flex-1 custom-scrollbar space-y-6">
               {/* Primary Contact & Org Bar */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/80 p-5 rounded-2xl border border-slate-200/80">
                 <div>
@@ -379,8 +381,8 @@ const AdminPartners = () => {
               )}
             </div>
 
-            {/* Modal Footer Controls */}
-            <div className="flex items-center justify-between border-t border-slate-100 pt-4">
+            {/* Modal Footer Controls (Fixed at Bottom) */}
+            <div className="p-4 sm:px-8 border-t border-slate-100 bg-slate-50/80 flex items-center justify-between shrink-0">
               <button
                 onClick={() => setDeleteConfirmId(selectedPartner.id)}
                 className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-bold transition-all flex items-center gap-2"
@@ -389,13 +391,14 @@ const AdminPartners = () => {
               </button>
               <button
                 onClick={() => setSelectedPartner(null)}
-                className="px-6 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-md"
+                className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-md"
               >
                 Done
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
