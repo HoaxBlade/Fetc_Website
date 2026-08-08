@@ -2,29 +2,24 @@ import { useEffect } from 'react';
 
 /**
  * Custom hook to lock body scrolling when a modal or overlay is open.
- * Prevents background scrolling and compensates for scrollbar width to prevent layout jittering.
+ * Prevents background scrolling and compensates for scrollbar width to prevent layout shift.
  */
 export function useScrollLock(isLocked) {
   useEffect(() => {
     if (!isLocked) return;
 
-    // Calculate scrollbar width before locking
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     const originalBodyOverflow = document.body.style.overflow;
-    const originalHtmlOverflow = document.documentElement.style.overflow;
-    const originalStylePaddingRight = document.body.style.paddingRight;
+    const originalBodyPaddingRight = document.body.style.paddingRight;
 
-    // Apply scroll lock & padding compensation
     document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
 
     return () => {
       document.body.style.overflow = originalBodyOverflow;
-      document.documentElement.style.overflow = originalHtmlOverflow;
-      document.body.style.paddingRight = originalStylePaddingRight;
+      document.body.style.paddingRight = originalBodyPaddingRight;
     };
   }, [isLocked]);
 }
@@ -37,20 +32,25 @@ export function useGlobalModalScrollLock() {
     const checkModal = () => {
       // Find modal overlay containers in DOM
       const modalElements = document.querySelectorAll(
-        '.fixed.inset-0.z-\\[35\\], .fixed.inset-0.z-35, [class*="z-\\[35\\]"], [class*="z-35"], .fixed.inset-0.z-50, .fixed.inset-0.z-60, .fixed.inset-0.z-10, .fixed.inset-0.z-\\[110\\], .fixed.inset-0.z-\\[10000\\], .fixed.inset-0.z-\\[20000\\], .fixed.inset-0.z-\\[9999\\], .fixed.inset-0.z-\\[99999\\], [role="dialog"]'
+        '.fixed.inset-0, [role="dialog"]'
       );
       
       const isAnyModalOpen = Array.from(modalElements).some(el => {
         const style = window.getComputedStyle(el);
-        return style.display !== 'none' && style.visibility !== 'hidden' && !el.classList.contains('pointer-events-none');
+        const isBackdropOrModal = el.classList.contains('bg-slate-900/40') || 
+                                  el.classList.contains('bg-black/50') || 
+                                  el.classList.contains('bg-black/40') || 
+                                  el.classList.contains('backdrop-blur-sm') ||
+                                  el.classList.contains('backdrop-blur-md') ||
+                                  el.getAttribute('role') === 'dialog' ||
+                                  el.className.includes('z-[');
+        return isBackdropOrModal && style.display !== 'none' && style.visibility !== 'hidden' && !el.classList.contains('pointer-events-none');
       });
-
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
       if (isAnyModalOpen) {
         if (document.body.style.overflow !== 'hidden') {
+          const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
           document.body.style.overflow = 'hidden';
-          document.documentElement.style.overflow = 'hidden';
           if (scrollbarWidth > 0) {
             document.body.style.paddingRight = `${scrollbarWidth}px`;
           }
@@ -58,7 +58,6 @@ export function useGlobalModalScrollLock() {
       } else {
         if (document.body.style.overflow === 'hidden') {
           document.body.style.overflow = '';
-          document.documentElement.style.overflow = '';
           document.body.style.paddingRight = '';
         }
       }
@@ -71,8 +70,9 @@ export function useGlobalModalScrollLock() {
     return () => {
       observer.disconnect();
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
       document.body.style.paddingRight = '';
     };
   }, []);
 }
+
+

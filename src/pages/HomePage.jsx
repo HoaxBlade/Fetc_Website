@@ -186,7 +186,7 @@ function HomePage() {
 
       {/* SUCCESS STORIES & NEWS — Below Find Your Path */}
       <div className="relative z-15">
-        <SuccessStories />
+        <SuccessStories data={pageData?.bestStudentProfile || pageData?.studentSpotlights} />
       </div>
 
 

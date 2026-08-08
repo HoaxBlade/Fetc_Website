@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, ShieldCheck, Award, Users, Loader2 } from 'lucide-react';
-import { getAssetUrl } from '../apiConfig';
+import { ArrowRight, ShieldCheck, Award, Users, Loader2, X, User, Mail, Phone, Calendar, Lock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { getAssetUrl, getApiUrl } from '../apiConfig';
 import SafeImage from '../components/SafeImage';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 const DEFAULT_MOCK_TESTS = [
   {
@@ -65,12 +67,50 @@ const DEFAULT_MOCK_TESTS = [
 export default function MockTestsPage() {
   const [tests, setTests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedTest, setSelectedTest] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    date: new Date().toISOString().split('T')[0]
+  });
+
+  const [heroData, setHeroData] = useState({
+    badge: "Practice & Succeed",
+    titleMain: "Practice Mock Exams & Tests",
+    subtitle: "Gain the confidence needed to clear your foreign educational and language requirements. Fully timed, high-accuracy simulator environments."
+  });
+
+  useScrollLock(Boolean(selectedTest));
 
   useEffect(() => {
     const fetchMockTests = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch((window.API_BASE || '') + '/api/mock-tests', {
+
+        // 1. Fetch Page Management content for /mock-tests
+        try {
+          const pageRes = await fetch(getApiUrl('/api/pages/mock-tests'), {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+          });
+          const pageData = await pageRes.json();
+          if (pageData.success && pageData.page?.content) {
+            if (pageData.page.content.hero) {
+              setHeroData(prev => ({ ...prev, ...pageData.page.content.hero }));
+            }
+            if (pageData.page.content.mockTestsList && pageData.page.content.mockTestsList.length > 0) {
+              setTests(pageData.page.content.mockTestsList);
+              setIsLoading(false);
+              return;
+            }
+          }
+        } catch (pe) {
+          console.warn("Could not fetch /api/pages/mock-tests, falling back:", pe);
+        }
+
+        // 2. Fallback to /api/mock-tests endpoint
+        const response = await fetch(getApiUrl('/api/mock-tests'), {
           headers: { 'ngrok-skip-browser-warning': 'true' }
         });
         const data = await response.json();
@@ -90,8 +130,64 @@ export default function MockTestsPage() {
     fetchMockTests();
   }, []);
 
-  const handleEnroll = (testName) => {
-    console.log(`Enroll requested for: ${testName}`);
+  const handleEnroll = (test) => {
+    setSelectedTest(test);
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      date: new Date().toISOString().split('T')[0]
+    });
+  };
+
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedTest) return;
+
+    try {
+      setIsSubmitting(true);
+      const priceVal = parseInt((selectedTest.price || '₹49').replace(/\D/g, '')) || 49;
+      const testTitle = selectedTest.title || selectedTest.name || 'MOCK_TEST';
+
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.replace(/\D/g, ''),
+        date: formData.date,
+        courseId: selectedTest.id ? String(selectedTest.id) : testTitle,
+        productType: 'MOCK_TEST',
+        amount: priceVal,
+        returnUrl: window.location.href
+      };
+
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(getApiUrl('/api/v1/order/initiate-payment'), {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+
+      const res = await response.json();
+      const redirectUrl = res?.redirectUrl || res?.data?.redirectUrl;
+
+      if (!redirectUrl) {
+        setIsSubmitting(false);
+        const errorMsg = res?.message || res?.error || 'Gateway URL not returned by server.';
+        alert(`Payment Error: ${errorMsg}`);
+        return;
+      }
+
+      window.location.href = redirectUrl;
+    } catch (err) {
+      console.error('Mock test payment initiation error:', err);
+      setIsSubmitting(false);
+      alert(`Payment Error: ${err.message || 'Failed to initiate payment gateway.'}`);
+    }
   };
 
   return (
@@ -101,13 +197,13 @@ export default function MockTestsPage() {
         {/* Header Section */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold tracking-wider uppercase mb-6">
-            Practice & Succeed
+            {heroData.badge || "Practice & Succeed"}
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
-            Practice Mock Exams & Tests
+            {heroData.titleMain || "Practice Mock Exams & Tests"}
           </h1>
           <p className="text-lg text-slate-500 font-medium leading-relaxed">
-            Gain the confidence needed to clear your foreign educational and language requirements. Fully timed, high-accuracy simulator environments.
+            {heroData.subtitle || "Gain the confidence needed to clear your foreign educational and language requirements. Fully timed, high-accuracy simulator environments."}
           </p>
         </div>
 
@@ -151,7 +247,7 @@ export default function MockTestsPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => handleEnroll(testTitle)}
+                      onClick={() => handleEnroll(test)}
                       className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold text-xs tracking-wider uppercase transition-colors shadow-sm inline-flex items-center justify-center gap-2"
                     >
                       Request Access <ArrowRight size={14} />
@@ -193,6 +289,149 @@ export default function MockTestsPage() {
             </p>
           </div>
         </div>
+
+        {/* Request Access Modal */}
+        <AnimatePresence>
+          {selectedTest && (
+            <div className="fixed inset-0 w-screen h-screen z-[5000] flex items-center justify-center p-4 overflow-y-auto">
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedTest(null)}
+                className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"
+              />
+
+              {/* Modal Card */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 z-[5001] border border-slate-100"
+              >
+                {/* Header */}
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 inline-block mb-2">
+                      Mock Test Registration
+                    </span>
+                    <h3 className="text-xl font-bold text-slate-900 leading-tight">
+                      {selectedTest.title || selectedTest.name}
+                    </h3>
+                    <p className="text-xs text-slate-500 font-medium mt-1">
+                      Fill out the form below to begin your career evaluation.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedTest(null)}
+                    className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors shrink-0"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Price Banner */}
+                <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200/80 mb-6">
+                  <span className="text-xs font-semibold text-slate-600">Total Payable Amount</span>
+                  <span className="text-2xl font-extrabold text-blue-600 font-mono">
+                    {selectedTest.price || '₹49'}
+                  </span>
+                </div>
+
+                {/* Form Fields matching User Design */}
+                <form onSubmit={handlePaymentSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Full Name */}
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">
+                        Full Name <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="text"
+                          required
+                          placeholder="John Doe"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Email Address */}
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">
+                        Email Address <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="email"
+                          required
+                          placeholder="john@example.com"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Phone Number */}
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 mb-1.5 block">
+                      Phone Number <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type="tel"
+                        required
+                        placeholder="Enter phone number"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Select Date */}
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 mb-1.5 block">
+                      Select Date <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Calendar size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type="date"
+                        required
+                        value={formData.date}
+                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-200 flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <Lock size={16} />
+                    )}
+                    {isSubmitting ? "Initiating Payment Gateway..." : `Proceed to Pay ${selectedTest.price || '₹49'}`}
+                  </button>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
       </div>
     </div>

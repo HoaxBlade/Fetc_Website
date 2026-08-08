@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle } from 'lucide-react';
+import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle, Award } from 'lucide-react';
 import { getAssetUrl, getApiUrl } from '../../apiConfig';
 import SafeImage from '../../components/SafeImage';
 
@@ -78,14 +78,18 @@ const AdminPages = () => {
     }
   };
 
-  const categories = ["Main Pages", "Study Abroad", "Exams & Training", "Assessment", "Other"];
+  const categories = ["Home", "About Us", "Study Abroad", "Career Assessment", "Mock Test", "Exam & Training", "Other"];
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [groupSelectedPageIds, setGroupSelectedPageIds] = useState({});
 
   const getCategory = (slug) => {
-    if (slug === '/' || slug === '/contact' || slug === '/gallery' || slug.startsWith('/about/') || slug === '/forgot-password' || slug === '/my-account' || slug === '/terms' || slug === '/privacy' || slug === '/refund' || slug === '/faq') return 'Main Pages';
-    if (slug.startsWith('/study-abroad/')) return 'Study Abroad';
-    if (slug.startsWith('/exam-training/')) return 'Exams & Training';
-    if (slug.includes('career-assessment')) return 'Assessment';
+    const s = slug ? slug.toLowerCase() : '';
+    if (s === '/' || s === '/home' || s === 'home') return 'Home';
+    if (s.startsWith('/about') || s === '/gallery') return 'About Us';
+    if (s.startsWith('/study-abroad')) return 'Study Abroad';
+    if (s.includes('career-assessment')) return 'Career Assessment';
+    if (s.startsWith('/mock')) return 'Mock Test';
+    if (s.startsWith('/exam-training')) return 'Exam & Training';
     return 'Other';
   };
 
@@ -204,6 +208,144 @@ const AdminPages = () => {
     });
   };
 
+  const handleNestedContentChange = (section, subSection, field, value) => {
+    setSelectedPage(prev => {
+      const newContent = { ...(prev.content || {}) };
+      const currentSection = { ...(newContent[section] || {}) };
+      const currentSub = { ...(currentSection[subSection] || {}) };
+      currentSub[field] = value;
+      currentSection[subSection] = currentSub;
+      newContent[section] = currentSection;
+      return { ...prev, content: newContent };
+    });
+  };
+
+  const addTopStudent = () => {
+    setSelectedPage(prev => {
+      const newContent = { ...(prev.content || {}) };
+      const bsp = { ...(newContent.bestStudentProfile || {}) };
+      const topStudents = [...(bsp.topStudents || [])];
+      if (topStudents.length >= 9) {
+        alert("Maximum 9 student slots allowed! Please remove an existing student to add a new one.");
+        return prev;
+      }
+      topStudents.push({
+        name: "New FETC Student",
+        achievement: "Student Visa",
+        country: "🇺🇸",
+        image: ""
+      });
+      bsp.topStudents = topStudents;
+      newContent.bestStudentProfile = bsp;
+      return { ...prev, content: newContent };
+    });
+  };
+
+  const removeTopStudent = (index) => {
+    setSelectedPage(prev => {
+      const newContent = { ...(prev.content || {}) };
+      const bsp = { ...(newContent.bestStudentProfile || {}) };
+      const topStudents = [...(bsp.topStudents || [])];
+      topStudents.splice(index, 1);
+      bsp.topStudents = topStudents;
+      newContent.bestStudentProfile = bsp;
+      return { ...prev, content: newContent };
+    });
+  };
+
+  const updateTopStudent = (index, field, value) => {
+    setSelectedPage(prev => {
+      const newContent = { ...(prev.content || {}) };
+      const bsp = { ...(newContent.bestStudentProfile || {}) };
+      const topStudents = [...(bsp.topStudents || [])];
+      if (topStudents[index]) {
+        topStudents[index] = { ...topStudents[index], [field]: value };
+      }
+      bsp.topStudents = topStudents;
+      newContent.bestStudentProfile = bsp;
+      return { ...prev, content: newContent };
+    });
+  };
+
+  const uploadTopStudentImage = async (index, file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch(getApiUrl('/api/admin/upload'), {
+        method: 'POST',
+        headers: { 'ngrok-skip-browser-warning': 'true' },
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        updateTopStudent(index, 'image', data.url);
+      }
+    } catch (err) {
+      console.error('Upload failed:', err);
+      alert('Failed to upload image.');
+    }
+  };
+
+  const addMockTestItem = () => {
+    setSelectedPage(prev => {
+      const newContent = { ...(prev.content || {}) };
+      const currentList = [...(newContent.mockTestsList || [])];
+      currentList.push({
+        title: "New Practice Test",
+        content: "Complete practice module for foreign education entrance.",
+        price: "₹49",
+        image_url: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800&auto=format&fit=crop&q=60"
+      });
+      newContent.mockTestsList = currentList;
+      return { ...prev, content: newContent };
+    });
+  };
+
+  const removeMockTestItem = (index) => {
+    setSelectedPage(prev => {
+      const newContent = { ...(prev.content || {}) };
+      const currentList = [...(newContent.mockTestsList || [])];
+      currentList.splice(index, 1);
+      newContent.mockTestsList = currentList;
+      return { ...prev, content: newContent };
+    });
+  };
+
+  const updateMockTestItem = (index, field, value) => {
+    setSelectedPage(prev => {
+      const newContent = { ...(prev.content || {}) };
+      const currentList = [...(newContent.mockTestsList || [])];
+      if (currentList[index]) {
+        currentList[index] = { ...currentList[index], [field]: value };
+      }
+      newContent.mockTestsList = currentList;
+      return { ...prev, content: newContent };
+    });
+  };
+
+  const uploadMockTestImage = async (index, file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch(getApiUrl('/api/admin/upload'), {
+        method: 'POST',
+        headers: { 'ngrok-skip-browser-warning': 'true' },
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        updateMockTestItem(index, 'image_url', data.url);
+      }
+    } catch (err) {
+      console.error('Upload failed:', err);
+      alert('Failed to upload image.');
+    }
+  };
+
   const addSection = (type) => {
     setSelectedPage(prev => {
       const currentSections = prev.content?.sections || [];
@@ -273,8 +415,10 @@ const AdminPages = () => {
   }, []);
 
   const filteredPages = pages.filter(page => {
-    return page.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesCategory = selectedCategory === "All" || getCategory(page.slug) === selectedCategory;
+    const matchesSearch = page.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       page.slug.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
   });
 
   const formatDate = (dateString) => {
@@ -421,7 +565,7 @@ const AdminPages = () => {
       {/* Page Editor Modal */}
       <AnimatePresence>
         {selectedPage && (
-          <div className="fixed inset-0 z-[35] flex items-center justify-center p-4 overflow-y-auto">
+          <div className="fixed inset-0 w-screen h-screen z-[50] flex items-center justify-center pt-24 pb-6 px-4 overflow-y-auto">
             {/* Background Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -438,44 +582,46 @@ const AdminPages = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] z-50 my-auto transform-gpu p-4 md:p-6"
+              className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[calc(100vh-140px)] z-50 my-auto transform-gpu border border-slate-100"
             >
-                <div className="p-8 md:p-10 pb-0 shrink-0">
-                  <div className="flex justify-between items-start mb-6">
-                    <div className="flex items-center gap-4">
+                {/* Fixed Modal Header */}
+                <div className="p-6 md:px-8 md:pt-6 md:pb-0 shrink-0 bg-white border-b border-slate-100">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3.5">
                       <div className="p-3 bg-brand-50 text-brand-600 rounded-2xl">
-                        <Edit size={24} />
+                        <Edit size={22} />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-semibold text-slate-900">Page Editor</h2>
-                        <p className="text-xs text-slate-400 font-medium uppercase tracking-widest flex items-center gap-2">
-                          < Globe size={10} /> {selectedPage.slug}
+                        <h2 className="text-xl font-bold text-slate-900">Page Editor</h2>
+                        <p className="text-xs text-slate-400 font-medium tracking-wide flex items-center gap-1.5 mt-0.5">
+                          <Globe size={11} /> {selectedPage.slug}
                         </p>
                       </div>
                     </div>
-                    <button onClick={() => { setSelectedPage(null); setActiveTab("settings"); }} className="p-2 hover:bg-slate-50 rounded-full text-slate-400 transition-colors">
-                      <X size={24} />
+                    <button onClick={() => { setSelectedPage(null); setActiveTab("settings"); }} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
+                      <X size={20} />
                     </button>
                   </div>
 
                   {/* Tab Switcher */}
-                  <div className="flex gap-1 p-1 bg-slate-50 rounded-2xl mb-8">
+                  <div className="flex gap-1 p-1 bg-slate-100/80 rounded-xl mb-4">
                     <button
                       onClick={() => setActiveTab("settings")}
-                      className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[0.9rem] text-[10px] font-medium uppercase tracking-widest transition-all ${activeTab === 'settings' ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold transition-all ${activeTab === 'settings' ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
                     >
                       <Info size={14} /> Page Settings
                     </button>
                     <button
                       onClick={() => setActiveTab("content")}
-                      className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[0.9rem] text-[10px] font-medium uppercase tracking-widest transition-all ${activeTab === 'content' ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold transition-all ${activeTab === 'content' ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
                     >
                       <Edit size={14} /> Page Content
                     </button>
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-8 md:px-10 pb-10 custom-scrollbar">
+                {/* Scrollable Content Area */}
+                <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
                   {activeTab === 'settings' ? (
                     <div className="space-y-6">
                       <div className="space-y-2">
@@ -781,37 +927,185 @@ const AdminPages = () => {
                             </div>
                           </div>
 
-                          {/* 7. Career Assessment Section */}
-                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
-                              <Compass size={18} className="text-brand-600" /> 7. Career Assessment Section
-                            </h3>
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-2 gap-4">
+                          {/* 8. Best Student Profile (Student Spotlights) */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-6">
+                            <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
+                              <div>
+                                <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest flex items-center gap-3">
+                                  <Award size={18} className="text-brand-600" /> 8. Best Student Profile (Student Spotlights)
+                                </h3>
+                                <p className="text-xs text-slate-500 font-medium mt-1">
+                                  Manage your Star Student spotlight (1 slot) and Top FETC Students carousel (up to 9 slots). Unused slots are hidden on the home page.
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* A. STAR STUDENT (1 Slot) */}
+                            <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-600 flex items-center gap-2">
+                                  <Sparkles size={14} /> Star Student (Featured 1 Slot)
+                                </span>
+                              </div>
+
+                              <ImageUploader
+                                section="bestStudentProfile"
+                                field="starStudentImage"
+                                value={selectedPage.content?.bestStudentProfile?.starStudent?.image}
+                                label="Star Student Photo"
+                              />
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Section Title</label>
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Student Name</label>
                                   <input
-                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.careerAssessment?.title || ""}
-                                    onChange={(e) => handleContentChange('careerAssessment', 'title', e.target.value)}
+                                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 outline-none focus:border-brand-300"
+                                    value={selectedPage.content?.bestStudentProfile?.starStudent?.name || ""}
+                                    onChange={(e) => handleNestedContentChange('bestStudentProfile', 'starStudent', 'name', e.target.value)}
+                                    placeholder="e.g. Udit Gangnani"
                                   />
                                 </div>
+
                                 <div>
-                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Floating Badge</label>
                                   <input
-                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.careerAssessment?.badgeText || ""}
-                                    onChange={(e) => handleContentChange('careerAssessment', 'badgeText', e.target.value)}
+                                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 outline-none focus:border-brand-300"
+                                    value={selectedPage.content?.bestStudentProfile?.starStudent?.badge || ""}
+                                    onChange={(e) => handleNestedContentChange('bestStudentProfile', 'starStudent', 'badge', e.target.value)}
+                                    placeholder="e.g. Full Scholarship"
                                   />
                                 </div>
                               </div>
+
                               <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
-                                <textarea
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.careerAssessment?.description || ""}
-                                  onChange={(e) => handleContentChange('careerAssessment', 'description', e.target.value)}
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">University / Achievement Details</label>
+                                <input
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 outline-none focus:border-brand-300"
+                                  value={selectedPage.content?.bestStudentProfile?.starStudent?.university || ""}
+                                  onChange={(e) => handleNestedContentChange('bestStudentProfile', 'starStudent', 'university', e.target.value)}
+                                  placeholder="e.g. University of Pisa, Italy"
                                 />
+                              </div>
+
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Success Story Description</label>
+                                <textarea
+                                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none outline-none focus:border-brand-300"
+                                  value={selectedPage.content?.bestStudentProfile?.starStudent?.description || ""}
+                                  onChange={(e) => handleNestedContentChange('bestStudentProfile', 'starStudent', 'description', e.target.value)}
+                                  placeholder="Driven by a passion for higher education, Udit placed his trust in FETC..."
+                                />
+                              </div>
+                            </div>
+
+                            {/* B. TOP 9 FETC STUDENTS (Up to 9 Slots) */}
+                            <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <div>
+                                  <span className="text-xs font-extrabold uppercase tracking-widest text-slate-800 flex items-center gap-2">
+                                    <Users size={14} className="text-brand-600" /> Top 9 FETC Students ({selectedPage.content?.bestStudentProfile?.topStudents?.length || 0}/9 Slots Used)
+                                  </span>
+                                  <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+                                    Only uploaded student cards will show on the home page slider. Unused slots are automatically hidden.
+                                  </p>
+                                </div>
+                                {(selectedPage.content?.bestStudentProfile?.topStudents?.length || 0) < 9 && (
+                                  <button
+                                    type="button"
+                                    onClick={addTopStudent}
+                                    className="px-3.5 py-1.5 bg-brand-50 text-brand-600 hover:bg-brand-100 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                                  >
+                                    <Plus size={14} /> Add Student
+                                  </button>
+                                )}
+                              </div>
+
+                              <div className="space-y-4">
+                                {(selectedPage.content?.bestStudentProfile?.topStudents || []).map((student, idx) => (
+                                  <div key={idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200/70 space-y-3 relative group">
+                                    <div className="flex items-center justify-between border-b border-slate-200/50 pb-2">
+                                      <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                                        Student Slot #{idx + 1}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => removeTopStudent(idx)}
+                                        className="p-1.5 text-rose-500 hover:bg-rose-100/60 rounded-lg transition-all"
+                                        title="Remove Student"
+                                      >
+                                        <Trash2 size={14} />
+                                      </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      <div>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Full Name</label>
+                                        <input
+                                          className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 outline-none focus:border-brand-300"
+                                          value={student.name || ""}
+                                          onChange={(e) => updateTopStudent(idx, 'name', e.target.value)}
+                                          placeholder="e.g. Mansi Savani"
+                                        />
+                                      </div>
+
+                                      <div>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Achievement / Visa Subtitle</label>
+                                        <input
+                                          className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 outline-none focus:border-brand-300"
+                                          value={student.achievement || ""}
+                                          onChange={(e) => updateTopStudent(idx, 'achievement', e.target.value)}
+                                          placeholder="e.g. USA F1 Visa"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      <div>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Country Flag / Code</label>
+                                        <input
+                                          className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 outline-none focus:border-brand-300"
+                                          value={student.country || ""}
+                                          onChange={(e) => updateTopStudent(idx, 'country', e.target.value)}
+                                          placeholder="e.g. 🇺🇸 or US"
+                                        />
+                                      </div>
+
+                                      <div>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Student Photo</label>
+                                        <div className="flex items-center gap-2">
+                                          <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                              if (e.target.files && e.target.files[0]) {
+                                                uploadTopStudentImage(idx, e.target.files[0]);
+                                              }
+                                            }}
+                                            className="text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100 cursor-pointer"
+                                          />
+                                        </div>
+                                        {student.image && (
+                                          <div className="mt-2 w-12 h-12 rounded-lg overflow-hidden border border-slate-200">
+                                            <img src={getAssetUrl(student.image)} alt={student.name} className="w-full h-full object-cover" />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+
+                                {(!selectedPage.content?.bestStudentProfile?.topStudents || selectedPage.content.bestStudentProfile.topStudents.length === 0) && (
+                                  <div className="py-8 text-center border-2 border-dashed border-slate-200 rounded-2xl">
+                                    <p className="text-xs text-slate-400 italic font-medium mb-3">No student profiles added yet.</p>
+                                    <button
+                                      type="button"
+                                      onClick={addTopStudent}
+                                      className="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-bold hover:bg-brand-700 transition-all inline-flex items-center gap-1.5"
+                                    >
+                                      <Plus size={14} /> Add First Student (Max 9)
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1829,7 +2123,7 @@ const AdminPages = () => {
                       )}
 
                       {/* DYNAMIC SECTION EDITOR FOR GENERIC PAGES */}
-                      {selectedPage.slug !== '/' && selectedPage.slug !== '/about/company-profile' && selectedPage.slug !== '/about' && selectedPage.slug.toLowerCase() !== '/contact' && selectedPage.slug.toLowerCase() !== '/study-abroad' && !selectedPage.slug.toLowerCase().startsWith('/study-abroad/') && selectedPage.slug.toLowerCase() !== '/exam-training' && !selectedPage.slug.toLowerCase().startsWith('/exam-training/') && selectedPage.slug !== '/gallery' && !selectedPage.slug.includes('career-assessment') && selectedPage.slug !== '/terms' && selectedPage.slug !== '/privacy' && selectedPage.slug !== '/refund' && selectedPage.slug !== '/faq' && (
+                      {selectedPage.slug !== '/' && selectedPage.slug !== '/about/company-profile' && selectedPage.slug !== '/about' && selectedPage.slug.toLowerCase() !== '/contact' && selectedPage.slug.toLowerCase() !== '/study-abroad' && !selectedPage.slug.toLowerCase().startsWith('/study-abroad/') && selectedPage.slug.toLowerCase() !== '/exam-training' && !selectedPage.slug.toLowerCase().startsWith('/exam-training/') && selectedPage.slug.toLowerCase() !== '/mock-tests' && selectedPage.slug.toLowerCase() !== '/mock' && selectedPage.slug !== '/gallery' && !selectedPage.slug.includes('career-assessment') && selectedPage.slug !== '/terms' && selectedPage.slug !== '/privacy' && selectedPage.slug !== '/refund' && selectedPage.slug !== '/faq' && (
                         <div className="space-y-8 pb-20">
                           <div className="bg-brand-50/50 p-8 rounded-2xl border border-brand-100 flex items-center justify-between gap-6">
                             <div>
@@ -1946,16 +2240,159 @@ const AdminPages = () => {
                           </div>
                         </div>
                       )}
+
+                      {/* MOCK TESTS PAGE EDITOR */}
+                      {(selectedPage.slug?.toLowerCase() === '/mock-tests' || selectedPage.slug?.toLowerCase() === '/mock') && (
+                        <div className="space-y-6 pb-20">
+                          {/* 1. Page Header */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                              <Globe size={18} className="text-brand-600" /> 1. Page Header & Subtitle
+                            </h3>
+                            <div className="space-y-4">
+                              <div>
+                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.hero?.badge || "Practice & Succeed"}
+                                  onChange={(e) => handleNestedContentChange('hero', null, 'badge', e.target.value)}
+                                />
+                              </div>
+
+                              <div>
+                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Main Title</label>
+                                <input
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.hero?.titleMain || "Practice Mock Exams & Tests"}
+                                  onChange={(e) => handleNestedContentChange('hero', null, 'titleMain', e.target.value)}
+                                />
+                              </div>
+
+                              <div>
+                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Subtitle Description</label>
+                                <textarea
+                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
+                                  value={selectedPage.content?.hero?.subtitle || "Gain the confidence needed to clear your foreign educational and language requirements."}
+                                  onChange={(e) => handleNestedContentChange('hero', null, 'subtitle', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 2. Mock Test Cards List */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-6">
+                            <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
+                              <div>
+                                <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest flex items-center gap-3">
+                                  <BookOpen size={18} className="text-brand-600" /> 2. Available Mock Tests ({selectedPage.content?.mockTestsList?.length || 0})
+                                </h3>
+                                <p className="text-xs text-slate-500 font-medium mt-1">
+                                  Manage your mock test items, pricing, images, and syllabus descriptions.
+                                </p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={addMockTestItem}
+                                className="px-4 py-2 bg-brand-600 text-white hover:bg-brand-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-brand-100"
+                              >
+                                <Plus size={14} /> Add Mock Test
+                              </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {(selectedPage.content?.mockTestsList || []).map((test, idx) => (
+                                <div key={idx} className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-4 relative group">
+                                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                                    <span className="text-xs font-extrabold uppercase tracking-widest text-slate-700 flex items-center gap-2">
+                                      Mock Card #{idx + 1}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => removeMockTestItem(idx)}
+                                      className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                                      title="Remove Test"
+                                    >
+                                      <Trash2 size={14} />
+                                    </button>
+                                  </div>
+
+                                  <div className="grid grid-cols-3 gap-3">
+                                    <div className="col-span-2">
+                                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Test Title</label>
+                                      <input
+                                        className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:border-brand-300"
+                                        value={test.title || test.name || ""}
+                                        onChange={(e) => updateMockTestItem(idx, 'title', e.target.value)}
+                                        placeholder="e.g. SELT (Secure English Language Test)"
+                                      />
+                                    </div>
+
+                                    <div>
+                                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Price</label>
+                                      <input
+                                        className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-blue-600 outline-none focus:border-brand-300"
+                                        value={test.price || "₹49"}
+                                        onChange={(e) => updateMockTestItem(idx, 'price', e.target.value)}
+                                        placeholder="e.g. ₹49"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Description</label>
+                                    <textarea
+                                      className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none outline-none focus:border-brand-300"
+                                      value={test.content || test.description || ""}
+                                      onChange={(e) => updateMockTestItem(idx, 'content', e.target.value)}
+                                      placeholder="Official practice test details..."
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Card Image</label>
+                                    <div className="flex items-center gap-3">
+                                      <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                          if (e.target.files && e.target.files[0]) {
+                                            uploadMockTestImage(idx, e.target.files[0]);
+                                          }
+                                        }}
+                                        className="text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100 cursor-pointer"
+                                      />
+                                    </div>
+                                    {(test.image_url || test.image) && (
+                                      <div className="mt-2.5 h-20 rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
+                                        <img src={getAssetUrl(test.image_url || test.image)} alt={test.title} className="w-full h-full object-cover" />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
-
+                </div>
+                <div className="p-4 md:px-8 bg-slate-50/80 border-t border-slate-100 shrink-0 flex items-center justify-end gap-3">
                   <button
+                    type="button"
+                    onClick={() => { setSelectedPage(null); setActiveTab("settings"); }}
+                    className="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all shadow-xs"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => updatePage(selectedPage.id, selectedPage)}
                     disabled={isSaving}
-                    className="w-full py-4.5 bg-slate-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-brand-600 transition-all shadow-xl shadow-slate-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-8 sticky bottom-0 z-10"
+                    className="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-md shadow-brand-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isSaving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
-                    {isSaving ? "Saving Changes..." : "Save Page Content"}
+                    {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                    {isSaving ? "Saving..." : "Save Page Content"}
                   </button>
                 </div>
               </motion.div>
@@ -1982,7 +2419,7 @@ const AdminPages = () => {
       {/* Custom Creation Modal */}
       <AnimatePresence>
         {showCreateModal && (
-          <div className="fixed inset-0 z-[35] flex items-center justify-center p-4 overflow-y-auto">
+          <div className="fixed inset-0 w-screen h-screen z-[50] flex items-center justify-center pt-24 pb-6 px-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -2050,6 +2487,37 @@ const AdminPages = () => {
       </AnimatePresence>
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        {/* Navigation Category Filter Tabs */}
+        <div className="px-6 pt-6 pb-2 border-b border-slate-100 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+          {["All", ...categories].map((cat) => {
+            const count = cat === "All"
+              ? pages.length
+              : pages.filter(p => getCategory(p.slug) === cat).length;
+
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap border flex items-center gap-2 ${
+                  selectedCategory === cat
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                    : 'bg-slate-50 text-slate-600 border-slate-200/80 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                <span>{cat}</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
+                  selectedCategory === cat
+                    ? 'bg-white/20 text-white'
+                    : 'bg-slate-200 text-slate-600'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
         <div className="p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />

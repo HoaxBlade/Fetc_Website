@@ -158,7 +158,7 @@ const AdminLayout = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex relative overflow-clip">
+    <div className="min-h-screen bg-[#f8fafc] flex relative">
       {/* Dynamic Background Decorations */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-200/20 rounded-full blur-[140px] animate-pulse" />
@@ -183,11 +183,9 @@ const AdminLayout = () => {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className={`hidden lg:flex flex-col h-[calc(100vh-80px)] sticky top-20 z-40 bg-white border-r border-slate-200 shrink-0 transition-all duration-300 ${isCollapsed ? 'w-[76px]' : 'w-[260px]'}`}>
+      <aside className={`hidden lg:flex flex-col h-[calc(100vh-80px)] fixed top-[80px] left-0 bottom-0 z-[2000] bg-white border-r border-slate-200 shrink-0 transition-all duration-300 ${isCollapsed ? 'w-[76px]' : 'w-[260px]'}`}>
         <div className="h-full flex flex-col relative">
           <SidebarContent />
-
-
         </div>
       </aside>
 
@@ -218,7 +216,7 @@ const AdminLayout = () => {
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <main className="flex-1 relative z-10 w-full">
+      <main className={`flex-1 relative z-10 w-full transition-all duration-300 ${isCollapsed ? 'lg:ml-[76px]' : 'lg:ml-[260px]'}`}>
         <div className="pt-28 pb-16 px-4 md:px-6 lg:pt-5 lg:pb-16 lg:px-8 min-h-full">
           <Outlet />
         </div>

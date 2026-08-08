@@ -261,14 +261,14 @@ const AdminCourses = () => {
       {/* Add / Edit Course Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-[35] flex items-center justify-center p-4 overflow-y-auto">
+          <div className="fixed inset-0 w-screen h-screen z-[50] flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={() => setIsModalOpen(false)}
-              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu"
+              className="fixed inset-0 w-screen h-screen bg-slate-900/40 backdrop-blur-sm transform-gpu"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 15 }}

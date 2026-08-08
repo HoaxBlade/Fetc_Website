@@ -2275,8 +2275,8 @@ app.post('/api/v1/order/initiate-payment', async (req, res) => {
     }
 
     // 2. PhonePe Standard V1 Host Flow (Salt Key + SHA256 Checksum for QR generation)
-    const merchantId = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT';
-    const saltKey = process.env.PHONEPE_SALT_KEY || '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
+    const merchantId = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT86';
+    const saltKey = process.env.PHONEPE_SALT_KEY || '9643446-0b55-4e0b-b762-a115b22f7c3a';
     const saltIndex = process.env.PHONEPE_SALT_INDEX || '1';
     const hostUrl = process.env.PHONEPE_HOST_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox';
 
@@ -2317,11 +2317,13 @@ app.post('/api/v1/order/initiate-payment', async (req, res) => {
     const redirectUrl = responseData.data?.instrumentResponse?.redirectInfo?.url || responseData.data?.redirectUrl || responseData.redirectUrl;
 
     if (responseData.success && redirectUrl) {
-      res.json({ success: true, redirectUrl, merchantTransactionId: merchantOrderId });
+      return res.json({ success: true, redirectUrl, merchantTransactionId: merchantOrderId });
     } else {
-      res.status(400).json({
+      console.error('PhonePe Gateway Error:', responseData);
+      const detailMsg = responseData.message || responseData.code || 'Unauthorized merchant credentials';
+      return res.status(400).json({
         success: false,
-        message: responseData.message || 'Payment initiation failed with gateway',
+        message: `PhonePe Gateway Error (${responseData.code || '401'}): ${detailMsg}. Please verify PHONEPE_MERCHANT_ID & PHONEPE_SALT_KEY in server/.env`,
         data: responseData
       });
     }

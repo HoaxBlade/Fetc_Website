@@ -17,6 +17,7 @@ import {
   X,
   AlertCircle
 } from 'lucide-react';
+import { getApiUrl } from '../../apiConfig';
 
 const AdminPartners = () => {
   const [partners, setPartners] = useState([]);
@@ -27,12 +28,12 @@ const AdminPartners = () => {
   const fetchPartners = async () => {
     setLoading(true);
     try {
-      const response = await fetch((window.API_BASE || '') + '/api/partners', {
+      const response = await fetch(getApiUrl('/api/partners'), {
         headers: { 'ngrok-skip-browser-warning': 'true' }
       });
       const data = await response.json();
       if (data.success) {
-        setPartners(data.partners);
+        setPartners(data.partners || []);
       }
     } catch (err) {
       console.error('Failed to fetch partners:', err);
@@ -47,7 +48,7 @@ const AdminPartners = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch((window.API_BASE || '') + `/api/partners/${id}`, {
+      const response = await fetch(getApiUrl(`/api/partners/${id}`), {
         method: 'DELETE',
         headers: { 'ngrok-skip-browser-warning': 'true' }
       });
@@ -66,7 +67,7 @@ const AdminPartners = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const response = await fetch((window.API_BASE || '') + `/api/partners/${id}/status`, {
+      const response = await fetch(getApiUrl(`/api/partners/${id}/status`), {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
@@ -228,8 +229,9 @@ const AdminPartners = () => {
 
       {/* Delete Confirmation Dialog */}
       {deleteConfirmId && typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100 z-[100000]">
+        <div className="fixed inset-0 w-screen h-screen z-[50] flex items-center justify-center pt-24 pb-6 px-4 overflow-y-auto">
+          <div onClick={() => setDeleteConfirmId(null)} className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu" />
+          <div className="relative bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-100 z-50 my-auto transform-gpu">
             <div className="flex items-center gap-3 text-red-600">
               <AlertCircle size={24} />
               <h4 className="text-lg font-bold text-slate-900">Delete Partner Request?</h4>
@@ -258,8 +260,9 @@ const AdminPartners = () => {
 
       {/* Full Details Modal */}
       {selectedPartner && typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
-          <div className="relative bg-white rounded-3xl max-w-3xl w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden border border-slate-100 z-[100000]">
+        <div className="fixed inset-0 w-screen h-screen z-[50] flex items-center justify-center pt-24 pb-6 px-4 overflow-y-auto">
+          <div onClick={() => setSelectedPartner(null)} className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu" />
+          <div className="relative bg-white rounded-3xl max-w-3xl w-full flex flex-col max-h-[calc(100vh-140px)] shadow-2xl overflow-hidden border border-slate-100 z-50 my-auto transform-gpu">
             {/* Modal Header (Fixed at Top) */}
             <div className="p-6 sm:p-8 pb-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
               <div>

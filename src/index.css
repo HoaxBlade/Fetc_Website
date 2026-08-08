@@ -136,7 +136,7 @@ body {
 
 /* Smooth layout stability and prevent scrollbar layout shift */
 html {
-  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
 }
 
 body.modal-open {

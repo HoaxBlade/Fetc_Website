@@ -16,6 +16,7 @@ import {
   HelpCircle,
   ShieldCheck
 } from 'lucide-react';
+import { getApiUrl } from '../apiConfig';
 
 const BecomePartnerPage = () => {
   const [formData, setFormData] = useState({
@@ -75,7 +76,7 @@ const BecomePartnerPage = () => {
     setErrorMessage('');
 
     try {
-      const response = await fetch((window.API_BASE || '') + '/api/partners', {
+      const response = await fetch(getApiUrl('/api/partners'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

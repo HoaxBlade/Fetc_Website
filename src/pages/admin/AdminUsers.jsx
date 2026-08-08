@@ -258,13 +258,13 @@ const AdminUsers = () => {
       {/* Edit User Modal */}
       <AnimatePresence>
         {editingUser && (
-          <div className="fixed inset-0 z-[35] flex items-center justify-center p-4 overflow-y-auto">
+          <div className="fixed inset-0 w-screen h-screen z-[50] flex items-center justify-center p-4 overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu"
+              className="fixed inset-0 w-screen h-screen bg-slate-900/40 backdrop-blur-sm transform-gpu"
               onClick={() => setEditingUser(null)}
             />
             <motion.div 
@@ -310,13 +310,13 @@ const AdminUsers = () => {
       {/* Change Role Modal */}
       <AnimatePresence>
         {roleEditingUser && (
-          <div className="fixed inset-0 z-[35] flex items-center justify-center p-4 overflow-y-auto">
+          <div className="fixed inset-0 w-screen h-screen z-[50] flex items-center justify-center p-4 overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transform-gpu"
+              className="fixed inset-0 w-screen h-screen bg-slate-900/40 backdrop-blur-sm transform-gpu"
               onClick={() => setRoleEditingUser(null)}
             />
             <motion.div 
