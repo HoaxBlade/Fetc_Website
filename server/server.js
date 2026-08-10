@@ -2526,14 +2526,48 @@ const ensureInvoicesTable = async () => {
       invoice_date DATE NOT NULL DEFAULT CURRENT_DATE,
       payment_method VARCHAR(100) DEFAULT 'Cash',
       upi_ref VARCHAR(255),
-      bill_to JSONB NOT NULL,
-      items JSONB NOT NULL,
+      bill_to JSONB NOT NULL DEFAULT '{}'::jsonb,
+      items JSONB NOT NULL DEFAULT '[]'::jsonb,
       subtotal DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
       sgst DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
       cgst DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
       total DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
+    );
+
+    CREATE SEQUENCE IF NOT EXISTS invoices_id_seq;
+    ALTER TABLE invoices ALTER COLUMN id TYPE INTEGER USING (CASE WHEN id::text ~ '^[0-9]+$' THEN id::integer ELSE NULL END);
+    ALTER TABLE invoices ALTER COLUMN id SET DEFAULT nextval('invoices_id_seq');
+
+    DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='client') THEN
+        ALTER TABLE invoices ALTER COLUMN client DROP NOT NULL;
+      END IF;
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='company') THEN
+        ALTER TABLE invoices ALTER COLUMN company DROP NOT NULL;
+      END IF;
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='date') THEN
+        ALTER TABLE invoices ALTER COLUMN date DROP NOT NULL;
+      END IF;
+    END $$;
+
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS invoice_no VARCHAR(100);
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS invoice_date DATE DEFAULT CURRENT_DATE;
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_method VARCHAR(100) DEFAULT 'Cash';
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS upi_ref VARCHAR(255);
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS bill_to JSONB DEFAULT '{}'::jsonb;
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS items JSONB DEFAULT '[]'::jsonb;
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS subtotal DECIMAL(10, 2) DEFAULT 0.00;
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS sgst DECIMAL(10, 2) DEFAULT 0.00;
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS cgst DECIMAL(10, 2) DEFAULT 0.00;
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS total DECIMAL(10, 2) DEFAULT 0.00;
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+    DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'invoices_invoice_no_key') THEN
+        ALTER TABLE invoices ADD CONSTRAINT invoices_invoice_no_key UNIQUE (invoice_no);
+      END IF;
+    END $$;
   `);
 };
 
@@ -2541,9 +2575,15 @@ const ensureInvoicesTable = async () => {
 app.get(['/api/v1/invoice/next-no', '/api/admin/invoices/next-no'], async (req, res) => {
   try {
     await ensureInvoicesTable();
-    const result = await db.query(`SELECT COUNT(*), COALESCE(MAX(id), 0) as max_id FROM invoices`);
-    const nextId = parseInt(result.rows[0].max_id || 0) + 1;
-    const formattedInvoiceNo = `INV-${String(nextId).padStart(3, '0')}`;
+    const result = await db.query(`SELECT invoice_no FROM invoices WHERE invoice_no IS NOT NULL ORDER BY created_at DESC LIMIT 1`);
+    let nextNum = 1;
+    if (result.rows.length > 0 && result.rows[0].invoice_no) {
+      const match = result.rows[0].invoice_no.match(/(\d+)/);
+      if (match) {
+        nextNum = parseInt(match[1], 10) + 1;
+      }
+    }
+    const formattedInvoiceNo = `INV-${String(nextNum).padStart(3, '0')}`;
     res.json({ success: true, invoiceNo: formattedInvoiceNo });
   } catch (err) {
     console.error('Fetch next invoice no error:', err);

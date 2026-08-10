@@ -145,3 +145,20 @@ CREATE TABLE IF NOT EXISTS guide_pages (
     page_number INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 10. Invoices Table
+CREATE TABLE IF NOT EXISTS invoices (
+    id SERIAL PRIMARY KEY,
+    invoice_no VARCHAR(100) UNIQUE NOT NULL,
+    invoice_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    payment_method VARCHAR(100) DEFAULT 'Cash',
+    upi_ref VARCHAR(255),
+    bill_to JSONB NOT NULL DEFAULT '{}'::jsonb,
+    items JSONB NOT NULL DEFAULT '[]'::jsonb,
+    subtotal DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    sgst DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    cgst DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    total DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
