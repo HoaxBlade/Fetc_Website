@@ -1,4 +1,5 @@
--- FETC Database Schema
+-- FETC Database Comprehensive Schema
+-- Contains all tables required for local and deployed environments (Vercel, Supabase, Neon, Render, AWS, etc.)
 
 -- 1. Users Table
 CREATE TABLE IF NOT EXISTS users (
@@ -17,15 +18,17 @@ CREATE TABLE IF NOT EXISTS users (
 -- 2. Doubts Table (Student Support)
 CREATE TABLE IF NOT EXISTS doubts (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     subject VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     status VARCHAR(20) DEFAULT 'OPEN',
     admin_response TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    answer TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Leads Table (Student Inquiries)
+-- 3. Leads Table (Student Inquiries & Applications)
 CREATE TABLE IF NOT EXISTS leads (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -56,7 +59,7 @@ CREATE TABLE IF NOT EXISTS leads (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2.5. Lead Documents Table (For onboarding files)
+-- 4. Lead Documents Table (Onboarding Files)
 CREATE TABLE IF NOT EXISTS lead_documents (
     id SERIAL PRIMARY KEY,
     lead_id INTEGER REFERENCES leads(id) ON DELETE CASCADE,
@@ -69,23 +72,12 @@ CREATE TABLE IF NOT EXISTS lead_documents (
     UNIQUE (lead_id, document_type)
 );
 
--- 3. Universities Table (To be implemented)
--- CREATE TABLE IF NOT EXISTS universities (
---     id SERIAL PRIMARY KEY,
---     name VARCHAR(255) NOT NULL,
---     location VARCHAR(255),
---     description TEXT,
---     image_url TEXT,
---     category VARCHAR(100),
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
-
--- 4. Tickets Table (Support & Enquiries)
+-- 5. Tickets Table (Support & Enquiries)
 CREATE TABLE IF NOT EXISTS tickets (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id), -- Nullable for Guest enquiries
-    name VARCHAR(255), -- For Guest enquiries
-    email VARCHAR(255), -- For Guest enquiries
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(255),
+    email VARCHAR(255),
     subject VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
     priority VARCHAR(20) DEFAULT 'MEDIUM',
@@ -93,19 +85,19 @@ CREATE TABLE IF NOT EXISTS tickets (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. Pages Table (CMS)
+-- 6. Pages Table (CMS Content)
 CREATE TABLE IF NOT EXISTS pages (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) UNIQUE NOT NULL,      -- e.g., 'about-us'
-    status VARCHAR(20) DEFAULT 'DRAFT',     -- 'PUBLISHED' or 'DRAFT'
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    status VARCHAR(20) DEFAULT 'DRAFT',
     seo_title VARCHAR(255),
     seo_description TEXT,
-    content JSONB DEFAULT '{}',             -- Flexible storage for page sections
+    content JSONB DEFAULT '{}',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. News Flash Table
+-- 7. News Flash Table (Announcements Banner)
 CREATE TABLE IF NOT EXISTS news_flash (
     id SERIAL PRIMARY KEY,
     content TEXT NOT NULL,
@@ -116,7 +108,7 @@ CREATE TABLE IF NOT EXISTS news_flash (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 7. Blog Posts Table
+-- 8. Blog Posts Table
 CREATE TABLE IF NOT EXISTS posts (
     id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
@@ -127,7 +119,7 @@ CREATE TABLE IF NOT EXISTS posts (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 8. Interactive Guides Table
+-- 9. Interactive Guides Table
 CREATE TABLE IF NOT EXISTS interactive_guides (
     id SERIAL PRIMARY KEY,
     slug VARCHAR(255) UNIQUE NOT NULL,
@@ -137,7 +129,7 @@ CREATE TABLE IF NOT EXISTS interactive_guides (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 9. Guide Pages Table
+-- 10. Guide Pages Table
 CREATE TABLE IF NOT EXISTS guide_pages (
     id SERIAL PRIMARY KEY,
     guide_id INTEGER REFERENCES interactive_guides(id) ON DELETE CASCADE,
@@ -146,7 +138,52 @@ CREATE TABLE IF NOT EXISTS guide_pages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 10. Invoices Table
+-- 11. Mock Tests Table
+CREATE TABLE IF NOT EXISTS mock_tests (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    price VARCHAR(50) DEFAULT '₹49',
+    status VARCHAR(50) DEFAULT 'Published',
+    content TEXT,
+    image_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 12. Partners Table (Partner Inquiries)
+CREATE TABLE IF NOT EXISTS partners (
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(100) NOT NULL,
+    organization_name VARCHAR(255),
+    organization_website VARCHAR(255),
+    partnership_types JSONB,
+    other_type_detail TEXT,
+    organization_description TEXT,
+    why_partner TEXT,
+    preferred_communication VARCHAR(50),
+    candidates_sent VARCHAR(100),
+    additional_comments TEXT,
+    status VARCHAR(50) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 13. Orders Table (Payment Transactions)
+CREATE TABLE IF NOT EXISTS orders (
+    id SERIAL PRIMARY KEY,
+    merchant_transaction_id VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    email VARCHAR(255),
+    phone VARCHAR(100),
+    course_id VARCHAR(100),
+    product_type VARCHAR(100),
+    amount INT NOT NULL,
+    status VARCHAR(50) DEFAULT 'PENDING',
+    return_url VARCHAR(1000),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 14. Invoices Table (Billing System)
 CREATE TABLE IF NOT EXISTS invoices (
     id SERIAL PRIMARY KEY,
     invoice_no VARCHAR(100) UNIQUE NOT NULL,
@@ -162,3 +199,47 @@ CREATE TABLE IF NOT EXISTS invoices (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 15. Courses Table (Available Courses & Pricing)
+CREATE TABLE IF NOT EXISTS courses (
+    id SERIAL PRIMARY KEY,
+    course_id VARCHAR(100) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    category VARCHAR(100) DEFAULT 'Exam Prep',
+    price DECIMAL(10, 2) DEFAULT 0.00,
+    duration VARCHAR(100) DEFAULT '4 Weeks',
+    level VARCHAR(50) DEFAULT 'Intermediate',
+    status VARCHAR(50) DEFAULT 'ACTIVE',
+    students_count INT DEFAULT 0,
+    thumbnail VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 16. News Articles Table
+CREATE TABLE IF NOT EXISTS news_articles (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    summary TEXT,
+    source VARCHAR(100) DEFAULT 'FETC News',
+    date VARCHAR(50),
+    image_url TEXT,
+    category VARCHAR(100) DEFAULT 'General',
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 17. Student Reviews Table
+CREATE TABLE IF NOT EXISTS student_reviews (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    university VARCHAR(255),
+    score VARCHAR(50),
+    quote TEXT NOT NULL,
+    image_url TEXT,
+    visa_image TEXT,
+    country VARCHAR(100),
+    program VARCHAR(100),
+    rating INT DEFAULT 5,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
