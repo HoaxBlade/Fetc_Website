@@ -149,6 +149,84 @@ CREATE TABLE IF NOT EXISTS mock_tests (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 11b. Student Profiles Table (General Details, Test Scores & Academics)
+CREATE TABLE IF NOT EXISTS student_profiles (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    lead_id INTEGER REFERENCES leads(id) ON DELETE SET NULL,
+    
+    -- General Details
+    candidate_name VARCHAR(255),
+    candidate_age VARCHAR(50),
+    dob DATE,
+    student_phone VARCHAR(50),
+    student_email VARCHAR(255),
+    study_budget VARCHAR(255),
+    subject_interest VARCHAR(255),
+    target_country VARCHAR(255),
+    state_preference VARCHAR(255),
+    city_preference VARCHAR(255),
+    current_status VARCHAR(255),
+
+    -- Test Scores
+    toefl_score VARCHAR(50),
+    toefl_mock_score VARCHAR(50),
+    toefl_test_date DATE,
+    ielts_score VARCHAR(50),
+    ielts_mock_score VARCHAR(50),
+    ielts_test_date DATE,
+    gre_score VARCHAR(50),
+    gre_mock_score VARCHAR(50),
+    gre_test_date DATE,
+    gmat_score VARCHAR(50),
+    gmat_mock_score VARCHAR(50),
+    gmat_test_date DATE,
+    sat_score VARCHAR(50),
+    sat_mock_score VARCHAR(50),
+    sat_test_date DATE,
+
+    -- Academics
+    tenth_score VARCHAR(50),
+    tenth_passing_year VARCHAR(50),
+    tenth_school VARCHAR(255),
+
+    twelfth_score VARCHAR(50),
+    twelfth_passing_year VARCHAR(50),
+    twelfth_stream VARCHAR(255),
+    twelfth_school VARCHAR(255),
+
+    diploma_score VARCHAR(50),
+    diploma_passing_year VARCHAR(50),
+    diploma_name VARCHAR(255),
+    diploma_awarding_body VARCHAR(255),
+    diploma_duration VARCHAR(100),
+
+    bachelors_score VARCHAR(50),
+    bachelors_passing_year VARCHAR(50),
+    bachelors_degree VARCHAR(255),
+    bachelors_college VARCHAR(255),
+    bachelors_university VARCHAR(255),
+    bachelors_duration VARCHAR(100),
+    bachelors_backlogs VARCHAR(100),
+
+    pg_diploma_score VARCHAR(50),
+    pg_diploma_passing_year VARCHAR(50),
+    pg_diploma_name VARCHAR(255),
+    pg_diploma_awarding_body VARCHAR(255),
+    pg_diploma_duration VARCHAR(100),
+
+    masters_score VARCHAR(50),
+    masters_passing_year VARCHAR(50),
+    masters_degree VARCHAR(255),
+    masters_college VARCHAR(255),
+    masters_university VARCHAR(255),
+    masters_duration VARCHAR(100),
+    masters_backlogs VARCHAR(100),
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- 12. Partners Table (Partner Inquiries)
 CREATE TABLE IF NOT EXISTS partners (
     id SERIAL PRIMARY KEY,

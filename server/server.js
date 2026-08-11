@@ -387,6 +387,152 @@ const runMigrations = async () => {
       console.warn('Mock tests seeding warning:', seedErr.message);
     }
 
+    // Student Profiles table (General Details, Test Scores, Academics)
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS student_profiles (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+        lead_id INTEGER REFERENCES leads(id) ON DELETE SET NULL,
+        
+        candidate_name VARCHAR(255),
+        candidate_age VARCHAR(50),
+        dob DATE,
+        student_phone VARCHAR(50),
+        student_email VARCHAR(255),
+        study_budget VARCHAR(255),
+        subject_interest VARCHAR(255),
+        target_country VARCHAR(255),
+        state_preference VARCHAR(255),
+        city_preference VARCHAR(255),
+        current_status VARCHAR(255),
+
+        toefl_score VARCHAR(50),
+        toefl_mock_score VARCHAR(50),
+        toefl_test_date DATE,
+        ielts_score VARCHAR(50),
+        ielts_mock_score VARCHAR(50),
+        ielts_test_date DATE,
+        gre_score VARCHAR(50),
+        gre_mock_score VARCHAR(50),
+        gre_test_date DATE,
+        gmat_score VARCHAR(50),
+        gmat_mock_score VARCHAR(50),
+        gmat_test_date DATE,
+        sat_score VARCHAR(50),
+        sat_mock_score VARCHAR(50),
+        sat_test_date DATE,
+
+        tenth_score VARCHAR(50),
+        tenth_passing_year VARCHAR(50),
+        tenth_school VARCHAR(255),
+
+        twelfth_score VARCHAR(50),
+        twelfth_passing_year VARCHAR(50),
+        twelfth_stream VARCHAR(255),
+        twelfth_school VARCHAR(255),
+
+        diploma_score VARCHAR(50),
+        diploma_passing_year VARCHAR(50),
+        diploma_name VARCHAR(255),
+        diploma_awarding_body VARCHAR(255),
+        diploma_duration VARCHAR(100),
+
+        bachelors_score VARCHAR(50),
+        bachelors_passing_year VARCHAR(50),
+        bachelors_degree VARCHAR(255),
+        bachelors_college VARCHAR(255),
+        bachelors_university VARCHAR(255),
+        bachelors_duration VARCHAR(100),
+        bachelors_backlogs VARCHAR(100),
+
+        pg_diploma_score VARCHAR(50),
+        pg_diploma_passing_year VARCHAR(50),
+        pg_diploma_name VARCHAR(255),
+        pg_diploma_awarding_body VARCHAR(255),
+        pg_diploma_duration VARCHAR(100),
+
+        masters_score VARCHAR(50),
+        masters_passing_year VARCHAR(50),
+        masters_degree VARCHAR(255),
+        masters_college VARCHAR(255),
+        masters_university VARCHAR(255),
+        masters_duration VARCHAR(100),
+        masters_backlogs VARCHAR(100),
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `).catch(() => {});
+
+    // Ensure all columns exist in student_profiles table if created previously
+    const studentProfileColumns = [
+      ['candidate_name', 'VARCHAR(255)'],
+      ['candidate_age', 'VARCHAR(50)'],
+      ['dob', 'DATE'],
+      ['student_phone', 'VARCHAR(50)'],
+      ['student_email', 'VARCHAR(255)'],
+      ['study_budget', 'VARCHAR(255)'],
+      ['subject_interest', 'VARCHAR(255)'],
+      ['target_country', 'VARCHAR(255)'],
+      ['state_preference', 'VARCHAR(255)'],
+      ['city_preference', 'VARCHAR(255)'],
+      ['current_status', 'VARCHAR(255)'],
+      ['toefl_score', 'VARCHAR(50)'],
+      ['toefl_mock_score', 'VARCHAR(50)'],
+      ['toefl_test_date', 'DATE'],
+      ['ielts_score', 'VARCHAR(50)'],
+      ['ielts_mock_score', 'VARCHAR(50)'],
+      ['ielts_test_date', 'DATE'],
+      ['gre_score', 'VARCHAR(50)'],
+      ['gre_mock_score', 'VARCHAR(50)'],
+      ['gre_test_date', 'DATE'],
+      ['gmat_score', 'VARCHAR(50)'],
+      ['gmat_mock_score', 'VARCHAR(50)'],
+      ['gmat_test_date', 'DATE'],
+      ['sat_score', 'VARCHAR(50)'],
+      ['sat_mock_score', 'VARCHAR(50)'],
+      ['sat_test_date', 'DATE'],
+      ['tenth_score', 'VARCHAR(50)'],
+      ['tenth_passing_year', 'VARCHAR(50)'],
+      ['tenth_school', 'VARCHAR(255)'],
+      ['twelfth_score', 'VARCHAR(50)'],
+      ['twelfth_passing_year', 'VARCHAR(50)'],
+      ['twelfth_stream', 'VARCHAR(255)'],
+      ['twelfth_school', 'VARCHAR(255)'],
+      ['diploma_score', 'VARCHAR(50)'],
+      ['diploma_passing_year', 'VARCHAR(50)'],
+      ['diploma_name', 'VARCHAR(255)'],
+      ['diploma_awarding_body', 'VARCHAR(255)'],
+      ['diploma_duration', 'VARCHAR(100)'],
+      ['bachelors_score', 'VARCHAR(50)'],
+      ['bachelors_passing_year', 'VARCHAR(50)'],
+      ['bachelors_degree', 'VARCHAR(255)'],
+      ['bachelors_college', 'VARCHAR(255)'],
+      ['bachelors_university', 'VARCHAR(255)'],
+      ['bachelors_duration', 'VARCHAR(100)'],
+      ['bachelors_backlogs', 'VARCHAR(100)'],
+      ['pg_diploma_score', 'VARCHAR(50)'],
+      ['pg_diploma_passing_year', 'VARCHAR(50)'],
+      ['pg_diploma_name', 'VARCHAR(255)'],
+      ['pg_diploma_awarding_body', 'VARCHAR(255)'],
+      ['pg_diploma_duration', 'VARCHAR(100)'],
+      ['masters_score', 'VARCHAR(50)'],
+      ['masters_passing_year', 'VARCHAR(50)'],
+      ['masters_degree', 'VARCHAR(255)'],
+      ['masters_college', 'VARCHAR(255)'],
+      ['masters_university', 'VARCHAR(255)'],
+      ['masters_duration', 'VARCHAR(100)'],
+      ['masters_backlogs', 'VARCHAR(100)']
+    ];
+
+    for (const [col, colType] of studentProfileColumns) {
+      try {
+        await db.query(`ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS ${col} ${colType};`);
+      } catch (colErr) {
+        console.warn(`Could not add column ${col} to student_profiles:`, colErr.message);
+      }
+    }
+
     console.log('✅ All migrations completed successfully');
   } catch (err) {
     console.error('❌ Migration error:', err);
@@ -2999,6 +3145,235 @@ app.delete(['/api/v1/course/:id', '/api/admin/courses/:id'], async (req, res) =>
   } catch (err) {
     console.error('Delete course error:', err);
     res.status(500).json({ success: false, message: 'Failed to delete course' });
+  }
+});
+
+// ==========================================
+// STUDENT PROFILES API (General, Test Scores, Academics)
+// ==========================================
+
+function formatDate(d) {
+  if (!d) return '';
+  if (typeof d === 'string' && d.includes('T')) return d.split('T')[0];
+  try {
+    const dt = new Date(d);
+    return isNaN(dt.getTime()) ? '' : dt.toISOString().split('T')[0];
+  } catch (e) {
+    return '';
+  }
+}
+
+app.get(['/api/admin/users/:userId/student-profile', '/api/users/:userId/student-profile'], async (req, res) => {
+  try {
+    const { userId } = req.params;
+    let userRes;
+    if (isNaN(userId)) {
+      userRes = await db.query('SELECT id, name, email, phone FROM users WHERE email = $1', [userId]);
+    } else {
+      userRes = await db.query('SELECT id, name, email, phone FROM users WHERE id = $1', [parseInt(userId)]);
+    }
+
+    const user = userRes.rows[0] || { id: userId, name: '', email: '', phone: '' };
+
+    const profileRes = await db.query('SELECT * FROM student_profiles WHERE user_id = $1', [user.id || 0]);
+    let profile = profileRes.rows[0];
+
+    if (!profile) {
+      profile = {
+        user_id: user.id,
+        candidate_name: user.name || '',
+        student_email: user.email || '',
+        student_phone: user.phone || '',
+        candidate_age: '',
+        dob: '',
+        study_budget: '',
+        subject_interest: '',
+        target_country: '',
+        state_preference: '',
+        city_preference: '',
+        current_status: '',
+        toefl_score: '', toefl_mock_score: '', toefl_test_date: '',
+        ielts_score: '', ielts_mock_score: '', ielts_test_date: '',
+        gre_score: '', gre_mock_score: '', gre_test_date: '',
+        gmat_score: '', gmat_mock_score: '', gmat_test_date: '',
+        sat_score: '', sat_mock_score: '', sat_test_date: '',
+        tenth_score: '', tenth_passing_year: '', tenth_school: '',
+        twelfth_score: '', twelfth_passing_year: '', twelfth_stream: '', twelfth_school: '',
+        diploma_score: '', diploma_passing_year: '', diploma_name: '', diploma_awarding_body: '', diploma_duration: '',
+        bachelors_score: '', bachelors_passing_year: '', bachelors_degree: '', bachelors_college: '', bachelors_university: '', bachelors_duration: '', bachelors_backlogs: '',
+        pg_diploma_score: '', pg_diploma_passing_year: '', pg_diploma_name: '', pg_diploma_awarding_body: '', pg_diploma_duration: '',
+        masters_score: '', masters_passing_year: '', masters_degree: '', masters_college: '', masters_university: '', masters_duration: '', masters_backlogs: ''
+      };
+    } else {
+      profile.dob = formatDate(profile.dob);
+      profile.toefl_test_date = formatDate(profile.toefl_test_date);
+      profile.ielts_test_date = formatDate(profile.ielts_test_date);
+      profile.gre_test_date = formatDate(profile.gre_test_date);
+      profile.gmat_test_date = formatDate(profile.gmat_test_date);
+      profile.sat_test_date = formatDate(profile.sat_test_date);
+    }
+
+    res.json({ success: true, user, profile });
+  } catch (err) {
+    console.error('Error fetching student profile:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch student profile: ' + err.message });
+  }
+});
+
+app.put(['/api/admin/users/:userId/student-profile', '/api/users/:userId/student-profile'], async (req, res) => {
+  try {
+    const { userId } = req.params;
+    let targetUserId = parseInt(userId);
+    if (isNaN(targetUserId)) {
+      const u = await db.query('SELECT id FROM users WHERE email = $1', [userId]);
+      if (u.rows.length > 0) targetUserId = u.rows[0].id;
+    }
+
+    if (!targetUserId || isNaN(targetUserId)) {
+      return res.status(400).json({ success: false, message: 'Invalid User ID' });
+    }
+
+    const b = req.body || {};
+    const cleanDate = (val) => (val && String(val).trim() !== '' ? String(val).trim() : null);
+
+    const query = `
+      INSERT INTO student_profiles (
+        user_id, candidate_name, candidate_age, dob, student_phone, student_email,
+        study_budget, subject_interest, target_country, state_preference, city_preference, current_status,
+        toefl_score, toefl_mock_score, toefl_test_date,
+        ielts_score, ielts_mock_score, ielts_test_date,
+        gre_score, gre_mock_score, gre_test_date,
+        gmat_score, gmat_mock_score, gmat_test_date,
+        sat_score, sat_mock_score, sat_test_date,
+        tenth_score, tenth_passing_year, tenth_school,
+        twelfth_score, twelfth_passing_year, twelfth_stream, twelfth_school,
+        diploma_score, diploma_passing_year, diploma_name, diploma_awarding_body, diploma_duration,
+        bachelors_score, bachelors_passing_year, bachelors_degree, bachelors_college, bachelors_university, bachelors_duration, bachelors_backlogs,
+        pg_diploma_score, pg_diploma_passing_year, pg_diploma_name, pg_diploma_awarding_body, pg_diploma_duration,
+        masters_score, masters_passing_year, masters_degree, masters_college, masters_university, masters_duration, masters_backlogs,
+        updated_at
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,
+        $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27,
+        $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39,
+        $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51,
+        $52, $53, $54, $55, $56, $57, $58, CURRENT_TIMESTAMP
+      )
+      ON CONFLICT (user_id) DO UPDATE SET
+        candidate_name = EXCLUDED.candidate_name,
+        candidate_age = EXCLUDED.candidate_age,
+        dob = EXCLUDED.dob,
+        student_phone = EXCLUDED.student_phone,
+        student_email = EXCLUDED.student_email,
+        study_budget = EXCLUDED.study_budget,
+        subject_interest = EXCLUDED.subject_interest,
+        target_country = EXCLUDED.target_country,
+        state_preference = EXCLUDED.state_preference,
+        city_preference = EXCLUDED.city_preference,
+        current_status = EXCLUDED.current_status,
+
+        toefl_score = EXCLUDED.toefl_score,
+        toefl_mock_score = EXCLUDED.toefl_mock_score,
+        toefl_test_date = EXCLUDED.toefl_test_date,
+
+        ielts_score = EXCLUDED.ielts_score,
+        ielts_mock_score = EXCLUDED.ielts_mock_score,
+        ielts_test_date = EXCLUDED.ielts_test_date,
+
+        gre_score = EXCLUDED.gre_score,
+        gre_mock_score = EXCLUDED.gre_mock_score,
+        gre_test_date = EXCLUDED.gre_test_date,
+
+        gmat_score = EXCLUDED.gmat_score,
+        gmat_mock_score = EXCLUDED.gmat_mock_score,
+        gmat_test_date = EXCLUDED.gmat_test_date,
+
+        sat_score = EXCLUDED.sat_score,
+        sat_mock_score = EXCLUDED.sat_mock_score,
+        sat_test_date = EXCLUDED.sat_test_date,
+
+        tenth_score = EXCLUDED.tenth_score,
+        tenth_passing_year = EXCLUDED.tenth_passing_year,
+        tenth_school = EXCLUDED.tenth_school,
+
+        twelfth_score = EXCLUDED.twelfth_score,
+        twelfth_passing_year = EXCLUDED.twelfth_passing_year,
+        twelfth_stream = EXCLUDED.twelfth_stream,
+        twelfth_school = EXCLUDED.twelfth_school,
+
+        diploma_score = EXCLUDED.diploma_score,
+        diploma_passing_year = EXCLUDED.diploma_passing_year,
+        diploma_name = EXCLUDED.diploma_name,
+        diploma_awarding_body = EXCLUDED.diploma_awarding_body,
+        diploma_duration = EXCLUDED.diploma_duration,
+
+        bachelors_score = EXCLUDED.bachelors_score,
+        bachelors_passing_year = EXCLUDED.bachelors_passing_year,
+        bachelors_degree = EXCLUDED.bachelors_degree,
+        bachelors_college = EXCLUDED.bachelors_college,
+        bachelors_university = EXCLUDED.bachelors_university,
+        bachelors_duration = EXCLUDED.bachelors_duration,
+        bachelors_backlogs = EXCLUDED.bachelors_backlogs,
+
+        pg_diploma_score = EXCLUDED.pg_diploma_score,
+        pg_diploma_passing_year = EXCLUDED.pg_diploma_passing_year,
+        pg_diploma_name = EXCLUDED.pg_diploma_name,
+        pg_diploma_awarding_body = EXCLUDED.pg_diploma_awarding_body,
+        pg_diploma_duration = EXCLUDED.pg_diploma_duration,
+
+        masters_score = EXCLUDED.masters_score,
+        masters_passing_year = EXCLUDED.masters_passing_year,
+        masters_degree = EXCLUDED.masters_degree,
+        masters_college = EXCLUDED.masters_college,
+        masters_university = EXCLUDED.masters_university,
+        masters_duration = EXCLUDED.masters_duration,
+        masters_backlogs = EXCLUDED.masters_backlogs,
+
+        updated_at = CURRENT_TIMESTAMP
+      RETURNING *;
+    `;
+
+    const params = [
+      targetUserId,
+      b.candidate_name || '',
+      b.candidate_age || '',
+      cleanDate(b.dob),
+      b.student_phone || '',
+      b.student_email || '',
+      b.study_budget || '',
+      b.subject_interest || '',
+      b.target_country || '',
+      b.state_preference || '',
+      b.city_preference || '',
+      b.current_status || '',
+
+      b.toefl_score || '', b.toefl_mock_score || '', cleanDate(b.toefl_test_date),
+      b.ielts_score || '', b.ielts_mock_score || '', cleanDate(b.ielts_test_date),
+      b.gre_score || '', b.gre_mock_score || '', cleanDate(b.gre_test_date),
+      b.gmat_score || '', b.gmat_mock_score || '', cleanDate(b.gmat_test_date),
+      b.sat_score || '', b.sat_mock_score || '', cleanDate(b.sat_test_date),
+
+      b.tenth_score || '', b.tenth_passing_year || '', b.tenth_school || '',
+      b.twelfth_score || '', b.twelfth_passing_year || '', b.twelfth_stream || '', b.twelfth_school || '',
+      b.diploma_score || '', b.diploma_passing_year || '', b.diploma_name || '', b.diploma_awarding_body || '', b.diploma_duration || '',
+      b.bachelors_score || '', b.bachelors_passing_year || '', b.bachelors_degree || '', b.bachelors_college || '', b.bachelors_university || '', b.bachelors_duration || '', b.bachelors_backlogs || '',
+      b.pg_diploma_score || '', b.pg_diploma_passing_year || '', b.pg_diploma_name || '', b.pg_diploma_awarding_body || '', b.pg_diploma_duration || '',
+      b.masters_score || '', b.masters_passing_year || '', b.masters_degree || '', b.masters_college || '', b.masters_university || '', b.masters_duration || '', b.masters_backlogs || ''
+    ];
+
+    const result = await db.query(query, params);
+    const updatedProfile = result.rows[0];
+    updatedProfile.dob = formatDate(updatedProfile.dob);
+    updatedProfile.toefl_test_date = formatDate(updatedProfile.toefl_test_date);
+    updatedProfile.ielts_test_date = formatDate(updatedProfile.ielts_test_date);
+    updatedProfile.gre_test_date = formatDate(updatedProfile.gre_test_date);
+    updatedProfile.gmat_test_date = formatDate(updatedProfile.gmat_test_date);
+    updatedProfile.sat_test_date = formatDate(updatedProfile.sat_test_date);
+
+    res.json({ success: true, message: 'Student profile details saved successfully', profile: updatedProfile });
+  } catch (err) {
+    console.error('Error saving student profile:', err);
+    res.status(500).json({ success: false, message: 'Failed to save student profile: ' + err.message });
   }
 });
 
