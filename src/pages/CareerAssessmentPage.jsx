@@ -159,7 +159,7 @@ export default function CareerAssessmentPage() {
         name: modalFormData.name.trim(),
         email: modalFormData.email.trim(),
         productType: 'MOCK_TEST',
-        amount: 1,
+        amount: 1000,
         returnUrl: window.location.href,
       };
 
@@ -311,7 +311,7 @@ export default function CareerAssessmentPage() {
                         onClick={() => setIsModalOpen(true)}
                         className="px-6 py-3 bg-blue-600/30 backdrop-blur-md border border-white/20 text-white text-sm font-bold rounded-xl shadow-sm hover:bg-blue-600/50 transition-all inline-flex items-center gap-2 w-fit"
                       >
-                        Start Online Test <ArrowRight size={18} />
+                        Start Assessment <ArrowRight size={18} />
                       </button>
                     </div>
                   </div>
@@ -745,7 +745,7 @@ export default function CareerAssessmentPage() {
                 <div className="bg-blue-50/70 border border-blue-100 rounded-xl p-4 flex items-center justify-between">
                   <div>
                     <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">Total Amount</span>
-                    <div className="text-2xl font-extrabold text-slate-900">₹1 <span className="text-xs font-normal text-slate-500">INR</span></div>
+                    <div className="text-2xl font-extrabold text-slate-900">₹1,000 <span className="text-xs font-normal text-slate-500">INR</span></div>
                   </div>
                   <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                     Online Test Access
@@ -790,7 +790,7 @@ export default function CareerAssessmentPage() {
                     ) : (
                       <>
                         <CreditCard size={18} />
-                        <span>Pay ₹1 & Start Assessment</span>
+                        <span>Pay ₹1,000 & Start Assessment</span>
                       </>
                     )}
                   </button>

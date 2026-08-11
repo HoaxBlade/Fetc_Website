@@ -2202,7 +2202,7 @@ app.post('/api/v1/order/initiate-payment', async (req, res) => {
     const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
     const originUrl = returnUrl || req.get('referer');
     const merchantOrderId = `ORD_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-    const paymentAmount = amount !== undefined ? Math.round(parseFloat(amount) * 100) : 100; // Default ₹1 (100 paise)
+    const paymentAmount = amount !== undefined ? Math.round(parseFloat(amount) * 100) : 100000; // Default ₹1000 (100000 paise)
 
     // Auto-create orders table if not exists
     await db.query(`
