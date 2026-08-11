@@ -70,15 +70,37 @@ const ProfilePage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
 
-  const getProfileDetails = () => {
+  const formatDateForInput = (dateStr) => {
+    if (!dateStr) return '';
+    if (typeof dateStr === 'string' && dateStr.includes('T')) {
+      return dateStr.split('T')[0];
+    }
+    return dateStr;
+  };
+
+  const getProfileDetails = (userObj = userData, currentFormData = {}) => {
     try {
-      if (!userData.profile_details) return defaultProfileDetails;
-      if (typeof userData.profile_details === 'string') {
-        return { ...defaultProfileDetails, ...JSON.parse(userData.profile_details) };
+      let details = {};
+      if (userObj.profile_details) {
+        details = typeof userObj.profile_details === 'string'
+          ? JSON.parse(userObj.profile_details)
+          : userObj.profile_details;
       }
-      return { ...defaultProfileDetails, ...userData.profile_details };
+      return {
+        ...defaultProfileDetails,
+        ...details,
+        candidateName: details.candidateName || currentFormData.name || userObj.name || "",
+        studentPhone: details.studentPhone || currentFormData.phone || userObj.phone || userObj.phoneNumber || "",
+        studentEmail: details.studentEmail || userObj.email || "",
+        dob: formatDateForInput(details.dob || userObj.dob || "")
+      };
     } catch (e) {
-      return defaultProfileDetails;
+      return {
+        ...defaultProfileDetails,
+        candidateName: currentFormData.name || userObj.name || "",
+        studentPhone: currentFormData.phone || userObj.phone || userObj.phoneNumber || "",
+        studentEmail: userObj.email || ""
+      };
     }
   };
 
@@ -86,7 +108,7 @@ const ProfilePage = () => {
     name: userData.name,
     phone: userData.phone || userData.phoneNumber || "",
     bio: userData.bio || "",
-    profile_details: getProfileDetails()
+    profile_details: getProfileDetails(userData)
   });
 
   useEffect(() => {
@@ -103,17 +125,12 @@ const ProfilePage = () => {
           localStorage.setItem('user', JSON.stringify(updatedUser));
           window.dispatchEvent(new Event("user-login"));
           
-          let parsedDetails = {};
-          if (data.user.profile_details) {
-            parsedDetails = typeof data.user.profile_details === 'string'
-              ? JSON.parse(data.user.profile_details)
-              : data.user.profile_details;
-          }
+          const details = getProfileDetails(data.user, { name: data.user.name, phone: data.user.phone });
           setFormData({
             name: data.user.name,
             phone: data.user.phone || "",
             bio: data.user.bio || "",
-            profile_details: { ...defaultProfileDetails, ...parsedDetails }
+            profile_details: details
           });
         } else if (response.status === 404) {
           console.warn("User not found in database. Clearing session.");
@@ -135,7 +152,21 @@ const ProfilePage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [name]: value };
+      const pd = prev.profile_details || {};
+      let updatedDetails = { ...pd };
+      if (name === 'name' && (!pd.candidateName || pd.candidateName === prev.name)) {
+        updatedDetails.candidateName = value;
+      }
+      if (name === 'phone' && (!pd.studentPhone || pd.studentPhone === prev.phone)) {
+        updatedDetails.studentPhone = value;
+      }
+      return {
+        ...updated,
+        profile_details: updatedDetails
+      };
+    });
   };
 
   const handleDetailChange = (e) => {
@@ -157,6 +188,7 @@ const ProfilePage = () => {
     }
     setIsSaving(true);
     try {
+      // 1. Save user profile details
       const response = await fetch((window.API_BASE || "") + `/api/users/profile/${identifier}`, {
         method: 'PATCH',
         headers: { 
@@ -167,6 +199,93 @@ const ProfilePage = () => {
       });
 
       const data = await response.json();
+
+      // 2. Direct sync to student_profiles table endpoint
+      try {
+        const pd = formData.profile_details || {};
+        const studentProfilePayload = {
+          candidate_name: pd.candidateName || formData.name || userData.name || '',
+          candidate_age: pd.ageOfCandidate || '',
+          dob: pd.dob || '',
+          student_phone: pd.studentPhone || formData.phone || userData.phone || '',
+          student_email: pd.studentEmail || userData.email || '',
+          study_budget: pd.budget || '',
+          subject_interest: pd.subjectInterest || '',
+          target_country: pd.country || '',
+          state_preference: pd.statePreference || '',
+          city_preference: pd.cityPreference || '',
+          current_status: pd.currentStatus || '',
+
+          toefl_score: pd.toeflScore || '',
+          toefl_mock_score: pd.toeflMock || '',
+          toefl_test_date: pd.toeflDate || '',
+
+          ielts_score: pd.ieltsScore || '',
+          ielts_mock_score: pd.ieltsMock || '',
+          ielts_test_date: pd.ieltsDate || '',
+
+          gre_score: pd.greScore || '',
+          gre_mock_score: pd.greMock || '',
+          gre_test_date: pd.greDate || '',
+
+          gmat_score: pd.gmatScore || '',
+          gmat_mock_score: pd.gmatMock || '',
+          gmat_test_date: pd.gmatDate || '',
+
+          sat_score: pd.satScore || '',
+          sat_mock_score: pd.satMock || '',
+          sat_test_date: pd.satDate || '',
+
+          tenth_score: pd.passingYear10th || '',
+          tenth_passing_year: pd.passingYear10thYear || '',
+          tenth_school: pd.schoolName10th || '',
+
+          twelfth_score: pd.passingYear12th || '',
+          twelfth_passing_year: pd.passingYear12thYear || '',
+          twelfth_stream: pd.stream12th || '',
+          twelfth_school: pd.schoolName12th || '',
+
+          diploma_score: pd.passingYearDiploma || '',
+          diploma_passing_year: pd.passingYearDiplomaYear || '',
+          diploma_name: pd.diplomaName || '',
+          diploma_awarding_body: pd.awardingBodyDiploma || '',
+          diploma_duration: pd.durationDiploma || '',
+
+          bachelors_score: pd.passingYearBachelors || '',
+          bachelors_passing_year: pd.passingYearBachelorsYear || '',
+          bachelors_degree: pd.degreeNameBachelors || '',
+          bachelors_college: pd.collegeNameBachelors || '',
+          bachelors_university: pd.universityNameBachelors || '',
+          bachelors_duration: pd.durationBachelors || '',
+          bachelors_backlogs: pd.backlogsBachelors || '',
+
+          pg_diploma_score: pd.passingYearPgDiploma || '',
+          pg_diploma_passing_year: pd.passingYearPgDiplomaYear || '',
+          pg_diploma_name: pd.pgDiplomaName || '',
+          pg_diploma_awarding_body: pd.awardingBodyPgDiploma || '',
+          pg_diploma_duration: pd.durationPgDiploma || '',
+
+          masters_score: pd.passingYearMasters || '',
+          masters_passing_year: pd.passingYearMastersYear || '',
+          masters_degree: pd.degreeNameMasters || '',
+          masters_college: pd.collegeNameMasters || '',
+          masters_university: pd.universityNameMasters || '',
+          masters_duration: pd.durationMasters || '',
+          masters_backlogs: pd.backlogsMasters || ''
+        };
+
+        await fetch((window.API_BASE || "") + `/api/users/${identifier}/student-profile`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          },
+          body: JSON.stringify(studentProfilePayload)
+        });
+      } catch (syncErr) {
+        console.error("Error saving student profile sync:", syncErr);
+      }
+
       if (data.success) {
         const updatedUser = { ...userData, ...data.user };
         setUserData(updatedUser);
@@ -281,18 +400,19 @@ const ProfilePage = () => {
     }
   };
 
-  const renderInputBlock = (label, name, placeholder = "-") => {
-    const value = formData.profile_details?.[name] || "";
+  const renderInputBlock = (label, name, placeholder = "-", type = "text") => {
+    const rawVal = formData.profile_details?.[name] || "";
+    const value = type === "date" ? formatDateForInput(rawVal) : rawVal;
     return (
       <div key={name} className="space-y-1">
         <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</label>
         <input
-          type="text"
+          type={type}
           name={name}
           value={value}
           onChange={handleDetailChange}
           placeholder={placeholder}
-          className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 text-xs focus:outline-none focus:border-slate-500 transition-colors outline-none"
+          className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 text-xs focus:outline-none focus:border-slate-500 transition-colors outline-none cursor-pointer"
         />
       </div>
     );
@@ -456,7 +576,7 @@ const ProfilePage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {renderInputBlock("Candidate Name", "candidateName")}
               {renderInputBlock("Age of Candidate", "ageOfCandidate")}
-              {renderInputBlock("Date of Birth", "dob", "YYYY-MM-DD")}
+              {renderInputBlock("Date of Birth", "dob", "", "date")}
               {renderInputBlock("Student Phone", "studentPhone")}
               {renderInputBlock("Student Email", "studentEmail")}
               {renderInputBlock("Any Budget for Studying Abroad", "budget")}
@@ -494,7 +614,7 @@ const ProfilePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {renderInputBlock("TOEFL Score", "toeflScore")}
                   {renderInputBlock("Mock Score", "toeflMock")}
-                  {renderInputBlock("Test Date", "toeflDate")}
+                  {renderInputBlock("Test Date", "toeflDate", "", "date")}
                 </div>
               </div>
 
@@ -504,7 +624,7 @@ const ProfilePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {renderInputBlock("IELTS Score", "ieltsScore")}
                   {renderInputBlock("Mock Score", "ieltsMock")}
-                  {renderInputBlock("IELTS Date", "ieltsDate")}
+                  {renderInputBlock("IELTS Date", "ieltsDate", "", "date")}
                 </div>
               </div>
 
@@ -514,7 +634,7 @@ const ProfilePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {renderInputBlock("GRE Score", "greScore")}
                   {renderInputBlock("Mock Score", "greMock")}
-                  {renderInputBlock("GRE Date", "greDate")}
+                  {renderInputBlock("GRE Date", "greDate", "", "date")}
                 </div>
               </div>
 
@@ -524,7 +644,7 @@ const ProfilePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {renderInputBlock("GMAT Score", "gmatScore")}
                   {renderInputBlock("Mock Score", "gmatMock")}
-                  {renderInputBlock("GMAT Date", "gmatDate")}
+                  {renderInputBlock("GMAT Date", "gmatDate", "", "date")}
                 </div>
               </div>
 
@@ -534,7 +654,7 @@ const ProfilePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {renderInputBlock("SAT Score", "satScore")}
                   {renderInputBlock("Mock Score", "satMock")}
-                  {renderInputBlock("SAT Date", "satDate")}
+                  {renderInputBlock("SAT Date", "satDate", "", "date")}
                 </div>
               </div>
             </div>

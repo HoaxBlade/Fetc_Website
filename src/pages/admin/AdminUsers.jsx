@@ -38,74 +38,106 @@ const AdminUsers = () => {
     masters_score: '', masters_passing_year: '', masters_degree: '', masters_college: '', masters_university: '', masters_duration: '', masters_backlogs: ''
   });
 
+  const formatDateForInput = (dateStr) => {
+    if (!dateStr) return '';
+    if (typeof dateStr === 'string' && dateStr.includes('T')) {
+      return dateStr.split('T')[0];
+    }
+    return dateStr;
+  };
+
   const handleOpenProfile = async (user) => {
     setProfileUser(user);
     setIsProfileLoading(true);
     setProfileSaveSuccess(false);
+
+    const defaultProfile = {
+      candidate_name: user.name || '',
+      candidate_age: '',
+      dob: formatDateForInput(user.dob) || '',
+      student_phone: user.phone || user.phoneNumber || '',
+      student_email: user.email || '',
+      study_budget: '', subject_interest: '', target_country: '', state_preference: '', city_preference: '', current_status: '',
+      toefl_score: '', toefl_mock_score: '', toefl_test_date: '',
+      ielts_score: '', ielts_mock_score: '', ielts_test_date: '',
+      gre_score: '', gre_mock_score: '', gre_test_date: '',
+      gmat_score: '', gmat_mock_score: '', gmat_test_date: '',
+      sat_score: '', sat_mock_score: '', sat_test_date: '',
+      tenth_score: '', tenth_passing_year: '', tenth_school: '',
+      twelfth_score: '', twelfth_passing_year: '', twelfth_stream: '', twelfth_school: '',
+      diploma_score: '', diploma_passing_year: '', diploma_name: '', diploma_awarding_body: '', diploma_duration: '',
+      bachelors_score: '', bachelors_passing_year: '', bachelors_degree: '', bachelors_college: '', bachelors_university: '', bachelors_duration: '', bachelors_backlogs: '',
+      pg_diploma_score: '', pg_diploma_passing_year: '', pg_diploma_name: '', pg_diploma_awarding_body: '', pg_diploma_duration: '',
+      masters_score: '', masters_passing_year: '', masters_degree: '', masters_college: '', masters_university: '', masters_duration: '', masters_backlogs: ''
+    };
+
+    setProfileData(defaultProfile);
+
     try {
       const response = await fetch((window.API_BASE || "") + `/api/admin/users/${user.id}/student-profile`, {
         headers: { 'ngrok-skip-browser-warning': 'true' }
       });
       const data = await response.json();
       if (data.success && data.profile) {
+        const p = data.profile;
         setProfileData({
-          candidate_name: data.profile.candidate_name || user.name || '',
-          candidate_age: data.profile.candidate_age || '',
-          dob: data.profile.dob || '',
-          student_phone: data.profile.student_phone || user.phone || '',
-          student_email: data.profile.student_email || user.email || '',
-          study_budget: data.profile.study_budget || '',
-          subject_interest: data.profile.subject_interest || '',
-          target_country: data.profile.target_country || '',
-          state_preference: data.profile.state_preference || '',
-          city_preference: data.profile.city_preference || '',
-          current_status: data.profile.current_status || '',
-          toefl_score: data.profile.toefl_score || '',
-          toefl_mock_score: data.profile.toefl_mock_score || '',
-          toefl_test_date: data.profile.toefl_test_date || '',
-          ielts_score: data.profile.ielts_score || '',
-          ielts_mock_score: data.profile.ielts_mock_score || '',
-          ielts_test_date: data.profile.ielts_test_date || '',
-          gre_score: data.profile.gre_score || '',
-          gre_mock_score: data.profile.gre_mock_score || '',
-          gre_test_date: data.profile.gre_test_date || '',
-          gmat_score: data.profile.gmat_score || '',
-          gmat_mock_score: data.profile.gmat_mock_score || '',
-          gmat_test_date: data.profile.gmat_test_date || '',
-          sat_score: data.profile.sat_score || '',
-          sat_mock_score: data.profile.sat_mock_score || '',
-          sat_test_date: data.profile.sat_test_date || '',
-          tenth_score: data.profile.tenth_score || '',
-          tenth_passing_year: data.profile.tenth_passing_year || '',
-          tenth_school: data.profile.tenth_school || '',
-          twelfth_score: data.profile.twelfth_score || '',
-          twelfth_passing_year: data.profile.twelfth_passing_year || '',
-          twelfth_stream: data.profile.twelfth_stream || '',
-          twelfth_school: data.profile.twelfth_school || '',
-          diploma_score: data.profile.diploma_score || '',
-          diploma_passing_year: data.profile.diploma_passing_year || '',
-          diploma_name: data.profile.diploma_name || '',
-          diploma_awarding_body: data.profile.diploma_awarding_body || '',
-          diploma_duration: data.profile.diploma_duration || '',
-          bachelors_score: data.profile.bachelors_score || '',
-          bachelors_passing_year: data.profile.bachelors_passing_year || '',
-          bachelors_degree: data.profile.bachelors_degree || '',
-          bachelors_college: data.profile.bachelors_college || '',
-          bachelors_university: data.profile.bachelors_university || '',
-          bachelors_duration: data.profile.bachelors_duration || '',
-          bachelors_backlogs: data.profile.bachelors_backlogs || '',
-          pg_diploma_score: data.profile.pg_diploma_score || '',
-          pg_diploma_passing_year: data.profile.pg_diploma_passing_year || '',
-          pg_diploma_name: data.profile.pg_diploma_name || '',
-          pg_diploma_awarding_body: data.profile.pg_diploma_awarding_body || '',
-          pg_diploma_duration: data.profile.pg_diploma_duration || '',
-          masters_score: data.profile.masters_score || '',
-          masters_passing_year: data.profile.masters_passing_year || '',
-          masters_degree: data.profile.masters_degree || '',
-          masters_college: data.profile.masters_college || '',
-          masters_university: data.profile.masters_university || '',
-          masters_duration: data.profile.masters_duration || '',
-          masters_backlogs: data.profile.masters_backlogs || ''
+          candidate_name: p.candidate_name || user.name || '',
+          candidate_age: p.candidate_age || '',
+          dob: formatDateForInput(p.dob) || formatDateForInput(user.dob) || '',
+          student_phone: p.student_phone || user.phone || user.phoneNumber || '',
+          student_email: p.student_email || user.email || '',
+          study_budget: p.study_budget || '',
+          subject_interest: p.subject_interest || '',
+          target_country: p.target_country || '',
+          state_preference: p.state_preference || '',
+          city_preference: p.city_preference || '',
+          current_status: p.current_status || '',
+          toefl_score: p.toefl_score || '',
+          toefl_mock_score: p.toefl_mock_score || '',
+          toefl_test_date: formatDateForInput(p.toefl_test_date) || '',
+          ielts_score: p.ielts_score || '',
+          ielts_mock_score: p.ielts_mock_score || '',
+          ielts_test_date: formatDateForInput(p.ielts_test_date) || '',
+          gre_score: p.gre_score || '',
+          gre_mock_score: p.gre_mock_score || '',
+          gre_test_date: formatDateForInput(p.gre_test_date) || '',
+          gmat_score: p.gmat_score || '',
+          gmat_mock_score: p.gmat_mock_score || '',
+          gmat_test_date: formatDateForInput(p.gmat_test_date) || '',
+          sat_score: p.sat_score || '',
+          sat_mock_score: p.sat_mock_score || '',
+          sat_test_date: formatDateForInput(p.sat_test_date) || '',
+          tenth_score: p.tenth_score || '',
+          tenth_passing_year: p.tenth_passing_year || '',
+          tenth_school: p.tenth_school || '',
+          twelfth_score: p.twelfth_score || '',
+          twelfth_passing_year: p.twelfth_passing_year || '',
+          twelfth_stream: p.twelfth_stream || '',
+          twelfth_school: p.twelfth_school || '',
+          diploma_score: p.diploma_score || '',
+          diploma_passing_year: p.diploma_passing_year || '',
+          diploma_name: p.diploma_name || '',
+          diploma_awarding_body: p.diploma_awarding_body || '',
+          diploma_duration: p.diploma_duration || '',
+          bachelors_score: p.bachelors_score || '',
+          bachelors_passing_year: p.bachelors_passing_year || '',
+          bachelors_degree: p.bachelors_degree || '',
+          bachelors_college: p.bachelors_college || '',
+          bachelors_university: p.bachelors_university || '',
+          bachelors_duration: p.bachelors_duration || '',
+          bachelors_backlogs: p.bachelors_backlogs || '',
+          pg_diploma_score: p.pg_diploma_score || '',
+          pg_diploma_passing_year: p.pg_diploma_passing_year || '',
+          pg_diploma_name: p.pg_diploma_name || '',
+          pg_diploma_awarding_body: p.pg_diploma_awarding_body || '',
+          pg_diploma_duration: p.pg_diploma_duration || '',
+          masters_score: p.masters_score || '',
+          masters_passing_year: p.masters_passing_year || '',
+          masters_degree: p.masters_degree || '',
+          masters_college: p.masters_college || '',
+          masters_university: p.masters_university || '',
+          masters_duration: p.masters_duration || '',
+          masters_backlogs: p.masters_backlogs || ''
         });
       }
     } catch (err) {

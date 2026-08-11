@@ -767,7 +767,18 @@ app.patch('/api/users/profile/:id', async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
     
-    res.json({ success: true, user: result.rows[0] });
+    const updatedUser = result.rows[0];
+
+    // Sync profile_details to student_profiles DB table
+    if (req.body.profile_details) {
+      try {
+        await syncStudentProfileFromUser(updatedUser.id, updatedUser, req.body.profile_details);
+      } catch (syncErr) {
+        console.error('Error syncing to student_profiles table:', syncErr);
+      }
+    }
+
+    res.json({ success: true, user: updatedUser });
   } catch (err) {
     console.error('Update profile error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -3187,14 +3198,197 @@ function formatDate(d) {
   }
 }
 
+async function syncStudentProfileFromUser(userId, user, profileDetails) {
+  if (!userId) return;
+  let pd = profileDetails;
+  if (typeof pd === 'string') {
+    try { pd = JSON.parse(pd); } catch (e) { pd = {}; }
+  }
+  pd = pd || {};
+
+  const cleanDate = (val) => (val && String(val).trim() !== '' ? String(val).trim() : null);
+
+  const candidate_name = pd.candidateName || pd.candidate_name || user.name || '';
+  const candidate_age = pd.ageOfCandidate || pd.candidate_age || '';
+  const dob = cleanDate(pd.dob);
+  const student_phone = pd.studentPhone || pd.student_phone || user.phone || '';
+  const student_email = pd.studentEmail || pd.student_email || user.email || '';
+  const study_budget = pd.budget || pd.study_budget || '';
+  const subject_interest = pd.subjectInterest || pd.subject_interest || '';
+  const target_country = pd.country || pd.target_country || '';
+  const state_preference = pd.statePreference || pd.state_preference || '';
+  const city_preference = pd.cityPreference || pd.city_preference || '';
+  const current_status = pd.currentStatus || pd.current_status || '';
+
+  const toefl_score = pd.toeflScore || pd.toefl_score || '';
+  const toefl_mock_score = pd.toeflMock || pd.toefl_mock_score || '';
+  const toefl_test_date = cleanDate(pd.toeflDate || pd.toefl_test_date);
+
+  const ielts_score = pd.ieltsScore || pd.ielts_score || '';
+  const ielts_mock_score = pd.ieltsMock || pd.ielts_mock_score || '';
+  const ielts_test_date = cleanDate(pd.ieltsDate || pd.ielts_test_date);
+
+  const gre_score = pd.greScore || pd.gre_score || '';
+  const gre_mock_score = pd.greMock || pd.gre_mock_score || '';
+  const gre_test_date = cleanDate(pd.greDate || pd.gre_test_date);
+
+  const gmat_score = pd.gmatScore || pd.gmat_score || '';
+  const gmat_mock_score = pd.gmatMock || pd.gmat_mock_score || '';
+  const gmat_test_date = cleanDate(pd.gmatDate || pd.gmat_test_date);
+
+  const sat_score = pd.satScore || pd.sat_score || '';
+  const sat_mock_score = pd.satMock || pd.sat_mock_score || '';
+  const sat_test_date = cleanDate(pd.satDate || pd.sat_test_date);
+
+  const tenth_score = pd.passingYear10th || pd.tenth_score || '';
+  const tenth_passing_year = pd.passingYear10thYear || pd.tenth_passing_year || '';
+  const tenth_school = pd.schoolName10th || pd.tenth_school || '';
+
+  const twelfth_score = pd.passingYear12th || pd.twelfth_score || '';
+  const twelfth_passing_year = pd.passingYear12thYear || pd.twelfth_passing_year || '';
+  const twelfth_stream = pd.stream12th || pd.twelfth_stream || '';
+  const twelfth_school = pd.schoolName12th || pd.twelfth_school || '';
+
+  const diploma_score = pd.passingYearDiploma || pd.diploma_score || '';
+  const diploma_passing_year = pd.passingYearDiplomaYear || pd.diploma_passing_year || '';
+  const diploma_name = pd.diplomaName || pd.diploma_name || '';
+  const diploma_awarding_body = pd.awardingBodyDiploma || pd.diploma_awarding_body || '';
+  const diploma_duration = pd.durationDiploma || pd.diploma_duration || '';
+
+  const bachelors_score = pd.passingYearBachelors || pd.bachelors_score || '';
+  const bachelors_passing_year = pd.passingYearBachelorsYear || pd.bachelors_passing_year || '';
+  const bachelors_degree = pd.degreeNameBachelors || pd.bachelors_degree || '';
+  const bachelors_college = pd.collegeNameBachelors || pd.bachelors_college || '';
+  const bachelors_university = pd.universityNameBachelors || pd.bachelors_university || '';
+  const bachelors_duration = pd.durationBachelors || pd.bachelors_duration || '';
+  const bachelors_backlogs = pd.backlogsBachelors || pd.bachelors_backlogs || '';
+
+  const pg_diploma_score = pd.passingYearPgDiploma || pd.pg_diploma_score || '';
+  const pg_diploma_passing_year = pd.passingYearPgDiplomaYear || pd.pg_diploma_passing_year || '';
+  const pg_diploma_name = pd.pgDiplomaName || pd.pg_diploma_name || '';
+  const pg_diploma_awarding_body = pd.awardingBodyPgDiploma || pd.pg_diploma_awarding_body || '';
+  const pg_diploma_duration = pd.durationPgDiploma || pd.pg_diploma_duration || '';
+
+  const masters_score = pd.passingYearMasters || pd.masters_score || '';
+  const masters_passing_year = pd.passingYearMastersYear || pd.masters_passing_year || '';
+  const masters_degree = pd.degreeNameMasters || pd.masters_degree || '';
+  const masters_college = pd.collegeNameMasters || pd.masters_college || '';
+  const masters_university = pd.universityNameMasters || pd.masters_university || '';
+  const masters_duration = pd.durationMasters || pd.masters_duration || '';
+  const masters_backlogs = pd.backlogsMasters || pd.masters_backlogs || '';
+
+  const query = `
+    INSERT INTO student_profiles (
+      user_id, candidate_name, candidate_age, dob, student_phone, student_email,
+      study_budget, subject_interest, target_country, state_preference, city_preference, current_status,
+      toefl_score, toefl_mock_score, toefl_test_date,
+      ielts_score, ielts_mock_score, ielts_test_date,
+      gre_score, gre_mock_score, gre_test_date,
+      gmat_score, gmat_mock_score, gmat_test_date,
+      sat_score, sat_mock_score, sat_test_date,
+      tenth_score, tenth_passing_year, tenth_school,
+      twelfth_score, twelfth_passing_year, twelfth_stream, twelfth_school,
+      diploma_score, diploma_passing_year, diploma_name, diploma_awarding_body, diploma_duration,
+      bachelors_score, bachelors_passing_year, bachelors_degree, bachelors_college, bachelors_university, bachelors_duration, bachelors_backlogs,
+      pg_diploma_score, pg_diploma_passing_year, pg_diploma_name, pg_diploma_awarding_body, pg_diploma_duration,
+      masters_score, masters_passing_year, masters_degree, masters_college, masters_university, masters_duration, masters_backlogs,
+      updated_at
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,
+      $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27,
+      $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39,
+      $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51,
+      $52, $53, $54, $55, $56, $57, $58, CURRENT_TIMESTAMP
+    )
+    ON CONFLICT (user_id) DO UPDATE SET
+      candidate_name = EXCLUDED.candidate_name,
+      candidate_age = EXCLUDED.candidate_age,
+      dob = EXCLUDED.dob,
+      student_phone = EXCLUDED.student_phone,
+      student_email = EXCLUDED.student_email,
+      study_budget = EXCLUDED.study_budget,
+      subject_interest = EXCLUDED.subject_interest,
+      target_country = EXCLUDED.target_country,
+      state_preference = EXCLUDED.state_preference,
+      city_preference = EXCLUDED.city_preference,
+      current_status = EXCLUDED.current_status,
+      toefl_score = EXCLUDED.toefl_score,
+      toefl_mock_score = EXCLUDED.toefl_mock_score,
+      toefl_test_date = EXCLUDED.toefl_test_date,
+      ielts_score = EXCLUDED.ielts_score,
+      ielts_mock_score = EXCLUDED.ielts_mock_score,
+      ielts_test_date = EXCLUDED.ielts_test_date,
+      gre_score = EXCLUDED.gre_score,
+      gre_mock_score = EXCLUDED.gre_mock_score,
+      gre_test_date = EXCLUDED.gre_test_date,
+      gmat_score = EXCLUDED.gmat_score,
+      gmat_mock_score = EXCLUDED.gmat_mock_score,
+      gmat_test_date = EXCLUDED.gmat_test_date,
+      sat_score = EXCLUDED.sat_score,
+      sat_mock_score = EXCLUDED.sat_mock_score,
+      sat_test_date = EXCLUDED.sat_test_date,
+      tenth_score = EXCLUDED.tenth_score,
+      tenth_passing_year = EXCLUDED.tenth_passing_year,
+      tenth_school = EXCLUDED.tenth_school,
+      twelfth_score = EXCLUDED.twelfth_score,
+      twelfth_passing_year = EXCLUDED.twelfth_passing_year,
+      twelfth_stream = EXCLUDED.twelfth_stream,
+      twelfth_school = EXCLUDED.twelfth_school,
+      diploma_score = EXCLUDED.diploma_score,
+      diploma_passing_year = EXCLUDED.diploma_passing_year,
+      diploma_name = EXCLUDED.diploma_name,
+      diploma_awarding_body = EXCLUDED.diploma_awarding_body,
+      diploma_duration = EXCLUDED.diploma_duration,
+      bachelors_score = EXCLUDED.bachelors_score,
+      bachelors_passing_year = EXCLUDED.bachelors_passing_year,
+      bachelors_degree = EXCLUDED.bachelors_degree,
+      bachelors_college = EXCLUDED.bachelors_college,
+      bachelors_university = EXCLUDED.bachelors_university,
+      bachelors_duration = EXCLUDED.bachelors_duration,
+      bachelors_backlogs = EXCLUDED.bachelors_backlogs,
+      pg_diploma_score = EXCLUDED.pg_diploma_score,
+      pg_diploma_passing_year = EXCLUDED.pg_diploma_passing_year,
+      pg_diploma_name = EXCLUDED.pg_diploma_name,
+      pg_diploma_awarding_body = EXCLUDED.pg_diploma_awarding_body,
+      pg_diploma_duration = EXCLUDED.pg_diploma_duration,
+      masters_score = EXCLUDED.masters_score,
+      masters_passing_year = EXCLUDED.masters_passing_year,
+      masters_degree = EXCLUDED.masters_degree,
+      masters_college = EXCLUDED.masters_college,
+      masters_university = EXCLUDED.masters_university,
+      masters_duration = EXCLUDED.masters_duration,
+      masters_backlogs = EXCLUDED.masters_backlogs,
+      updated_at = CURRENT_TIMESTAMP;
+  `;
+
+  const params = [
+    userId,
+    candidate_name, candidate_age, dob, student_phone, student_email,
+    study_budget, subject_interest, target_country, state_preference, city_preference, current_status,
+    toefl_score, toefl_mock_score, toefl_test_date,
+    ielts_score, ielts_mock_score, ielts_test_date,
+    gre_score, gre_mock_score, gre_test_date,
+    gmat_score, gmat_mock_score, gmat_test_date,
+    sat_score, sat_mock_score, sat_test_date,
+    tenth_score, tenth_passing_year, tenth_school,
+    twelfth_score, twelfth_passing_year, twelfth_stream, twelfth_school,
+    diploma_score, diploma_passing_year, diploma_name, diploma_awarding_body, diploma_duration,
+    bachelors_score, bachelors_passing_year, bachelors_degree, bachelors_college, bachelors_university, bachelors_duration, bachelors_backlogs,
+    pg_diploma_score, pg_diploma_passing_year, pg_diploma_name, pg_diploma_awarding_body, pg_diploma_duration,
+    masters_score, masters_passing_year, masters_degree, masters_college, masters_university, masters_duration, masters_backlogs
+  ];
+
+  await db.query(query, params);
+}
+
 app.get(['/api/admin/users/:userId/student-profile', '/api/users/:userId/student-profile'], async (req, res) => {
   try {
     const { userId } = req.params;
     let userRes;
     if (isNaN(userId)) {
-      userRes = await db.query('SELECT id, name, email, phone FROM users WHERE email = $1', [userId]);
+      userRes = await db.query('SELECT id, name, email, phone, profile_details FROM users WHERE email = $1', [userId]);
     } else {
-      userRes = await db.query('SELECT id, name, email, phone FROM users WHERE id = $1', [parseInt(userId)]);
+      userRes = await db.query('SELECT id, name, email, phone, profile_details FROM users WHERE id = $1', [parseInt(userId)]);
     }
 
     const user = userRes.rows[0] || { id: userId, name: '', email: '', phone: '' };
@@ -3202,39 +3396,106 @@ app.get(['/api/admin/users/:userId/student-profile', '/api/users/:userId/student
     const profileRes = await db.query('SELECT * FROM student_profiles WHERE user_id = $1', [user.id || 0]);
     let profile = profileRes.rows[0];
 
+    let userPd = {};
+    if (user && user.profile_details) {
+      userPd = typeof user.profile_details === 'string' ? JSON.parse(user.profile_details) : user.profile_details;
+    }
+
     if (!profile) {
       profile = {
         user_id: user.id,
-        candidate_name: user.name || '',
-        student_email: user.email || '',
-        student_phone: user.phone || '',
-        candidate_age: '',
-        dob: '',
-        study_budget: '',
-        subject_interest: '',
-        target_country: '',
-        state_preference: '',
-        city_preference: '',
-        current_status: '',
-        toefl_score: '', toefl_mock_score: '', toefl_test_date: '',
-        ielts_score: '', ielts_mock_score: '', ielts_test_date: '',
-        gre_score: '', gre_mock_score: '', gre_test_date: '',
-        gmat_score: '', gmat_mock_score: '', gmat_test_date: '',
-        sat_score: '', sat_mock_score: '', sat_test_date: '',
-        tenth_score: '', tenth_passing_year: '', tenth_school: '',
-        twelfth_score: '', twelfth_passing_year: '', twelfth_stream: '', twelfth_school: '',
-        diploma_score: '', diploma_passing_year: '', diploma_name: '', diploma_awarding_body: '', diploma_duration: '',
-        bachelors_score: '', bachelors_passing_year: '', bachelors_degree: '', bachelors_college: '', bachelors_university: '', bachelors_duration: '', bachelors_backlogs: '',
-        pg_diploma_score: '', pg_diploma_passing_year: '', pg_diploma_name: '', pg_diploma_awarding_body: '', pg_diploma_duration: '',
-        masters_score: '', masters_passing_year: '', masters_degree: '', masters_college: '', masters_university: '', masters_duration: '', masters_backlogs: ''
+        candidate_name: userPd.candidateName || user.name || '',
+        student_email: userPd.studentEmail || user.email || '',
+        student_phone: userPd.studentPhone || user.phone || '',
+        candidate_age: userPd.ageOfCandidate || '',
+        dob: formatDate(userPd.dob),
+        study_budget: userPd.budget || '',
+        subject_interest: userPd.subjectInterest || '',
+        target_country: userPd.country || '',
+        state_preference: userPd.statePreference || '',
+        city_preference: userPd.cityPreference || '',
+        current_status: userPd.currentStatus || '',
+        toefl_score: userPd.toeflScore || '', toefl_mock_score: userPd.toeflMock || '', toefl_test_date: formatDate(userPd.toeflDate),
+        ielts_score: userPd.ieltsScore || '', ielts_mock_score: userPd.ieltsMock || '', ielts_test_date: formatDate(userPd.ieltsDate),
+        gre_score: userPd.greScore || '', gre_mock_score: userPd.greMock || '', gre_test_date: formatDate(userPd.greDate),
+        gmat_score: userPd.gmatScore || '', gmat_mock_score: userPd.gmatMock || '', gmat_test_date: formatDate(userPd.gmatDate),
+        sat_score: userPd.satScore || '', sat_mock_score: userPd.satMock || '', sat_test_date: formatDate(userPd.satDate),
+        tenth_score: userPd.passingYear10th || '', tenth_passing_year: userPd.passingYear10thYear || '', tenth_school: userPd.schoolName10th || '',
+        twelfth_score: userPd.passingYear12th || '', twelfth_passing_year: userPd.passingYear12thYear || '', twelfth_stream: userPd.stream12th || '', twelfth_school: userPd.schoolName12th || '',
+        diploma_score: userPd.passingYearDiploma || '', diploma_passing_year: userPd.passingYearDiplomaYear || '', diploma_name: userPd.diplomaName || '', diploma_awarding_body: userPd.awardingBodyDiploma || '', diploma_duration: userPd.durationDiploma || '',
+        bachelors_score: userPd.passingYearBachelors || '', bachelors_passing_year: userPd.passingYearBachelorsYear || '', bachelors_degree: userPd.degreeNameBachelors || '', bachelors_college: userPd.collegeNameBachelors || '', bachelors_university: userPd.universityNameBachelors || '', bachelors_duration: userPd.durationBachelors || '', bachelors_backlogs: userPd.backlogsBachelors || '',
+        pg_diploma_score: userPd.passingYearPgDiploma || '', pg_diploma_passing_year: userPd.passingYearPgDiplomaYear || '', pg_diploma_name: userPd.pgDiplomaName || '', pg_diploma_awarding_body: userPd.awardingBodyPgDiploma || '', pg_diploma_duration: userPd.durationPgDiploma || '',
+        masters_score: userPd.passingYearMasters || '', masters_passing_year: userPd.passingYearMastersYear || '', masters_degree: userPd.degreeNameMasters || '', masters_college: userPd.collegeNameMasters || '', masters_university: userPd.universityNameMasters || '', masters_duration: userPd.durationMasters || '', masters_backlogs: userPd.backlogsMasters || ''
       };
     } else {
-      profile.dob = formatDate(profile.dob);
-      profile.toefl_test_date = formatDate(profile.toefl_test_date);
-      profile.ielts_test_date = formatDate(profile.ielts_test_date);
-      profile.gre_test_date = formatDate(profile.gre_test_date);
-      profile.gmat_test_date = formatDate(profile.gmat_test_date);
-      profile.sat_test_date = formatDate(profile.sat_test_date);
+      profile.candidate_name = profile.candidate_name || userPd.candidateName || user.name || '';
+      profile.student_phone = profile.student_phone || userPd.studentPhone || user.phone || '';
+      profile.student_email = profile.student_email || userPd.studentEmail || user.email || '';
+      profile.candidate_age = profile.candidate_age || userPd.ageOfCandidate || '';
+      profile.dob = formatDate(profile.dob || userPd.dob);
+      profile.study_budget = profile.study_budget || userPd.budget || '';
+      profile.subject_interest = profile.subject_interest || userPd.subjectInterest || '';
+      profile.target_country = profile.target_country || userPd.country || '';
+      profile.state_preference = profile.state_preference || userPd.statePreference || '';
+      profile.city_preference = profile.city_preference || userPd.cityPreference || '';
+      profile.current_status = profile.current_status || userPd.currentStatus || '';
+      
+      profile.toefl_score = profile.toefl_score || userPd.toeflScore || '';
+      profile.toefl_mock_score = profile.toefl_mock_score || userPd.toeflMock || '';
+      profile.toefl_test_date = formatDate(profile.toefl_test_date || userPd.toeflDate);
+
+      profile.ielts_score = profile.ielts_score || userPd.ieltsScore || '';
+      profile.ielts_mock_score = profile.ielts_mock_score || userPd.ieltsMock || '';
+      profile.ielts_test_date = formatDate(profile.ielts_test_date || userPd.ieltsDate);
+
+      profile.gre_score = profile.gre_score || userPd.greScore || '';
+      profile.gre_mock_score = profile.gre_mock_score || userPd.greMock || '';
+      profile.gre_test_date = formatDate(profile.gre_test_date || userPd.greDate);
+
+      profile.gmat_score = profile.gmat_score || userPd.gmatScore || '';
+      profile.gmat_mock_score = profile.gmat_mock_score || userPd.gmatMock || '';
+      profile.gmat_test_date = formatDate(profile.gmat_test_date || userPd.gmatDate);
+
+      profile.sat_score = profile.sat_score || userPd.satScore || '';
+      profile.sat_mock_score = profile.sat_mock_score || userPd.satMock || '';
+      profile.sat_test_date = formatDate(profile.sat_test_date || userPd.satDate);
+
+      profile.tenth_score = profile.tenth_score || userPd.passingYear10th || '';
+      profile.tenth_passing_year = profile.tenth_passing_year || userPd.passingYear10thYear || '';
+      profile.tenth_school = profile.tenth_school || userPd.schoolName10th || '';
+
+      profile.twelfth_score = profile.twelfth_score || userPd.passingYear12th || '';
+      profile.twelfth_passing_year = profile.twelfth_passing_year || userPd.passingYear12thYear || '';
+      profile.twelfth_stream = profile.twelfth_stream || userPd.stream12th || '';
+      profile.twelfth_school = profile.twelfth_school || userPd.schoolName12th || '';
+
+      profile.diploma_score = profile.diploma_score || userPd.passingYearDiploma || '';
+      profile.diploma_passing_year = profile.diploma_passing_year || userPd.passingYearDiplomaYear || '';
+      profile.diploma_name = profile.diploma_name || userPd.diplomaName || '';
+      profile.diploma_awarding_body = profile.diploma_awarding_body || userPd.awardingBodyDiploma || '';
+      profile.diploma_duration = profile.diploma_duration || userPd.durationDiploma || '';
+
+      profile.bachelors_score = profile.bachelors_score || userPd.passingYearBachelors || '';
+      profile.bachelors_passing_year = profile.bachelors_passing_year || userPd.passingYearBachelorsYear || '';
+      profile.bachelors_degree = profile.bachelors_degree || userPd.degreeNameBachelors || '';
+      profile.bachelors_college = profile.bachelors_college || userPd.collegeNameBachelors || '';
+      profile.bachelors_university = profile.bachelors_university || userPd.universityNameBachelors || '';
+      profile.bachelors_duration = profile.bachelors_duration || userPd.durationBachelors || '';
+      profile.bachelors_backlogs = profile.bachelors_backlogs || userPd.backlogsBachelors || '';
+
+      profile.pg_diploma_score = profile.pg_diploma_score || userPd.passingYearPgDiploma || '';
+      profile.pg_diploma_passing_year = profile.pg_diploma_passing_year || userPd.passingYearPgDiplomaYear || '';
+      profile.pg_diploma_name = profile.pg_diploma_name || userPd.pgDiplomaName || '';
+      profile.pg_diploma_awarding_body = profile.pg_diploma_awarding_body || userPd.awardingBodyPgDiploma || '';
+      profile.pg_diploma_duration = profile.pg_diploma_duration || userPd.durationPgDiploma || '';
+
+      profile.masters_score = profile.masters_score || userPd.passingYearMasters || '';
+      profile.masters_passing_year = profile.masters_passing_year || userPd.passingYearMastersYear || '';
+      profile.masters_degree = profile.masters_degree || userPd.degreeNameMasters || '';
+      profile.masters_college = profile.masters_college || userPd.collegeNameMasters || '';
+      profile.masters_university = profile.masters_university || userPd.universityNameMasters || '';
+      profile.masters_duration = profile.masters_duration || userPd.durationMasters || '';
+      profile.masters_backlogs = profile.masters_backlogs || userPd.backlogsMasters || '';
     }
 
     res.json({ success: true, user, profile });
@@ -3393,6 +3654,87 @@ app.put(['/api/admin/users/:userId/student-profile', '/api/users/:userId/student
     updatedProfile.gre_test_date = formatDate(updatedProfile.gre_test_date);
     updatedProfile.gmat_test_date = formatDate(updatedProfile.gmat_test_date);
     updatedProfile.sat_test_date = formatDate(updatedProfile.sat_test_date);
+
+    // Reverse sync into users.profile_details
+    try {
+      const camelObj = {
+        candidateName: updatedProfile.candidate_name || '',
+        ageOfCandidate: updatedProfile.candidate_age || '',
+        dob: updatedProfile.dob || '',
+        studentPhone: updatedProfile.student_phone || '',
+        studentEmail: updatedProfile.student_email || '',
+        budget: updatedProfile.study_budget || '',
+        subjectInterest: updatedProfile.subject_interest || '',
+        country: updatedProfile.target_country || '',
+        statePreference: updatedProfile.state_preference || '',
+        cityPreference: updatedProfile.city_preference || '',
+        currentStatus: updatedProfile.current_status || '',
+
+        toeflScore: updatedProfile.toefl_score || '',
+        toeflMock: updatedProfile.toefl_mock_score || '',
+        toeflDate: updatedProfile.toefl_test_date || '',
+
+        ieltsScore: updatedProfile.ielts_score || '',
+        ieltsMock: updatedProfile.ielts_mock_score || '',
+        ieltsDate: updatedProfile.ielts_test_date || '',
+
+        greScore: updatedProfile.gre_score || '',
+        greMock: updatedProfile.gre_mock_score || '',
+        greDate: updatedProfile.gre_test_date || '',
+
+        gmatScore: updatedProfile.gmat_score || '',
+        gmatMock: updatedProfile.gmat_mock_score || '',
+        gmatDate: updatedProfile.gmat_test_date || '',
+
+        satScore: updatedProfile.sat_score || '',
+        satMock: updatedProfile.sat_mock_score || '',
+        satDate: updatedProfile.sat_test_date || '',
+
+        passingYear10th: updatedProfile.tenth_score || '',
+        passingYear10thYear: updatedProfile.tenth_passing_year || '',
+        schoolName10th: updatedProfile.tenth_school || '',
+
+        passingYear12th: updatedProfile.twelfth_score || '',
+        passingYear12thYear: updatedProfile.twelfth_passing_year || '',
+        stream12th: updatedProfile.twelfth_stream || '',
+        schoolName12th: updatedProfile.twelfth_school || '',
+
+        passingYearDiploma: updatedProfile.diploma_score || '',
+        passingYearDiplomaYear: updatedProfile.diploma_passing_year || '',
+        diplomaName: updatedProfile.diploma_name || '',
+        awardingBodyDiploma: updatedProfile.diploma_awarding_body || '',
+        durationDiploma: updatedProfile.diploma_duration || '',
+
+        passingYearBachelors: updatedProfile.bachelors_score || '',
+        passingYearBachelorsYear: updatedProfile.bachelors_passing_year || '',
+        degreeNameBachelors: updatedProfile.bachelors_degree || '',
+        collegeNameBachelors: updatedProfile.bachelors_college || '',
+        universityNameBachelors: updatedProfile.bachelors_university || '',
+        durationBachelors: updatedProfile.bachelors_duration || '',
+        backlogsBachelors: updatedProfile.bachelors_backlogs || '',
+
+        passingYearPgDiploma: updatedProfile.pg_diploma_score || '',
+        passingYearPgDiplomaYear: updatedProfile.pg_diploma_passing_year || '',
+        pgDiplomaName: updatedProfile.pg_diploma_name || '',
+        awardingBodyPgDiploma: updatedProfile.pg_diploma_awarding_body || '',
+        durationPgDiploma: updatedProfile.pg_diploma_duration || '',
+
+        passingYearMasters: updatedProfile.masters_score || '',
+        passingYearMastersYear: updatedProfile.masters_passing_year || '',
+        degreeNameMasters: updatedProfile.masters_degree || '',
+        collegeNameMasters: updatedProfile.masters_college || '',
+        universityNameMasters: updatedProfile.masters_university || '',
+        durationMasters: updatedProfile.masters_duration || '',
+        backlogsMasters: updatedProfile.masters_backlogs || ''
+      };
+
+      await db.query(
+        'UPDATE users SET profile_details = $1 WHERE id = $2',
+        [JSON.stringify(camelObj), targetUserId]
+      );
+    } catch (syncErr) {
+      console.error("Error reverse-syncing to users.profile_details:", syncErr);
+    }
 
     res.json({ success: true, message: 'Student profile details saved successfully', profile: updatedProfile });
   } catch (err) {
