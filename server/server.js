@@ -1082,7 +1082,7 @@ const triggerCheerioWorkflow = async (lead) => {
 };
 
 // GET /api/v1/lead/allleads - Get all leads with their documents populated
-app.get('/api/v1/lead/allleads', async (req, res) => {
+app.get(['/api/v1/lead/allleads', '/api/leads', '/api/admin/leads', '/api/v1/leads'], async (req, res) => {
   try {
     const leadsRes = await db.query('SELECT * FROM leads ORDER BY created_at DESC');
     const leads = leadsRes.rows;
@@ -1641,16 +1641,19 @@ app.post('/api/v1/lead/:leadId/documents/:documentType/upload', leadMulterUpload
 app.post('/api/leads', async (req, res) => {
   const { name, email, phone, subject, message, userId, gender, location } = req.body;
   try {
+    const safeSubject = subject || 'Lead Inquiry';
+    const safeMessage = message || subject || 'New Lead Form Submission';
+
     // 1. Create Lead
     const leadResult = await db.query(
       'INSERT INTO leads (name, email, phone, subject, message, gender, location) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [name, email, phone, subject, message, gender || null, location || null]
+      [name, email, phone, safeSubject, safeMessage, gender || null, location || null]
     );
 
     // 2. Create Ticket (Dual entry as requested)
     await db.query(
       'INSERT INTO tickets (user_id, name, email, subject, message, priority) VALUES ($1, $2, $3, $4, $5, $6)',
-      [userId || null, name, email, subject, message, 'HIGH']
+      [userId || null, name, email, safeSubject, safeMessage, 'HIGH']
     );
 
     // 3. Trigger Cheerio AI Workflow (except for Career Assessment)
@@ -1667,20 +1670,19 @@ app.post('/api/leads', async (req, res) => {
 
 // POST /api/partners - Save partner form application
 app.post('/api/partners', async (req, res) => {
-  const {
-    fullName,
-    email,
-    phone,
-    organizationName,
-    organizationWebsite,
-    partnershipTypes,
-    otherTypeDetail,
-    organizationDescription,
-    whyPartner,
-    preferredCommunication,
-    candidatesSent,
-    additionalComments
-  } = req.body;
+  const body = req.body || {};
+  const fullName = body.fullName || body.full_name || body.name || 'Partner Applicant';
+  const email = body.email || 'partner@example.com';
+  const phone = body.phone || '9999999999';
+  const organizationName = body.organizationName || body.organization_name || null;
+  const organizationWebsite = body.organizationWebsite || body.organization_website || null;
+  const partnershipTypes = body.partnershipTypes || body.partnership_types || [];
+  const otherTypeDetail = body.otherTypeDetail || body.other_type_detail || null;
+  const organizationDescription = body.organizationDescription || body.organization_description || null;
+  const whyPartner = body.whyPartner || body.why_partner || null;
+  const preferredCommunication = body.preferredCommunication || body.preferred_communication || 'Email';
+  const candidatesSent = body.candidatesSent || body.candidates_sent || null;
+  const additionalComments = body.additionalComments || body.additional_comments || null;
 
   try {
     await db.query(`
@@ -1713,22 +1715,22 @@ app.post('/api/partners', async (req, res) => {
         fullName,
         email,
         phone,
-        organizationName || null,
-        organizationWebsite || null,
-        JSON.stringify(partnershipTypes || []),
-        otherTypeDetail || null,
-        organizationDescription || null,
-        whyPartner || null,
-        preferredCommunication || 'Email',
-        candidatesSent || null,
-        additionalComments || null
+        organizationName,
+        organizationWebsite,
+        JSON.stringify(partnershipTypes),
+        otherTypeDetail,
+        organizationDescription,
+        whyPartner,
+        preferredCommunication,
+        candidatesSent,
+        additionalComments
       ]
     );
 
     res.status(201).json({ success: true, partner: result.rows[0] });
   } catch (err) {
     console.error('Save partner inquiry error:', err);
-    res.status(500).json({ success: false, message: 'Database error saving partner application' });
+    res.status(500).json({ success: false, message: 'Database error saving partner application: ' + err.message });
   }
 });
 
@@ -1903,6 +1905,28 @@ app.get('/api/users/:userId/tickets', async (req, res) => {
   } catch (err) {
     console.error('Fetch user tickets error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// POST /api/tickets - Create a new support ticket
+app.post(['/api/tickets', '/api/v1/tickets'], async (req, res) => {
+  const body = req.body || {};
+  const userId = body.userId || body.user_id || null;
+  const name = body.name || 'Anonymous User';
+  const email = body.email || 'user@example.com';
+  const subject = body.subject || 'Support Query';
+  const message = body.message || body.description || subject || 'No message provided';
+  const priority = body.priority || 'MEDIUM';
+
+  try {
+    const result = await db.query(
+      'INSERT INTO tickets (user_id, name, email, subject, message, priority) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [userId, name, email, subject, message, priority]
+    );
+    res.status(201).json({ success: true, ticket: result.rows[0] });
+  } catch (err) {
+    console.error('Create ticket error:', err);
+    res.status(500).json({ success: false, message: 'Server error creating support ticket: ' + err.message });
   }
 });
 
