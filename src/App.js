@@ -38,6 +38,7 @@ import UserSupport from "./pages/user/UserSupport";
 import UserDoubts from "./pages/user/UserDoubts";
 import UserVerification from "./pages/user/UserVerification";
 import UserPayments from "./pages/user/UserPayments";
+import UserOrders from "./pages/user/UserOrders";
 
 // Admin Imports
 import AdminLayout from "./components/admin/AdminLayout";
@@ -119,8 +120,8 @@ function AppContent() {
             <Route index element={<Navigate to="profile" replace />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="courses" element={<div className="p-8 text-slate-400 italic">My Courses component coming soon...</div>} />
-            <Route path="orders" element={<UserPayments />} />
-            <Route path="payments" element={<UserPayments />} />
+            <Route path="orders" element={<UserOrders />} />
+            <Route path="payments" element={<Navigate to="/dashboard/orders" replace />} />
             <Route path="support" element={<UserSupport />} />
             <Route path="doubts" element={<UserDoubts />} />
             <Route path="verification" element={<UserVerification />} />

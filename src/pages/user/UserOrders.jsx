@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Loader2, CreditCard, ShieldCheck, Calendar, Hash, IndianRupee } from 'lucide-react';
+import { Loader2, Package, Calendar, Hash, IndianRupee, CreditCard, ShieldCheck } from 'lucide-react';
 import { getApiUrl } from '../../apiConfig';
 
-const UserPayments = () => {
+const UserOrders = () => {
   const { user } = useOutletContext();
-  const [transactions, setTransactions] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchPayments();
+    fetchOrders();
   }, [user]);
 
-  const fetchPayments = async () => {
+  const fetchOrders = async () => {
     setIsLoading(true);
     try {
       const emailParam = user?.email ? `email=${encodeURIComponent(user.email)}` : '';
@@ -26,10 +26,10 @@ const UserPayments = () => {
       const data = await response.json();
 
       if (data.success) {
-        setTransactions(data.orders || data.transactions || []);
+        setOrders(data.orders || data.transactions || []);
       }
     } catch (err) {
-      console.error('Error fetching payment transactions:', err);
+      console.error('Error fetching user orders:', err);
     } finally {
       setIsLoading(false);
     }
@@ -58,13 +58,13 @@ const UserPayments = () => {
     );
   };
 
-  const getTitle = (tx) => {
-    if (tx.courseName) return tx.courseName;
-    if (tx.productName) return tx.productName;
-    if (tx.courseId === 'CAREER_ASSESSMENT') return 'Career Assessment Payment';
-    if (tx.courseId) return tx.courseId.replace(/_/g, ' ');
-    if (tx.productType) return tx.productType.replace(/_/g, ' ');
-    return 'Transaction #' + (tx.id || '');
+  const getTitle = (order) => {
+    if (order.courseName) return order.courseName;
+    if (order.productName) return order.productName;
+    if (order.courseId === 'CAREER_ASSESSMENT') return 'Career Assessment';
+    if (order.courseId) return order.courseId.replace(/_/g, ' ');
+    if (order.productType) return order.productType.replace(/_/g, ' ');
+    return 'Order #' + (order.id || '');
   };
 
   if (isLoading) {
@@ -78,26 +78,26 @@ const UserPayments = () => {
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Online Payments</h1>
-        <p className="text-sm text-slate-500 mt-1">View payment receipts, transaction history, and status updates.</p>
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">My Orders & Payments</h1>
+        <p className="text-sm text-slate-500 mt-1">View your order details, payment status, and transaction receipts.</p>
       </div>
 
-      {transactions.length === 0 ? (
+      {orders.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
           <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4 text-slate-400">
-            <CreditCard size={24} />
+            <Package size={24} />
           </div>
-          <h3 className="text-slate-800 font-semibold mb-1">No payment transactions</h3>
-          <p className="text-slate-500 text-sm">You have no online payment transactions yet.</p>
+          <h3 className="text-slate-800 font-semibold mb-1">No orders or payment records found</h3>
+          <p className="text-slate-500 text-sm">You have not placed any orders yet.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {transactions.map((tx) => {
-            const txId = tx.id || tx._id || tx.transactionId;
-            const status = (tx.status || 'PENDING').toUpperCase();
-            const title = getTitle(tx);
-            const formattedDate = tx.createdAt
-              ? new Date(tx.createdAt).toLocaleString('en-US', {
+          {orders.map((order) => {
+            const orderId = order.id || order._id || order.transactionId;
+            const status = (order.status || 'PENDING').toUpperCase();
+            const title = getTitle(order);
+            const formattedDate = order.createdAt
+              ? new Date(order.createdAt).toLocaleString('en-US', {
                   month: 'short',
                   day: 'numeric',
                   year: 'numeric',
@@ -108,10 +108,10 @@ const UserPayments = () => {
 
             return (
               <div
-                key={txId}
+                key={orderId}
                 className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4"
               >
-                {/* Header: Title & Status */}
+                {/* Header: Product Title & Status */}
                 <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shrink-0">
@@ -122,14 +122,14 @@ const UserPayments = () => {
                         {title}
                       </h3>
                       <p className="text-xs text-slate-400 font-medium">
-                        {tx.method || 'Online (PhonePe Gateway)'}
+                        {order.method || 'Online (PhonePe Gateway)'}
                       </p>
                     </div>
                   </div>
                   <div>{getStatusBadge(status)}</div>
                 </div>
 
-                {/* Grid Info: Always Visible */}
+                {/* Grid Fields - Always Visible */}
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
                     <div className="flex items-center gap-1.5 text-slate-400 font-medium mb-1">
@@ -137,7 +137,7 @@ const UserPayments = () => {
                       <span>Payment Amount</span>
                     </div>
                     <span className="text-sm font-extrabold text-slate-900">
-                      ₹{Number(tx.amount || 0).toFixed(2)}
+                      ₹{Number(order.amount || 0).toFixed(2)}
                     </span>
                   </div>
 
@@ -154,10 +154,10 @@ const UserPayments = () => {
                   <div className="col-span-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
                     <div className="flex items-center gap-1.5 text-slate-400 font-medium mb-1">
                       <Hash size={13} />
-                      <span>Payment / Transaction ID</span>
+                      <span>Payment ID / Transaction ID</span>
                     </div>
                     <span className="font-mono text-xs font-semibold text-slate-800 break-all select-all">
-                      {tx.transactionId || tx.merchant_transaction_id || `TX-${tx.id}`}
+                      {order.transactionId || order.merchant_transaction_id || `ORD-${order.id}`}
                     </span>
                   </div>
                 </div>
@@ -168,7 +168,7 @@ const UserPayments = () => {
                     <ShieldCheck size={14} />
                     <span>Verified Payment</span>
                   </div>
-                  <span>{tx.courseId || 'CAREER_ASSESSMENT'}</span>
+                  <span>{order.courseId || 'CAREER_ASSESSMENT'}</span>
                 </div>
               </div>
             );
@@ -179,4 +179,4 @@ const UserPayments = () => {
   );
 };
 
-export default UserPayments;
+export default UserOrders;

@@ -30,8 +30,7 @@ const UserLayout = () => {
   const sidebarItems = [
     { icon: User, label: "Profile", path: "/dashboard/profile" },
     { icon: BookOpen, label: "My Courses", path: "/dashboard/courses" },
-    { icon: ShoppingBag, label: "My Orders", path: "/dashboard/orders" },
-    { icon: CreditCard, label: "Payments", path: "/dashboard/payments" },
+    { icon: ShoppingBag, label: "My Orders & Payments", path: "/dashboard/orders" },
     { icon: HelpCircle, label: "Support", path: "/dashboard/support" },
     { icon: MessageCircle, label: "Doubts", path: "/dashboard/doubts" },
     { icon: FileCheck, label: "Document Verification Portal", path: "/dashboard/verification" },
