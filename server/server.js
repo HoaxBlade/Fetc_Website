@@ -228,6 +228,124 @@ const runMigrations = async () => {
       );
     `);
 
+    // Partners table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS partners (
+        id SERIAL PRIMARY KEY,
+        full_name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(100) NOT NULL,
+        organization_name VARCHAR(255),
+        organization_website VARCHAR(255),
+        partnership_types JSONB,
+        other_type_detail TEXT,
+        organization_description TEXT,
+        why_partner TEXT,
+        preferred_communication VARCHAR(50),
+        candidates_sent VARCHAR(100),
+        additional_comments TEXT,
+        status VARCHAR(50) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `).catch(() => {});
+
+    // Orders table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS orders (
+        id SERIAL PRIMARY KEY,
+        merchant_transaction_id VARCHAR(255) UNIQUE NOT NULL,
+        name VARCHAR(255),
+        email VARCHAR(255),
+        phone VARCHAR(100),
+        course_id VARCHAR(100),
+        product_type VARCHAR(100),
+        amount INT NOT NULL,
+        status VARCHAR(50) DEFAULT 'PENDING',
+        return_url VARCHAR(1000),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS return_url VARCHAR(1000);
+    `).catch(() => {});
+
+    // Invoices table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS invoices (
+        id SERIAL PRIMARY KEY,
+        invoice_no VARCHAR(100) UNIQUE NOT NULL,
+        invoice_date DATE NOT NULL DEFAULT CURRENT_DATE,
+        payment_method VARCHAR(100) DEFAULT 'Cash',
+        upi_ref VARCHAR(255),
+        bill_to JSONB NOT NULL,
+        items JSONB NOT NULL,
+        subtotal DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+        sgst DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+        cgst DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+        total DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS invoice_no VARCHAR(100);
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS invoice_date DATE DEFAULT CURRENT_DATE;
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_method VARCHAR(100) DEFAULT 'Cash';
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS upi_ref VARCHAR(255);
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS bill_to JSONB DEFAULT '{}';
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS items JSONB DEFAULT '[]';
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS subtotal DECIMAL(10, 2) DEFAULT 0.00;
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS sgst DECIMAL(10, 2) DEFAULT 0.00;
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS cgst DECIMAL(10, 2) DEFAULT 0.00;
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS total DECIMAL(10, 2) DEFAULT 0.00;
+    `).catch(() => {});
+
+    // Courses table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS courses (
+        id SERIAL PRIMARY KEY,
+        course_id VARCHAR(100) UNIQUE NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        category VARCHAR(100) DEFAULT 'Exam Prep',
+        price DECIMAL(10, 2) DEFAULT 0.00,
+        duration VARCHAR(100) DEFAULT '4 Weeks',
+        level VARCHAR(50) DEFAULT 'Intermediate',
+        status VARCHAR(50) DEFAULT 'ACTIVE',
+        students_count INT DEFAULT 0,
+        thumbnail VARCHAR(500),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `).catch(() => {});
+
+    // News Articles table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS news_articles (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        summary TEXT,
+        source VARCHAR(100) DEFAULT 'FETC News',
+        date VARCHAR(50),
+        image_url TEXT,
+        category VARCHAR(100) DEFAULT 'General',
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `).catch(() => {});
+
+    // Student Reviews table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS student_reviews (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        university VARCHAR(255),
+        score VARCHAR(50),
+        quote TEXT NOT NULL,
+        image_url TEXT,
+        visa_image TEXT,
+        country VARCHAR(100),
+        program VARCHAR(100),
+        rating INT DEFAULT 5,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `).catch(() => {});
+
     // Mock Tests table
     await db.query(`
       CREATE TABLE IF NOT EXISTS mock_tests (
@@ -2568,7 +2686,7 @@ const ensureInvoicesTable = async () => {
         ALTER TABLE invoices ADD CONSTRAINT invoices_invoice_no_key UNIQUE (invoice_no);
       END IF;
     END $$;
-  `);
+  `).catch(() => {});
 };
 
 // GET next invoice number
