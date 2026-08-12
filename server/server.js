@@ -178,6 +178,8 @@ const runMigrations = async () => {
         status VARCHAR(20) DEFAULT 'OPEN',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+      ALTER TABLE tickets ADD COLUMN IF NOT EXISTS admin_reply TEXT;
+      ALTER TABLE tickets ADD COLUMN IF NOT EXISTS replied_at TIMESTAMP;
     `);
 
     // News Flash table
@@ -1812,8 +1814,7 @@ app.patch('/api/partners/:id/status', async (req, res) => {
 // Admin Tickets List Route
 app.get('/api/admin/tickets', async (req, res) => {
   try {
-    // Only fetch tickets that are NOT resolved to keep the dashboard clean
-    const tickets = await db.query("SELECT * FROM tickets WHERE status != 'RESOLVED' ORDER BY created_at DESC");
+    const tickets = await db.query("SELECT * FROM tickets ORDER BY created_at DESC");
     res.json({ success: true, tickets: tickets.rows });
   } catch (err) {
     console.error('Fetch tickets error:', err);
@@ -1877,6 +1878,106 @@ const sendTicketStatusEmail = async (studentEmail, studentName, subject, status)
     console.error('Email sending error:', error);
   }
 };
+
+// Helper function for sending custom email replies to tickets
+const sendTicketReplyEmail = async (studentEmail, studentName, ticketSubject, ticketMessage, replyMessage) => {
+  try {
+    const mailOptions = {
+      from: `"FETC Support" <${process.env.EMAIL_USER}>`,
+      to: studentEmail,
+      subject: `Response to your query: ${ticketSubject}`,
+      html: `
+        <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 36px; background-color: #f8fafc; border-radius: 20px;">
+          <div style="text-align: center; margin-bottom: 28px;">
+            <div style="display: inline-block; padding: 12px; background-color: #2563eb; border-radius: 12px; margin-bottom: 12px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <h1 style="color: #0f172a; margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.025em;">Support Team Response</h1>
+          </div>
+          
+          <div style="background-color: white; padding: 32px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+            <p style="color: #334155; font-size: 15px; line-height: 1.6; margin-bottom: 20px;">Hello <strong>${studentName || 'Student'}</strong>,</p>
+            <p style="color: #475569; font-size: 15px; line-height: 1.6; margin-bottom: 20px;">
+              Thank you for contacting FETC Support. Here is our response regarding <strong>"${ticketSubject}"</strong>:
+            </p>
+            
+            <div style="background-color: #eff6ff; border-left: 4px solid #2563eb; padding: 16px 20px; border-radius: 10px; margin-bottom: 24px;">
+              <p style="color: #1e40af; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; margin: 0 0 8px 0;">Official Response</p>
+              <p style="color: #0f172a; font-size: 15px; line-height: 1.6; margin: 0; white-space: pre-wrap;">${replyMessage}</p>
+            </div>
+
+            <div style="background-color: #f8fafc; padding: 16px 20px; border-radius: 10px; margin-bottom: 24px; border: 1px solid #f1f5f9;">
+              <p style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; margin: 0 0 6px 0;">Your Original Query</p>
+              <p style="color: #475569; font-size: 13px; font-style: italic; margin: 0;">"${ticketMessage}"</p>
+            </div>
+            
+            <p style="color: #64748b; font-size: 13px; line-height: 1.6; margin-bottom: 28px;">
+              If you have any further questions, feel free to reply directly to this email or visit your student portal.
+            </p>
+            
+            <div style="padding-top: 20px; border-top: 1px solid #f1f5f9; text-align: center;">
+              <p style="color: #94a3b8; font-size: 13px; margin: 0;">Best regards,</p>
+              <p style="color: #0f172a; font-size: 14px; font-weight: 700; margin: 4px 0 0 0;">FETC Support Team</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-top: 20px;">
+            <p style="color: #94a3b8; font-size: 12px;">© 2026 FETC Education. All rights reserved.</p>
+          </div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`Support reply email sent successfully to ${studentEmail}`);
+    return true;
+  } catch (error) {
+    console.error('Support reply email sending error:', error);
+    throw error;
+  }
+};
+
+// POST /api/admin/tickets/:id/reply - Send email reply to ticket creator
+app.post('/api/admin/tickets/:id/reply', async (req, res) => {
+  const { id } = req.params;
+  const { replyMessage, status } = req.body;
+
+  if (!replyMessage || !replyMessage.trim()) {
+    return res.status(400).json({ success: false, message: 'Reply message is required' });
+  }
+
+  try {
+    const ticketResult = await db.query('SELECT * FROM tickets WHERE id = $1', [id]);
+    if (ticketResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Ticket not found' });
+    }
+
+    const ticket = ticketResult.rows[0];
+    const newStatus = status || 'RESOLVED';
+
+    // Send email to student
+    await sendTicketReplyEmail(ticket.email, ticket.name, ticket.subject, ticket.message, replyMessage);
+
+    // Save reply to ticket and update status
+    const updateResult = await db.query(
+      'UPDATE tickets SET admin_reply = $1, status = $2, replied_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *',
+      [replyMessage, newStatus, id]
+    );
+
+    res.json({
+      success: true,
+      message: `Email successfully sent to ${ticket.email}`,
+      ticket: updateResult.rows[0]
+    });
+  } catch (err) {
+    console.error('Ticket reply error:', err);
+    let errorMsg = err.message || 'Failed to send email';
+    if (errorMsg.includes('535') || errorMsg.includes('Invalid login') || process.env.EMAIL_PASS === 'your-app-password') {
+      errorMsg = 'Gmail Authentication Failed: Please set a valid 16-character Gmail App Password in server/.env for EMAIL_PASS.';
+    }
+    res.status(500).json({ success: false, message: errorMsg });
+  }
+});
 
 // PATCH /api/admin/tickets/:id - Update ticket status
 app.patch('/api/admin/tickets/:id', async (req, res) => {
