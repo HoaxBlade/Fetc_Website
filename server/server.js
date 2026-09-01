@@ -2932,25 +2932,42 @@ app.post('/api/v1/order/initiate-payment', async (req, res) => {
           }
         };
 
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `O-Bearer ${token}`,
+          'accept': 'application/json'
+        };
+        if (process.env.PHONEPE_MERCHANT_ID && process.env.PHONEPE_MERCHANT_ID !== process.env.PHONEPE_CLIENT_ID) {
+          headers['X-MERCHANT-ID'] = process.env.PHONEPE_MERCHANT_ID;
+        }
+
         const response = await fetch(`${hostUrl}/checkout/v2/pay`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `O-Bearer ${token}`,
-            'accept': 'application/json'
-          },
+          headers,
           body: JSON.stringify(payload)
         });
 
         const responseData = await response.json();
         console.log('PhonePe V2 API Response:', responseData);
 
-        const redirectUrl = responseData.redirectUrl || responseData.data?.redirectUrl || responseData.data?.instrumentResponse?.redirectInfo?.url;
+        const redirectUrl = responseData.redirectUrl || responseData.data?.redirectUrl || responseData.data?.instrumentResponse?.redirectInfo?.url || responseData.url;
         if (redirectUrl) {
           return res.json({ success: true, redirectUrl, merchantTransactionId: merchantOrderId, orderId: responseData.orderId });
         }
+
+        // If V2 was attempted with Client ID/Secret but failed, return PhonePe V2 error details
+        const errorMsg = responseData.message || responseData.error || responseData.code || responseData.detail || JSON.stringify(responseData);
+        return res.status(400).json({
+          success: false,
+          message: `PhonePe V2 Error (${responseData.code || response.status}): ${errorMsg}`,
+          data: responseData
+        });
       } catch (v2Err) {
-        console.warn('PhonePe V2 flow failed, falling back to V1 checksum flow:', v2Err.message);
+        console.error('PhonePe V2 Flow Exception:', v2Err);
+        return res.status(500).json({
+          success: false,
+          message: `PhonePe V2 Auth Exception: ${v2Err.message}`
+        });
       }
     }
 
