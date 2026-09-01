@@ -116,7 +116,7 @@ const runMigrations = async () => {
       ALTER TABLE leads ADD COLUMN IF NOT EXISTS address TEXT;
       ALTER TABLE leads ADD COLUMN IF NOT EXISTS emergency_contact_name VARCHAR(255);
       ALTER TABLE leads ADD COLUMN IF NOT EXISTS emergency_contact_phone VARCHAR(50);
-      ALTER TABLE tracks ADD COLUMN IF NOT EXISTS emergency_contact_relation VARCHAR(100);
+      ALTER TABLE leads ADD COLUMN IF NOT EXISTS emergency_contact_relation VARCHAR(100);
     `).catch(() => {}); // Catch in case of syntax or other minor execution errors, but we'll do individual columns below:
     
     // Let's run individual ADD COLUMN statements safely so that failure of one column does not block others:
@@ -627,12 +627,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif|svg|avif|bmp)$/i.test(file.originalname)) {
-      return cb(null, true);
-    }
-    cb(new Error('Only image files (JPG, PNG, WEBP, GIF, SVG) are allowed!'));
+    cb(null, true); // Allow images, pdfs, docs, and videos cleanly
   }
 });
 
@@ -647,6 +644,13 @@ app.post('/api/admin/upload', (req, res) => {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
     const fileUrl = `/uploads/${req.file.filename}`;
+    try {
+      const publicUploads = path.join(__dirname, '../public/uploads');
+      if (!fs.existsSync(publicUploads)) fs.mkdirSync(publicUploads, { recursive: true });
+      fs.copyFileSync(req.file.path, path.join(publicUploads, req.file.filename));
+    } catch (e) {
+      console.warn('Could not copy upload to public/uploads:', e.message);
+    }
     res.json({ success: true, url: fileUrl });
   });
 });
@@ -661,6 +665,11 @@ app.post('/api/upload', (req, res) => {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
     const fileUrl = `/uploads/${req.file.filename}`;
+    try {
+      const publicUploads = path.join(__dirname, '../public/uploads');
+      if (!fs.existsSync(publicUploads)) fs.mkdirSync(publicUploads, { recursive: true });
+      fs.copyFileSync(req.file.path, path.join(publicUploads, req.file.filename));
+    } catch (e) {}
     res.json({ success: true, url: fileUrl });
   });
 });
@@ -685,6 +694,11 @@ app.post('/api/admin/upload-media', mediaUpload.single('file'), (req, res) => {
     return res.status(400).json({ success: false, message: 'No media file uploaded' });
   }
   const fileUrl = `/uploads/${req.file.filename}`;
+  try {
+    const publicUploads = path.join(__dirname, '../public/uploads');
+    if (!fs.existsSync(publicUploads)) fs.mkdirSync(publicUploads, { recursive: true });
+    fs.copyFileSync(req.file.path, path.join(publicUploads, req.file.filename));
+  } catch (e) {}
   res.json({ success: true, url: fileUrl });
 });
 

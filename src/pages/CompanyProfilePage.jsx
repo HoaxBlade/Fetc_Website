@@ -12,6 +12,7 @@ import {
   FileDown
 } from "lucide-react";
 import amazingTeamImg from "../assets/fetc-about-us/welcome-3.jpeg";
+import { getApiUrl, getAssetUrl } from "../apiConfig";
 
 const PROGRAM_DOWNLOADS = [
   {
@@ -202,11 +203,152 @@ function CompanyProfilePage() {
   const [activeTab, setActiveTab] = useState("All");
   const [isChanging, setIsChanging] = useState(false);
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
+  const [pageContent, setPageContent] = useState(null);
+
+  useEffect(() => {
+    fetch(getApiUrl('/api/pages/about/company-profile'))
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.page?.content) {
+          let content = data.page.content;
+          while (typeof content === 'string') {
+            try {
+              const parsed = JSON.parse(content);
+              if (typeof parsed === 'string' && parsed === content) break;
+              content = parsed;
+            } catch (e) { break; }
+          }
+          if (content && typeof content === 'object') {
+            setPageContent(content);
+          }
+        }
+      })
+      .catch(err => console.error('Failed to fetch company profile page content:', err));
+  }, []);
+
+  const hero = pageContent?.hero || {
+    badge: "About FETC",
+    title: "Building Global Careers",
+    titleHighlight: "Since 1999",
+    description: "FETC is an authorized, state-of-the-art English examination and training center headquartered in Surat, Gujarat. We are a dream project under Gina Abroad Pvt. Ltd., empowering students with digital classrooms and authorized examination spaces."
+  };
+
+  const stats = pageContent?.stats && pageContent.stats.length > 0 ? pageContent.stats : STATS;
+  const programDownloads = pageContent?.programDownloads && pageContent.programDownloads.length > 0 ? pageContent.programDownloads : PROGRAM_DOWNLOADS;
+  const certificates = pageContent?.certificates && pageContent.certificates.length > 0 ? pageContent.certificates : [
+    { src: "/assets/certificates/Screenshot 2026-06-10 111633.png", alt: "Certificate of Representation" },
+    { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "City College Birmingham Appointment Letter" },
+    { src: "/assets/certificates/Screenshot 2026-06-10 111719.png", alt: "Certificate of Attendance" },
+    { src: "/assets/certificates/Screenshot 2026-06-10 111730.png", alt: "ICEF Accredited Certificate" },
+  ];
+  
+  const galleryItems = (pageContent?.galleryItems && pageContent.galleryItems.length > 0) 
+    ? pageContent.galleryItems 
+    : GALLERY_ITEMS;
+
+  const partnership = pageContent?.partnership || {
+    tag: "Our Partnership",
+    titlePrefix: "Expanding",
+    titleHighlight: "Opportunities",
+    titleSuffix: "Together",
+    description1: "We're excited to collaborate with R.H. Patel Institute of Technology to expand opportunities for your students and enhance faculty development. Our comprehensive approach combines international university partnerships, career counseling excellence, and certified training programs.",
+    description2: "This partnership opens doors to global education while supporting your institution's growth and your students' success.",
+    cardBadge: "About Us",
+    cardTitle: "At FETC, We Offer Excellence in English Language Training",
+    cardDesc: "We are dedicated to helping students and professionals achieve their dreams of studying, working, or settling abroad. We connect you with a world of opportunities through top-notch English language support, making your application process for international education and careers smooth and successful."
+  };
+
+  const campusVisits = pageContent?.campusVisits || [
+    {
+      icon: "🗓️",
+      tag: "First Visit",
+      title: "Bill Boozing – 3rd April 2026",
+      desc: "Curry College representative will visit your campus, sharing opportunities for American education."
+    },
+    {
+      icon: "🇬🇧",
+      tag: "Follow-Up Visits",
+      title: "UK University Representatives",
+      desc: "UK University Representatives will visit, showcasing British higher education options and pathways."
+    },
+    {
+      icon: "🌍",
+      tag: "Ongoing Access",
+      title: "Continued University Partnerships",
+      desc: "Continued university partnerships expanding your students' global education choices."
+    }
+  ];
+
+  const agendaItems = pageContent?.agendaItems || [
+    {
+      icon: "📜",
+      title: "Professional Training",
+      desc: "Certified TOEFL and SELT training programs for faculty members, enhancing teaching capabilities and career advancement opportunities."
+    },
+    {
+      icon: "🎯",
+      title: "Career Counselling",
+      desc: "Expert guidance helping students navigate career paths, university selections, and global opportunities with confidence."
+    },
+    {
+      icon: "🏫",
+      title: "University Visits",
+      desc: "Direct campus visits from international university representatives, providing students with firsthand information about study abroad options."
+    },
+    {
+      icon: "🎓",
+      title: "City College Birmingham (2+1)",
+      desc: "Explore your path to Accredited qualifications. Complete your first two years in India, pathway to abroad."
+    }
+  ];
+
+  const facultyBenefits = pageContent?.facultyBenefits || [
+    {
+      icon: "🏅",
+      title: "Certified Training Programs",
+      desc: "Official TOEFL and SELT certification training that enhances your teaching credentials and opens new career opportunities."
+    },
+    {
+      icon: "📈",
+      title: "Professional Development",
+      desc: "Stay current with international education standards and improve your ability to guide students toward global opportunities."
+    },
+    {
+      icon: "💰",
+      title: "Referral Incentives",
+      desc: "Earn referral incentives when your students enroll through our partnerships, creating additional income streams for dedicated faculty."
+    }
+  ];
+
+  const pathways = pageContent?.pathways || [
+    "Software Developer/ Web Developer",
+    "IT Support Specialist",
+    "Network Engineer/ Cybersecurity Analyst",
+    "Data Scientist/ Business Intelligence Analyst",
+    "E-Commerce Manager",
+    "Tech Project Manager"
+  ];
+
+  const story = pageContent?.story || {
+    title: "The Inception (Since 1999)",
+    desc: "Specifically for exams and training and study abroad services this company has been formed under the umbrella of Ms. Bhumika Dilkhush proprietor of Gina Abroad.",
+    videoTitle: "Inside FETC & Gina Abroad",
+    videoPoster: "/assets/story-video-thumbnail.png",
+    videoUrl: "/assets/story-video.mp4"
+  };
+
+  const teamBanner = pageContent?.teamBanner || {
+    tag: "Our Pillars",
+    title: "The team behind your success",
+    quote: "Be Great. Do Good. Learn Always.",
+    desc: "Whether organizing mock tests or conducting staff alignment meetings in our conference halls, our core value remains the same: student success comes first.",
+    image: null
+  };
 
   const filteredGallery = useMemo(() => {
-    if (activeTab === "All") return GALLERY_ITEMS;
-    return GALLERY_ITEMS.filter(item => item.category === activeTab);
-  }, [activeTab]);
+    if (activeTab === "All") return galleryItems;
+    return galleryItems.filter(item => item.category === activeTab);
+  }, [activeTab, galleryItems]);
 
   const handleTabChange = (tab) => {
     if (tab === activeTab) return;
@@ -233,7 +375,7 @@ function CompanyProfilePage() {
             transition={{ duration: 0.5 }}
           >
             <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-600 mb-3 px-3 py-1.5 bg-brand-50 rounded-full border border-brand-100">
-              About FETC
+              {hero.badge ?? "About FETC"}
             </span>
           </motion.div>
 
@@ -244,9 +386,9 @@ function CompanyProfilePage() {
             className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight text-balance mb-4"
             style={{ lineHeight: "1.35" }}
           >
-            Building Global Careers <br />
+            {hero.title ?? "Building Global Careers"} <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600 font-bold">
-              Since 1999
+              {hero.titleHighlight ?? "Since 1999"}
             </span>
           </motion.h1>
 
@@ -256,14 +398,14 @@ function CompanyProfilePage() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-base md:text-lg text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed mb-8"
           >
-            FETC is an authorized, state-of-the-art English examination and training center headquartered in Surat, Gujarat. We are a dream project under Gina Abroad Pvt. Ltd., empowering students with digital classrooms and authorized examination spaces.
+            {hero.description ?? "FETC is an authorized, state-of-the-art English examination and training center headquartered in Surat, Gujarat. We are a dream project under Gina Abroad Pvt. Ltd., empowering students with digital classrooms and authorized examination spaces."}
           </motion.p>
 
           {/* Real-time Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-8 pt-6 border-t border-slate-100">
-            {STATS.map((stat, idx) => (
+            {stats.map((stat, idx) => (
               <motion.div
-                key={stat.label}
+                key={stat.label || idx}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.3 + idx * 0.05 }}
@@ -290,16 +432,16 @@ function CompanyProfilePage() {
             transition={{ duration: 0.6 }}
             className="space-y-5"
           >
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-500">Our Partnership</span>
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-500">{partnership.tag ?? "Our Partnership"}</span>
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-              Expanding <span className="text-brand-600">Opportunities</span> Together
+              Expanding <span className="text-brand-600">{partnership.titleHighlight ?? "Opportunities"}</span> Together
             </h2>
             <div className="w-12 h-1 bg-brand-600 rounded-full" />
             <p className="text-slate-600 font-medium leading-relaxed text-lg">
-              We're excited to collaborate with R.H. Patel Institute of Technology to expand opportunities for your students and enhance faculty development. Our comprehensive approach combines international university partnerships, career counseling excellence, and certified training programs.
+              {partnership.description1 ?? "We're excited to collaborate with R.H. Patel Institute of Technology to expand opportunities for your students and enhance faculty development. Our comprehensive approach combines international university partnerships, career counseling excellence, and certified training programs."}
             </p>
             <p className="text-slate-500 font-medium leading-relaxed">
-              This partnership opens doors to global education while supporting your institution's growth and your students' success.
+              {partnership.description2 ?? "This partnership opens doors to global education while supporting your institution's growth and your students' success."}
             </p>
           </motion.div>
 
@@ -311,13 +453,13 @@ function CompanyProfilePage() {
             className="bg-white rounded-3xl border border-slate-100 shadow-lg p-8 space-y-5"
           >
             <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 px-4 py-2 bg-indigo-50 rounded-full border border-indigo-100">
-              About Us
+              {partnership.cardBadge ?? "About Us"}
             </span>
             <h3 className="text-2xl font-black text-slate-900 leading-tight">
-              At FETC, We Offer Excellence in English Language Training
+              {partnership.cardTitle ?? "At FETC, We Offer Excellence in English Language Training"}
             </h3>
             <p className="text-slate-500 font-medium leading-relaxed">
-              We are dedicated to helping students and professionals achieve their dreams of studying, working, or settling abroad. We connect you with a world of opportunities through top-notch English language support, making your application process for international education and careers smooth and successful.
+              {partnership.cardDesc ?? "We are dedicated to helping students and professionals achieve their dreams of studying, working, or settling abroad. We connect you with a world of opportunities through top-notch English language support, making your application process for international education and careers smooth and successful."}
             </p>
           </motion.div>
         </div>
@@ -335,26 +477,7 @@ function CompanyProfilePage() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: "🗓️",
-                tag: "First Visit",
-                title: "Bill Boozing – 3rd April 2026",
-                desc: "Curry College representative will visit your campus, sharing opportunities for American education."
-              },
-              {
-                icon: "🇬🇧",
-                tag: "Follow-Up Visits",
-                title: "UK University Representatives",
-                desc: "UK University Representatives will visit, showcasing British higher education options and pathways."
-              },
-              {
-                icon: "🌍",
-                tag: "Ongoing Access",
-                title: "Continued University Partnerships",
-                desc: "Continued university partnerships expanding your students' global education choices."
-              }
-            ].map((item, idx) => (
+            {campusVisits.map((item, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
@@ -385,28 +508,7 @@ function CompanyProfilePage() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                icon: "📜",
-                title: "Professional Training",
-                desc: "Certified TOEFL and SELT training programs for faculty members, enhancing teaching capabilities and career advancement opportunities."
-              },
-              {
-                icon: "🎯",
-                title: "Career Counselling",
-                desc: "Expert guidance helping students navigate career paths, university selections, and global opportunities with confidence."
-              },
-              {
-                icon: "🏫",
-                title: "University Visits",
-                desc: "Direct campus visits from international university representatives, providing students with firsthand information about study abroad options."
-              },
-              {
-                icon: "🎓",
-                title: "City College Birmingham (2+1)",
-                desc: "Explore your path to Accredited qualifications. Complete your first two years in India, pathway to abroad."
-              }
-            ].map((item, idx) => (
+            {agendaItems.map((item, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
@@ -436,23 +538,7 @@ function CompanyProfilePage() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: "🏅",
-                title: "Certified Training Programs",
-                desc: "Official TOEFL and SELT certification training that enhances your teaching credentials and opens new career opportunities."
-              },
-              {
-                icon: "📈",
-                title: "Professional Development",
-                desc: "Stay current with international education standards and improve your ability to guide students toward global opportunities."
-              },
-              {
-                icon: "💰",
-                title: "Referral Incentives",
-                desc: "Earn referral incentives when your students enroll through our partnerships, creating additional income streams for dedicated faculty."
-              }
-            ].map((item, idx) => (
+            {facultyBenefits.map((item, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
@@ -492,14 +578,7 @@ function CompanyProfilePage() {
                 Career Pathway
               </h3>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  "Software Developer/ Web Developer",
-                  "IT Support Specialist",
-                  "Network Engineer/ Cybersecurity Analyst",
-                  "Data Scientist/ Business Intelligence Analyst",
-                  "E-Commerce Manager",
-                  "Tech Project Manager"
-                ].map((pathway, idx) => (
+                {pathways.map((pathway, idx) => (
                   <motion.li
                     key={idx}
                     initial={{ opacity: 0, x: -10 }}
@@ -533,17 +612,17 @@ function CompanyProfilePage() {
             {/* Story Content Block */}
             <div className="bg-white rounded-3xl border border-slate-100 shadow-lg p-8 space-y-4">
               <h3 className="text-xl font-black text-slate-900 border-b border-slate-100 pb-3">
-                {TIMELINE[0].title}
+                {story.title || TIMELINE[0].title}
               </h3>
               <p className="text-slate-600 font-semibold leading-relaxed text-sm md:text-base">
-                {TIMELINE[0].desc}
+                {story.desc || TIMELINE[0].desc}
               </p>
             </div>
 
             {/* Story Video Block */}
             <div className="bg-white rounded-3xl border border-slate-100 shadow-lg p-6 space-y-4 overflow-hidden">
               <h3 className="text-lg font-black text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                🎥 Inside FETC & Gina Abroad
+                🎥 {story.videoTitle || "Inside FETC & Gina Abroad"}
               </h3>
               <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-900 shadow-inner group">
                 {!isPlayingVideo ? (
@@ -554,7 +633,7 @@ function CompanyProfilePage() {
                     {/* Video poster overlay */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-brand-900/40 to-slate-900/60 mix-blend-multiply transition-opacity group-hover:opacity-75" />
                     <img 
-                      src="/assets/story-video-thumbnail.png" 
+                      src={getAssetUrl(story.videoPoster || "/assets/story-video-thumbnail.png")} 
                       alt="FETC Video Preview"
                       className="absolute inset-0 w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-700"
                     />
@@ -571,7 +650,7 @@ function CompanyProfilePage() {
                   </div>
                 ) : (
                   <video 
-                    src="/assets/story-video.mp4" 
+                    src={getAssetUrl(story.videoUrl || "/assets/story-video.mp4")} 
                     controls 
                     autoPlay 
                     className="w-full h-full object-contain"
@@ -594,7 +673,7 @@ function CompanyProfilePage() {
             📂 Program Curriculums & Guides
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {PROGRAM_DOWNLOADS.map((prog, idx) => (
+            {programDownloads.map((prog, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 15 }}
@@ -634,12 +713,12 @@ function CompanyProfilePage() {
       <section className="py-12 px-4 md:px-8 bg-white">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="max-w-3xl">
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-indigo-500">Our Pillars</span>
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-indigo-500">{teamBanner.tag || "Our Pillars"}</span>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-none mt-2 mb-3">
-              The team <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">behind your success</span>
+              {teamBanner.title || "The team behind your success"}
             </h2>
             <p className="text-slate-500 font-medium leading-relaxed text-sm">
-              Certified examiners, tech support teams, and counseling heads—our experts work in unison to provide an error-free, supportive testing and coaching environment.
+              {teamBanner.desc || "Certified examiners, tech support teams, and counseling heads—our experts work in unison to provide an error-free, supportive testing and coaching environment."}
             </p>
           </div>
 
@@ -650,17 +729,17 @@ function CompanyProfilePage() {
             className="relative h-[300px] md:h-[380px] rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-100 group"
           >
             <img
-              src={amazingTeamImg}
+              src={getAssetUrl(teamBanner.image || amazingTeamImg)}
               alt="FETC Team and workspace"
               className="w-full h-full object-cover object-[center_20%] group-hover:scale-[1.02] transition-transform duration-[2000ms]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/30 to-transparent flex flex-col justify-end p-6 md:p-10">
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-300 mb-1.5">Collaboration & Quality</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-300 mb-1.5">{teamBanner.tag ?? "Collaboration & Quality"}</span>
               <h3 className="text-white font-black text-2xl md:text-3xl tracking-tight leading-none mb-2">
-                Be Great. Do Good. Learn Always.
+                {teamBanner.quote ?? "Be Great. Do Good. Learn Always."}
               </h3>
               <p className="text-white/70 max-w-xl font-medium text-xs md:text-sm leading-relaxed">
-                Whether organizing mock tests or conducting staff alignment meetings in our conference halls, our core value remains the same: student success comes first.
+                {teamBanner.desc ?? "Whether organizing mock tests or conducting staff alignment meetings in our conference halls, our core value remains the same: student success comes first."}
               </p>
             </div>
           </motion.div>
@@ -682,12 +761,7 @@ function CompanyProfilePage() {
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { src: "/assets/certificates/Screenshot 2026-06-10 111633.png", alt: "Certificate of Representation" },
-              { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "City College Birmingham Appointment Letter" },
-              { src: "/assets/certificates/Screenshot 2026-06-10 111719.png", alt: "Certificate of Attendance" },
-              { src: "/assets/certificates/Screenshot 2026-06-10 111730.png", alt: "ICEF Accredited Certificate" },
-            ].map((cert, idx) => (
+            {certificates.map((cert, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
@@ -698,8 +772,8 @@ function CompanyProfilePage() {
               >
                 <div className="w-full h-56 overflow-hidden bg-slate-50">
                   <img
-                    src={cert.src}
-                    alt={cert.alt}
+                    src={getAssetUrl(cert.src)}
+                    alt={cert.alt || "Certificate"}
                     className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
@@ -784,7 +858,7 @@ function CompanyProfilePage() {
                 >
                   {filteredGallery.map((item, idx) => (
                     <motion.div
-                      key={item.src}
+                      key={idx}
                       initial={{ opacity: 0, y: 15, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.3, delay: idx * 0.02, ease: "easeOut" }}
@@ -792,8 +866,8 @@ function CompanyProfilePage() {
                     >
                       <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
                         <img
-                          src={item.src}
-                          alt={item.title}
+                          src={getAssetUrl(item.src)}
+                          alt={item.title || "Gallery image"}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                           loading="eager"
                         />

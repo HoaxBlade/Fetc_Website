@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle, Award, CreditCard } from 'lucide-react';
+import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle, Award, CreditCard, Upload, Video, Play, FileDown, Folder, Calendar } from 'lucide-react';
 import { getAssetUrl, getApiUrl } from '../../apiConfig';
 import SafeImage from '../../components/SafeImage';
 
@@ -205,6 +205,7 @@ const AdminPages = () => {
 
   const handleContentChange = (section, field, value) => {
     setSelectedPage(prev => {
+      if (!prev) return null;
       const newContent = { ...(prev.content || {}) };
       if (section) {
         newContent[section] = { ...(newContent[section] || {}), [field]: value };
@@ -220,6 +221,7 @@ const AdminPages = () => {
 
   const handleNestedContentChange = (section, subSection, field, value) => {
     setSelectedPage(prev => {
+      if (!prev) return null;
       const newContent = { ...(prev.content || {}) };
       const currentSection = { ...(newContent[section] || {}) };
       const currentSub = { ...(currentSection[subSection] || {}) };
@@ -232,6 +234,7 @@ const AdminPages = () => {
 
   const addTopStudent = () => {
     setSelectedPage(prev => {
+      if (!prev) return null;
       const newContent = { ...(prev.content || {}) };
       const bsp = { ...(newContent.bestStudentProfile || {}) };
       const topStudents = [...(bsp.topStudents || [])];
@@ -253,6 +256,7 @@ const AdminPages = () => {
 
   const removeTopStudent = (index) => {
     setSelectedPage(prev => {
+      if (!prev) return null;
       const newContent = { ...(prev.content || {}) };
       const bsp = { ...(newContent.bestStudentProfile || {}) };
       const topStudents = [...(bsp.topStudents || [])];
@@ -265,6 +269,7 @@ const AdminPages = () => {
 
   const updateTopStudent = (index, field, value) => {
     setSelectedPage(prev => {
+      if (!prev) return null;
       const newContent = { ...(prev.content || {}) };
       const bsp = { ...(newContent.bestStudentProfile || {}) };
       const topStudents = [...(bsp.topStudents || [])];
@@ -300,6 +305,7 @@ const AdminPages = () => {
 
   const addMockTestItem = () => {
     setSelectedPage(prev => {
+      if (!prev) return null;
       const newContent = { ...(prev.content || {}) };
       const currentList = [...(newContent.mockTestsList || [])];
       currentList.push({
@@ -315,6 +321,7 @@ const AdminPages = () => {
 
   const removeMockTestItem = (index) => {
     setSelectedPage(prev => {
+      if (!prev) return null;
       const newContent = { ...(prev.content || {}) };
       const currentList = [...(newContent.mockTestsList || [])];
       currentList.splice(index, 1);
@@ -325,6 +332,7 @@ const AdminPages = () => {
 
   const updateMockTestItem = (index, field, value) => {
     setSelectedPage(prev => {
+      if (!prev) return null;
       const newContent = { ...(prev.content || {}) };
       const currentList = [...(newContent.mockTestsList || [])];
       if (currentList[index]) {
@@ -358,6 +366,7 @@ const AdminPages = () => {
 
   const addSection = (type) => {
     setSelectedPage(prev => {
+      if (!prev) return null;
       const currentSections = prev.content?.sections || [];
       const newSection = {
         type,
@@ -375,6 +384,7 @@ const AdminPages = () => {
 
   const updateSection = (index, field, value) => {
     setSelectedPage(prev => {
+      if (!prev) return null;
       const currentSections = [...(prev.content?.sections || [])];
       currentSections[index] = { ...currentSections[index], [field]: value };
       return {
@@ -386,6 +396,7 @@ const AdminPages = () => {
 
   const removeSection = (index) => {
     setSelectedPage(prev => {
+      if (!prev) return null;
       const currentSections = [...(prev.content?.sections || [])];
       currentSections.splice(index, 1);
       return {
@@ -592,7 +603,7 @@ const AdminPages = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[calc(100vh-140px)] z-50 my-auto transform-gpu border border-slate-100"
+              className="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[calc(100vh-100px)] z-50 my-auto transform-gpu border border-slate-100"
             >
                 {/* Fixed Modal Header */}
                 <div className="p-6 md:px-8 md:pt-6 md:pb-0 shrink-0 bg-white border-b border-slate-100">
@@ -1264,186 +1275,785 @@ const AdminPages = () => {
                       {/* 2. COMPANY PROFILE EDITOR */}
                       {(selectedPage.slug?.toLowerCase() === '/about/company-profile' || selectedPage.slug?.toLowerCase() === '/about' || selectedPage.slug?.toLowerCase() === '/about/') && (
                         <div className="space-y-6 pb-20">
-                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
-                              <Globe size={18} className="text-brand-600" /> 1. Hero / Our Story
+                          
+                          {/* 1. HERO HEADER & KEY METRICS */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-6">
+                            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-3 border-b border-slate-200/80 pb-3">
+                              <Globe size={18} className="text-brand-600" /> 1. Hero Header & Key Metrics
                             </h3>
                             <div className="space-y-4">
-                              <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Main Title (e.g. Our)</label>
-                                <input
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.hero?.title || ""}
-                                  onChange={(e) => handleContentChange('hero', 'title', e.target.value)}
-                                />
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Badge Text (e.g. About FETC)</label>
+                                  <input
+                                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:border-brand-400 outline-none transition-all"
+                                    value={selectedPage.content?.hero?.badge ?? "About FETC"}
+                                    onChange={(e) => handleContentChange('hero', 'badge', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Main Title (e.g. Building Global Careers)</label>
+                                  <input
+                                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:border-brand-400 outline-none transition-all"
+                                    value={selectedPage.content?.hero?.title ?? "Building Global Careers"}
+                                    onChange={(e) => handleContentChange('hero', 'title', e.target.value)}
+                                  />
+                                </div>
                               </div>
                               <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Title Highlight (e.g. Story)</label>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Title Highlight (e.g. Since 1999)</label>
                                 <input
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.hero?.titleHighlight || ""}
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-brand-600 focus:border-brand-400 outline-none transition-all"
+                                  value={selectedPage.content?.hero?.titleHighlight ?? "Since 1999"}
                                   onChange={(e) => handleContentChange('hero', 'titleHighlight', e.target.value)}
                                 />
                               </div>
                               <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Hero Description</label>
                                 <textarea
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.hero?.description || ""}
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-24 resize-none focus:border-brand-400 outline-none transition-all"
+                                  value={selectedPage.content?.hero?.description ?? "FETC is an authorized, state-of-the-art English examination and training center headquartered in Surat, Gujarat. We are a dream project under Gina Abroad Pvt. Ltd., empowering students with digital classrooms and authorized examination spaces."}
                                   onChange={(e) => handleContentChange('hero', 'description', e.target.value)}
                                 />
                               </div>
-                            </div>
-                          </div>
 
-                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
-                              <Users size={18} className="text-brand-600" /> 2. Director's Note
-                            </h3>
-                            <div className="space-y-4">
-                              <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Main Quote</label>
-                                <textarea
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-24 resize-none focus:border-brand-300 outline-none transition-all italic"
-                                  value={selectedPage.content?.directorsNote?.quote || ""}
-                                  onChange={(e) => handleContentChange('directorsNote', 'quote', e.target.value)}
-                                />
-                              </div>
-                              <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Detailed Message</label>
-                                <textarea
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-40 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.directorsNote?.content || ""}
-                                  onChange={(e) => handleContentChange('directorsNote', 'content', e.target.value)}
-                                  placeholder="Add paragraphs here. Use new lines for separate paragraphs."
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Vision & Values Section Editor */}
-                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
-                              <Target size={18} className="text-brand-600" /> 3. Vision & Values
-                            </h3>
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
-                                  <input
-                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.visionSection?.badge || ""}
-                                    onChange={(e) => handleContentChange('visionSection', 'badge', e.target.value)}
-                                  />
+                              {/* Key Metrics List Editor */}
+                              <div className="pt-4 border-t border-slate-200/80 space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Key Metrics / Stats</label>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const current = selectedPage.content?.stats || [
+                                        { value: "27+", label: "Years of Industry Experience" },
+                                        { value: "5,000+", label: "Candidates Trained" },
+                                        { value: "5+", label: "State-of-the-art Centres" },
+                                        { value: "15+", label: "Countries Served" },
+                                        { value: "100%", label: "Tech-enabled Testing Labs" }
+                                      ];
+                                      handleContentChange(null, 'stats', [...current, { value: "10+", label: "New Highlight" }]);
+                                    }}
+                                    className="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-600 text-[10px] font-bold rounded-lg border border-brand-200 flex items-center gap-1 transition-all"
+                                  >
+                                    <Plus size={12} /> Add Metric
+                                  </button>
                                 </div>
-                                <div>
-                                  <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Title Prefix</label>
-                                  <input
-                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.visionSection?.titlePrefix || ""}
-                                    onChange={(e) => handleContentChange('visionSection', 'titlePrefix', e.target.value)}
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Title Highlight</label>
-                                <input
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.visionSection?.titleHighlight || ""}
-                                  onChange={(e) => handleContentChange('visionSection', 'titleHighlight', e.target.value)}
-                                />
-                              </div>
-
-                              <div className="space-y-3 pt-4">
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight block">Vision Pillars (3 Recommended)</label>
-                                {(selectedPage.content?.visionSection?.values || []).map((val, idx) => (
-                                  <div key={idx} className="p-4 bg-white rounded-2xl border border-slate-100 space-y-3 relative group">
-                                    <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  {(selectedPage.content?.stats || [
+                                    { value: "27+", label: "Years of Industry Experience" },
+                                    { value: "5,000+", label: "Candidates Trained" },
+                                    { value: "5+", label: "State-of-the-art Centres" },
+                                    { value: "15+", label: "Countries Served" },
+                                    { value: "100%", label: "Tech-enabled Testing Labs" }
+                                  ]).map((st, idx) => (
+                                    <div key={idx} className="p-3 bg-white rounded-xl border border-slate-200 flex items-center gap-2 relative">
                                       <input
-                                        className="px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-bold"
-                                        value={val.icon}
+                                        className="w-20 px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-brand-600"
+                                        value={st.value}
                                         onChange={(e) => {
-                                          const newVals = [...selectedPage.content.visionSection.values];
-                                          newVals[idx].icon = e.target.value;
-                                          handleContentChange('visionSection', 'values', newVals);
+                                          const current = [...(selectedPage.content?.stats || [])];
+                                          current[idx].value = e.target.value;
+                                          handleContentChange(null, 'stats', current);
                                         }}
-                                        placeholder="Icon (Target, Lightbulb, Compass)"
+                                        placeholder="27+"
                                       />
                                       <input
-                                        className="px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-bold"
-                                        value={val.title}
+                                        className="flex-1 px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-700"
+                                        value={st.label}
                                         onChange={(e) => {
-                                          const newVals = [...selectedPage.content.visionSection.values];
-                                          newVals[idx].title = e.target.value;
-                                          handleContentChange('visionSection', 'values', newVals);
+                                          const current = [...(selectedPage.content?.stats || [])];
+                                          current[idx].label = e.target.value;
+                                          handleContentChange(null, 'stats', current);
                                         }}
-                                        placeholder="Pillar Title"
+                                        placeholder="Label..."
                                       />
-                                    </div>
-                                    <textarea
-                                      className="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-medium h-16 resize-none"
-                                      value={val.desc}
-                                      onChange={(e) => {
-                                        const newVals = [...selectedPage.content.visionSection.values];
-                                        newVals[idx].desc = e.target.value;
-                                        handleContentChange('visionSection', 'values', newVals);
-                                      }}
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="p-6 bg-white border-2 border-brand-100 border-dashed rounded-2xl">
-                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
-                              <ImageIcon size={18} className="text-brand-600" /> 4. Office Showcase
-                            </h3>
-                            <div className="space-y-4">
-                              <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Main Headline</label>
-                                <input
-                                  className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.officeShowcase?.title || ""}
-                                  onChange={(e) => handleContentChange('officeShowcase', 'title', e.target.value)}
-                                />
-                              </div>
-                              <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
-                                <textarea
-                                  className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.officeShowcase?.description || ""}
-                                  onChange={(e) => handleContentChange('officeShowcase', 'description', e.target.value)}
-                                />
-                              </div>
-
-                              <div className="pt-4">
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-3 block">Showcase Gallery Images</label>
-                                <div className="grid grid-cols-2 gap-4">
-                                  {(selectedPage.content?.officeShowcase?.images || []).map((img, idx) => (
-                                    <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-slate-100 group">
-                                      <SafeImage src={getAssetUrl(img)} className="w-full h-full object-cover" alt="Showcase" />
                                       <button
+                                        type="button"
                                         onClick={() => {
-                                          const newImgs = selectedPage.content.officeShowcase.images.filter((_, i) => i !== idx);
-                                          handleContentChange('officeShowcase', 'images', newImgs);
+                                          const current = (selectedPage.content?.stats || []).filter((_, i) => i !== idx);
+                                          handleContentChange(null, 'stats', current);
                                         }}
-                                        className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all font-medium text-xs"
+                                        className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                                       >
-                                        <X size={16} /> Remove
+                                        <X size={14} />
                                       </button>
                                     </div>
                                   ))}
-                                  <label className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-brand-300 hover:text-brand-600 transition-all group">
-                                    <Plus size={24} className="text-slate-300 group-hover:text-brand-600" />
-                                    <span className="text-[10px] font-medium uppercase text-slate-400 group-hover:text-brand-600">Add Photo</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 2. OUR PARTNERSHIP SECTION */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-4">
+                            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-3 border-b border-slate-200/80 pb-3">
+                              <Building size={18} className="text-brand-600" /> 2. Our Partnership Section
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Section Tag</label>
+                                <input
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700"
+                                  value={selectedPage.content?.partnership?.tag ?? "Our Partnership"}
+                                  onChange={(e) => handleContentChange('partnership', 'tag', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Title Highlight</label>
+                                <input
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-brand-600"
+                                  value={selectedPage.content?.partnership?.titleHighlight ?? "Opportunities"}
+                                  onChange={(e) => handleContentChange('partnership', 'titleHighlight', e.target.value)}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Primary Description</label>
+                                <textarea
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none"
+                                  value={selectedPage.content?.partnership?.description1 ?? "We're excited to collaborate with R.H. Patel Institute of Technology to expand opportunities for your students and enhance faculty development. Our comprehensive approach combines international university partnerships, career counseling excellence, and certified training programs."}
+                                  onChange={(e) => handleContentChange('partnership', 'description1', e.target.value)}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Secondary Description</label>
+                                <textarea
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-16 resize-none"
+                                  value={selectedPage.content?.partnership?.description2 ?? "This partnership opens doors to global education while supporting your institution's growth and your students' success."}
+                                  onChange={(e) => handleContentChange('partnership', 'description2', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Side Card Badge (e.g. About Us)</label>
+                                <input
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-indigo-600"
+                                  value={selectedPage.content?.partnership?.cardBadge ?? "About Us"}
+                                  onChange={(e) => handleContentChange('partnership', 'cardBadge', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Side Card Headline</label>
+                                <input
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                                  value={selectedPage.content?.partnership?.cardTitle ?? "At FETC, We Offer Excellence in English Language Training"}
+                                  onChange={(e) => handleContentChange('partnership', 'cardTitle', e.target.value)}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Side Card Content</label>
+                                <textarea
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none"
+                                  value={selectedPage.content?.partnership?.cardDesc ?? "We are dedicated to helping students and professionals achieve their dreams of studying, working, or settling abroad. We connect you with a world of opportunities through top-notch English language support."}
+                                  onChange={(e) => handleContentChange('partnership', 'cardDesc', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 3. CAMPUS VISITS (OUTREACH) */}
+                          <div className="p-6 bg-white border-2 border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                <MapPin size={18} className="text-brand-600" /> 3. Campus Visits & Outreach
+                              </h3>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = selectedPage.content?.campusVisits || [
+                                    { icon: "🗓️", tag: "First Visit", title: "Bill Boozing – 3rd April 2026", desc: "Curry College representative..." },
+                                    { icon: "🇬🇧", tag: "Follow-Up Visits", title: "UK University Representatives", desc: "UK reps..." }
+                                  ];
+                                  handleContentChange(null, 'campusVisits', [
+                                    ...current,
+                                    { icon: "🌍", tag: "New Visit", title: "Global Partner Visit", desc: "Visit details..." }
+                                  ]);
+                                }}
+                                className="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-600 text-xs font-bold rounded-xl border border-brand-200 flex items-center gap-1 transition-all"
+                              >
+                                <Plus size={14} /> Add Campus Visit
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                              {(selectedPage.content?.campusVisits || [
+                                { icon: "🗓️", tag: "First Visit", title: "Bill Boozing – 3rd April 2026", desc: "Curry College representative will visit your campus, sharing opportunities for American education." },
+                                { icon: "🇬🇧", tag: "Follow-Up Visits", title: "UK University Representatives", desc: "UK University Representatives will visit, showcasing British higher education options and pathways." },
+                                { icon: "🌍", tag: "Ongoing Access", title: "Continued University Partnerships", desc: "Continued university partnerships expanding your students' global education choices." }
+                              ]).map((item, idx) => (
+                                <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 relative overflow-hidden shadow-xs">
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      className="w-10 px-2 py-1.5 bg-white border border-slate-200 rounded-xl text-center text-lg shrink-0"
+                                      value={item.icon}
+                                      onChange={(e) => {
+                                        const current = [...(selectedPage.content?.campusVisits || [])];
+                                        current[idx].icon = e.target.value;
+                                        handleContentChange(null, 'campusVisits', current);
+                                      }}
+                                    />
+                                    <input
+                                      className="flex-1 min-w-0 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-brand-600 truncate"
+                                      value={item.tag}
+                                      onChange={(e) => {
+                                        const current = [...(selectedPage.content?.campusVisits || [])];
+                                        current[idx].tag = e.target.value;
+                                        handleContentChange(null, 'campusVisits', current);
+                                      }}
+                                      placeholder="Tag..."
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const current = (selectedPage.content?.campusVisits || []).filter((_, i) => i !== idx);
+                                        handleContentChange(null, 'campusVisits', current);
+                                      }}
+                                      className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0 transition-all"
+                                    >
+                                      <X size={14} />
+                                    </button>
+                                  </div>
+                                  <input
+                                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                                    value={item.title}
+                                    onChange={(e) => {
+                                      const current = [...(selectedPage.content?.campusVisits || [])];
+                                      current[idx].title = e.target.value;
+                                      handleContentChange(null, 'campusVisits', current);
+                                    }}
+                                    placeholder="Title..."
+                                  />
+                                  <textarea
+                                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none"
+                                    value={item.desc}
+                                    onChange={(e) => {
+                                      const current = [...(selectedPage.content?.campusVisits || [])];
+                                      current[idx].desc = e.target.value;
+                                      handleContentChange(null, 'campusVisits', current);
+                                    }}
+                                    placeholder="Description..."
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 4. AGENDA OF OUR PARTNERSHIP (COLLABORATION) */}
+                          <div className="p-6 bg-white border-2 border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                              <div>
+                                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                  <Folder size={18} className="text-indigo-600" /> 4. Agenda of Our Partnership (Collaboration)
+                                </h3>
+                                <p className="text-[11px] text-slate-400 font-normal">Manage professional training, counselling, visits, and City College Birmingham cards</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = selectedPage.content?.agendaItems || [
+                                    { icon: "📜", title: "Professional Training", desc: "Certified TOEFL and SELT training programs..." },
+                                    { icon: "🎯", title: "Career Counselling", desc: "Expert guidance helping students..." }
+                                  ];
+                                  handleContentChange(null, 'agendaItems', [
+                                    ...current,
+                                    { icon: "🎓", title: "New Agenda Card", desc: "Description of collaboration..." }
+                                  ]);
+                                }}
+                                className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-bold rounded-xl border border-indigo-200 flex items-center gap-1 transition-all"
+                              >
+                                <Plus size={14} /> Add Agenda Card
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                              {(selectedPage.content?.agendaItems || [
+                                { icon: "📜", title: "Professional Training", desc: "Certified TOEFL and SELT training programs for faculty members, enhancing teaching capabilities and career advancement opportunities." },
+                                { icon: "🎯", title: "Career Counselling", desc: "Expert guidance helping students navigate career paths, university selections, and global opportunities with confidence." },
+                                { icon: "🏫", title: "University Visits", desc: "Direct campus visits from international university representatives, providing students with firsthand information about study abroad options." },
+                                { icon: "🎓", title: "City College Birmingham (2+1)", desc: "Explore your path to Accredited qualifications. Complete your first two years in India, pathway to abroad." }
+                              ]).map((item, idx) => (
+                                <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 relative overflow-hidden">
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      className="w-10 px-2 py-1.5 bg-white border border-slate-200 rounded-xl text-center text-lg shrink-0"
+                                      value={item.icon}
+                                      onChange={(e) => {
+                                        const current = [...(selectedPage.content?.agendaItems || [])];
+                                        current[idx].icon = e.target.value;
+                                        handleContentChange(null, 'agendaItems', current);
+                                      }}
+                                    />
+                                    <input
+                                      className="flex-1 min-w-0 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 truncate"
+                                      value={item.title}
+                                      onChange={(e) => {
+                                        const current = [...(selectedPage.content?.agendaItems || [])];
+                                        current[idx].title = e.target.value;
+                                        handleContentChange(null, 'agendaItems', current);
+                                      }}
+                                      placeholder="Title..."
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const current = (selectedPage.content?.agendaItems || []).filter((_, i) => i !== idx);
+                                        handleContentChange(null, 'agendaItems', current);
+                                      }}
+                                      className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0 transition-all"
+                                    >
+                                      <X size={14} />
+                                    </button>
+                                  </div>
+                                  <textarea
+                                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none"
+                                    value={item.desc}
+                                    onChange={(e) => {
+                                      const current = [...(selectedPage.content?.agendaItems || [])];
+                                      current[idx].desc = e.target.value;
+                                      handleContentChange(null, 'agendaItems', current);
+                                    }}
+                                    placeholder="Description..."
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 5. BENEFITS FOR YOUR FACULTY MEMBERS (FACULTY GROWTH) */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-4">
+                            <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
+                              <div>
+                                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                                  <Award size={18} className="text-brand-600" /> 5. Benefits for Your Faculty Members
+                                </h3>
+                                <p className="text-[11px] text-slate-400 font-normal">Faculty growth, certified training, professional development & referral incentives</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = selectedPage.content?.facultyBenefits || [
+                                    { icon: "🏅", title: "Certified Training Programs", desc: "Official TOEFL and SELT certification training..." }
+                                  ];
+                                  handleContentChange(null, 'facultyBenefits', [
+                                    ...current,
+                                    { icon: "⭐", title: "New Benefit Card", desc: "Benefit details..." }
+                                  ]);
+                                }}
+                                className="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-600 text-xs font-bold rounded-xl border border-brand-200 flex items-center gap-1 transition-all"
+                              >
+                                <Plus size={14} /> Add Faculty Benefit
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                              {(selectedPage.content?.facultyBenefits || [
+                                { icon: "🏅", title: "Certified Training Programs", desc: "Official TOEFL and SELT certification training that enhances your teaching credentials and opens new career opportunities." },
+                                { icon: "📈", title: "Professional Development", desc: "Stay current with international education standards and improve your ability to guide students toward global opportunities." },
+                                { icon: "💰", title: "Referral Incentives", desc: "Earn referral incentives when your students enroll through our partnerships, creating additional income streams for dedicated faculty." }
+                              ]).map((item, idx) => (
+                                <div key={idx} className="p-4 bg-white border border-slate-200 rounded-2xl space-y-3 relative overflow-hidden shadow-xs">
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      className="w-10 px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg shrink-0"
+                                      value={item.icon}
+                                      onChange={(e) => {
+                                        const current = [...(selectedPage.content?.facultyBenefits || [])];
+                                        current[idx].icon = e.target.value;
+                                        handleContentChange(null, 'facultyBenefits', current);
+                                      }}
+                                    />
+                                    <input
+                                      className="flex-1 min-w-0 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 truncate"
+                                      value={item.title}
+                                      onChange={(e) => {
+                                        const current = [...(selectedPage.content?.facultyBenefits || [])];
+                                        current[idx].title = e.target.value;
+                                        handleContentChange(null, 'facultyBenefits', current);
+                                      }}
+                                      placeholder="Title..."
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const current = (selectedPage.content?.facultyBenefits || []).filter((_, i) => i !== idx);
+                                        handleContentChange(null, 'facultyBenefits', current);
+                                      }}
+                                      className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0 transition-all"
+                                    >
+                                      <X size={14} />
+                                    </button>
+                                  </div>
+                                  <textarea
+                                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none"
+                                    value={item.desc}
+                                    onChange={(e) => {
+                                      const current = [...(selectedPage.content?.facultyBenefits || [])];
+                                      current[idx].desc = e.target.value;
+                                      handleContentChange(null, 'facultyBenefits', current);
+                                    }}
+                                    placeholder="Description..."
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 6. GLOBAL TECH EDUCATION & CAREER PATHWAYS */}
+                          <div className="p-6 bg-white border-2 border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                              <div>
+                                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                  <Globe size={18} className="text-indigo-600" /> 6. Global Tech Education & Career Pathways
+                                </h3>
+                                <p className="text-[11px] text-slate-400 font-normal">IT, Computing & Digital Technology career pathway tags</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = selectedPage.content?.pathways || [
+                                    "Software Developer/ Web Developer",
+                                    "IT Support Specialist"
+                                  ];
+                                  handleContentChange(null, 'pathways', [...current, "New Career Pathway"]);
+                                }}
+                                className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-bold rounded-xl border border-indigo-200 flex items-center gap-1 transition-all"
+                              >
+                                <Plus size={14} /> Add Pathway Tag
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                              {(selectedPage.content?.pathways || [
+                                "Software Developer/ Web Developer",
+                                "IT Support Specialist",
+                                "Network Engineer/ Cybersecurity Analyst",
+                                "Data Scientist/ Business Intelligence Analyst",
+                                "E-Commerce Manager",
+                                "Tech Project Manager"
+                              ]).map((pw, idx) => (
+                                <div key={idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-2">
+                                  <input
+                                    className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-indigo-700"
+                                    value={pw}
+                                    onChange={(e) => {
+                                      const current = [...(selectedPage.content?.pathways || [])];
+                                      current[idx] = e.target.value;
+                                      handleContentChange(null, 'pathways', current);
+                                    }}
+                                    placeholder="Pathway name..."
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const current = (selectedPage.content?.pathways || []).filter((_, i) => i !== idx);
+                                      handleContentChange(null, 'pathways', current);
+                                    }}
+                                    className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 7. HISTORY, OUR STORY & VIDEO DEMO (WITH MEDIA PREVIEWS) */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-5">
+                            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-3 border-b border-slate-200/80 pb-3">
+                              <Video size={18} className="text-brand-600" /> 7. History, Our Story & Video Demo
+                            </h3>
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Story Card Title</label>
+                                  <input
+                                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                                    value={selectedPage.content?.story?.title ?? "The Inception (Since 1999)"}
+                                    onChange={(e) => handleContentChange('story', 'title', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Video Title Headline</label>
+                                  <input
+                                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                                    value={selectedPage.content?.story?.videoTitle ?? "Inside FETC & Gina Abroad"}
+                                    onChange={(e) => handleContentChange('story', 'videoTitle', e.target.value)}
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Story Text Description</label>
+                                <textarea
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-24 resize-none"
+                                  value={selectedPage.content?.story?.desc ?? "Specifically for exams and training and study abroad services this company has been formed under the umbrella of Ms. Bhumika Dilkhush proprietor of Gina Abroad."}
+                                  onChange={(e) => handleContentChange('story', 'desc', e.target.value)}
+                                />
+                              </div>
+
+                              {/* Media Row: Poster Image Preview & Video Preview */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-3">
+                                {/* Video Poster Image */}
+                                <div className="space-y-2">
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">1. Video Poster Preview</label>
+                                  <div className="relative aspect-video rounded-2xl overflow-hidden border-2 border-slate-200 bg-slate-900 group">
+                                    <SafeImage
+                                      src={getAssetUrl(selectedPage.content?.story?.videoPoster || "/assets/story-video-thumbnail.png")}
+                                      className="w-full h-full object-cover"
+                                      alt="Video Poster Preview"
+                                    />
+                                    <label className="absolute inset-0 bg-slate-950/70 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer font-bold text-xs gap-1.5">
+                                      <Upload size={20} /> Upload Poster Image
+                                      <input
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                          if (e.target.files?.[0]) {
+                                            handleFileUpload('story', 'videoPoster', e.target.files[0]);
+                                          }
+                                        }}
+                                      />
+                                    </label>
+                                  </div>
+                                </div>
+
+                                {/* Video Player Preview */}
+                                <div className="space-y-2">
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">2. Video Player Preview (MP4)</label>
+                                  <div className="relative aspect-video rounded-2xl overflow-hidden border-2 border-slate-200 bg-slate-900 flex flex-col items-center justify-center group">
+                                    <video
+                                      src={getAssetUrl(selectedPage.content?.story?.videoUrl || "/assets/story-video.mp4")}
+                                      controls
+                                      className="w-full h-full object-contain"
+                                    />
+                                    <label className="absolute top-2 right-2 bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-lg flex items-center gap-1 cursor-pointer transition-all">
+                                      <Upload size={14} /> Upload Video (MP4)
+                                      <input
+                                        type="file"
+                                        className="hidden"
+                                        accept="video/*"
+                                        onChange={(e) => {
+                                          if (e.target.files?.[0]) {
+                                            handleFileUpload('story', 'videoUrl', e.target.files[0]);
+                                          }
+                                        }}
+                                      />
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 5. PROGRAM CURRICULUMS & PDF DOCUMENTS */}
+                          <div className="p-6 bg-white border-2 border-indigo-100 rounded-2xl space-y-4 shadow-sm">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                              <div>
+                                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                  <FileText size={18} className="text-indigo-600" /> 5. Program Curriculums & PDF Documents
+                                </h3>
+                                <p className="text-[11px] text-slate-400 font-normal">Add downloadable PDF guides and curriculums for students</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = selectedPage.content?.programDownloads || [
+                                    { name: "Business Management", category: "Management", icon: "💼", fileUrl: "/assets/certificates/Business Management.pdf" },
+                                    { name: "Diploma in Health & Social Care", category: "Health & Social Care", icon: "🏥", fileUrl: "/assets/certificates/Diploma in Health & Social Care.pdf" }
+                                  ];
+                                  handleContentChange(null, 'programDownloads', [
+                                    ...current,
+                                    { name: "New Course Syllabus", category: "Academic Guide", icon: "📚", fileUrl: "" }
+                                  ]);
+                                }}
+                                className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
+                              >
+                                <Plus size={14} /> Add PDF Document
+                              </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4 pt-2">
+                              {(selectedPage.content?.programDownloads || [
+                                { name: "Business Management", category: "Management", icon: "💼", fileUrl: "/assets/certificates/Business Management.pdf" },
+                                { name: "Diploma in Health & Social Care", category: "Health & Social Care", icon: "🏥", fileUrl: "/assets/certificates/Diploma in Health & Social Care.pdf" },
+                                { name: "Diploma in IT - Web Design", category: "IT & Computing", icon: "💻", fileUrl: "/assets/certificates/Diploma in Information Technology - Web Design.pdf" },
+                                { name: "Diploma in IT - E Commerce", category: "IT & Computing", icon: "🛒", fileUrl: "/assets/certificates/Diploma in IT - E Commerce F.pdf" },
+                                { name: "Hospitality & Tourism Management", category: "Hospitality", icon: "🏨", fileUrl: "/assets/certificates/Hospitality & Tourism Management.pdf" },
+                                { name: "Gina Abroad - British Degree Route", category: "Academic Guide", icon: "🇬🇧", fileUrl: "/assets/certificates/Gina Abroad_Your-Smartest-Route-to-a-British-Degree.pdf" }
+                              ]).map((doc, idx) => (
+                                <div key={idx} className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-3 relative group hover:border-indigo-200 transition-all">
+                                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                                    <div className="md:col-span-1">
+                                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Icon</label>
+                                      <input
+                                        className="w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-center text-lg font-bold"
+                                        value={doc.icon || "📄"}
+                                        onChange={(e) => {
+                                          const current = [...(selectedPage.content?.programDownloads || [])];
+                                          current[idx].icon = e.target.value;
+                                          handleContentChange(null, 'programDownloads', current);
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="md:col-span-4">
+                                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Document Title</label>
+                                      <input
+                                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                                        value={doc.name || ""}
+                                        onChange={(e) => {
+                                          const current = [...(selectedPage.content?.programDownloads || [])];
+                                          current[idx].name = e.target.value;
+                                          handleContentChange(null, 'programDownloads', current);
+                                        }}
+                                        placeholder="Document Name..."
+                                      />
+                                    </div>
+                                    <div className="md:col-span-3">
+                                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Category</label>
+                                      <input
+                                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600"
+                                        value={doc.category || ""}
+                                        onChange={(e) => {
+                                          const current = [...(selectedPage.content?.programDownloads || [])];
+                                          current[idx].category = e.target.value;
+                                          handleContentChange(null, 'programDownloads', current);
+                                        }}
+                                        placeholder="Category..."
+                                      />
+                                    </div>
+                                    <div className="md:col-span-4 flex items-center gap-2 pt-4 md:pt-0">
+                                      <div className="flex-1 overflow-hidden">
+                                        <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">File URL / Path</label>
+                                        <input
+                                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-[11px] font-mono text-slate-500 truncate"
+                                          value={doc.fileUrl || doc.filename || ""}
+                                          onChange={(e) => {
+                                            const current = [...(selectedPage.content?.programDownloads || [])];
+                                            current[idx].fileUrl = e.target.value;
+                                            handleContentChange(null, 'programDownloads', current);
+                                          }}
+                                          placeholder="/assets/certificates/file.pdf"
+                                        />
+                                      </div>
+                                      <label className="px-3 py-2 bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white rounded-xl border border-indigo-200 text-xs font-bold cursor-pointer transition-all flex items-center gap-1 shrink-0 mt-4">
+                                        <Upload size={14} /> Upload PDF
+                                        <input
+                                          type="file"
+                                          className="hidden"
+                                          accept=".pdf,.doc,.docx"
+                                          onChange={async (e) => {
+                                            if (e.target.files?.[0]) {
+                                              const file = e.target.files[0];
+                                              const formData = new FormData();
+                                              formData.append('image', file);
+                                              try {
+                                                const res = await fetch(getApiUrl('/api/admin/upload'), {
+                                                  method: 'POST',
+                                                  headers: { 'ngrok-skip-browser-warning': 'true' },
+                                                  body: formData
+                                                });
+                                                const data = await res.json();
+                                                if (data.success && data.url) {
+                                                  const current = [...(selectedPage.content?.programDownloads || [])];
+                                                  current[idx].fileUrl = data.url;
+                                                  handleContentChange(null, 'programDownloads', current);
+                                                }
+                                              } catch (err) {
+                                                console.error('PDF upload failed:', err);
+                                              }
+                                            }
+                                          }}
+                                        />
+                                      </label>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const current = (selectedPage.content?.programDownloads || []).filter((_, i) => i !== idx);
+                                          handleContentChange(null, 'programDownloads', current);
+                                        }}
+                                        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all mt-4"
+                                      >
+                                        <Trash2 size={16} />
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 6. TEAM PILLARS BANNER & IMAGE */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-4">
+                            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-3 border-b border-slate-200/80 pb-3">
+                              <Users size={18} className="text-brand-600" /> 6. Team Pillars Banner & Image
+                            </h3>
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Banner Tag</label>
+                                  <input
+                                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-indigo-600"
+                                    value={selectedPage.content?.teamBanner?.tag ?? "Our Pillars"}
+                                    onChange={(e) => handleContentChange('teamBanner', 'tag', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Banner Title</label>
+                                  <input
+                                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                                    value={selectedPage.content?.teamBanner?.title ?? "The team behind your success"}
+                                    onChange={(e) => handleContentChange('teamBanner', 'title', e.target.value)}
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Overlay Quote</label>
+                                <input
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-brand-600 italic"
+                                  value={selectedPage.content?.teamBanner?.quote ?? "Be Great. Do Good. Learn Always."}
+                                  onChange={(e) => handleContentChange('teamBanner', 'quote', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Banner Subtext</label>
+                                <textarea
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none"
+                                  value={selectedPage.content?.teamBanner?.desc ?? "Whether organizing mock tests or conducting staff alignment meetings in our conference halls, our core value remains the same: student success comes first."}
+                                  onChange={(e) => handleContentChange('teamBanner', 'desc', e.target.value)}
+                                />
+                              </div>
+
+                              {/* Team Banner Image Upload & Preview */}
+                              <div className="pt-2">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Team Banner Image Preview</label>
+                                <div className="relative h-48 bg-slate-900 rounded-2xl overflow-hidden border-2 border-slate-200 group">
+                                  <SafeImage
+                                    src={getAssetUrl(selectedPage.content?.teamBanner?.image || "/assets/fetc-about-us/welcome-3.jpeg")}
+                                    className="w-full h-full object-cover"
+                                    alt="Team Banner Preview"
+                                  />
+                                  <label className="absolute inset-0 bg-slate-950/70 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer font-bold text-xs gap-1.5">
+                                    <Upload size={20} /> Replace Team Banner Image
                                     <input
                                       type="file"
                                       className="hidden"
                                       accept="image/*"
-                                      onChange={(e) => {
+                                      onChange={async (e) => {
                                         if (e.target.files?.[0]) {
-                                          handleFileUpload('officeShowcase', 'images', e.target.files[0], null);
+                                          const file = e.target.files[0];
+                                          const formData = new FormData();
+                                          formData.append('image', file);
+                                          try {
+                                            const res = await fetch(getApiUrl('/api/admin/upload'), {
+                                              method: 'POST',
+                                              headers: { 'ngrok-skip-browser-warning': 'true' },
+                                              body: formData
+                                            });
+                                            const data = await res.json();
+                                            if (data.success && data.url) {
+                                              handleContentChange('teamBanner', 'image', data.url);
+                                            } else {
+                                              alert('Upload failed: ' + (data.message || 'Error uploading file'));
+                                            }
+                                          } catch (err) {
+                                            console.error('Upload failed:', err);
+                                            alert('Upload error. Please try again.');
+                                          }
                                         }
                                       }}
                                     />
@@ -1452,6 +2062,245 @@ const AdminPages = () => {
                               </div>
                             </div>
                           </div>
+
+                          {/* 7. CERTIFICATIONS & ACCREDITATIONS */}
+                          <div className="p-6 bg-white border-2 border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                              <div>
+                                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                  <Award size={18} className="text-brand-600" /> 7. Certifications & Accreditations
+                                </h3>
+                                <p className="text-[11px] text-slate-400 font-normal">Official certificate & appointment images</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = selectedPage.content?.certificates || [
+                                    { src: "/assets/certificates/Screenshot 2026-06-10 111633.png", alt: "Certificate of Representation" },
+                                    { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "City College Birmingham Appointment Letter" }
+                                  ];
+                                  handleContentChange(null, 'certificates', [
+                                    ...current,
+                                    { src: "/assets/certificates/Screenshot 2026-06-10 111633.png", alt: "New Certificate Title" }
+                                  ]);
+                                }}
+                                className="px-3.5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
+                              >
+                                <Plus size={14} /> Add Certificate
+                              </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+                              {(selectedPage.content?.certificates || [
+                                { src: "/assets/certificates/Screenshot 2026-06-10 111633.png", alt: "Certificate of Representation" },
+                                { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "City College Birmingham Appointment Letter" },
+                                { src: "/assets/certificates/Screenshot 2026-06-10 111719.png", alt: "Certificate of Attendance" },
+                                { src: "/assets/certificates/Screenshot 2026-06-10 111730.png", alt: "ICEF Accredited Certificate" }
+                              ]).map((cert, idx) => (
+                                <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 relative group">
+                                  <div className="h-44 bg-white rounded-xl overflow-hidden border border-slate-200 relative">
+                                    <SafeImage src={getAssetUrl(cert.src)} className="w-full h-full object-contain p-2" alt={cert.alt} />
+                                    <label className="absolute inset-0 bg-slate-900/70 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer font-bold text-xs gap-1">
+                                      <Upload size={18} /> Replace Image
+                                      <input
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={async (e) => {
+                                          if (e.target.files?.[0]) {
+                                            const file = e.target.files[0];
+                                            const formData = new FormData();
+                                            formData.append('image', file);
+                                            try {
+                                              const res = await fetch(getApiUrl('/api/admin/upload'), {
+                                                method: 'POST',
+                                                headers: { 'ngrok-skip-browser-warning': 'true' },
+                                                body: formData
+                                              });
+                                              const data = await res.json();
+                                              if (data.success && data.url) {
+                                                const current = [...(selectedPage.content?.certificates || [])];
+                                                current[idx].src = data.url;
+                                                handleContentChange(null, 'certificates', current);
+                                              }
+                                            } catch (err) {
+                                              console.error('Certificate upload failed:', err);
+                                            }
+                                          }
+                                        }}
+                                      />
+                                    </label>
+                                  </div>
+                                  <div className="space-y-2">
+                                    <input
+                                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                                      value={cert.alt || ""}
+                                      onChange={(e) => {
+                                        const current = [...(selectedPage.content?.certificates || [])];
+                                        current[idx].alt = e.target.value;
+                                        handleContentChange(null, 'certificates', current);
+                                      }}
+                                      placeholder="Certificate Title..."
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const current = (selectedPage.content?.certificates || []).filter((_, i) => i !== idx);
+                                        handleContentChange(null, 'certificates', current);
+                                      }}
+                                      className="w-full py-1.5 text-red-500 hover:bg-red-50 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1"
+                                    >
+                                      <Trash2 size={12} /> Remove
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 8. TEAM & CAMPUS ENVIRONMENT GALLERY PHOTOS */}
+                          <div className="p-6 bg-white border-2 border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                              <div>
+                                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                  <ImageIcon size={18} className="text-brand-600" /> 8. Team & Campus Environment Gallery Photos
+                                </h3>
+                                <p className="text-[11px] text-slate-400 font-normal">Showcase testing labs, executive lounges, events, and workspaces</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = selectedPage.content?.galleryItems || [
+                                    { src: "/assets/office-images/testing-lab.jpg", title: "High-Capacity Testing Lab", category: "Labs", location: "Surat Vesu Branch", desc: "State-of-the-art computer labs customized for official exams." },
+                                    { src: "/assets/office-images/vip-conference.jpg", title: "VIP Executive Conference", category: "Spaces", location: "Surat Vesu Branch", desc: "Professional conference space for academic training." }
+                                  ];
+                                  handleContentChange(null, 'galleryItems', [
+                                    ...current,
+                                    { src: "/assets/office-images/testing-lab.jpg", title: "New Campus Photo", category: "Spaces", location: "Surat Branch", desc: "Campus facility detail." }
+                                  ]);
+                                }}
+                                className="px-3.5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
+                              >
+                                <Plus size={14} /> Add Extra Photo
+                              </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                              {(selectedPage.content?.galleryItems || [
+                                { src: "/assets/office-images/testing-lab.jpg", title: "High-Capacity Testing Lab", category: "Labs", location: "Surat Vesu Branch", desc: "State-of-the-art computer labs customized for official IELTS and PTE exam delivery." },
+                                { src: "/assets/office-images/vip-conference.jpg", title: "VIP Executive Conference", category: "Spaces", location: "Surat Vesu Branch", desc: "Professional conference space for academic training and workshops." },
+                                { src: "/assets/office-images/vip-exam-centre.jpg", title: "Authorised City College Birmingham Centre", category: "Spaces", location: "Surat Vesu Branch", desc: "Authorised Study Centre for City College Birmingham, UK." },
+                                { src: "/assets/office-images/directors-cabin.jpeg", title: "Director's Cabin", category: "Spaces", location: "Surat Vesu Branch", desc: "Our executive administrative space." },
+                                { src: "/assets/office-images/p1.jpeg", title: "Navratri Traditional Day", category: "Events & News", location: "Surat Vesu Branch", desc: "Celebration of Navratri festival with staff." },
+                                { src: "/assets/office-images/p2.jpeg", title: "Diwali Celebration Dinner", category: "Events & News", location: "FETC Grand Ballroom", desc: "Annual festive dinner gathering with staff." },
+                                { src: "/assets/office-images/p3.jpeg", title: "Annual Team Trip & Offsite", category: "Events & News", location: "FETC Offsite", desc: "Annual retreat promoting team building." },
+                                { src: "/assets/office-images/p4.jpeg", title: "Champions of the League", category: "Events & News", location: "Surat Turf Arena", desc: "Turf cricket championship victory." },
+                                { src: "/assets/office-images/p5.jpeg", title: "Faculty Training Seminars", category: "Events & News", location: "Surat Vesu Branch", desc: "Score-optimization bootcamps." },
+                                { src: "/assets/office-images/p6.jpeg", title: "Student Success Ceremony", category: "Events & News", location: "Surat Vesu Branch", desc: "Recognizing high scoring students." },
+                                { src: "/assets/news/news1.png", title: "CBSE Mock Test Initiative", category: "Events & News", location: "Radiant School", desc: "English mock test for 700+ students." },
+                                { src: "/assets/news/news2.png", title: "Foreign Innovation Test", category: "Events & News", location: "Radiant School", desc: "Media coverage of mock test." },
+                                { src: "/assets/office-images/exterior-roongta-vesu.jpeg", title: "Roongta Business Park Campus", category: "Exterior", location: "Surat Vesu Branch", desc: "Flagship training center." },
+                                { src: "/assets/office-images/exterior-varachha-prime.jpeg", title: "Varachha Branch Campus", category: "Exterior", location: "Surat Varachha Branch", desc: "Second fully equipped branch." },
+                                { src: "/assets/office-images/admin-pc.jpeg", title: "Administrative Terminal", category: "Workspace", location: "Surat Vesu Branch", desc: "Dedicated administrative workspace." },
+                                { src: "/assets/office-images/waiting-area-washroom.jpeg", title: "Student Lounge & Waiting Area", category: "Workspace", location: "Surat Vesu Branch", desc: "Spacious lobby for candidates." }
+                              ]).map((item, idx) => (
+                                <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 relative group">
+                                  <div className="h-44 bg-slate-900 rounded-xl overflow-hidden relative">
+                                    <SafeImage src={getAssetUrl(item.src)} className="w-full h-full object-cover" alt={item.title} />
+                                    <label className="absolute inset-0 bg-slate-900/70 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer font-bold text-xs gap-1">
+                                      <Upload size={18} /> Replace Photo
+                                      <input
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={async (e) => {
+                                          if (e.target.files?.[0]) {
+                                            const file = e.target.files[0];
+                                            const formData = new FormData();
+                                            formData.append('image', file);
+                                            try {
+                                              const res = await fetch(getApiUrl('/api/admin/upload'), {
+                                                method: 'POST',
+                                                headers: { 'ngrok-skip-browser-warning': 'true' },
+                                                body: formData
+                                              });
+                                              const data = await res.json();
+                                              if (data.success && data.url) {
+                                                const current = [...(selectedPage.content?.galleryItems || [])];
+                                                current[idx].src = data.url;
+                                                handleContentChange(null, 'galleryItems', current);
+                                              }
+                                            } catch (err) {
+                                              console.error('Gallery image upload failed:', err);
+                                            }
+                                          }
+                                        }}
+                                      />
+                                    </label>
+                                  </div>
+                                  <div className="space-y-2">
+                                    <div>
+                                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Photo Title</label>
+                                      <input
+                                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                                        value={item.title || ""}
+                                        onChange={(e) => {
+                                          const current = [...(selectedPage.content?.galleryItems || [])];
+                                          current[idx].title = e.target.value;
+                                          handleContentChange(null, 'galleryItems', current);
+                                        }}
+                                        placeholder="Title..."
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <div>
+                                        <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Category</label>
+                                        <select
+                                          className="w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700"
+                                          value={item.category || "Spaces"}
+                                          onChange={(e) => {
+                                            const current = [...(selectedPage.content?.galleryItems || [])];
+                                            current[idx].category = e.target.value;
+                                            handleContentChange(null, 'galleryItems', current);
+                                          }}
+                                        >
+                                          <option value="Labs">Labs</option>
+                                          <option value="Spaces">Spaces</option>
+                                          <option value="Events & News">Events & News</option>
+                                          <option value="Exterior">Exterior</option>
+                                          <option value="Workspace">Workspace</option>
+                                        </select>
+                                      </div>
+                                      <div>
+                                        <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Location</label>
+                                        <input
+                                          className="w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600"
+                                          value={item.location || ""}
+                                          onChange={(e) => {
+                                            const current = [...(selectedPage.content?.galleryItems || [])];
+                                            current[idx].location = e.target.value;
+                                            handleContentChange(null, 'galleryItems', current);
+                                          }}
+                                          placeholder="Surat..."
+                                        />
+                                      </div>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const current = (selectedPage.content?.galleryItems || []).filter((_, i) => i !== idx);
+                                        handleContentChange(null, 'galleryItems', current);
+                                      }}
+                                      className="w-full py-1.5 text-red-500 hover:bg-red-50 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1"
+                                    >
+                                      <Trash2 size={12} /> Remove
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
                         </div>
                       )}
 

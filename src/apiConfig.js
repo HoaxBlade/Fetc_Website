@@ -60,6 +60,19 @@ export const getProfileImageUrl = (url) => {
 };
 
 export const getAssetUrl = (url) => {
+  if (!url) return '';
+  if (typeof url !== 'string') return url;
+
+  // Frontend static assets in public/assets (e.g. /assets/...) or public/uploads (e.g. /uploads/...)
+  if (url.startsWith('/assets/') || url.startsWith('assets/') || url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+    return url.startsWith('/') ? url : `/${url}`;
+  }
+
+  // Data URLs or Blobs
+  if (url.startsWith('data:') || url.startsWith('blob:')) {
+    return url;
+  }
+
   return getProfileImageUrl(url);
 };
 
