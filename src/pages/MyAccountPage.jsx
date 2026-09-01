@@ -78,7 +78,11 @@ export default function MyAccountPage() {
           
           // Redirect after a short delay
           setTimeout(() => {
-            window.location.href = data.user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard/profile";
+            window.location.href = data.user.role === "ADMIN"
+              ? "/admin/dashboard"
+              : data.user.role === "INSTRUCTOR"
+                ? "/admin/news-flash"
+                : "/dashboard/profile";
           }, 1000);
         } else {
           setSuccess("Account created successfully! You can now login.");

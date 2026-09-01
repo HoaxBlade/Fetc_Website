@@ -177,7 +177,7 @@ function Navbar() {
           <div className={`hidden md:block pl-3 ml-1 ${!location.pathname.startsWith('/admin') ? "border-l border-slate-200" : ""}`}>
             <div className="group relative flex items-center h-full">
               <NavLink 
-                to={!currentUser ? "/my-account" : currentUser.role === "ADMIN" ? "/admin/dashboard" : "/dashboard/profile"}
+                to={!currentUser ? "/my-account" : currentUser.role === "ADMIN" ? "/admin/dashboard" : currentUser.role === "INSTRUCTOR" ? "/admin/news-flash" : "/dashboard/profile"}
                 className={({ isActive }) => 
                   `flex items-center justify-center p-2 rounded-full transition-all duration-300 hover:bg-brand-50 hover:text-brand-700 hover:scale-110 ${
                     isActive ? "bg-brand-50 text-brand-700" : "text-slate-700 bg-slate-50"
@@ -206,6 +206,11 @@ function Navbar() {
                       {currentUser.role === "ADMIN" && (
                         <Link to="/admin/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-700 rounded-xl transition">
                           <LayoutDashboard size={16} /> Admin Dashboard
+                        </Link>
+                      )}
+                      {currentUser.role === "INSTRUCTOR" && (
+                        <Link to="/admin/news-flash" className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-700 rounded-xl transition">
+                          <LayoutDashboard size={16} /> Instructor Panel
                         </Link>
                       )}
                       <Link to="/dashboard/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-700 rounded-xl transition">
@@ -269,7 +274,7 @@ function Navbar() {
                   {menu.path === "/my-account" ? (
                     <div className="space-y-1">
                       <NavLink
-                        to={!currentUser ? "/my-account" : currentUser.role === "ADMIN" ? "/admin/dashboard" : "/dashboard/profile"}
+                        to={!currentUser ? "/my-account" : currentUser.role === "ADMIN" ? "/admin/dashboard" : currentUser.role === "INSTRUCTOR" ? "/admin/news-flash" : "/dashboard/profile"}
                         onClick={() => setMobileOpen(false)}
                         className={({ isActive }) =>
                           `flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left font-medium transition-colors ${
@@ -300,6 +305,15 @@ function Navbar() {
                                 className="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
                               >
                                 <LayoutDashboard size={14} /> Admin Dashboard
+                              </Link>
+                            )}
+                            {currentUser.role === "INSTRUCTOR" && (
+                              <Link 
+                                to="/admin/news-flash" 
+                                onClick={() => setMobileOpen(false)} 
+                                className="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                              >
+                                <LayoutDashboard size={14} /> Instructor Panel
                               </Link>
                             )}
                             <Link 

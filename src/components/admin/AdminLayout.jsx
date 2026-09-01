@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, FileText, Share2,
   Zap, Ticket, Menu, X, HelpCircle, LogOut,
-  ClipboardList, BookOpen, CheckSquare, Handshake
+  ClipboardList, BookOpen, CheckSquare, Handshake,
+  MessageSquare, LifeBuoy, Receipt
 } from 'lucide-react';
 import { getProfileImageUrl } from "../../apiConfig";
 import SafeImage from "../SafeImage";
@@ -15,6 +16,7 @@ const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isCollapsed = false;
   const navigate = useNavigate();
+  const location = useLocation();
   const [userData, setUserData] = useState(() =>
     JSON.parse(localStorage.getItem('user') || '{"name":"Admin","role":"ADMIN"}')
   );
@@ -31,6 +33,25 @@ const AdminLayout = () => {
     };
   }, []);
 
+  const isInstructor = userData?.role === 'INSTRUCTOR';
+
+  // Route protection for Instructor
+  useEffect(() => {
+    if (isInstructor) {
+      const allowedPaths = [
+        '/admin/news-flash',
+        '/admin/support-tickets',
+        '/admin/invoice',
+        '/admin/leads',
+        '/admin/partner-list'
+      ];
+      const isAllowed = allowedPaths.some(p => location.pathname.startsWith(p));
+      if (!isAllowed) {
+        navigate('/admin/news-flash', { replace: true });
+      }
+    }
+  }, [isInstructor, location.pathname, navigate]);
+
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
@@ -38,20 +59,24 @@ const AdminLayout = () => {
     navigate('/my-account');
   };
 
-  const sidebarItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
-    { icon: BookOpen, label: "Courses", path: "/admin/courses" },
-    { icon: Users, label: "Users", path: "/admin/users" },
-    { icon: FileText, label: "Pages", path: "/admin/pages" },
-    { icon: Share2, label: "Posts", path: "/admin/posts" },
-    { icon: CheckSquare, label: "Mock Test", path: "/admin/mock-test" },
-    { icon: Zap, label: "News Flash", path: "/admin/news-flash" },
-    { icon: Ticket, label: "Support Tickets", path: "/admin/support-tickets" },
-    { icon: FileText, label: "Invoice", path: "/admin/invoice" },
-    { icon: ClipboardList, label: "Leads Dashboard", path: "/admin/leads" },
-    { icon: Handshake, label: "Partner List", path: "/admin/partner-list" },
-    { icon: HelpCircle, label: "Doubts", path: "/admin/doubts" },
+  const allSidebarItems = [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard", roles: ["ADMIN"] },
+    { icon: BookOpen, label: "Courses", path: "/admin/courses", roles: ["ADMIN"] },
+    { icon: Users, label: "Users", path: "/admin/users", roles: ["ADMIN"] },
+    { icon: FileText, label: "Pages", path: "/admin/pages", roles: ["ADMIN"] },
+    { icon: Share2, label: "Posts", path: "/admin/posts", roles: ["ADMIN"] },
+    { icon: CheckSquare, label: "Mock Test", path: "/admin/mock-test", roles: ["ADMIN"] },
+    { icon: MessageSquare, label: "News Flash", path: "/admin/news-flash", roles: ["ADMIN", "INSTRUCTOR"] },
+    { icon: LifeBuoy, label: "Support Tickets", path: "/admin/support-tickets", roles: ["ADMIN", "INSTRUCTOR"] },
+    { icon: Receipt, label: "Invoice", path: "/admin/invoice", roles: ["ADMIN", "INSTRUCTOR"] },
+    { icon: ClipboardList, label: "Leads Dashboard", path: "/admin/leads", roles: ["ADMIN", "INSTRUCTOR"] },
+    { icon: Handshake, label: "Partner List", path: "/admin/partner-list", roles: ["ADMIN", "INSTRUCTOR"] },
+    { icon: HelpCircle, label: "Doubts", path: "/admin/doubts", roles: ["ADMIN"] },
   ];
+
+  const sidebarItems = isInstructor
+    ? allSidebarItems.filter(item => item.roles.includes("INSTRUCTOR"))
+    : allSidebarItems;
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full overflow-hidden bg-white/95 backdrop-blur-md border-r border-slate-200/70 shadow-xs">
@@ -63,8 +88,12 @@ const AdminLayout = () => {
           </div>
           {!isCollapsed && (
             <div className="leading-none">
-              <h2 className="text-sm font-bold text-slate-800 tracking-tight">FETC</h2>
-              <span className="text-[10px] font-semibold text-slate-400 tracking-[0.1em] uppercase leading-none mt-0.5 block">Admin Portal</span>
+              <h2 className="text-sm font-bold text-slate-800 tracking-tight">
+                {isInstructor ? 'Instructor Panel' : 'FETC'}
+              </h2>
+              <span className="text-[10px] font-semibold text-slate-400 tracking-[0.1em] uppercase leading-none mt-0.5 block">
+                {isInstructor ? 'Instructor Portal' : 'Admin Portal'}
+              </span>
             </div>
           )}
         </div>
@@ -178,7 +207,9 @@ const AdminLayout = () => {
           <div className="w-6 h-6 bg-slate-900 rounded flex items-center justify-center text-white">
             <Zap size={12} />
           </div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-900">Admin</span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-900">
+            {isInstructor ? 'Instructor' : 'Admin'}
+          </span>
         </div>
       </div>
 

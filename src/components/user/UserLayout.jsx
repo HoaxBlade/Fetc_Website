@@ -82,13 +82,23 @@ const UserLayout = () => {
           </NavLink>
         ))}
 
-        {userData.role === "ADMIN" && (
+        {userData?.role === "ADMIN" && (
            <NavLink
             to="/admin/dashboard"
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-900 hover:bg-slate-50 border border-slate-200 mt-3"
           >
             <Settings size={16} />
             Admin Panel
+          </NavLink>
+        )}
+
+        {userData?.role === "INSTRUCTOR" && (
+           <NavLink
+            to="/admin/news-flash"
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-900 hover:bg-slate-50 border border-slate-200 mt-3"
+          >
+            <Settings size={16} />
+            Instructor Panel
           </NavLink>
         )}
       </nav>
