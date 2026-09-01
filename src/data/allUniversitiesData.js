@@ -108,9 +108,9 @@ import uni_img_106 from "../assets/university-logos/usa/University of Utah_USA.p
 import uni_img_107 from "../assets/university-logos/usa/University Texas a&m USA.png";
 
 export const allUniversities = {
-  exclusive: [
+  "exclusive": [
   ],
-  australia: [
+  "australia": [
     { name: "Bond University", image: uni_img_0, webPath: "/assets/university-logos/australia/Bond University_Australia.png" },
     { name: "Charles Darwin University", image: uni_img_1, webPath: "/assets/university-logos/australia/Charles Darwin University_Australia.png" },
     { name: "Deakin University", image: uni_img_2, webPath: "/assets/university-logos/australia/Deakin University_Australia.png" },
@@ -132,7 +132,7 @@ export const allUniversities = {
     { name: "Victoria University", image: uni_img_18, webPath: "/assets/university-logos/australia/Victoria University_Australia.png" },
     { name: "Western Sydney University", image: uni_img_19, webPath: "/assets/university-logos/australia/Western Sydney University_Australia.png" },
   ],
-  canada: [
+  "canada": [
     { name: "Algoma University", image: uni_img_20, webPath: "/assets/university-logos/canada/Algoma University_Canada.png" },
     { name: "College Avalon", image: uni_img_21, webPath: "/assets/university-logos/canada/College Avalon_Canada.png" },
     { name: "Cypress College", image: uni_img_22, webPath: "/assets/university-logos/canada/Cypress College_Canada.png" },
@@ -144,13 +144,13 @@ export const allUniversities = {
     { name: "York College of Applied Science", image: uni_img_28, webPath: "/assets/university-logos/canada/York College of Applied Science_Canada.png" },
     { name: "Yorkville University", image: uni_img_29, webPath: "/assets/university-logos/canada/Yorkville University_Canada.png" },
   ],
-  dubai: [
+  "dubai": [
     { name: "De Montfort University (DMU) - Dubai", image: uni_img_30, webPath: "/assets/university-logos/dubai/De Montfort University (DMU) - Dubai.jpg" },
     { name: "GBS", image: uni_img_31, webPath: "/assets/university-logos/dubai/GBS_Dubai.png" },
     { name: "Middlesex University", image: uni_img_32, webPath: "/assets/university-logos/dubai/Middlesex University_Dubai.png" },
     { name: "RIT", image: uni_img_33, webPath: "/assets/university-logos/dubai/RIT_Dubai.png" },
   ],
-  europe: [
+  "europe": [
     { name: "Aix Marseille Universite, France", image: uni_img_34, webPath: "/assets/university-logos/europe/Aix Marseille Universite, France.jpg" },
     { name: "Berlin School of Business and Innovation_Germany", image: uni_img_35, webPath: "/assets/university-logos/europe/Berlin School of Business and Innovation_Germany.png" },
     { name: "Burgundy School of Business_France", image: uni_img_36, webPath: "/assets/university-logos/europe/Burgundy School of Business_France.jpg" },
@@ -166,7 +166,7 @@ export const allUniversities = {
     { name: "University of Lyon_France", image: uni_img_46, webPath: "/assets/university-logos/europe/University of Lyon_France.png" },
     { name: "UWS UK", image: uni_img_47, webPath: "/assets/university-logos/europe/UWS UK.png" },
   ],
-  ireland: [
+  "ireland": [
     { name: "Griffith Logo Ireland", image: uni_img_48, webPath: "/assets/university-logos/ireland/Griffith Logo Ireland.jpg" },
     { name: "IBAT College Dublin", image: uni_img_49, webPath: "/assets/university-logos/ireland/IBAT College Dublin_Ireland.png" },
     { name: "Maynooth university", image: uni_img_50, webPath: "/assets/university-logos/ireland/Maynooth university_Ireland.png" },
@@ -175,12 +175,14 @@ export const allUniversities = {
     { name: "TU Dublin", image: uni_img_53, webPath: "/assets/university-logos/ireland/TU Dublin_Ireland.png" },
     { name: "University of Ireland Galway", image: uni_img_54, webPath: "/assets/university-logos/ireland/University of Ireland Galway_Ireland.png" },
   ],
-  newZealand: [
+  "newZealand": [
   ],
-  singapore: [
+  "new-zealand": [
+  ],
+  "singapore": [
     { name: "LSBF Singapore", image: uni_img_55, webPath: "/assets/university-logos/singapore/LSBF Singapore.png" },
   ],
-  uk: [
+  "uk": [
     { name: "Bangor University", image: uni_img_56, webPath: "/assets/university-logos/united-kingdom/Bangor University_UK.png" },
     { name: "Buckingham New Hampshire University", image: uni_img_57, webPath: "/assets/university-logos/united-kingdom/Buckingham New Hampshire University_UK.png" },
     { name: "Canterbury Christ Church University", image: uni_img_58, webPath: "/assets/university-logos/united-kingdom/Canterbury Christ Church University_UK.png" },
@@ -204,7 +206,31 @@ export const allUniversities = {
     { name: "University of Wales Trinity Saint David (UWTSD)", image: uni_img_76, webPath: "/assets/university-logos/united-kingdom/University of Wales Trinity Saint David (UWTSD)_UK.png" },
     { name: "University of West London", image: uni_img_77, webPath: "/assets/university-logos/united-kingdom/University of West London_UK.png" },
   ],
-  usa: [
+  "united-kingdom": [
+    { name: "Bangor University", image: uni_img_56, webPath: "/assets/university-logos/united-kingdom/Bangor University_UK.png" },
+    { name: "Buckingham New Hampshire University", image: uni_img_57, webPath: "/assets/university-logos/united-kingdom/Buckingham New Hampshire University_UK.png" },
+    { name: "Canterbury Christ Church University", image: uni_img_58, webPath: "/assets/university-logos/united-kingdom/Canterbury Christ Church University_UK.png" },
+    { name: "De Montfort university", image: uni_img_59, webPath: "/assets/university-logos/united-kingdom/De Montfort university_UK.png" },
+    { name: "European School of Economics", image: uni_img_60, webPath: "/assets/university-logos/united-kingdom/European School of Economics_UK.png" },
+    { name: "Leeds Beckett University", image: uni_img_61, webPath: "/assets/university-logos/united-kingdom/Leeds Beckett University_UK.png" },
+    { name: "London Metropolitan University", image: uni_img_62, webPath: "/assets/university-logos/united-kingdom/London Metropolitan University_UK.png" },
+    { name: "LSBU", image: uni_img_63, webPath: "/assets/university-logos/united-kingdom/LSBU_UK.jpg" },
+    { name: "Middlesex University London", image: uni_img_64, webPath: "/assets/university-logos/united-kingdom/Middlesex University London_UK.png" },
+    { name: "Northumbria University", image: uni_img_65, webPath: "/assets/university-logos/united-kingdom/Northumbria University_UK.png" },
+    { name: "Ravensbourne University", image: uni_img_66, webPath: "/assets/university-logos/united-kingdom/Ravensbourne University_UK.png" },
+    { name: "Teesside University", image: uni_img_67, webPath: "/assets/university-logos/united-kingdom/Teesside University_UK.png" },
+    { name: "Ulster University", image: uni_img_68, webPath: "/assets/university-logos/united-kingdom/Ulster University_UK.png" },
+    { name: "University College Birmingham", image: uni_img_69, webPath: "/assets/university-logos/united-kingdom/University College Birmingham_UK.jpg" },
+    { name: "University of Brighton", image: uni_img_70, webPath: "/assets/university-logos/united-kingdom/University of Brighton_UK.png" },
+    { name: "University of Chester", image: uni_img_71, webPath: "/assets/university-logos/united-kingdom/University of Chester_UK.png" },
+    { name: "University of Cumbria", image: uni_img_72, webPath: "/assets/university-logos/united-kingdom/University of Cumbria_UK.png" },
+    { name: "University of East London -uk", image: uni_img_73, webPath: "/assets/university-logos/united-kingdom/University of East London -uk.png" },
+    { name: "University of Greenwich", image: uni_img_74, webPath: "/assets/university-logos/united-kingdom/University of Greenwich_UK.png" },
+    { name: "University of Portsmouth", image: uni_img_75, webPath: "/assets/university-logos/united-kingdom/University of Portsmouth_UK.png" },
+    { name: "University of Wales Trinity Saint David (UWTSD)", image: uni_img_76, webPath: "/assets/university-logos/united-kingdom/University of Wales Trinity Saint David (UWTSD)_UK.png" },
+    { name: "University of West London", image: uni_img_77, webPath: "/assets/university-logos/united-kingdom/University of West London_UK.png" },
+  ],
+  "usa": [
     { name: "Adelphi University", image: uni_img_78, webPath: "/assets/university-logos/usa/Adelphi University_USA.png" },
     { name: "American Collegiate", image: uni_img_79, webPath: "/assets/university-logos/usa/American Collegiate_USA.png" },
     { name: "American University", image: uni_img_80, webPath: "/assets/university-logos/usa/American University_USA.png" },
