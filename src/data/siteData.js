@@ -5,7 +5,7 @@ import irelandImg from "../assets/countries/ireland.png";
 import newZealandImg from "../assets/countries/new-zealand.png";
 import ukImg from "../assets/countries/uk.png";
 import usaImg from "../assets/countries/usa.png";
-import canadaImg from "../assets/Study abroad/Canada.png";
+import canadaImg from "../assets/countries/canada.png";
 import singaporeImg from "../assets/countries/Singapore.png";
 import { allUniversities } from "./allUniversitiesData";
 

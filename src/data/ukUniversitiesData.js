@@ -1,25 +1,25 @@
-import bangorImg from "../assets/Study abroad/university logos and list of university/UK/Bangor University_UK.png";
-import buckinghamImg from "../assets/Study abroad/university logos and list of university/UK/Buckingham New Hampshire University_UK.png";
-import canterburyImg from "../assets/Study abroad/university logos and list of university/UK/Canterbury Christ Church University_UK.png";
-import deMontfortImg from "../assets/Study abroad/university logos and list of university/UK/De Montfort university_UK.png";
-import eseImg from "../assets/Study abroad/university logos and list of university/UK/European School of Economics_UK.png";
-import lsbuImg from "../assets/Study abroad/university logos and list of university/UK/LSBU_UK.jpg";
-import leedsBeckettImg from "../assets/Study abroad/university logos and list of university/UK/Leeds Beckett University_UK.png";
-import londonMetImg from "../assets/Study abroad/university logos and list of university/UK/London Metropolitan University_UK.png";
-import middlesexImg from "../assets/Study abroad/university logos and list of university/UK/Middlesex University London_UK.png";
-import northumbriaImg from "../assets/Study abroad/university logos and list of university/UK/Northumbria University_UK.png";
-import ravensbourneImg from "../assets/Study abroad/university logos and list of university/UK/Ravensbourne University_UK.png";
-import teessideImg from "../assets/Study abroad/university logos and list of university/UK/Teesside University_UK.png";
-import ulsterImg from "../assets/Study abroad/university logos and list of university/UK/Ulster University_UK.png";
-import birminghamImg from "../assets/Study abroad/university logos and list of university/UK/University College Birmingham_UK.jpg";
-import brightonImg from "../assets/Study abroad/university logos and list of university/UK/University of Brighton_UK.png";
-import chesterImg from "../assets/Study abroad/university logos and list of university/UK/University of Chester_UK.png";
-import cumbriaImg from "../assets/Study abroad/university logos and list of university/UK/University of Cumbria_UK.png";
-import eastLondonImg from "../assets/Study abroad/university logos and list of university/UK/University of East London -uk.png";
-import greenwichImg from "../assets/Study abroad/university logos and list of university/UK/University of Greenwich_UK.png";
-import portsmouthImg from "../assets/Study abroad/university logos and list of university/UK/University of Portsmouth_UK.png";
-import uwtsdImg from "../assets/Study abroad/university logos and list of university/UK/University of Wales Trinity Saint David (UWTSD)_UK.png";
-import westLondonImg from "../assets/Study abroad/university logos and list of university/UK/University of West London_UK.png";
+import bangorImg from "../assets/university-logos/united-kingdom/Bangor University_UK.png";
+import buckinghamImg from "../assets/university-logos/united-kingdom/Buckingham New Hampshire University_UK.png";
+import canterburyImg from "../assets/university-logos/united-kingdom/Canterbury Christ Church University_UK.png";
+import deMontfortImg from "../assets/university-logos/united-kingdom/De Montfort university_UK.png";
+import eseImg from "../assets/university-logos/united-kingdom/European School of Economics_UK.png";
+import lsbuImg from "../assets/university-logos/united-kingdom/LSBU_UK.jpg";
+import leedsBeckettImg from "../assets/university-logos/united-kingdom/Leeds Beckett University_UK.png";
+import londonMetImg from "../assets/university-logos/united-kingdom/London Metropolitan University_UK.png";
+import middlesexImg from "../assets/university-logos/united-kingdom/Middlesex University London_UK.png";
+import northumbriaImg from "../assets/university-logos/united-kingdom/Northumbria University_UK.png";
+import ravensbourneImg from "../assets/university-logos/united-kingdom/Ravensbourne University_UK.png";
+import teessideImg from "../assets/university-logos/united-kingdom/Teesside University_UK.png";
+import ulsterImg from "../assets/university-logos/united-kingdom/Ulster University_UK.png";
+import birminghamImg from "../assets/university-logos/united-kingdom/University College Birmingham_UK.jpg";
+import brightonImg from "../assets/university-logos/united-kingdom/University of Brighton_UK.png";
+import chesterImg from "../assets/university-logos/united-kingdom/University of Chester_UK.png";
+import cumbriaImg from "../assets/university-logos/united-kingdom/University of Cumbria_UK.png";
+import eastLondonImg from "../assets/university-logos/united-kingdom/University of East London -uk.png";
+import greenwichImg from "../assets/university-logos/united-kingdom/University of Greenwich_UK.png";
+import portsmouthImg from "../assets/university-logos/united-kingdom/University of Portsmouth_UK.png";
+import uwtsdImg from "../assets/university-logos/united-kingdom/University of Wales Trinity Saint David (UWTSD)_UK.png";
+import westLondonImg from "../assets/university-logos/united-kingdom/University of West London_UK.png";
 
 export const ukUniversities = [
   { name: "University of Greenwich", image: greenwichImg, link: "https://www.gre.ac.uk/" },
