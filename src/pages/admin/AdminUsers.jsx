@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, UserPlus, Search, Mail, Loader2, X, Trash2, Edit2, Shield, FileText, Save, CheckCircle2, GraduationCap } from 'lucide-react';
 
+const ALL_ROLES = [
+  { id: 'USER', label: 'USER', description: 'Standard user portal' },
+  { id: 'STUDENT', label: 'STUDENT', description: 'Student portal & course access' },
+  { id: 'INSTRUCTOR', label: 'INSTRUCTOR', description: 'Instructor & course management' },
+  { id: 'ADMIN', label: 'ADMIN', description: 'Full system access' }
+];
+
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -358,22 +365,22 @@ const AdminUsers = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
                 <div className="space-y-1">
                   <label className="text-[9px] font-medium text-slate-400 uppercase tracking-widest pl-1">User Role</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {['USER', 'ADMIN', 'COUNSELOR'].map((role) => (
+                  <div className="flex flex-wrap gap-1.5">
+                    {ALL_ROLES.map((r) => (
                       <button
-                        key={role}
+                        key={r.id}
                         type="button"
-                        onClick={() => setInviteForm({...inviteForm, role})}
-                        className={`py-2.5 rounded-xl text-[10px] font-medium tracking-widest transition-all border ${
-                          inviteForm.role === role 
-                            ? 'bg-brand-600 text-white border-brand-600 shadow-lg shadow-brand-200' 
+                        onClick={() => setInviteForm({...inviteForm, role: r.id})}
+                        className={`px-3 py-2 rounded-xl text-[10px] font-bold tracking-widest transition-all border ${
+                          inviteForm.role === r.id 
+                            ? 'bg-brand-600 text-white border-brand-600 shadow-md shadow-brand-200' 
                             : 'bg-white text-slate-400 border-slate-100 hover:border-brand-200 hover:text-slate-600'
                         }`}
                       >
-                        {role}
+                        {r.id}
                       </button>
                     ))}
                   </div>
@@ -493,28 +500,26 @@ const AdminUsers = () => {
             <form onSubmit={(e) => { e.preventDefault(); handleUpdateUser(roleEditingUser.id, { role: roleEditingUser.role }, () => setRoleEditingUser(null)); }} className="space-y-6">
               <div className="space-y-3">
                 <label className="text-[9px] font-medium text-slate-400 uppercase tracking-widest pl-1">Select Access Permission</label>
-                <div className="flex flex-col gap-2">
-                  {['USER', 'ADMIN', 'COUNSELOR'].map((role) => (
+                <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
+                  {ALL_ROLES.map((r) => (
                     <button
-                      key={role}
+                      key={r.id}
                       type="button"
-                      onClick={() => setRoleEditingUser({...roleEditingUser, role})}
-                      className={`w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all border-2 ${
-                        roleEditingUser.role === role 
+                      onClick={() => setRoleEditingUser({...roleEditingUser, role: r.id})}
+                      className={`w-full flex items-center justify-between px-5 py-3.5 rounded-2xl transition-all border-2 ${
+                        roleEditingUser.role === r.id 
                           ? 'bg-brand-50 border-brand-600 text-brand-900 ring-4 ring-brand-600/5' 
                           : 'bg-white border-slate-50 text-slate-400 hover:border-slate-200 hover:text-slate-600'
                       }`}
                     >
                       <div className="flex flex-col items-start">
-                        <span className="text-xs font-medium tracking-widest">{role}</span>
-                        <span className="text-[9px] font-medium opacity-60">
-                          {role === 'ADMIN' ? 'Full system access' : role === 'COUNSELOR' ? 'Student management' : 'Standard user portal'}
-                        </span>
+                        <span className="text-xs font-bold tracking-widest">{r.label}</span>
+                        <span className="text-[9px] font-medium opacity-60">{r.description}</span>
                       </div>
                       <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                        roleEditingUser.role === role ? 'border-brand-600 bg-brand-600' : 'border-slate-100'
+                        roleEditingUser.role === r.id ? 'border-brand-600 bg-brand-600' : 'border-slate-100'
                       }`}>
-                        {roleEditingUser.role === role && <motion.div layoutId="check" className="w-1.5 h-1.5 bg-white rounded-full" />}
+                        {roleEditingUser.role === r.id && <motion.div layoutId="check" className="w-1.5 h-1.5 bg-white rounded-full" />}
                       </div>
                     </button>
                   ))}

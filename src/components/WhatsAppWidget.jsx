@@ -2,8 +2,8 @@ import React from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 
 const WhatsAppWidget = () => {
-  // Replace with your Cheerio WhatsApp Business Number (e.g. 919033347209)
-  const phoneNumber = process.env.REACT_APP_WHATSAPP_NUMBER || "919033347209"; 
+  // Replace with your Cheerio WhatsApp Business Number (e.g. 919033347200)
+  const phoneNumber = process.env.REACT_APP_WHATSAPP_NUMBER || "919033347200"; 
   
   // Trigger text set in Cheerio AI Workflow
   const triggerMessage = encodeURIComponent("Hi, I want more details");

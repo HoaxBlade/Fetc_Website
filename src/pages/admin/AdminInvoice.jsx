@@ -5,6 +5,14 @@ import {
 } from 'lucide-react';
 import { getApiUrl } from '../../apiConfig';
 
+const COMPANY_OPTIONS = [
+  'Syzygy llp',
+  'Foreign English Tests Capital llp',
+  'Parikshaa.in llp',
+  'Gina Abroad',
+  'Gina Abroad pvt.ltd',
+];
+
 const AdminInvoice = () => {
   // Navigation & View Mode State ('list' | 'create' | 'edit')
   const [viewMode, setViewMode] = useState('list');
@@ -16,6 +24,7 @@ const AdminInvoice = () => {
   // Invoice Form State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
+    issuerCompany: 'Gina Abroad pvt.ltd',
     companyName: '',
     clientName: '',
     address: '',
@@ -70,6 +79,7 @@ const AdminInvoice = () => {
   const handleOpenCreateForm = async () => {
     const nextNo = await fetchNextInvoiceNo();
     setFormData({
+      issuerCompany: 'Gina Abroad pvt.ltd',
       companyName: '',
       clientName: '',
       address: '',
@@ -93,6 +103,7 @@ const AdminInvoice = () => {
     setSelectedInvoiceNo(inv.invoiceNo);
     const billTo = inv.billTo || {};
     setFormData({
+      issuerCompany: inv.issuerCompany || billTo.issuerCompany || 'Gina Abroad pvt.ltd',
       companyName: billTo.companyName || '',
       clientName: billTo.clientName || '',
       address: billTo.address || '',
@@ -410,7 +421,23 @@ const AdminInvoice = () => {
                   className="w-28 h-auto object-contain mb-2"
                   onError={(e) => { e.target.style.display = 'none'; }}
                 />
-                <h3 className="font-extrabold text-sm text-slate-900">Gina Abroad Pvt. Ltd</h3>
+                <div className="mb-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
+                    Issuing Company Name
+                  </label>
+                  <select
+                    value={formData.issuerCompany}
+                    onChange={(e) => handleInputChange('issuerCompany', e.target.value)}
+                    className="font-extrabold text-sm text-slate-900 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-slate-400 cursor-pointer shadow-sm w-full sm:w-auto"
+                    title="Select Issuing Company Name"
+                  >
+                    {COMPANY_OPTIONS.map((company) => (
+                      <option key={company} value={company}>
+                        {company}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <p className="font-medium">Bhumika Dilkhush</p>
                 <p>238-239, Roongta Signature, VIP Road, Vesu, Surat - 395007</p>
                 <p>Phone: +91-9033347204 | Email: accounts@fetc.in</p>
@@ -660,8 +687,8 @@ const AdminInvoice = () => {
             {/* Signature & Stamp Footer */}
             <div className="pt-8 border-t border-slate-100 flex justify-between items-end text-xs">
               <div className="space-y-1">
-                <p className="font-bold text-slate-800">For, Foreign English Tests Capital</p>
-                <p className="text-slate-500">Powered by Gina Abroad Pvt. Ltd</p>
+                <p className="font-bold text-slate-800">For, {formData.issuerCompany || 'Foreign English Tests Capital'}</p>
+                <p className="text-slate-500">Powered by {formData.issuerCompany || 'Gina Abroad Pvt. Ltd'}</p>
               </div>
 
               <div className="text-right space-y-8">

@@ -1094,6 +1094,12 @@ const triggerCheerioWorkflow = async (lead) => {
   }
 };
 
+// Webhook endpoint to receive WhatsApp / Cheerio events
+app.post(['/api/webhook/whatsapp', '/api/v1/webhook/whatsapp'], (req, res) => {
+  console.log('📩 [Cheerio Webhook Received]:', JSON.stringify(req.body, null, 2));
+  res.status(200).json({ success: true, message: 'Webhook received successfully' });
+});
+
 // GET /api/v1/lead/allleads - Get all leads with their documents populated
 app.get(['/api/v1/lead/allleads', '/api/leads', '/api/admin/leads', '/api/v1/leads'], async (req, res) => {
   try {
@@ -2961,6 +2967,7 @@ const ensureInvoicesTable = async () => {
     ALTER TABLE invoices ADD COLUMN IF NOT EXISTS sgst DECIMAL(10, 2) DEFAULT 0.00;
     ALTER TABLE invoices ADD COLUMN IF NOT EXISTS cgst DECIMAL(10, 2) DEFAULT 0.00;
     ALTER TABLE invoices ADD COLUMN IF NOT EXISTS total DECIMAL(10, 2) DEFAULT 0.00;
+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS issuer_company VARCHAR(255);
     ALTER TABLE invoices ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
     DO $$ BEGIN
@@ -3020,6 +3027,7 @@ app.get(['/api/v1/invoice/all', '/api/admin/invoices'], async (req, res) => {
       invoiceDate: row.invoice_date,
       paymentMethod: row.payment_method,
       upiRef: row.upi_ref,
+      issuerCompany: row.issuer_company || (row.bill_to ? row.bill_to.issuerCompany : null) || 'Gina Abroad pvt.ltd',
       billTo: typeof row.bill_to === 'string' ? JSON.parse(row.bill_to) : row.bill_to,
       items: typeof row.items === 'string' ? JSON.parse(row.items) : row.items,
       subtotal: parseFloat(row.subtotal),
@@ -3054,6 +3062,7 @@ app.get(['/api/v1/invoice/:invoiceNo', '/api/admin/invoices/:invoiceNo'], async 
       invoiceDate: row.invoice_date,
       paymentMethod: row.payment_method,
       upiRef: row.upi_ref,
+      issuerCompany: row.issuer_company || (row.bill_to ? row.bill_to.issuerCompany : null) || 'Gina Abroad pvt.ltd',
       billTo: typeof row.bill_to === 'string' ? JSON.parse(row.bill_to) : row.bill_to,
       items: typeof row.items === 'string' ? JSON.parse(row.items) : row.items,
       subtotal: parseFloat(row.subtotal),
@@ -3089,6 +3098,7 @@ app.post(['/api/v1/invoice/create', '/api/admin/invoices'], async (req, res) => 
       invoiceDate,
       paymentMethod,
       upiRef,
+      issuerCompany,
       billTo,
       items,
       subtotal,
@@ -3102,8 +3112,8 @@ app.post(['/api/v1/invoice/create', '/api/admin/invoices'], async (req, res) => 
     }
 
     const query = `
-      INSERT INTO invoices (invoice_no, invoice_date, payment_method, upi_ref, bill_to, items, subtotal, sgst, cgst, total)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      INSERT INTO invoices (invoice_no, invoice_date, payment_method, upi_ref, bill_to, items, subtotal, sgst, cgst, total, issuer_company)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       ON CONFLICT (invoice_no) DO UPDATE SET
         invoice_date = EXCLUDED.invoice_date,
         payment_method = EXCLUDED.payment_method,
@@ -3113,7 +3123,8 @@ app.post(['/api/v1/invoice/create', '/api/admin/invoices'], async (req, res) => 
         subtotal = EXCLUDED.subtotal,
         sgst = EXCLUDED.sgst,
         cgst = EXCLUDED.cgst,
-        total = EXCLUDED.total
+        total = EXCLUDED.total,
+        issuer_company = EXCLUDED.issuer_company
       RETURNING *
     `;
 
@@ -3127,7 +3138,8 @@ app.post(['/api/v1/invoice/create', '/api/admin/invoices'], async (req, res) => 
       parseFloat(subtotal || 0),
       parseFloat(sgst || 0),
       parseFloat(cgst || 0),
-      parseFloat(total || 0)
+      parseFloat(total || 0),
+      issuerCompany || (billTo ? billTo.issuerCompany : 'Gina Abroad pvt.ltd')
     ];
 
     const result = await db.query(query, values);
