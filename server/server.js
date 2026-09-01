@@ -3437,6 +3437,67 @@ app.delete(['/api/v1/invoice/:invoiceNo', '/api/admin/invoices/:invoiceNo'], asy
   }
 });
 
+// GET all student purchases / orders
+app.get(['/api/v1/orders/all', '/api/admin/student-purchases'], async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT 
+        id, 
+        merchant_transaction_id, 
+        name, 
+        email, 
+        phone, 
+        course_id, 
+        product_type, 
+        amount, 
+        status, 
+        created_at
+      FROM orders 
+      ORDER BY id DESC
+    `);
+
+    const purchases = result.rows.map(row => {
+      const cId = (row.course_id || '').toUpperCase();
+      const pType = (row.product_type || '').toUpperCase();
+
+      let finalType = pType || 'ONLINE_PURCHASE';
+      let finalName = 'Online Purchase';
+
+      if (cId === 'CAREER_ASSESSMENT' || pType === 'CAREER_ASSESSMENT') {
+        finalType = 'CAREER_ASSESSMENT';
+        finalName = 'Career Assessment Test';
+      } else if (pType === 'MOCK_TEST') {
+        finalType = 'MOCK_TEST';
+        finalName = cId && cId !== 'TEST_COURSE' ? `Mock Test #${cId}` : 'Online Mock Test';
+      } else if (pType === 'COURSE') {
+        finalType = 'COURSE';
+        finalName = cId ? cId.replace(/_/g, ' ') : 'Online Course';
+      } else {
+        finalName = cId ? cId.replace(/_/g, ' ') : 'Online Purchase';
+      }
+
+      return {
+        id: row.id,
+        invoiceNo: `STU-INV-${String(row.id).padStart(3, '0')}`,
+        transactionId: row.merchant_transaction_id,
+        studentName: row.name || 'Anonymous Student',
+        email: row.email || 'N/A',
+        phone: row.phone || 'N/A',
+        productName: finalName,
+        productType: finalType,
+        amount: parseFloat(row.amount || 0),
+        status: row.status || 'COMPLETED',
+        createdAt: row.created_at
+      };
+    });
+
+    res.json({ success: true, purchases });
+  } catch (err) {
+    console.error('Fetch student purchases error:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch student purchases' });
+  }
+});
+
 // Helper to ensure courses table exists & seeds default courses
 const ensureCoursesTable = async () => {
   await db.query(`

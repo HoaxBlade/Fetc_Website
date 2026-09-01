@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   FileText, Plus, Search, Calendar, Edit2, Trash2, Loader2, 
-  ArrowLeft, Save, Printer, X, PlusCircle, CheckCircle2 
+  ArrowLeft, Save, Printer, X, PlusCircle, CheckCircle2, ShoppingBag, CreditCard, User, Tag, Eye
 } from 'lucide-react';
 import { getApiUrl } from '../../apiConfig';
 
@@ -16,10 +16,18 @@ const COMPANY_OPTIONS = [
 const AdminInvoice = () => {
   // Navigation & View Mode State ('list' | 'create' | 'edit')
   const [viewMode, setViewMode] = useState('list');
+  const [activeCategory, setActiveCategory] = useState('admin'); // 'admin' | 'student'
+  
+  // Data States
   const [invoices, setInvoices] = useState([]);
+  const [studentPurchases, setStudentPurchases] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetchingPurchases, setIsFetchingPurchases] = useState(false);
+  
+  // Filters & Selection
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedInvoiceNo, setSelectedInvoiceNo] = useState(null);
+  const [selectedPurchase, setSelectedPurchase] = useState(null); // Receipt Modal
 
   // Invoice Form State
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,6 +54,7 @@ const AdminInvoice = () => {
 
   useEffect(() => {
     fetchInvoices();
+    fetchStudentPurchases();
   }, []);
 
   const fetchInvoices = async () => {
@@ -60,6 +69,21 @@ const AdminInvoice = () => {
       console.error('Error fetching invoices:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchStudentPurchases = async () => {
+    setIsFetchingPurchases(true);
+    try {
+      const response = await fetch(getApiUrl('/api/v1/orders/all'));
+      const data = await response.json();
+      if (data.success) {
+        setStudentPurchases(data.purchases || []);
+      }
+    } catch (err) {
+      console.error('Error fetching student purchases:', err);
+    } finally {
+      setIsFetchingPurchases(false);
     }
   };
 
@@ -100,27 +124,36 @@ const AdminInvoice = () => {
   };
 
   const handleOpenEditForm = async (inv) => {
-    setSelectedInvoiceNo(inv.invoiceNo);
-    const billTo = inv.billTo || {};
-    setFormData({
-      issuerCompany: inv.issuerCompany || billTo.issuerCompany || 'Gina Abroad pvt.ltd',
-      companyName: billTo.companyName || '',
-      clientName: billTo.clientName || '',
-      address: billTo.address || '',
-      country: billTo.country || '',
-      pin: billTo.pinCode || billTo.pin || '',
-      phone: billTo.phone || '',
-      email: billTo.email || '',
-      invoiceNo: inv.invoiceNo,
-      invoiceDate: inv.invoiceDate ? new Date(inv.invoiceDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-      paymentMethod: inv.paymentMethod || 'Cash',
-      upiRef: inv.upiRef || '',
-      items: inv.items && inv.items.length > 0 ? inv.items : [{ description: '', duration: '', quantity: 1, rate: 0, amount: 0 }],
-      applySgst: Number(inv.sgst) > 0,
-      applyCgst: Number(inv.cgst) > 0,
-    });
-    setErrors({});
-    setViewMode('edit');
+    try {
+      const response = await fetch(getApiUrl(`/api/v1/invoice/${inv.invoiceNo}`));
+      const data = await response.json();
+      if (data.success && data.invoice) {
+        const fullInv = data.invoice;
+        const billTo = fullInv.billTo || {};
+        setFormData({
+          issuerCompany: fullInv.issuerCompany || billTo.issuerCompany || 'Gina Abroad pvt.ltd',
+          companyName: billTo.companyName || '',
+          clientName: billTo.clientName || '',
+          address: billTo.address || '',
+          country: billTo.country || '',
+          pin: billTo.pin || '',
+          phone: billTo.phone || '',
+          email: billTo.email || '',
+          invoiceNo: fullInv.invoiceNo,
+          invoiceDate: fullInv.invoiceDate || new Date().toISOString().split('T')[0],
+          paymentMethod: fullInv.paymentMethod || 'Cash',
+          upiRef: fullInv.upiRef || '',
+          items: fullInv.items && fullInv.items.length > 0 ? fullInv.items : [{ description: '', duration: '', quantity: 1, rate: 0, amount: 0 }],
+          applySgst: (fullInv.sgst || 0) > 0,
+          applyCgst: (fullInv.cgst || 0) > 0,
+        });
+        setSelectedInvoiceNo(fullInv.invoiceNo);
+        setErrors({});
+        setViewMode('edit');
+      }
+    } catch (err) {
+      console.error('Error fetching invoice details for edit:', err);
+    }
   };
 
   const handleDeleteInvoice = async (invoiceNo) => {
@@ -131,37 +164,35 @@ const AdminInvoice = () => {
       });
       const data = await response.json();
       if (data.success) {
-        fetchInvoices();
+        setInvoices(invoices.filter((inv) => inv.invoiceNo !== invoiceNo));
       } else {
         alert(data.message || 'Failed to delete invoice');
       }
     } catch (err) {
       console.error('Error deleting invoice:', err);
+      alert('Failed to delete invoice');
     }
   };
 
-  // Form Field Change Handlers
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: null }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: null }));
+    }
   };
 
-  const handleItemChange = (idx, field, rawValue) => {
-    setFormData((prev) => {
-      const updatedItems = prev.items.map((item, i) => {
-        if (i !== idx) return item;
-        const val = (field === 'rate' || field === 'quantity' || field === 'amount') ? Number(rawValue) || 0 : rawValue;
-        const newItem = { ...item, [field]: val };
-        
-        if (field === 'rate' || field === 'quantity') {
-          const rate = Number(newItem.rate) || 0;
-          const quantity = Number(newItem.quantity) || 0;
-          newItem.amount = Number((rate * quantity).toFixed(2));
-        }
-        return newItem;
-      });
-      return { ...prev, items: updatedItems };
-    });
+  const handleItemChange = (index, field, value) => {
+    const newItems = [...formData.items];
+    const currentItem = { ...newItems[index], [field]: value };
+
+    if (field === 'quantity' || field === 'rate') {
+      const qty = parseFloat(field === 'quantity' ? value : currentItem.quantity) || 0;
+      const rate = parseFloat(field === 'rate' ? value : currentItem.rate) || 0;
+      currentItem.amount = qty * rate;
+    }
+
+    newItems[index] = currentItem;
+    setFormData((prev) => ({ ...prev, items: newItems }));
   };
 
   const addItem = () => {
@@ -171,11 +202,11 @@ const AdminInvoice = () => {
     }));
   };
 
-  const removeItem = (idx) => {
+  const removeItem = (index) => {
     if (formData.items.length <= 1) return;
     setFormData((prev) => ({
       ...prev,
-      items: prev.items.filter((_, i) => i !== idx),
+      items: prev.items.filter((_, i) => i !== index),
     }));
   };
 
@@ -186,40 +217,41 @@ const AdminInvoice = () => {
   const grandTotal = subtotal + sgst + cgst;
 
   const validateForm = () => {
-    const errs = {};
-    if (!formData.clientName.trim()) errs.clientName = 'Client name is required';
-    if (!formData.invoiceNo.trim()) errs.invoiceNo = 'Invoice number is required';
-    if (!formData.items || formData.items.length === 0) errs.items = 'At least one item is required';
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
+    const newErrors = {};
+    if (!formData.clientName.trim()) newErrors.clientName = 'Client name is required';
+    if (!formData.invoiceNo.trim()) newErrors.invoiceNo = 'Invoice number is required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSaveInvoice = async () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    try {
-      const payload = {
-        invoiceNo: formData.invoiceNo,
-        invoiceDate: formData.invoiceDate,
-        paymentMethod: formData.paymentMethod,
-        upiRef: formData.upiRef,
-        billTo: {
-          companyName: formData.companyName,
-          clientName: formData.clientName,
-          address: formData.address,
-          country: formData.country,
-          pinCode: formData.pin,
-          phone: formData.phone,
-          email: formData.email,
-        },
-        items: formData.items,
-        subtotal: subtotal.toFixed(2),
-        sgst: sgst.toFixed(2),
-        cgst: cgst.toFixed(2),
-        total: grandTotal.toFixed(2),
-      };
+    const payload = {
+      invoiceNo: formData.invoiceNo,
+      invoiceDate: formData.invoiceDate,
+      paymentMethod: formData.paymentMethod,
+      upiRef: formData.upiRef,
+      issuerCompany: formData.issuerCompany,
+      billTo: {
+        issuerCompany: formData.issuerCompany,
+        clientName: formData.clientName,
+        companyName: formData.companyName,
+        address: formData.address,
+        country: formData.country,
+        pin: formData.pin,
+        phone: formData.phone,
+        email: formData.email,
+      },
+      items: formData.items,
+      subtotal,
+      sgst,
+      cgst,
+      total: grandTotal,
+    };
 
+    try {
       const response = await fetch(getApiUrl('/api/v1/invoice/create'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -235,7 +267,7 @@ const AdminInvoice = () => {
       }
     } catch (err) {
       console.error('Error saving invoice:', err);
-      alert('Network error while saving invoice.');
+      alert('Failed to save invoice');
     } finally {
       setIsSubmitting(false);
     }
@@ -245,6 +277,7 @@ const AdminInvoice = () => {
     window.print();
   };
 
+  // Filtered lists
   const filteredInvoices = invoices.filter((inv) => {
     const query = searchQuery.toLowerCase();
     const invNo = (inv.invoiceNo || '').toLowerCase();
@@ -253,29 +286,81 @@ const AdminInvoice = () => {
     return invNo.includes(query) || client.includes(query) || company.includes(query);
   });
 
+  const filteredPurchases = studentPurchases.filter((stu) => {
+    const query = searchQuery.toLowerCase();
+    const invNo = (stu.invoiceNo || '').toLowerCase();
+    const name = (stu.studentName || '').toLowerCase();
+    const email = (stu.email || '').toLowerCase();
+    const product = (stu.productName || '').toLowerCase();
+    return invNo.includes(query) || name.includes(query) || email.includes(query) || product.includes(query);
+  });
+
   return (
     <div className="max-w-[1600px] mx-auto p-2 sm:p-4">
       {viewMode === 'list' ? (
         <>
           {/* Header */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-700">
+              <div className="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-md">
                 <FileText size={24} />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">All Invoices</h1>
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Invoice Management</h1>
+                <p className="text-xs text-slate-500 font-medium">Manage Created Company Invoices & Student Online Purchases</p>
               </div>
             </div>
+
+            {activeCategory === 'admin' && (
+              <button
+                onClick={handleOpenCreateForm}
+                className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-800 transition-all shadow-md active:scale-95"
+              >
+                <Plus size={16} /> Create New Invoice
+              </button>
+            )}
+          </div>
+
+          {/* 2 Category Switcher Tabs */}
+          <div className="flex items-center gap-3 mb-6 bg-slate-100/70 p-1.5 rounded-2xl w-fit border border-slate-200/60">
             <button
-              onClick={handleOpenCreateForm}
-              className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl font-medium text-sm hover:bg-slate-800 transition-all shadow-sm"
+              type="button"
+              onClick={() => setActiveCategory('admin')}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                activeCategory === 'admin'
+                  ? 'bg-slate-900 text-white shadow-md'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+              }`}
             >
-              <Plus size={16} /> Create New Invoice
+              <FileText size={16} />
+              <span>Created Invoices (Admin)</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
+                activeCategory === 'admin' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+              }`}>
+                {invoices.length}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveCategory('student')}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                activeCategory === 'student'
+                  ? 'bg-brand-600 text-white shadow-md shadow-brand-200'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+              }`}
+            >
+              <ShoppingBag size={16} />
+              <span>Student Online Payments</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
+                activeCategory === 'student' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+              }`}>
+                {studentPurchases.length}
+              </span>
             </button>
           </div>
 
-          {/* Filters & Search */}
+          {/* Search & Filters */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
               <div className="relative flex-1 max-w-sm">
@@ -285,103 +370,190 @@ const AdminInvoice = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-12 pr-6 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none font-medium text-slate-700"
-                  placeholder="Search by Invoice No, Client, or Company"
+                  placeholder={activeCategory === 'admin' ? "Search by Invoice No, Client, or Company" : "Search by Student Name, Email, or Course"}
                 />
               </div>
               <div className="relative">
                 <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <input
                   type="text"
-                  className="pl-12 pr-6 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none font-medium text-slate-700"
+                  className="pl-12 pr-6 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none font-medium text-slate-700 cursor-not-allowed"
                   placeholder="Filter by Date Range"
                   readOnly
                 />
               </div>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto p-4">
-              {isLoading ? (
-                <div className="flex justify-center py-12 text-slate-400">
-                  <Loader2 className="w-6 h-6 animate-spin text-slate-600" />
-                </div>
-              ) : filteredInvoices.length === 0 ? (
-                <div className="p-8 text-center text-slate-400 text-xs italic">
-                  No saved invoices found. Click "Create New Invoice" to create your first invoice.
-                </div>
-              ) : (
-                <table className="w-full text-left border-separate border-spacing-y-2">
-                  <thead>
-                    <tr className="text-slate-400 text-[10px] font-semibold uppercase tracking-widest px-4">
-                      <th className="px-6 pb-2">Invoice No</th>
-                      <th className="px-6 pb-2">Client</th>
-                      <th className="px-6 pb-2">Company</th>
-                      <th className="px-6 pb-2">Date</th>
-                      <th className="px-6 pb-2">Total</th>
-                      <th className="px-6 pb-2 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredInvoices.map((inv) => {
-                      const clientName = inv.billTo?.clientName || inv.client || 'N/A';
-                      const companyName = inv.billTo?.companyName || inv.company || 'N/A';
-                      const formattedDate = inv.invoiceDate
-                        ? new Date(inv.invoiceDate).toLocaleDateString('en-US')
-                        : inv.date || 'N/A';
-                      const totalFormatted = typeof inv.total === 'number'
-                        ? `₹${inv.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
-                        : inv.total;
+            {/* CATEGORY 1: ADMIN CREATED INVOICES TABLE */}
+            {activeCategory === 'admin' && (
+              <div className="overflow-x-auto p-4">
+                {isLoading ? (
+                  <div className="flex justify-center py-12 text-slate-400">
+                    <Loader2 className="w-6 h-6 animate-spin text-slate-600" />
+                  </div>
+                ) : filteredInvoices.length === 0 ? (
+                  <div className="p-8 text-center text-slate-400 text-xs italic">
+                    No saved invoices found. Click "Create New Invoice" to create your first invoice.
+                  </div>
+                ) : (
+                  <table className="w-full text-left border-separate border-spacing-y-2">
+                    <thead>
+                      <tr className="text-slate-400 text-[10px] font-semibold uppercase tracking-widest px-4">
+                        <th className="px-6 pb-2">Invoice No</th>
+                        <th className="px-6 pb-2">Client</th>
+                        <th className="px-6 pb-2">Company</th>
+                        <th className="px-6 pb-2">Date</th>
+                        <th className="px-6 pb-2">Total</th>
+                        <th className="px-6 pb-2 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredInvoices.map((inv) => {
+                        const clientName = inv.billTo?.clientName || inv.client || 'N/A';
+                        const companyName = inv.billTo?.companyName || inv.company || 'N/A';
+                        const formattedDate = inv.invoiceDate
+                          ? new Date(inv.invoiceDate).toLocaleDateString('en-US')
+                          : inv.date || 'N/A';
+                        const totalFormatted = typeof inv.total === 'number'
+                          ? `₹${inv.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                          : inv.total;
 
-                      return (
-                        <tr key={inv.invoiceNo || inv.id} className="bg-slate-50 rounded-xl hover:bg-slate-100/80 transition-colors">
-                          <td className="px-6 py-4 font-semibold text-xs text-slate-700 rounded-l-xl">
-                            {inv.invoiceNo || inv.id}
-                          </td>
-                          <td className="px-6 py-4 text-xs text-slate-600 font-medium">
-                            {clientName}
-                          </td>
-                          <td className="px-6 py-4 text-xs text-slate-600 font-medium">
-                            {companyName}
-                          </td>
-                          <td className="px-6 py-4 text-xs text-slate-600 font-medium">
-                            {formattedDate}
-                          </td>
-                          <td className="px-6 py-4 text-xs text-slate-800 font-bold">
-                            {totalFormatted}
-                          </td>
-                          <td className="px-6 py-4 text-right rounded-r-xl">
-                            <div className="flex items-center justify-end gap-2">
+                        return (
+                          <tr key={inv.invoiceNo || inv.id} className="bg-slate-50 rounded-xl hover:bg-slate-100/80 transition-colors">
+                            <td className="px-6 py-4 font-semibold text-xs text-slate-700 rounded-l-xl">
+                              {inv.invoiceNo || inv.id}
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-600 font-medium">
+                              {clientName}
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-600 font-medium">
+                              {companyName}
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-600 font-medium">
+                              {formattedDate}
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-800 font-bold">
+                              {totalFormatted}
+                            </td>
+                            <td className="px-6 py-4 text-right rounded-r-xl">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => handleOpenEditForm(inv)}
+                                  className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                                  title="Edit Invoice"
+                                >
+                                  <Edit2 size={14} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteInvoice(inv.invoiceNo)}
+                                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                  title="Delete Invoice"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            )}
+
+            {/* CATEGORY 2: STUDENT ONLINE PURCHASES TABLE */}
+            {activeCategory === 'student' && (
+              <div className="overflow-x-auto p-4">
+                {isFetchingPurchases ? (
+                  <div className="flex justify-center py-12 text-slate-400">
+                    <Loader2 className="w-6 h-6 animate-spin text-brand-600" />
+                  </div>
+                ) : filteredPurchases.length === 0 ? (
+                  <div className="p-8 text-center text-slate-400 text-xs italic">
+                    No student online purchases found yet.
+                  </div>
+                ) : (
+                  <table className="w-full text-left border-separate border-spacing-y-2">
+                    <thead>
+                      <tr className="text-slate-400 text-[10px] font-semibold uppercase tracking-widest px-4">
+                        <th className="px-6 pb-2">Receipt No</th>
+                        <th className="px-6 pb-2">Student Name</th>
+                        <th className="px-6 pb-2">Product / Test</th>
+                        <th className="px-6 pb-2">Date</th>
+                        <th className="px-6 pb-2">Amount</th>
+                        <th className="px-6 pb-2">Status</th>
+                        <th className="px-6 pb-2 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredPurchases.map((stu) => {
+                        const formattedDate = stu.createdAt
+                          ? new Date(stu.createdAt).toLocaleDateString('en-US')
+                          : 'N/A';
+                        const totalFormatted = typeof stu.amount === 'number'
+                          ? `₹${stu.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                          : stu.amount;
+
+                        const isCompleted = stu.status?.toUpperCase() === 'COMPLETED' || stu.status?.toUpperCase() === 'SUCCESS';
+                        const isPending = stu.status?.toUpperCase() === 'PENDING';
+
+                        return (
+                          <tr key={stu.id} className="bg-slate-50 rounded-xl hover:bg-slate-100/80 transition-colors">
+                            <td className="px-6 py-4 font-semibold text-xs text-brand-600 rounded-l-xl">
+                              {stu.invoiceNo}
+                            </td>
+                            <td className="px-6 py-4 text-xs font-semibold text-slate-800">
+                              <div>{stu.studentName}</div>
+                              <div className="text-[10px] text-slate-400 font-normal">{stu.email}</div>
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-700 font-bold">
+                              <span className="px-2 py-0.5 bg-brand-50 text-brand-600 rounded-md text-[10px] uppercase font-mono mr-1">
+                                {stu.productType}
+                              </span>
+                              {stu.productName}
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-600 font-medium">
+                              {formattedDate}
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-900 font-black">
+                              {totalFormatted}
+                            </td>
+                            <td className="px-6 py-4 text-xs">
+                              <span className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border ${
+                                isCompleted 
+                                  ? 'bg-emerald-50 text-emerald-600 border-emerald-200' 
+                                  : isPending 
+                                  ? 'bg-amber-50 text-amber-600 border-amber-200' 
+                                  : 'bg-rose-50 text-rose-600 border-rose-200'
+                              }`}>
+                                {stu.status || 'COMPLETED'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-right rounded-r-xl">
                               <button
-                                onClick={() => handleOpenEditForm(inv)}
-                                className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
-                                title="Edit Invoice"
+                                onClick={() => setSelectedPurchase(stu)}
+                                className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-brand-50 hover:text-brand-600 hover:border-brand-200 rounded-lg transition-all text-xs font-bold flex items-center gap-1.5 ml-auto shadow-xs"
                               >
-                                <Edit2 size={14} />
+                                <Eye size={14} /> Receipt
                               </button>
-                              <button
-                                onClick={() => handleDeleteInvoice(inv.invoiceNo)}
-                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                title="Delete Invoice"
-                              >
-                                <Trash2 size={14} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
-            </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            )}
 
             <div className="p-6 text-center border-t border-slate-50 text-slate-400 text-xs italic">
-              List of all saved invoices
+              {activeCategory === 'admin' ? 'List of all admin created invoices' : 'List of all student online purchases'}
             </div>
           </div>
         </>
       ) : (
-        /* Create / Edit Form View */
+        /* Create / Edit Form View for Admin Invoices */
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
             <button
@@ -695,6 +867,88 @@ const AdminInvoice = () => {
                 <p className="font-bold text-slate-800">Receiver's Signature</p>
                 <div className="border-t border-slate-300 w-40 inline-block"></div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* STUDENT PURCHASE RECEIPT MODAL */}
+      {selectedPurchase && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-8 space-y-6 shadow-2xl relative border border-slate-100">
+            <button
+              type="button"
+              onClick={() => setSelectedPurchase(null)}
+              className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-all"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+              <div className="p-3 bg-brand-50 text-brand-600 rounded-2xl">
+                <ShoppingBag size={24} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900">Student Purchase Receipt</h3>
+                <p className="text-xs text-slate-400 font-mono">{selectedPurchase.invoiceNo}</p>
+              </div>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div className="p-4 bg-slate-50 rounded-2xl space-y-2 border border-slate-100">
+                <div className="flex justify-between">
+                  <span className="text-slate-500 font-medium">Student Name:</span>
+                  <span className="font-bold text-slate-900">{selectedPurchase.studentName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500 font-medium">Email Address:</span>
+                  <span className="font-semibold text-slate-700">{selectedPurchase.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500 font-medium">Phone Number:</span>
+                  <span className="font-semibold text-slate-700">{selectedPurchase.phone}</span>
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-2xl space-y-2 border border-slate-100">
+                <div className="flex justify-between">
+                  <span className="text-slate-500 font-medium">Product / Course:</span>
+                  <span className="font-bold text-brand-600">{selectedPurchase.productName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500 font-medium">Transaction ID:</span>
+                  <span className="font-mono text-slate-600">{selectedPurchase.transactionId || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500 font-medium">Purchase Date:</span>
+                  <span className="font-semibold text-slate-700">
+                    {selectedPurchase.createdAt ? new Date(selectedPurchase.createdAt).toLocaleString() : 'N/A'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-slate-200">
+                  <span className="text-slate-500 font-bold">Total Amount Paid:</span>
+                  <span className="text-lg font-black text-slate-900">
+                    ₹{(selectedPurchase.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setSelectedPurchase(null)}
+                className="px-5 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-200 transition-all"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="px-5 py-2.5 bg-slate-900 text-white font-bold rounded-xl text-xs hover:bg-brand-600 transition-all shadow-md flex items-center gap-2"
+              >
+                <Printer size={14} /> Print Receipt
+              </button>
             </div>
           </div>
         </div>

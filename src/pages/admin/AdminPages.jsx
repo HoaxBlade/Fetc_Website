@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle, Award, CreditCard, Upload, Video, Play, FileDown, Folder, Calendar, Download } from 'lucide-react';
+import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle, Award, CreditCard, Upload, Video, Play, FileDown, Folder, Calendar, Download, LayoutGrid } from 'lucide-react';
 import { getAssetUrl, getApiUrl } from '../../apiConfig';
 import SafeImage from '../../components/SafeImage';
 
@@ -3226,68 +3226,258 @@ const AdminPages = () => {
                         </div>
                       )}
 
-                      {/* 7. CAREER EDITOR */}
+                      {/* 7. CAREER ASSESSMENT PAGE EDITOR */}
                       {selectedPage.slug?.toLowerCase().includes('career-assessment') && (
                         <div className="space-y-6 pb-20">
-                          <div className="p-8 bg-slate-50 rounded-2xl border border-slate-100">
-                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
-                              <Target size={22} className="text-brand-600" /> Career Analysis Editor
+                          {/* Section 1: Hero Identity */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
+                            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                              <Target size={18} className="text-brand-600" /> 1. Hero Identity & Title
                             </h3>
-                            <div className="space-y-6">
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-2 block">Main Heading</label>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Badge Text</label>
                                 <input
-                                  className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-800 focus:border-brand-300 outline-none transition-all shadow-sm"
-                                  value={selectedPage.content?.title || ""}
-                                  onChange={(e) => handleContentChange(null, 'title', e.target.value)}
-                                  placeholder="Behaviour and Career Analysis"
+                                  className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none"
+                                  value={selectedPage.content?.hero?.badge ?? "Verified Assessment"}
+                                  onChange={(e) => handleNestedContentChange('hero', null, 'badge', e.target.value)}
+                                  placeholder="Verified Assessment"
                                 />
                               </div>
                               <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-2 block">Detailed Description</label>
-                                <textarea
-                                  className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-600 h-44 resize-none focus:border-brand-300 outline-none transition-all shadow-sm"
-                                  value={selectedPage.content?.description || ""}
-                                  onChange={(e) => handleContentChange(null, 'description', e.target.value)}
-                                  placeholder="Describe your career analysis services here..."
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Primary Profile</label>
+                                <input
+                                  className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none"
+                                  value={selectedPage.content?.hero?.primaryProfile ?? "Consultative Leader"}
+                                  onChange={(e) => handleNestedContentChange('hero', null, 'primaryProfile', e.target.value)}
+                                  placeholder="Consultative Leader"
                                 />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Main Title</label>
+                                <input
+                                  className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none"
+                                  value={selectedPage.content?.hero?.title ?? selectedPage.content?.title ?? "Behavioral & Career"}
+                                  onChange={(e) => {
+                                    handleNestedContentChange('hero', null, 'title', e.target.value);
+                                    handleContentChange(null, 'title', e.target.value);
+                                  }}
+                                  placeholder="Behavioral & Career"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Title Highlight</label>
+                                <input
+                                  className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-brand-600 outline-none"
+                                  value={selectedPage.content?.hero?.titleHighlight ?? "Analysis Report"}
+                                  onChange={(e) => handleNestedContentChange('hero', null, 'titleHighlight', e.target.value)}
+                                  placeholder="Analysis Report"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Detailed Description</label>
+                              <textarea
+                                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-24 resize-none outline-none"
+                                value={selectedPage.content?.hero?.description ?? selectedPage.content?.description ?? ""}
+                                onChange={(e) => {
+                                  handleNestedContentChange('hero', null, 'description', e.target.value);
+                                  handleContentChange(null, 'description', e.target.value);
+                                }}
+                                placeholder="Describe your career analysis evaluation parameters..."
+                              />
+                            </div>
+                          </div>
+
+                          {/* Section 2: Executive Summary & Strengths */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
+                            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                              <LayoutGrid size={18} className="text-brand-600" /> 2. Executive Summary & Key Strengths
+                            </h3>
+
+                            <div>
+                              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Overview Summary</label>
+                              <textarea
+                                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-24 resize-none outline-none"
+                                value={selectedPage.content?.overview?.summary ?? "The analysis indicates a strong alignment with roles requiring methodical organization, interpersonal diplomacy, and contextual consistency."}
+                                onChange={(e) => handleNestedContentChange('overview', null, 'summary', e.target.value)}
+                                placeholder="Write overview summary..."
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Primary Modality</label>
+                                <input
+                                  className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none"
+                                  value={selectedPage.content?.overview?.primaryModality ?? "Visual-Dominant"}
+                                  onChange={(e) => handleNestedContentChange('overview', null, 'primaryModality', e.target.value)}
+                                  placeholder="Visual-Dominant"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Modality Description</label>
+                                <input
+                                  className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 outline-none"
+                                  value={selectedPage.content?.overview?.modalityDesc ?? "Primary cognitive processing occurs through spatial and observational engagement."}
+                                  onChange={(e) => handleNestedContentChange('overview', null, 'modalityDesc', e.target.value)}
+                                  placeholder="Modality description..."
+                                />
+                              </div>
+                            </div>
+
+                            {/* Strengths List */}
+                            <div className="pt-2">
+                              <div className="flex items-center justify-between mb-2">
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Candidate Strengths List</label>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const current = selectedPage.content?.overview?.strengths || [];
+                                    handleNestedContentChange('overview', null, 'strengths', [...current, "New Candidate Strength"]);
+                                  }}
+                                  className="px-3 py-1 bg-slate-900 text-white rounded-lg text-[10px] font-bold hover:bg-brand-600 transition-all flex items-center gap-1"
+                                >
+                                  <Plus size={12} /> Add Strength
+                                </button>
                               </div>
 
-                              {/* Assessment Fee Editor */}
-                              <div className="p-6 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-blue-100 rounded-2xl space-y-3">
-                                <div className="flex items-center gap-2">
-                                  <CreditCard size={18} className="text-brand-600" />
-                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-900">
-                                    Career Assessment Fee (INR)
-                                  </label>
-                                </div>
-                                <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
-                                  Set the payment amount charged on the checkout modal when candidates start the assessment.
-                                </p>
-                                <div className="relative max-w-sm pt-1">
-                                  <span className="absolute left-4 top-[18px] text-slate-500 font-bold text-sm">₹</span>
-                                  <input
-                                    type="number"
-                                    min="0"
-                                    step="1"
-                                    className="w-full pl-9 pr-6 py-3.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 outline-none transition-all shadow-sm"
-                                    value={selectedPage.content?.amount ?? selectedPage.content?.fee ?? 1000}
-                                    onChange={(e) => {
-                                      const val = e.target.value;
-                                      handleContentChange(null, 'amount', val);
-                                      handleContentChange(null, 'fee', val);
-                                    }}
-                                    placeholder="1000"
-                                  />
-                                </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                {(selectedPage.content?.overview?.strengths || [
+                                  "Effectively processes and utilizes feedback",
+                                  "Engages positively in recognition exchanges",
+                                  "Consistently identifies potential in peers",
+                                  "Demonstrates high emotional intelligence"
+                                ]).map((str, sIdx) => (
+                                  <div key={sIdx} className="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
+                                    <input
+                                      className="flex-1 px-2.5 py-1 bg-transparent text-xs font-medium text-slate-700 outline-none"
+                                      value={str}
+                                      onChange={(e) => {
+                                        const current = [...(selectedPage.content?.overview?.strengths || [])];
+                                        current[sIdx] = e.target.value;
+                                        handleNestedContentChange('overview', null, 'strengths', current);
+                                      }}
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const current = (selectedPage.content?.overview?.strengths || []).filter((_, i) => i !== sIdx);
+                                        handleNestedContentChange('overview', null, 'strengths', current);
+                                      }}
+                                      className="p-1 text-slate-400 hover:text-rose-600 rounded"
+                                    >
+                                      <X size={14} />
+                                    </button>
+                                  </div>
+                                ))}
                               </div>
                             </div>
                           </div>
 
-                          <div className="p-8 bg-brand-50/50 rounded-2xl border border-brand-100 border-dashed text-center">
-                            <p className="text-xs font-medium text-brand-600 opacity-60 flex items-center justify-center gap-2">
-                              <Sparkles size={14} /> Career Assessment Module Active
+                          {/* Section 3: Core Competencies Manager */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
+                            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                              <div>
+                                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                  <Target size={18} className="text-brand-600" /> 3. Core Competencies & Evaluation Scores
+                                </h3>
+                                <p className="text-xs text-slate-400 font-medium">Manage subject parameters and target percentage scores.</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = selectedPage.content?.competencies || [];
+                                  handleContentChange(null, 'competencies', [...current, { subject: "New Competency", score: 80 }]);
+                                }}
+                                className="px-3.5 py-1.5 bg-brand-600 text-white rounded-xl text-xs font-bold hover:bg-brand-700 transition-all flex items-center gap-1.5 shadow-sm"
+                              >
+                                <Plus size={14} /> Add Competency
+                              </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {(selectedPage.content?.competencies || [
+                                { subject: 'Democratic values', score: 90 },
+                                { subject: 'Helping attitude', score: 85 },
+                                { subject: 'Organizing', score: 70 },
+                                { subject: 'Market research', score: 75 }
+                              ]).map((comp, cIdx) => (
+                                <div key={cIdx} className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
+                                  <div className="flex-1 space-y-1">
+                                    <label className="text-[9px] font-bold text-slate-400 uppercase">Subject / Skill</label>
+                                    <input
+                                      className="w-full px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-800"
+                                      value={comp.subject || ""}
+                                      onChange={(e) => {
+                                        const current = [...(selectedPage.content?.competencies || [])];
+                                        current[cIdx] = { ...current[cIdx], subject: e.target.value };
+                                        handleContentChange(null, 'competencies', current);
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="w-20 space-y-1">
+                                    <label className="text-[9px] font-bold text-slate-400 uppercase">Score (%)</label>
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      max="100"
+                                      className="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-black text-brand-600 text-center"
+                                      value={comp.score || 0}
+                                      onChange={(e) => {
+                                        const current = [...(selectedPage.content?.competencies || [])];
+                                        current[cIdx] = { ...current[cIdx], score: Number(e.target.value) };
+                                        handleContentChange(null, 'competencies', current);
+                                      }}
+                                    />
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const current = (selectedPage.content?.competencies || []).filter((_, i) => i !== cIdx);
+                                      handleContentChange(null, 'competencies', current);
+                                    }}
+                                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Section 4: Assessment Fee Editor */}
+                          <div className="p-6 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-blue-100 rounded-2xl space-y-3">
+                            <div className="flex items-center gap-2">
+                              <CreditCard size={18} className="text-brand-600" />
+                              <label className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                                Career Assessment Fee (INR)
+                              </label>
+                            </div>
+                            <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                              Set the payment amount charged on the checkout modal when candidates start the assessment.
                             </p>
+                            <div className="relative max-w-sm pt-1">
+                              <span className="absolute left-4 top-[18px] text-slate-500 font-bold text-sm">₹</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                className="w-full pl-9 pr-6 py-3.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 outline-none transition-all shadow-sm"
+                                value={selectedPage.content?.amount ?? selectedPage.content?.fee ?? 1000}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  handleContentChange(null, 'amount', val);
+                                  handleContentChange(null, 'fee', val);
+                                }}
+                                placeholder="1000"
+                              />
+                            </div>
                           </div>
                         </div>
                       )}
