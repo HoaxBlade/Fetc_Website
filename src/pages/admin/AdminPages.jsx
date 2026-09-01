@@ -1458,10 +1458,12 @@ const AdminPages = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const current = selectedPage.content?.campusVisits || [
-                                    { icon: "🗓️", tag: "First Visit", title: "Bill Boozing – 3rd April 2026", desc: "Curry College representative..." },
-                                    { icon: "🇬🇧", tag: "Follow-Up Visits", title: "UK University Representatives", desc: "UK reps..." }
+                                  const defaultVisits = [
+                                    { icon: "🗓️", tag: "First Visit", title: "Bill Boozing – 3rd April 2026", desc: "Curry College representative will visit your campus, sharing opportunities for American education." },
+                                    { icon: "🇬🇧", tag: "Follow-Up Visits", title: "UK University Representatives", desc: "UK University Representatives will visit, showcasing British higher education options and pathways." },
+                                    { icon: "🌍", tag: "Ongoing Access", title: "Continued University Partnerships", desc: "Continued university partnerships expanding your students' global education choices." }
                                   ];
+                                  const current = selectedPage.content?.campusVisits || defaultVisits;
                                   handleContentChange(null, 'campusVisits', [
                                     ...current,
                                     { icon: "🌍", tag: "New Visit", title: "Global Partner Visit", desc: "Visit details..." }
@@ -1473,65 +1475,69 @@ const AdminPages = () => {
                               </button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                              {(selectedPage.content?.campusVisits || [
-                                { icon: "🗓️", tag: "First Visit", title: "Bill Boozing – 3rd April 2026", desc: "Curry College representative will visit your campus, sharing opportunities for American education." },
-                                { icon: "🇬🇧", tag: "Follow-Up Visits", title: "UK University Representatives", desc: "UK University Representatives will visit, showcasing British higher education options and pathways." },
-                                { icon: "🌍", tag: "Ongoing Access", title: "Continued University Partnerships", desc: "Continued university partnerships expanding your students' global education choices." }
-                              ]).map((item, idx) => (
-                                <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 relative overflow-hidden shadow-xs">
-                                  <div className="flex items-center gap-2">
+                              {(() => {
+                                const defaultVisits = [
+                                  { icon: "🗓️", tag: "First Visit", title: "Bill Boozing – 3rd April 2026", desc: "Curry College representative will visit your campus, sharing opportunities for American education." },
+                                  { icon: "🇬🇧", tag: "Follow-Up Visits", title: "UK University Representatives", desc: "UK University Representatives will visit, showcasing British higher education options and pathways." },
+                                  { icon: "🌍", tag: "Ongoing Access", title: "Continued University Partnerships", desc: "Continued university partnerships expanding your students' global education choices." }
+                                ];
+                                const list = selectedPage.content?.campusVisits || defaultVisits;
+                                return list.map((item, idx) => (
+                                  <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 relative overflow-hidden shadow-xs">
+                                    <div className="flex items-center gap-2">
+                                      <input
+                                        className="w-10 px-2 py-1.5 bg-white border border-slate-200 rounded-xl text-center text-lg shrink-0"
+                                        value={item.icon || ""}
+                                        onChange={(e) => {
+                                          const current = [...list];
+                                          current[idx] = { ...current[idx], icon: e.target.value };
+                                          handleContentChange(null, 'campusVisits', current);
+                                        }}
+                                      />
+                                      <input
+                                        className="flex-1 min-w-0 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-brand-600 truncate"
+                                        value={item.tag || ""}
+                                        onChange={(e) => {
+                                          const current = [...list];
+                                          current[idx] = { ...current[idx], tag: e.target.value };
+                                          handleContentChange(null, 'campusVisits', current);
+                                        }}
+                                        placeholder="Tag..."
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const current = list.filter((_, i) => i !== idx);
+                                          handleContentChange(null, 'campusVisits', current);
+                                        }}
+                                        className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0 transition-all"
+                                      >
+                                        <X size={14} />
+                                      </button>
+                                    </div>
                                     <input
-                                      className="w-10 px-2 py-1.5 bg-white border border-slate-200 rounded-xl text-center text-lg shrink-0"
-                                      value={item.icon}
+                                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                                      value={item.title || ""}
                                       onChange={(e) => {
-                                        const current = [...(selectedPage.content?.campusVisits || [])];
-                                        current[idx].icon = e.target.value;
+                                        const current = [...list];
+                                        current[idx] = { ...current[idx], title: e.target.value };
                                         handleContentChange(null, 'campusVisits', current);
                                       }}
+                                      placeholder="Title..."
                                     />
-                                    <input
-                                      className="flex-1 min-w-0 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-brand-600 truncate"
-                                      value={item.tag}
+                                    <textarea
+                                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none"
+                                      value={item.desc || ""}
                                       onChange={(e) => {
-                                        const current = [...(selectedPage.content?.campusVisits || [])];
-                                        current[idx].tag = e.target.value;
+                                        const current = [...list];
+                                        current[idx] = { ...current[idx], desc: e.target.value };
                                         handleContentChange(null, 'campusVisits', current);
                                       }}
-                                      placeholder="Tag..."
+                                      placeholder="Description..."
                                     />
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const current = (selectedPage.content?.campusVisits || []).filter((_, i) => i !== idx);
-                                        handleContentChange(null, 'campusVisits', current);
-                                      }}
-                                      className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0 transition-all"
-                                    >
-                                      <X size={14} />
-                                    </button>
                                   </div>
-                                  <input
-                                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
-                                    value={item.title}
-                                    onChange={(e) => {
-                                      const current = [...(selectedPage.content?.campusVisits || [])];
-                                      current[idx].title = e.target.value;
-                                      handleContentChange(null, 'campusVisits', current);
-                                    }}
-                                    placeholder="Title..."
-                                  />
-                                  <textarea
-                                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none"
-                                    value={item.desc}
-                                    onChange={(e) => {
-                                      const current = [...(selectedPage.content?.campusVisits || [])];
-                                      current[idx].desc = e.target.value;
-                                      handleContentChange(null, 'campusVisits', current);
-                                    }}
-                                    placeholder="Description..."
-                                  />
-                                </div>
-                              ))}
+                                ));
+                              })()}
                             </div>
                           </div>
 
@@ -1547,10 +1553,13 @@ const AdminPages = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const current = selectedPage.content?.agendaItems || [
-                                    { icon: "📜", title: "Professional Training", desc: "Certified TOEFL and SELT training programs..." },
-                                    { icon: "🎯", title: "Career Counselling", desc: "Expert guidance helping students..." }
+                                  const defaultAgenda = [
+                                    { icon: "📜", title: "Professional Training", desc: "Certified TOEFL and SELT training programs for faculty members, enhancing teaching capabilities and career advancement opportunities." },
+                                    { icon: "🎯", title: "Career Counselling", desc: "Expert guidance helping students navigate career paths, university selections, and global opportunities with confidence." },
+                                    { icon: "🏫", title: "University Visits", desc: "Direct campus visits from international university representatives, providing students with firsthand information about study abroad options." },
+                                    { icon: "🎓", title: "City College Birmingham (2+1)", desc: "Explore your path to Accredited qualifications. Complete your first two years in India, pathway to abroad." }
                                   ];
+                                  const current = selectedPage.content?.agendaItems || defaultAgenda;
                                   handleContentChange(null, 'agendaItems', [
                                     ...current,
                                     { icon: "🎓", title: "New Agenda Card", desc: "Description of collaboration..." }
@@ -1562,56 +1571,60 @@ const AdminPages = () => {
                               </button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                              {(selectedPage.content?.agendaItems || [
-                                { icon: "📜", title: "Professional Training", desc: "Certified TOEFL and SELT training programs for faculty members, enhancing teaching capabilities and career advancement opportunities." },
-                                { icon: "🎯", title: "Career Counselling", desc: "Expert guidance helping students navigate career paths, university selections, and global opportunities with confidence." },
-                                { icon: "🏫", title: "University Visits", desc: "Direct campus visits from international university representatives, providing students with firsthand information about study abroad options." },
-                                { icon: "🎓", title: "City College Birmingham (2+1)", desc: "Explore your path to Accredited qualifications. Complete your first two years in India, pathway to abroad." }
-                              ]).map((item, idx) => (
-                                <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 relative overflow-hidden">
-                                  <div className="flex items-center gap-2">
-                                    <input
-                                      className="w-10 px-2 py-1.5 bg-white border border-slate-200 rounded-xl text-center text-lg shrink-0"
-                                      value={item.icon}
+                              {(() => {
+                                const defaultAgenda = [
+                                  { icon: "📜", title: "Professional Training", desc: "Certified TOEFL and SELT training programs for faculty members, enhancing teaching capabilities and career advancement opportunities." },
+                                  { icon: "🎯", title: "Career Counselling", desc: "Expert guidance helping students navigate career paths, university selections, and global opportunities with confidence." },
+                                  { icon: "🏫", title: "University Visits", desc: "Direct campus visits from international university representatives, providing students with firsthand information about study abroad options." },
+                                  { icon: "🎓", title: "City College Birmingham (2+1)", desc: "Explore your path to Accredited qualifications. Complete your first two years in India, pathway to abroad." }
+                                ];
+                                const list = selectedPage.content?.agendaItems || defaultAgenda;
+                                return list.map((item, idx) => (
+                                  <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 relative overflow-hidden">
+                                    <div className="flex items-center gap-2">
+                                      <input
+                                        className="w-10 px-2 py-1.5 bg-white border border-slate-200 rounded-xl text-center text-lg shrink-0"
+                                        value={item.icon || ""}
+                                        onChange={(e) => {
+                                          const current = [...list];
+                                          current[idx] = { ...current[idx], icon: e.target.value };
+                                          handleContentChange(null, 'agendaItems', current);
+                                        }}
+                                      />
+                                      <input
+                                        className="flex-1 min-w-0 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 truncate"
+                                        value={item.title || ""}
+                                        onChange={(e) => {
+                                          const current = [...list];
+                                          current[idx] = { ...current[idx], title: e.target.value };
+                                          handleContentChange(null, 'agendaItems', current);
+                                        }}
+                                        placeholder="Title..."
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const current = list.filter((_, i) => i !== idx);
+                                          handleContentChange(null, 'agendaItems', current);
+                                        }}
+                                        className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0 transition-all"
+                                      >
+                                        <X size={14} />
+                                      </button>
+                                    </div>
+                                    <textarea
+                                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none"
+                                      value={item.desc || ""}
                                       onChange={(e) => {
-                                        const current = [...(selectedPage.content?.agendaItems || [])];
-                                        current[idx].icon = e.target.value;
+                                        const current = [...list];
+                                        current[idx] = { ...current[idx], desc: e.target.value };
                                         handleContentChange(null, 'agendaItems', current);
                                       }}
+                                      placeholder="Description..."
                                     />
-                                    <input
-                                      className="flex-1 min-w-0 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 truncate"
-                                      value={item.title}
-                                      onChange={(e) => {
-                                        const current = [...(selectedPage.content?.agendaItems || [])];
-                                        current[idx].title = e.target.value;
-                                        handleContentChange(null, 'agendaItems', current);
-                                      }}
-                                      placeholder="Title..."
-                                    />
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const current = (selectedPage.content?.agendaItems || []).filter((_, i) => i !== idx);
-                                        handleContentChange(null, 'agendaItems', current);
-                                      }}
-                                      className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0 transition-all"
-                                    >
-                                      <X size={14} />
-                                    </button>
                                   </div>
-                                  <textarea
-                                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none"
-                                    value={item.desc}
-                                    onChange={(e) => {
-                                      const current = [...(selectedPage.content?.agendaItems || [])];
-                                      current[idx].desc = e.target.value;
-                                      handleContentChange(null, 'agendaItems', current);
-                                    }}
-                                    placeholder="Description..."
-                                  />
-                                </div>
-                              ))}
+                                ));
+                              })()}
                             </div>
                           </div>
 
@@ -1627,9 +1640,12 @@ const AdminPages = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const current = selectedPage.content?.facultyBenefits || [
-                                    { icon: "🏅", title: "Certified Training Programs", desc: "Official TOEFL and SELT certification training..." }
+                                  const defaultBenefits = [
+                                    { icon: "🏅", title: "Certified Training Programs", desc: "Official TOEFL and SELT certification training that enhances your teaching credentials and opens new career opportunities." },
+                                    { icon: "📈", title: "Professional Development", desc: "Stay current with international education standards and improve your ability to guide students toward global opportunities." },
+                                    { icon: "💰", title: "Referral Incentives", desc: "Earn referral incentives when your students enroll through our partnerships, creating additional income streams for dedicated faculty." }
                                   ];
+                                  const current = selectedPage.content?.facultyBenefits || defaultBenefits;
                                   handleContentChange(null, 'facultyBenefits', [
                                     ...current,
                                     { icon: "⭐", title: "New Benefit Card", desc: "Benefit details..." }
@@ -1641,55 +1657,59 @@ const AdminPages = () => {
                               </button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                              {(selectedPage.content?.facultyBenefits || [
-                                { icon: "🏅", title: "Certified Training Programs", desc: "Official TOEFL and SELT certification training that enhances your teaching credentials and opens new career opportunities." },
-                                { icon: "📈", title: "Professional Development", desc: "Stay current with international education standards and improve your ability to guide students toward global opportunities." },
-                                { icon: "💰", title: "Referral Incentives", desc: "Earn referral incentives when your students enroll through our partnerships, creating additional income streams for dedicated faculty." }
-                              ]).map((item, idx) => (
-                                <div key={idx} className="p-4 bg-white border border-slate-200 rounded-2xl space-y-3 relative overflow-hidden shadow-xs">
-                                  <div className="flex items-center gap-2">
-                                    <input
-                                      className="w-10 px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg shrink-0"
-                                      value={item.icon}
+                              {(() => {
+                                const defaultBenefits = [
+                                  { icon: "🏅", title: "Certified Training Programs", desc: "Official TOEFL and SELT certification training that enhances your teaching credentials and opens new career opportunities." },
+                                  { icon: "📈", title: "Professional Development", desc: "Stay current with international education standards and improve your ability to guide students toward global opportunities." },
+                                  { icon: "💰", title: "Referral Incentives", desc: "Earn referral incentives when your students enroll through our partnerships, creating additional income streams for dedicated faculty." }
+                                ];
+                                const list = selectedPage.content?.facultyBenefits || defaultBenefits;
+                                return list.map((item, idx) => (
+                                  <div key={idx} className="p-4 bg-white border border-slate-200 rounded-2xl space-y-3 relative overflow-hidden shadow-xs">
+                                    <div className="flex items-center gap-2">
+                                      <input
+                                        className="w-10 px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg shrink-0"
+                                        value={item.icon || ""}
+                                        onChange={(e) => {
+                                          const current = [...list];
+                                          current[idx] = { ...current[idx], icon: e.target.value };
+                                          handleContentChange(null, 'facultyBenefits', current);
+                                        }}
+                                      />
+                                      <input
+                                        className="flex-1 min-w-0 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 truncate"
+                                        value={item.title || ""}
+                                        onChange={(e) => {
+                                          const current = [...list];
+                                          current[idx] = { ...current[idx], title: e.target.value };
+                                          handleContentChange(null, 'facultyBenefits', current);
+                                        }}
+                                        placeholder="Title..."
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const current = list.filter((_, i) => i !== idx);
+                                          handleContentChange(null, 'facultyBenefits', current);
+                                        }}
+                                        className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0 transition-all"
+                                      >
+                                        <X size={14} />
+                                      </button>
+                                    </div>
+                                    <textarea
+                                      className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none"
+                                      value={item.desc || ""}
                                       onChange={(e) => {
-                                        const current = [...(selectedPage.content?.facultyBenefits || [])];
-                                        current[idx].icon = e.target.value;
+                                        const current = [...list];
+                                        current[idx] = { ...current[idx], desc: e.target.value };
                                         handleContentChange(null, 'facultyBenefits', current);
                                       }}
+                                      placeholder="Description..."
                                     />
-                                    <input
-                                      className="flex-1 min-w-0 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 truncate"
-                                      value={item.title}
-                                      onChange={(e) => {
-                                        const current = [...(selectedPage.content?.facultyBenefits || [])];
-                                        current[idx].title = e.target.value;
-                                        handleContentChange(null, 'facultyBenefits', current);
-                                      }}
-                                      placeholder="Title..."
-                                    />
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const current = (selectedPage.content?.facultyBenefits || []).filter((_, i) => i !== idx);
-                                        handleContentChange(null, 'facultyBenefits', current);
-                                      }}
-                                      className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0 transition-all"
-                                    >
-                                      <X size={14} />
-                                    </button>
                                   </div>
-                                  <textarea
-                                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none"
-                                    value={item.desc}
-                                    onChange={(e) => {
-                                      const current = [...(selectedPage.content?.facultyBenefits || [])];
-                                      current[idx].desc = e.target.value;
-                                      handleContentChange(null, 'facultyBenefits', current);
-                                    }}
-                                    placeholder="Description..."
-                                  />
-                                </div>
-                              ))}
+                                ));
+                              })()}
                             </div>
                           </div>
 
@@ -1705,10 +1725,15 @@ const AdminPages = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const current = selectedPage.content?.pathways || [
+                                  const defaultPathways = [
                                     "Software Developer/ Web Developer",
-                                    "IT Support Specialist"
+                                    "IT Support Specialist",
+                                    "Network Engineer/ Cybersecurity Analyst",
+                                    "Data Scientist/ Business Intelligence Analyst",
+                                    "E-Commerce Manager",
+                                    "Tech Project Manager"
                                   ];
+                                  const current = selectedPage.content?.pathways || defaultPathways;
                                   handleContentChange(null, 'pathways', [...current, "New Career Pathway"]);
                                 }}
                                 className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-bold rounded-xl border border-indigo-200 flex items-center gap-1 transition-all"
@@ -1717,37 +1742,41 @@ const AdminPages = () => {
                               </button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
-                              {(selectedPage.content?.pathways || [
-                                "Software Developer/ Web Developer",
-                                "IT Support Specialist",
-                                "Network Engineer/ Cybersecurity Analyst",
-                                "Data Scientist/ Business Intelligence Analyst",
-                                "E-Commerce Manager",
-                                "Tech Project Manager"
-                              ]).map((pw, idx) => (
-                                <div key={idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-2">
-                                  <input
-                                    className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-indigo-700"
-                                    value={pw}
-                                    onChange={(e) => {
-                                      const current = [...(selectedPage.content?.pathways || [])];
-                                      current[idx] = e.target.value;
-                                      handleContentChange(null, 'pathways', current);
-                                    }}
-                                    placeholder="Pathway name..."
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const current = (selectedPage.content?.pathways || []).filter((_, i) => i !== idx);
-                                      handleContentChange(null, 'pathways', current);
-                                    }}
-                                    className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                                  >
-                                    <Trash2 size={14} />
-                                  </button>
-                                </div>
-                              ))}
+                              {(() => {
+                                const defaultPathways = [
+                                  "Software Developer/ Web Developer",
+                                  "IT Support Specialist",
+                                  "Network Engineer/ Cybersecurity Analyst",
+                                  "Data Scientist/ Business Intelligence Analyst",
+                                  "E-Commerce Manager",
+                                  "Tech Project Manager"
+                                ];
+                                const list = selectedPage.content?.pathways || defaultPathways;
+                                return list.map((pw, idx) => (
+                                  <div key={idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-2">
+                                    <input
+                                      className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-indigo-700"
+                                      value={pw || ""}
+                                      onChange={(e) => {
+                                        const current = [...list];
+                                        current[idx] = e.target.value;
+                                        handleContentChange(null, 'pathways', current);
+                                      }}
+                                      placeholder="Pathway name..."
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const current = list.filter((_, i) => i !== idx);
+                                        handleContentChange(null, 'pathways', current);
+                                      }}
+                                      className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                    >
+                                      <Trash2 size={14} />
+                                    </button>
+                                  </div>
+                                ));
+                              })()}
                             </div>
                           </div>
 
@@ -1852,10 +1881,15 @@ const AdminPages = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const current = selectedPage.content?.programDownloads || [
+                                  const defaultDocs = [
                                     { name: "Business Management", category: "Management", icon: "💼", fileUrl: "/assets/certificates/Business Management.pdf" },
-                                    { name: "Diploma in Health & Social Care", category: "Health & Social Care", icon: "🏥", fileUrl: "/assets/certificates/Diploma in Health & Social Care.pdf" }
+                                    { name: "Diploma in Health & Social Care", category: "Health & Social Care", icon: "🏥", fileUrl: "/assets/certificates/Diploma in Health & Social Care.pdf" },
+                                    { name: "Diploma in IT - Web Design", category: "IT & Computing", icon: "💻", fileUrl: "/assets/certificates/Diploma in Information Technology - Web Design.pdf" },
+                                    { name: "Diploma in IT - E Commerce", category: "IT & Computing", icon: "🛒", fileUrl: "/assets/certificates/Diploma in IT - E Commerce F.pdf" },
+                                    { name: "Hospitality & Tourism Management", category: "Hospitality", icon: "🏨", fileUrl: "/assets/certificates/Hospitality & Tourism Management.pdf" },
+                                    { name: "Gina Abroad - British Degree Route", category: "Academic Guide", icon: "🇬🇧", fileUrl: "/assets/certificates/Gina Abroad_Your-Smartest-Route-to-a-British-Degree.pdf" }
                                   ];
+                                  const current = selectedPage.content?.programDownloads || defaultDocs;
                                   handleContentChange(null, 'programDownloads', [
                                     ...current,
                                     { name: "New Course Syllabus", category: "Academic Guide", icon: "📚", fileUrl: "" }
@@ -1868,86 +1902,119 @@ const AdminPages = () => {
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 pt-2">
-                              {(selectedPage.content?.programDownloads || [
-                                { name: "Business Management", category: "Management", icon: "💼", fileUrl: "/assets/certificates/Business Management.pdf" },
-                                { name: "Diploma in Health & Social Care", category: "Health & Social Care", icon: "🏥", fileUrl: "/assets/certificates/Diploma in Health & Social Care.pdf" },
-                                { name: "Diploma in IT - Web Design", category: "IT & Computing", icon: "💻", fileUrl: "/assets/certificates/Diploma in Information Technology - Web Design.pdf" },
-                                { name: "Diploma in IT - E Commerce", category: "IT & Computing", icon: "🛒", fileUrl: "/assets/certificates/Diploma in IT - E Commerce F.pdf" },
-                                { name: "Hospitality & Tourism Management", category: "Hospitality", icon: "🏨", fileUrl: "/assets/certificates/Hospitality & Tourism Management.pdf" },
-                                { name: "Gina Abroad - British Degree Route", category: "Academic Guide", icon: "🇬🇧", fileUrl: "/assets/certificates/Gina Abroad_Your-Smartest-Route-to-a-British-Degree.pdf" }
-                              ]).map((doc, idx) => (
-                                <div key={idx} className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-3 relative group hover:border-indigo-200 transition-all">
-                                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                                    <div className="md:col-span-1">
-                                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Icon</label>
-                                      <input
-                                        className="w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-center text-lg font-bold"
-                                        value={doc.icon || "📄"}
-                                        onChange={(e) => {
-                                          const current = [...(selectedPage.content?.programDownloads || [])];
-                                          current[idx].icon = e.target.value;
-                                          handleContentChange(null, 'programDownloads', current);
-                                        }}
-                                      />
-                                    </div>
-                                    <div className="md:col-span-4">
-                                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Document Title</label>
-                                      <input
-                                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
-                                        value={doc.name || ""}
-                                        onChange={(e) => {
-                                          const current = [...(selectedPage.content?.programDownloads || [])];
-                                          current[idx].name = e.target.value;
-                                          handleContentChange(null, 'programDownloads', current);
-                                        }}
-                                        placeholder="Document Name..."
-                                      />
-                                    </div>
-                                    <div className="md:col-span-3">
-                                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Category</label>
-                                      <input
-                                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600"
-                                        value={doc.category || ""}
-                                        onChange={(e) => {
-                                          const current = [...(selectedPage.content?.programDownloads || [])];
-                                          current[idx].category = e.target.value;
-                                          handleContentChange(null, 'programDownloads', current);
-                                        }}
-                                        placeholder="Category..."
-                                      />
-                                    </div>
-                                    <div className="md:col-span-4 flex items-center gap-2 pt-4 md:pt-0">
-                                      <div className="flex-1 overflow-hidden">
-                                        <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">File URL / Path</label>
+                              {(() => {
+                                const defaultDocs = [
+                                  { name: "Business Management", category: "Management", icon: "💼", fileUrl: "/assets/certificates/Business Management.pdf" },
+                                  { name: "Diploma in Health & Social Care", category: "Health & Social Care", icon: "🏥", fileUrl: "/assets/certificates/Diploma in Health & Social Care.pdf" },
+                                  { name: "Diploma in IT - Web Design", category: "IT & Computing", icon: "💻", fileUrl: "/assets/certificates/Diploma in Information Technology - Web Design.pdf" },
+                                  { name: "Diploma in IT - E Commerce", category: "IT & Computing", icon: "🛒", fileUrl: "/assets/certificates/Diploma in IT - E Commerce F.pdf" },
+                                  { name: "Hospitality & Tourism Management", category: "Hospitality", icon: "🏨", fileUrl: "/assets/certificates/Hospitality & Tourism Management.pdf" },
+                                  { name: "Gina Abroad - British Degree Route", category: "Academic Guide", icon: "🇬🇧", fileUrl: "/assets/certificates/Gina Abroad_Your-Smartest-Route-to-a-British-Degree.pdf" }
+                                ];
+                                const list = selectedPage.content?.programDownloads || defaultDocs;
+                                return list.map((doc, idx) => (
+                                  <div key={idx} className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-3 relative group hover:border-indigo-200 transition-all">
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                                      <div className="md:col-span-1">
+                                        <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Icon</label>
                                         <input
-                                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-[11px] font-mono text-slate-500 truncate"
-                                          value={doc.fileUrl || doc.filename || ""}
+                                          className="w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-center text-lg font-bold"
+                                          value={doc.icon || "📄"}
                                           onChange={(e) => {
-                                            const current = [...(selectedPage.content?.programDownloads || [])];
-                                            current[idx].fileUrl = e.target.value;
+                                            const current = [...list];
+                                            current[idx] = { ...current[idx], icon: e.target.value };
                                             handleContentChange(null, 'programDownloads', current);
                                           }}
-                                          placeholder="/assets/certificates/file.pdf"
                                         />
                                       </div>
-                                      <label className="px-3 py-2 bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white rounded-xl border border-indigo-200 text-xs font-bold cursor-pointer transition-all flex items-center gap-1 shrink-0 mt-4">
-                                        <Upload size={14} /> Upload PDF
+                                      <div className="md:col-span-4">
+                                        <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Document Title</label>
                                         <input
-                                          type="file"
-                                          className="hidden"
-                                          accept=".pdf,.doc,.docx"
-                                          onChange={async (e) => {
-                                            if (e.target.files?.[0]) {
-                                              const file = e.target.files[0];
-                                              const formData = new FormData();
-                                              formData.append('image', file);
-                                              try {
-                                                const res = await fetch(getApiUrl('/api/admin/upload'), {
-                                                  method: 'POST',
-                                                  headers: { 'ngrok-skip-browser-warning': 'true' },
-                                                  body: formData
-                                                });
-                                                const data = await res.json();
+                                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                                          value={doc.name || ""}
+                                          onChange={(e) => {
+                                            const current = [...list];
+                                            current[idx] = { ...current[idx], name: e.target.value };
+                                            handleContentChange(null, 'programDownloads', current);
+                                          }}
+                                          placeholder="Document Name..."
+                                        />
+                                      </div>
+                                      <div className="md:col-span-3">
+                                        <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Category</label>
+                                        <input
+                                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600"
+                                          value={doc.category || ""}
+                                          onChange={(e) => {
+                                            const current = [...list];
+                                            current[idx] = { ...current[idx], category: e.target.value };
+                                            handleContentChange(null, 'programDownloads', current);
+                                          }}
+                                          placeholder="Category..."
+                                        />
+                                      </div>
+                                      <div className="md:col-span-4 flex items-center gap-2 pt-4 md:pt-0">
+                                        <div className="flex-1 overflow-hidden">
+                                          <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">File URL / Path</label>
+                                          <input
+                                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-[11px] font-mono text-slate-500 truncate"
+                                            value={doc.fileUrl || doc.filename || ""}
+                                            onChange={(e) => {
+                                              const current = [...list];
+                                              current[idx] = { ...current[idx], fileUrl: e.target.value };
+                                              handleContentChange(null, 'programDownloads', current);
+                                            }}
+                                            placeholder="/assets/certificates/file.pdf"
+                                          />
+                                        </div>
+                                        <label className="px-3 py-2 bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white rounded-xl border border-indigo-200 text-xs font-bold cursor-pointer transition-all flex items-center gap-1 shrink-0 mt-4">
+                                          <Upload size={14} /> Upload PDF
+                                          <input
+                                            type="file"
+                                            className="hidden"
+                                            accept=".pdf,.doc,.docx"
+                                            onChange={async (e) => {
+                                              if (e.target.files?.[0]) {
+                                                const file = e.target.files[0];
+                                                const formData = new FormData();
+                                                formData.append('image', file);
+                                                try {
+                                                  const res = await fetch(getApiUrl('/api/admin/upload'), {
+                                                    method: 'POST',
+                                                    headers: { 'ngrok-skip-browser-warning': 'true' },
+                                                    body: formData
+                                                  });
+                                                  const data = await res.json();
+                                                  if (data.success && data.url) {
+                                                    const current = [...list];
+                                                    current[idx] = { ...current[idx], fileUrl: data.url };
+                                                    handleContentChange(null, 'programDownloads', current);
+                                                  }
+                                                } catch (err) {
+                                                  console.error('PDF upload failed:', err);
+                                                }
+                                              }
+                                            }}
+                                          />
+                                        </label>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const current = list.filter((_, i) => i !== idx);
+                                            handleContentChange(null, 'programDownloads', current);
+                                          }}
+                                          className="p-2 text-red-500 hover:bg-red-50 rounded-xl shrink-0 mt-4 transition-all"
+                                          title="Remove Document"
+                                        >
+                                          <Trash2 size={14} />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ));
+                              })()}
+                            </div>
+                          </div>
                                                 if (data.success && data.url) {
                                                   const current = [...(selectedPage.content?.programDownloads || [])];
                                                   current[idx].fileUrl = data.url;
@@ -2075,13 +2142,16 @@ const AdminPages = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const current = selectedPage.content?.certificates || [
+                                  const defaultCerts = [
                                     { src: "/assets/certificates/Screenshot 2026-06-10 111633.png", alt: "Certificate of Representation" },
-                                    { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "City College Birmingham Appointment Letter" }
+                                    { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "City College Birmingham Appointment Letter" },
+                                    { src: "/assets/certificates/Screenshot 2026-06-10 111719.png", alt: "Certificate of Attendance" },
+                                    { src: "/assets/certificates/Screenshot 2026-06-10 111730.png", alt: "ICEF Accredited Certificate" }
                                   ];
+                                  const current = selectedPage.content?.certificates || defaultCerts;
                                   handleContentChange(null, 'certificates', [
                                     ...current,
-                                    { src: "/assets/certificates/Screenshot 2026-06-10 111633.png", alt: "New Certificate Title" }
+                                    { src: "", alt: "New Certificate Title" }
                                   ]);
                                 }}
                                 className="px-3.5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
@@ -2096,48 +2166,92 @@ const AdminPages = () => {
                                 { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "City College Birmingham Appointment Letter" },
                                 { src: "/assets/certificates/Screenshot 2026-06-10 111719.png", alt: "Certificate of Attendance" },
                                 { src: "/assets/certificates/Screenshot 2026-06-10 111730.png", alt: "ICEF Accredited Certificate" }
-                              ]).map((cert, idx) => (
+                              ]).map((cert, idx) => {
+                                const defaultCertsList = [
+                                  { src: "/assets/certificates/Screenshot 2026-06-10 111633.png", alt: "Certificate of Representation" },
+                                  { src: "/assets/certificates/Screenshot 2026-06-10 111657.png", alt: "City College Birmingham Appointment Letter" },
+                                  { src: "/assets/certificates/Screenshot 2026-06-10 111719.png", alt: "Certificate of Attendance" },
+                                  { src: "/assets/certificates/Screenshot 2026-06-10 111730.png", alt: "ICEF Accredited Certificate" }
+                                ];
+                                return (
                                 <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 relative group">
                                   <div className="h-44 bg-white rounded-xl overflow-hidden border border-slate-200 relative">
-                                    <SafeImage src={getAssetUrl(cert.src)} className="w-full h-full object-contain p-2" alt={cert.alt} />
-                                    <label className="absolute inset-0 bg-slate-900/70 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer font-bold text-xs gap-1">
-                                      <Upload size={18} /> Replace Image
-                                      <input
-                                        type="file"
-                                        className="hidden"
-                                        accept="image/*"
-                                        onChange={async (e) => {
-                                          if (e.target.files?.[0]) {
-                                            const file = e.target.files[0];
-                                            const formData = new FormData();
-                                            formData.append('image', file);
-                                            try {
-                                              const res = await fetch(getApiUrl('/api/admin/upload'), {
-                                                method: 'POST',
-                                                headers: { 'ngrok-skip-browser-warning': 'true' },
-                                                body: formData
-                                              });
-                                              const data = await res.json();
-                                              if (data.success && data.url) {
-                                                const current = [...(selectedPage.content?.certificates || [])];
-                                                current[idx].src = data.url;
-                                                handleContentChange(null, 'certificates', current);
+                                    {cert.src ? (
+                                      <>
+                                        <SafeImage src={getAssetUrl(cert.src)} className="w-full h-full object-contain p-2" alt={cert.alt} />
+                                        <label className="absolute inset-0 bg-slate-900/70 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer font-bold text-xs gap-1">
+                                          <Upload size={18} /> Replace Image
+                                          <input
+                                            type="file"
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={async (e) => {
+                                              if (e.target.files?.[0]) {
+                                                const file = e.target.files[0];
+                                                const formData = new FormData();
+                                                formData.append('image', file);
+                                                try {
+                                                  const res = await fetch(getApiUrl('/api/admin/upload'), {
+                                                    method: 'POST',
+                                                    headers: { 'ngrok-skip-browser-warning': 'true' },
+                                                    body: formData
+                                                  });
+                                                  const data = await res.json();
+                                                  if (data.success && data.url) {
+                                                    const current = [...(selectedPage.content?.certificates || defaultCertsList)];
+                                                    current[idx] = { ...current[idx], src: data.url };
+                                                    handleContentChange(null, 'certificates', current);
+                                                  }
+                                                } catch (err) {
+                                                  console.error('Certificate upload failed:', err);
+                                                }
                                               }
-                                            } catch (err) {
-                                              console.error('Certificate upload failed:', err);
+                                            }}
+                                          />
+                                        </label>
+                                      </>
+                                    ) : (
+                                      <label className="w-full h-full flex flex-col items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-brand-600 transition-all cursor-pointer p-4 text-center gap-1.5 border-2 border-dashed border-slate-300 rounded-xl">
+                                        <Upload size={24} className="text-brand-600 mb-1" />
+                                        <span className="text-xs font-bold text-slate-700">Upload Certificate Image</span>
+                                        <span className="text-[10px] text-slate-400">Click to select file</span>
+                                        <input
+                                          type="file"
+                                          className="hidden"
+                                          accept="image/*"
+                                          onChange={async (e) => {
+                                            if (e.target.files?.[0]) {
+                                              const file = e.target.files[0];
+                                              const formData = new FormData();
+                                              formData.append('image', file);
+                                              try {
+                                                const res = await fetch(getApiUrl('/api/admin/upload'), {
+                                                  method: 'POST',
+                                                  headers: { 'ngrok-skip-browser-warning': 'true' },
+                                                  body: formData
+                                                });
+                                                const data = await res.json();
+                                                if (data.success && data.url) {
+                                                  const current = [...(selectedPage.content?.certificates || defaultCertsList)];
+                                                  current[idx] = { ...current[idx], src: data.url };
+                                                  handleContentChange(null, 'certificates', current);
+                                                }
+                                              } catch (err) {
+                                                console.error('Certificate upload failed:', err);
+                                              }
                                             }
-                                          }
-                                        }}
-                                      />
-                                    </label>
+                                          }}
+                                        />
+                                      </label>
+                                    )}
                                   </div>
                                   <div className="space-y-2">
                                     <input
                                       className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
                                       value={cert.alt || ""}
                                       onChange={(e) => {
-                                        const current = [...(selectedPage.content?.certificates || [])];
-                                        current[idx].alt = e.target.value;
+                                        const current = [...(selectedPage.content?.certificates || defaultCertsList)];
+                                        current[idx] = { ...current[idx], alt: e.target.value };
                                         handleContentChange(null, 'certificates', current);
                                       }}
                                       placeholder="Certificate Title..."
@@ -2145,7 +2259,7 @@ const AdminPages = () => {
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        const current = (selectedPage.content?.certificates || []).filter((_, i) => i !== idx);
+                                        const current = (selectedPage.content?.certificates || defaultCertsList).filter((_, i) => i !== idx);
                                         handleContentChange(null, 'certificates', current);
                                       }}
                                       className="w-full py-1.5 text-red-500 hover:bg-red-50 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1"
@@ -2154,7 +2268,8 @@ const AdminPages = () => {
                                     </button>
                                   </div>
                                 </div>
-                              ))}
+                              );
+                              })}
                             </div>
                           </div>
 
@@ -2170,13 +2285,28 @@ const AdminPages = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const current = selectedPage.content?.galleryItems || [
-                                    { src: "/assets/office-images/testing-lab.jpg", title: "High-Capacity Testing Lab", category: "Labs", location: "Surat Vesu Branch", desc: "State-of-the-art computer labs customized for official exams." },
-                                    { src: "/assets/office-images/vip-conference.jpg", title: "VIP Executive Conference", category: "Spaces", location: "Surat Vesu Branch", desc: "Professional conference space for academic training." }
+                                  const defaultGallery = [
+                                    { src: "/assets/office-images/testing-lab.jpg", title: "High-Capacity Testing Lab", category: "Labs", location: "Surat Vesu Branch", desc: "State-of-the-art computer labs customized for official IELTS and PTE exam delivery." },
+                                    { src: "/assets/office-images/vip-conference.jpg", title: "VIP Executive Conference", category: "Spaces", location: "Surat Vesu Branch", desc: "Professional conference space for academic training and workshops." },
+                                    { src: "/assets/office-images/vip-exam-centre.jpg", title: "Authorised City College Birmingham Centre", category: "Spaces", location: "Surat Vesu Branch", desc: "Authorised Study Centre for City College Birmingham, UK." },
+                                    { src: "/assets/office-images/directors-cabin.jpeg", title: "Director's Cabin", category: "Spaces", location: "Surat Vesu Branch", desc: "Our executive administrative space." },
+                                    { src: "/assets/office-images/p1.jpeg", title: "Navratri Traditional Day", category: "Events & News", location: "Surat Vesu Branch", desc: "Celebration of Navratri festival with staff." },
+                                    { src: "/assets/office-images/p2.jpeg", title: "Diwali Celebration Dinner", category: "Events & News", location: "FETC Grand Ballroom", desc: "Annual festive dinner gathering with staff." },
+                                    { src: "/assets/office-images/p3.jpeg", title: "Annual Team Trip & Offsite", category: "Events & News", location: "FETC Offsite", desc: "Annual retreat promoting team building." },
+                                    { src: "/assets/office-images/p4.jpeg", title: "Champions of the League", category: "Events & News", location: "Surat Turf Arena", desc: "Turf cricket championship victory." },
+                                    { src: "/assets/office-images/p5.jpeg", title: "Faculty Training Seminars", category: "Events & News", location: "Surat Vesu Branch", desc: "Score-optimization bootcamps." },
+                                    { src: "/assets/office-images/p6.jpeg", title: "Student Success Ceremony", category: "Events & News", location: "Surat Vesu Branch", desc: "Recognizing high scoring students." },
+                                    { src: "/assets/news/news1.png", title: "CBSE Mock Test Initiative", category: "Events & News", location: "Radiant School", desc: "English mock test for 700+ students." },
+                                    { src: "/assets/news/news2.png", title: "Foreign Innovation Test", category: "Events & News", location: "Radiant School", desc: "Media coverage of mock test." },
+                                    { src: "/assets/office-images/exterior-roongta-vesu.jpeg", title: "Roongta Business Park Campus", category: "Exterior", location: "Surat Vesu Branch", desc: "Flagship training center." },
+                                    { src: "/assets/office-images/exterior-varachha-prime.jpeg", title: "Varachha Branch Campus", category: "Exterior", location: "Surat Varachha Branch", desc: "Second fully equipped branch." },
+                                    { src: "/assets/office-images/admin-pc.jpeg", title: "Administrative Terminal", category: "Workspace", location: "Surat Vesu Branch", desc: "Dedicated administrative workspace." },
+                                    { src: "/assets/office-images/waiting-area-washroom.jpeg", title: "Student Lounge & Waiting Area", category: "Workspace", location: "Surat Vesu Branch", desc: "Spacious lobby for candidates." }
                                   ];
+                                  const current = selectedPage.content?.galleryItems || defaultGallery;
                                   handleContentChange(null, 'galleryItems', [
                                     ...current,
-                                    { src: "/assets/office-images/testing-lab.jpg", title: "New Campus Photo", category: "Spaces", location: "Surat Branch", desc: "Campus facility detail." }
+                                    { src: "", title: "New Campus Photo", category: "Spaces", location: "Surat Branch", desc: "Campus facility detail." }
                                   ]);
                                 }}
                                 className="px-3.5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
@@ -2186,83 +2316,161 @@ const AdminPages = () => {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
-                              {(selectedPage.content?.galleryItems || [
-                                { src: "/assets/office-images/testing-lab.jpg", title: "High-Capacity Testing Lab", category: "Labs", location: "Surat Vesu Branch", desc: "State-of-the-art computer labs customized for official IELTS and PTE exam delivery." },
-                                { src: "/assets/office-images/vip-conference.jpg", title: "VIP Executive Conference", category: "Spaces", location: "Surat Vesu Branch", desc: "Professional conference space for academic training and workshops." },
-                                { src: "/assets/office-images/vip-exam-centre.jpg", title: "Authorised City College Birmingham Centre", category: "Spaces", location: "Surat Vesu Branch", desc: "Authorised Study Centre for City College Birmingham, UK." },
-                                { src: "/assets/office-images/directors-cabin.jpeg", title: "Director's Cabin", category: "Spaces", location: "Surat Vesu Branch", desc: "Our executive administrative space." },
-                                { src: "/assets/office-images/p1.jpeg", title: "Navratri Traditional Day", category: "Events & News", location: "Surat Vesu Branch", desc: "Celebration of Navratri festival with staff." },
-                                { src: "/assets/office-images/p2.jpeg", title: "Diwali Celebration Dinner", category: "Events & News", location: "FETC Grand Ballroom", desc: "Annual festive dinner gathering with staff." },
-                                { src: "/assets/office-images/p3.jpeg", title: "Annual Team Trip & Offsite", category: "Events & News", location: "FETC Offsite", desc: "Annual retreat promoting team building." },
-                                { src: "/assets/office-images/p4.jpeg", title: "Champions of the League", category: "Events & News", location: "Surat Turf Arena", desc: "Turf cricket championship victory." },
-                                { src: "/assets/office-images/p5.jpeg", title: "Faculty Training Seminars", category: "Events & News", location: "Surat Vesu Branch", desc: "Score-optimization bootcamps." },
-                                { src: "/assets/office-images/p6.jpeg", title: "Student Success Ceremony", category: "Events & News", location: "Surat Vesu Branch", desc: "Recognizing high scoring students." },
-                                { src: "/assets/news/news1.png", title: "CBSE Mock Test Initiative", category: "Events & News", location: "Radiant School", desc: "English mock test for 700+ students." },
-                                { src: "/assets/news/news2.png", title: "Foreign Innovation Test", category: "Events & News", location: "Radiant School", desc: "Media coverage of mock test." },
-                                { src: "/assets/office-images/exterior-roongta-vesu.jpeg", title: "Roongta Business Park Campus", category: "Exterior", location: "Surat Vesu Branch", desc: "Flagship training center." },
-                                { src: "/assets/office-images/exterior-varachha-prime.jpeg", title: "Varachha Branch Campus", category: "Exterior", location: "Surat Varachha Branch", desc: "Second fully equipped branch." },
-                                { src: "/assets/office-images/admin-pc.jpeg", title: "Administrative Terminal", category: "Workspace", location: "Surat Vesu Branch", desc: "Dedicated administrative workspace." },
-                                { src: "/assets/office-images/waiting-area-washroom.jpeg", title: "Student Lounge & Waiting Area", category: "Workspace", location: "Surat Vesu Branch", desc: "Spacious lobby for candidates." }
-                              ]).map((item, idx) => (
-                                <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 relative group">
-                                  <div className="h-44 bg-slate-900 rounded-xl overflow-hidden relative">
-                                    <SafeImage src={getAssetUrl(item.src)} className="w-full h-full object-cover" alt={item.title} />
-                                    <label className="absolute inset-0 bg-slate-900/70 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer font-bold text-xs gap-1">
-                                      <Upload size={18} /> Replace Photo
-                                      <input
-                                        type="file"
-                                        className="hidden"
-                                        accept="image/*"
-                                        onChange={async (e) => {
-                                          if (e.target.files?.[0]) {
-                                            const file = e.target.files[0];
-                                            const formData = new FormData();
-                                            formData.append('image', file);
-                                            try {
-                                              const res = await fetch(getApiUrl('/api/admin/upload'), {
-                                                method: 'POST',
-                                                headers: { 'ngrok-skip-browser-warning': 'true' },
-                                                body: formData
-                                              });
-                                              const data = await res.json();
-                                              if (data.success && data.url) {
-                                                const current = [...(selectedPage.content?.galleryItems || [])];
-                                                current[idx].src = data.url;
-                                                handleContentChange(null, 'galleryItems', current);
+                              {(() => {
+                                const defaultGallery = [
+                                  { src: "/assets/office-images/testing-lab.jpg", title: "High-Capacity Testing Lab", category: "Labs", location: "Surat Vesu Branch", desc: "State-of-the-art computer labs customized for official IELTS and PTE exam delivery." },
+                                  { src: "/assets/office-images/vip-conference.jpg", title: "VIP Executive Conference", category: "Spaces", location: "Surat Vesu Branch", desc: "Professional conference space for academic training and workshops." },
+                                  { src: "/assets/office-images/vip-exam-centre.jpg", title: "Authorised City College Birmingham Centre", category: "Spaces", location: "Surat Vesu Branch", desc: "Authorised Study Centre for City College Birmingham, UK." },
+                                  { src: "/assets/office-images/directors-cabin.jpeg", title: "Director's Cabin", category: "Spaces", location: "Surat Vesu Branch", desc: "Our executive administrative space." },
+                                  { src: "/assets/office-images/p1.jpeg", title: "Navratri Traditional Day", category: "Events & News", location: "Surat Vesu Branch", desc: "Celebration of Navratri festival with staff." },
+                                  { src: "/assets/office-images/p2.jpeg", title: "Diwali Celebration Dinner", category: "Events & News", location: "FETC Grand Ballroom", desc: "Annual festive dinner gathering with staff." },
+                                  { src: "/assets/office-images/p3.jpeg", title: "Annual Team Trip & Offsite", category: "Events & News", location: "FETC Offsite", desc: "Annual retreat promoting team building." },
+                                  { src: "/assets/office-images/p4.jpeg", title: "Champions of the League", category: "Events & News", location: "Surat Turf Arena", desc: "Turf cricket championship victory." },
+                                  { src: "/assets/office-images/p5.jpeg", title: "Faculty Training Seminars", category: "Events & News", location: "Surat Vesu Branch", desc: "Score-optimization bootcamps." },
+                                  { src: "/assets/office-images/p6.jpeg", title: "Student Success Ceremony", category: "Events & News", location: "Surat Vesu Branch", desc: "Recognizing high scoring students." },
+                                  { src: "/assets/news/news1.png", title: "CBSE Mock Test Initiative", category: "Events & News", location: "Radiant School", desc: "English mock test for 700+ students." },
+                                  { src: "/assets/news/news2.png", title: "Foreign Innovation Test", category: "Events & News", location: "Radiant School", desc: "Media coverage of mock test." },
+                                  { src: "/assets/office-images/exterior-roongta-vesu.jpeg", title: "Roongta Business Park Campus", category: "Exterior", location: "Surat Vesu Branch", desc: "Flagship training center." },
+                                  { src: "/assets/office-images/exterior-varachha-prime.jpeg", title: "Varachha Branch Campus", category: "Exterior", location: "Surat Varachha Branch", desc: "Second fully equipped branch." },
+                                  { src: "/assets/office-images/admin-pc.jpeg", title: "Administrative Terminal", category: "Workspace", location: "Surat Vesu Branch", desc: "Dedicated administrative workspace." },
+                                  { src: "/assets/office-images/waiting-area-washroom.jpeg", title: "Student Lounge & Waiting Area", category: "Workspace", location: "Surat Vesu Branch", desc: "Spacious lobby for candidates." }
+                                ];
+                                const list = selectedPage.content?.galleryItems || defaultGallery;
+                                return list.map((item, idx) => (
+                                  <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 relative group">
+                                    <div className="h-44 bg-slate-900 rounded-xl overflow-hidden relative">
+                                      {item.src ? (
+                                        <>
+                                          <SafeImage src={getAssetUrl(item.src)} className="w-full h-full object-cover" alt={item.title} />
+                                          <label className="absolute inset-0 bg-slate-900/70 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer font-bold text-xs gap-1">
+                                            <Upload size={18} /> Replace Photo
+                                            <input
+                                              type="file"
+                                              className="hidden"
+                                              accept="image/*"
+                                              onChange={async (e) => {
+                                                if (e.target.files?.[0]) {
+                                                  const file = e.target.files[0];
+                                                  const formData = new FormData();
+                                                  formData.append('image', file);
+                                                  try {
+                                                    const res = await fetch(getApiUrl('/api/admin/upload'), {
+                                                      method: 'POST',
+                                                      headers: { 'ngrok-skip-browser-warning': 'true' },
+                                                      body: formData
+                                                    });
+                                                    const data = await res.json();
+                                                    if (data.success && data.url) {
+                                                      const current = [...list];
+                                                      current[idx] = { ...current[idx], src: data.url };
+                                                      handleContentChange(null, 'galleryItems', current);
+                                                    }
+                                                  } catch (err) {
+                                                    console.error('Gallery image upload failed:', err);
+                                                  }
+                                                }
+                                              }}
+                                            />
+                                          </label>
+                                        </>
+                                      ) : (
+                                        <label className="w-full h-full flex flex-col items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-brand-600 transition-all cursor-pointer p-4 text-center gap-1.5 border-2 border-dashed border-slate-300 rounded-xl">
+                                          <Upload size={24} className="text-brand-600 mb-1" />
+                                          <span className="text-xs font-bold text-slate-700">Upload Photo Image</span>
+                                          <span className="text-[10px] text-slate-400">Click to select file</span>
+                                          <input
+                                            type="file"
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={async (e) => {
+                                              if (e.target.files?.[0]) {
+                                                const file = e.target.files[0];
+                                                const formData = new FormData();
+                                                formData.append('image', file);
+                                                try {
+                                                  const res = await fetch(getApiUrl('/api/admin/upload'), {
+                                                    method: 'POST',
+                                                    headers: { 'ngrok-skip-browser-warning': 'true' },
+                                                    body: formData
+                                                  });
+                                                  const data = await res.json();
+                                                  if (data.success && data.url) {
+                                                    const current = [...list];
+                                                    current[idx] = { ...current[idx], src: data.url };
+                                                    handleContentChange(null, 'galleryItems', current);
+                                                  }
+                                                } catch (err) {
+                                                  console.error('Gallery image upload failed:', err);
+                                                }
                                               }
-                                            } catch (err) {
-                                              console.error('Gallery image upload failed:', err);
-                                            }
-                                          }
-                                        }}
-                                      />
-                                    </label>
-                                  </div>
-                                  <div className="space-y-2">
-                                    <div>
-                                      <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Photo Title</label>
-                                      <input
-                                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
-                                        value={item.title || ""}
-                                        onChange={(e) => {
-                                          const current = [...(selectedPage.content?.galleryItems || [])];
-                                          current[idx].title = e.target.value;
-                                          handleContentChange(null, 'galleryItems', current);
-                                        }}
-                                        placeholder="Title..."
-                                      />
+                                            }}
+                                          />
+                                        </label>
+                                      )}
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="space-y-2">
                                       <div>
-                                        <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Category</label>
-                                        <select
-                                          className="w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700"
-                                          value={item.category || "Spaces"}
+                                        <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Photo Title</label>
+                                        <input
+                                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                                          value={item.title || ""}
                                           onChange={(e) => {
-                                            const current = [...(selectedPage.content?.galleryItems || [])];
-                                            current[idx].category = e.target.value;
+                                            const current = [...list];
+                                            current[idx] = { ...current[idx], title: e.target.value };
                                             handleContentChange(null, 'galleryItems', current);
                                           }}
+                                          placeholder="Title..."
+                                        />
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                          <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Category</label>
+                                          <select
+                                            className="w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700"
+                                            value={item.category || "Spaces"}
+                                            onChange={(e) => {
+                                              const current = [...list];
+                                              current[idx] = { ...current[idx], category: e.target.value };
+                                              handleContentChange(null, 'galleryItems', current);
+                                            }}
+                                          >
+                                            <option value="Labs">Labs</option>
+                                            <option value="Spaces">Spaces</option>
+                                            <option value="Events & News">Events & News</option>
+                                            <option value="Exterior">Exterior</option>
+                                            <option value="Workspace">Workspace</option>
+                                          </select>
+                                        </div>
+                                        <div>
+                                          <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Location</label>
+                                          <input
+                                            className="w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600"
+                                            value={item.location || ""}
+                                            onChange={(e) => {
+                                              const current = [...list];
+                                              current[idx] = { ...current[idx], location: e.target.value };
+                                              handleContentChange(null, 'galleryItems', current);
+                                            }}
+                                            placeholder="Surat..."
+                                          />
+                                        </div>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const current = list.filter((_, i) => i !== idx);
+                                          handleContentChange(null, 'galleryItems', current);
+                                        }}
+                                        className="w-full py-1.5 text-red-500 hover:bg-red-50 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1"
+                                      >
+                                        <Trash2 size={12} /> Remove
+                                      </button>
+                                    </div>
+                                  </div>
+                                ));
+                              })()}
+                            </div>
+                          </div>
                                         >
                                           <option value="Labs">Labs</option>
                                           <option value="Spaces">Spaces</option>
