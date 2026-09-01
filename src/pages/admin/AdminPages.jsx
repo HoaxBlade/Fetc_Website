@@ -2011,7 +2011,6 @@ const AdminPages = () => {
                                       </div>
                                              </div>
                           </div>
-                                </div>
                               ))}
                             </div>
                           </div>
