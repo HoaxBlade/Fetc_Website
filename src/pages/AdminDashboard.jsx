@@ -6,7 +6,7 @@ import {
   Users, Ticket, HelpCircle, FileText, Zap,
   TrendingUp, Clock, CheckCircle2, AlertCircle,
   ExternalLink, Plus, MessageSquare, Send, X, Mail,
-  User, MessageCircle, Loader2
+  User, MessageCircle, Loader2, Trash2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -116,6 +116,40 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleDeleteTicket = async (ticketId, e) => {
+    if (e) e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this support ticket? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const baseUrl = window.API_BASE || '';
+      const response = await fetch(`${baseUrl}/api/admin/tickets/${ticketId}`, {
+        method: 'DELETE',
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setRecentData(prev => ({
+          ...prev,
+          tickets: prev.tickets.filter(t => t.id !== ticketId)
+        }));
+        setStats(prev => ({
+          ...prev,
+          openTickets: Math.max(0, prev.openTickets - 1)
+        }));
+        if (selectedTicket && selectedTicket.id === ticketId) {
+          setSelectedTicket(null);
+        }
+      } else {
+        alert(data.message || 'Failed to delete ticket');
+      }
+    } catch (err) {
+      console.error('Delete ticket error:', err);
+      alert('Error deleting support ticket');
+    }
+  };
 
   const fetchChatMessages = async (ticketId, silent = false) => {
     if (!silent) setIsChatLoading(true);
@@ -358,14 +392,23 @@ const AdminDashboard = () => {
                       {item.status}
                     </span>
                     {tab === 'tickets' ? (
-                      <button 
-                        onClick={() => setSelectedTicket(item)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-bold transition-all active:scale-95 shrink-0"
-                        title="Open Live Chat Box"
-                      >
-                        <MessageCircle size={14} />
-                        <span>Chat & Solve</span>
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button 
+                          onClick={() => setSelectedTicket(item)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-bold transition-all active:scale-95 shrink-0"
+                          title="Open Live Chat Box"
+                        >
+                          <MessageCircle size={14} />
+                          <span>Chat & Solve</span>
+                        </button>
+                        <button 
+                          onClick={(e) => handleDeleteTicket(item.id, e)}
+                          className="p-1.5 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-lg transition-all"
+                          title="Delete Support Ticket"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     ) : (
                       <button 
                         onClick={() => navigate('/admin/leads')}
@@ -537,12 +580,21 @@ const AdminDashboard = () => {
                     <h3 className="font-bold text-slate-900 text-base leading-snug line-clamp-1">{selectedTicket.subject}</h3>
                   </div>
 
-                  <button 
-                    onClick={() => setSelectedTicket(null)}
-                    className="p-2 hover:bg-slate-200/60 rounded-xl text-slate-400 transition-colors"
-                  >
-                    <X size={20} />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button 
+                      onClick={(e) => handleDeleteTicket(selectedTicket.id, e)}
+                      className="p-2 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-xl transition-colors"
+                      title="Delete Support Ticket"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    <button 
+                      onClick={() => setSelectedTicket(null)}
+                      className="p-2 hover:bg-slate-200/60 rounded-xl text-slate-400 transition-colors"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Chat Thread */}

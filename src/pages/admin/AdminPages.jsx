@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle, Award } from 'lucide-react';
+import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle, Award, CreditCard } from 'lucide-react';
 import { getAssetUrl, getApiUrl } from '../../apiConfig';
 import SafeImage from '../../components/SafeImage';
 
@@ -146,6 +146,16 @@ const AdminPages = () => {
       });
       const data = await response.json();
       if (data.success) {
+        if (selectedPage?.slug?.toLowerCase().includes('career-assessment')) {
+          const feeVal = processedData.content?.amount ?? processedData.content?.fee;
+          if (feeVal !== undefined && feeVal !== null) {
+            fetch(getApiUrl('/api/admin/settings'), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+              body: JSON.stringify({ key: 'career_assessment_fee', value: String(feeVal) })
+            }).catch(e => console.error('Setting sync error:', e));
+          }
+        }
         let content = data.page.content;
         while (typeof content === 'string') {
           try {
@@ -1969,11 +1979,40 @@ const AdminPages = () => {
                               <div>
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-2 block">Detailed Description</label>
                                 <textarea
-                                  className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-600 h-64 resize-none focus:border-brand-300 outline-none transition-all shadow-sm"
+                                  className="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-600 h-44 resize-none focus:border-brand-300 outline-none transition-all shadow-sm"
                                   value={selectedPage.content?.description || ""}
                                   onChange={(e) => handleContentChange(null, 'description', e.target.value)}
                                   placeholder="Describe your career analysis services here..."
                                 />
+                              </div>
+
+                              {/* Assessment Fee Editor */}
+                              <div className="p-6 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-blue-100 rounded-2xl space-y-3">
+                                <div className="flex items-center gap-2">
+                                  <CreditCard size={18} className="text-brand-600" />
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                                    Career Assessment Fee (INR)
+                                  </label>
+                                </div>
+                                <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                                  Set the payment amount charged on the checkout modal when candidates start the assessment.
+                                </p>
+                                <div className="relative max-w-sm pt-1">
+                                  <span className="absolute left-4 top-[18px] text-slate-500 font-bold text-sm">₹</span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    className="w-full pl-9 pr-6 py-3.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 outline-none transition-all shadow-sm"
+                                    value={selectedPage.content?.amount ?? selectedPage.content?.fee ?? 1000}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      handleContentChange(null, 'amount', val);
+                                      handleContentChange(null, 'fee', val);
+                                    }}
+                                    placeholder="1000"
+                                  />
+                                </div>
                               </div>
                             </div>
                           </div>

@@ -106,6 +106,7 @@ export default function CareerAssessmentPage() {
   // Payment Checkout Modal State
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isRedirectingPayment, setIsRedirectingPayment] = useState(false);
+  const [assessmentFee, setAssessmentFee] = useState(1000);
 
   // Lock body scroll when any modal is open & prevent scrollbar layout shift
   useScrollLock(isModalOpen || showPaymentModal);
@@ -159,7 +160,7 @@ export default function CareerAssessmentPage() {
         name: modalFormData.name.trim(),
         email: modalFormData.email.trim(),
         productType: 'MOCK_TEST',
-        amount: 1000,
+        amount: Number(assessmentFee) || 1000,
         returnUrl: window.location.href,
       };
 
@@ -193,8 +194,25 @@ export default function CareerAssessmentPage() {
 
   useEffect(() => {
     setIsLoading(true);
+    fetch(getApiUrl('/api/settings/career_assessment_fee'))
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.value) {
+          setAssessmentFee(Number(data.value));
+        }
+      })
+      .catch(err => console.error('Failed to fetch fee setting:', err));
+
     fetch(getApiUrl('/api/pages/career-assessment/behaviour-and-career-analysis'))
       .then(res => res.json())
+      .then(data => {
+        if (data.success && data.page?.content) {
+          const pAmount = data.page.content.amount ?? data.page.content.fee;
+          if (pAmount !== undefined && pAmount !== null && pAmount !== '') {
+            setAssessmentFee(Number(pAmount));
+          }
+        }
+      })
       .catch(err => console.error('Failed to fetch career data:', err))
       .finally(() => setIsLoading(false));
   }, []);
@@ -745,7 +763,7 @@ export default function CareerAssessmentPage() {
                 <div className="bg-blue-50/70 border border-blue-100 rounded-xl p-4 flex items-center justify-between">
                   <div>
                     <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">Total Amount</span>
-                    <div className="text-2xl font-extrabold text-slate-900">₹1,000 <span className="text-xs font-normal text-slate-500">INR</span></div>
+                    <div className="text-2xl font-extrabold text-slate-900">₹{Number(assessmentFee).toLocaleString('en-IN')} <span className="text-xs font-normal text-slate-500">INR</span></div>
                   </div>
                   <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                     Online Test Access
@@ -790,7 +808,7 @@ export default function CareerAssessmentPage() {
                     ) : (
                       <>
                         <CreditCard size={18} />
-                        <span>Pay ₹1,000 & Start Assessment</span>
+                        <span>Pay ₹{Number(assessmentFee).toLocaleString('en-IN')} & Start Assessment</span>
                       </>
                     )}
                   </button>

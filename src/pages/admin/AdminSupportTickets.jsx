@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Ticket, Search, Loader2, Mail, Clock, CheckCircle, User, X, MessageSquare, Send, ExternalLink } from 'lucide-react';
+import { Ticket, Search, Loader2, Mail, Clock, CheckCircle, User, X, MessageSquare, Send, ExternalLink, Trash2 } from 'lucide-react';
 
 const AdminSupportTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -18,6 +18,8 @@ const AdminSupportTickets = () => {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const messagesEndRef = React.useRef(null);
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const userRole = (currentUser?.role || '').toUpperCase();
+  const canDeleteTicket = userRole === 'ADMIN' || userRole === 'INSTRUCTOR' || !userRole;
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -104,6 +106,32 @@ const AdminSupportTickets = () => {
       }
     } catch (err) {
       console.error('Update failed:', err);
+    }
+  };
+
+  const handleDeleteTicket = async (id, e) => {
+    if (e) e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this support ticket? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const response = await fetch((window.API_BASE || '') + `/api/admin/tickets/${id}`, {
+        method: 'DELETE',
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setTickets(prev => prev.filter(t => t.id !== id));
+        if (selectedTicket && selectedTicket.id === id) {
+          setSelectedTicket(null);
+        }
+      } else {
+        alert(data.message || 'Failed to delete ticket');
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Error deleting support ticket');
     }
   };
 
@@ -214,9 +242,20 @@ const AdminSupportTickets = () => {
                     </div>
                     <h2 className="text-xl font-semibold text-slate-900 leading-snug">{selectedTicket.subject}</h2>
                   </div>
-                  <button onClick={() => setSelectedTicket(null)} className="p-2 hover:bg-slate-200/50 rounded-full text-slate-400 transition-colors">
-                    <X size={22} />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    {canDeleteTicket && (
+                      <button 
+                        onClick={(e) => handleDeleteTicket(selectedTicket.id, e)}
+                        className="p-2 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-full transition-colors"
+                        title="Delete Support Ticket"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    )}
+                    <button onClick={() => setSelectedTicket(null)} className="p-2 hover:bg-slate-200/50 rounded-full text-slate-400 transition-colors">
+                      <X size={22} />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Scrollable Content */}
@@ -457,6 +496,15 @@ const AdminSupportTickets = () => {
                         title="Mark Resolved"
                       >
                         <CheckCircle size={16} />
+                      </button>
+                    )}
+                    {canDeleteTicket && (
+                      <button 
+                        onClick={(e) => handleDeleteTicket(ticket.id, e)}
+                        className="p-2 text-rose-500 bg-rose-50 rounded-xl hover:bg-rose-100 transition-colors"
+                        title="Delete Support Ticket"
+                      >
+                        <Trash2 size={16} />
                       </button>
                     )}
                   </div>

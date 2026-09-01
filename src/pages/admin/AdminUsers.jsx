@@ -286,7 +286,8 @@ const AdminUsers = () => {
 
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    ((user.enrolled_course || user.enrolledCourse || '').toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
 
@@ -458,6 +459,21 @@ const AdminUsers = () => {
                 <label className="text-[9px] font-medium text-slate-400 uppercase tracking-widest pl-1">Phone Number</label>
                 <input className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:border-brand-300 transition-all font-mono" value={editingUser.phone || ''} onChange={(e) => setEditingUser({...editingUser, phone: e.target.value})} />
               </div>
+              {/* Enrolled Courses Block */}
+              <div className="pt-2 border-t border-slate-100 space-y-1">
+                <h4 className="text-sm font-bold text-slate-900">Enrolled Courses</h4>
+                <p className="text-xs text-slate-400">Courses enrolled by this student</p>
+                <div className="pt-1">
+                  {editingUser.enrolled_course || editingUser.enrolledCourse ? (
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100">
+                      <GraduationCap size={14} className="text-blue-600 shrink-0" />
+                      <span>{editingUser.enrolled_course || editingUser.enrolledCourse}</span>
+                    </div>
+                  ) : (
+                    <p className="text-sm font-semibold text-slate-900 pt-1">No enrolled courses</p>
+                  )}
+                </div>
+              </div>
               <div className="pt-4">
                 <button disabled={isUpdating} type="submit" className="w-full bg-brand-600 text-white py-4 rounded-2xl font-medium text-sm hover:bg-brand-700 transition-all shadow-xl flex items-center justify-center gap-2">
                   {isUpdating ? <Loader2 className="animate-spin" size={18} /> : 'Save Changes'}
@@ -555,6 +571,7 @@ const AdminUsers = () => {
             <thead>
               <tr className="text-slate-400 text-[10px] font-medium uppercase tracking-widest px-4">
                 <th className="px-6 pb-4">User Details</th>
+                <th className="px-6 pb-4">Enrolled Course</th>
                 <th className="px-6 pb-4">Access Role</th>
                 <th className="px-6 pb-4">Activity Status</th>
                 <th className="px-6 pb-4">Contact</th>
@@ -574,6 +591,16 @@ const AdminUsers = () => {
                         <p className="text-[10px] text-slate-400 italic">{user.email}</p>
                       </div>
                     </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {user.enrolled_course || user.enrolledCourse ? (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-100">
+                        <GraduationCap size={12} className="text-blue-600" />
+                        {user.enrolled_course || user.enrolledCourse}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-slate-400 italic">Not Enrolled</span>
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-xs font-medium text-slate-600">{user.role}</span>
@@ -627,7 +654,7 @@ const AdminUsers = () => {
 
               {!isLoading && filteredUsers.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="px-6 py-10 text-center text-slate-400 italic text-sm">
+                  <td colSpan="6" className="px-6 py-10 text-center text-slate-400 italic text-sm">
                     No users found matching your search.
                   </td>
                 </tr>

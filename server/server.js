@@ -37,6 +37,7 @@ const runMigrations = async () => {
     await db.query(`
       ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image TEXT;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS enrolled_course VARCHAR(255);
     `);
 
     // Seed default admin if not exists
@@ -206,6 +207,16 @@ const runMigrations = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+
+    // Site Settings table (for dynamic settings like payment amounts/fees)
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS site_settings (
+        key VARCHAR(255) PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      INSERT INTO site_settings (key, value) VALUES ('career_assessment_fee', '1000') ON CONFLICT (key) DO NOTHING;
     `);
 
     // Pages table
@@ -904,8 +915,40 @@ app.get('/api/admin/stats', async (req, res) => {
 // Admin Users List Route
 app.get('/api/admin/users', async (req, res) => {
   try {
-    const users = await db.query('SELECT id, name, email, role, phone, status, created_at FROM users ORDER BY created_at DESC');
-    res.json({ success: true, users: users.rows });
+    const usersResult = await db.query(
+      'SELECT id, name, email, role, phone, status, enrolled_course, created_at FROM users ORDER BY created_at DESC'
+    );
+    const users = usersResult.rows;
+
+    // Safely attempt to enhance enrolled_course from successful orders
+    try {
+      const ordersResult = await db.query(
+        "SELECT email, phone, course_id FROM orders WHERE status = 'SUCCESS' ORDER BY id DESC"
+      );
+      if (ordersResult.rows.length > 0) {
+        const orderMap = {};
+        ordersResult.rows.forEach(ord => {
+          if (ord.email && !orderMap[ord.email.toLowerCase()]) {
+            orderMap[ord.email.toLowerCase()] = ord.course_id;
+          }
+          if (ord.phone && !orderMap[ord.phone]) {
+            orderMap[ord.phone] = ord.course_id;
+          }
+        });
+        users.forEach(u => {
+          if (!u.enrolled_course) {
+            const course = (u.email && orderMap[u.email.toLowerCase()]) || (u.phone && orderMap[u.phone]);
+            if (course) {
+              u.enrolled_course = course;
+            }
+          }
+        });
+      }
+    } catch (orderErr) {
+      // Non-critical: ignore if orders table doesn't exist yet
+    }
+
+    res.json({ success: true, users });
   } catch (err) {
     console.error('Fetch users error:', err);
     res.status(500).json({ success: false, message: 'Error fetching users' });
@@ -986,12 +1029,20 @@ app.post('/api/admin/users/invite', async (req, res) => {
 // Admin Update User Route
 app.patch('/api/admin/users/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, email, phone, role } = req.body;
+  const { name, email, phone, role, enrolled_course, enrolledCourse } = req.body;
+  const courseValue = enrolled_course !== undefined ? enrolled_course : enrolledCourse;
   
   try {
     const result = await db.query(
-      'UPDATE users SET name = COALESCE($1, name), email = COALESCE($2, email), phone = COALESCE($3, phone), role = COALESCE($4, role) WHERE id = $5 RETURNING id, name, email, role, phone, status, created_at',
-      [name, email, phone, role, id]
+      `UPDATE users SET 
+        name = COALESCE($1, name), 
+        email = COALESCE($2, email), 
+        phone = COALESCE($3, phone), 
+        role = COALESCE($4, role), 
+        enrolled_course = COALESCE($5, enrolled_course) 
+       WHERE id = $6 
+       RETURNING id, name, email, role, phone, status, enrolled_course, created_at`,
+      [name, email, phone, role, courseValue, id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'User not found' });
@@ -2047,6 +2098,86 @@ app.patch('/api/admin/tickets/:id', async (req, res) => {
     res.status(500).json({ success: false, message: 'Database error' });
   }
 });
+
+// DELETE /api/admin/tickets/:id - Delete a support ticket (Admin & Instructor)
+app.delete(['/api/admin/tickets/:id', '/api/tickets/:id'], async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query('DELETE FROM ticket_messages WHERE ticket_id = $1', [id]);
+    const result = await db.query('DELETE FROM tickets WHERE id = $1 RETURNING *', [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Ticket not found' });
+    }
+
+    res.json({ success: true, message: 'Support ticket deleted successfully' });
+  } catch (err) {
+    console.error('Delete ticket error:', err);
+    res.status(500).json({ success: false, message: 'Database error deleting support ticket' });
+  }
+});
+
+// --- Site Settings API (Payment Fees, Configuration) ---
+
+// GET /api/settings - Get all site settings
+app.get('/api/settings', async (req, res) => {
+  try {
+    const result = await db.query('SELECT key, value FROM site_settings');
+    const settings = {};
+    result.rows.forEach(row => {
+      settings[row.key] = row.value;
+    });
+    res.json({ success: true, settings });
+  } catch (err) {
+    console.error('Fetch settings error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// GET /api/settings/:key - Get specific site setting
+app.get('/api/settings/:key', async (req, res) => {
+  const { key } = req.params;
+  try {
+    const result = await db.query('SELECT key, value FROM site_settings WHERE key = $1', [key]);
+    if (result.rows.length === 0) {
+      return res.json({ success: true, key, value: key === 'career_assessment_fee' ? '1000' : null });
+    }
+    res.json({ success: true, key: result.rows[0].key, value: result.rows[0].value });
+  } catch (err) {
+    console.error('Fetch setting error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// POST /api/admin/settings - Save or update site settings
+app.post(['/api/admin/settings', '/api/settings'], async (req, res) => {
+  const { key, value, settings } = req.body;
+  try {
+    if (settings && typeof settings === 'object') {
+      for (const [k, v] of Object.entries(settings)) {
+        await db.query(
+          `INSERT INTO site_settings (key, value, updated_at) VALUES ($1, $2, CURRENT_TIMESTAMP)
+           ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP`,
+          [k, String(v)]
+        );
+      }
+    } else if (key && value !== undefined) {
+      await db.query(
+        `INSERT INTO site_settings (key, value, updated_at) VALUES ($1, $2, CURRENT_TIMESTAMP)
+         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP`,
+        [key, String(value)]
+      );
+    } else {
+      return res.status(400).json({ success: false, message: 'Key and value or settings object required' });
+    }
+
+    res.json({ success: true, message: 'Settings saved successfully' });
+  } catch (err) {
+    console.error('Save settings error:', err);
+    res.status(500).json({ success: false, message: 'Database error saving settings' });
+  }
+});
+
 
 // --- User Support API ---
 
