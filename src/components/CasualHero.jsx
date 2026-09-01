@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Sparkles, Users, GraduationCap, Briefcase, Stethoscope } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getAssetUrl } from "../apiConfig";
 
 // Import new full-length banners
 import banner1 from "../assets/logo/banner 1.png";
@@ -24,35 +25,33 @@ const CasualHero = ({ content }) => {
     };
   }, []);
 
-  const slides = [
+  const defaultSlides = [
     {
       image: banner1,
       field: "Medical & Health",
-      icon: Stethoscope,
-      label: "Global Medical Hubs",
-      color: "text-teal-600",
-      bgColor: "bg-teal-50",
       position: "object-right"
     },
     {
       image: banner2,
       field: "Law & Justice",
-      icon: Briefcase,
-      label: "Elite Law Schools",
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
       position: "object-right md:object-[95%_center]"
     },
     {
       image: banner3,
       field: "Engineering & Tech",
-      icon: GraduationCap,
-      label: "Top Tech Universities",
-      color: "text-brand-600",
-      bgColor: "bg-brand-50",
       position: "object-right md:object-[95%_center]"
     }
   ];
+
+  const customBanners = content?.banners || (content?.bgImage ? [content.bgImage] : null);
+
+  const slides = (customBanners && Array.isArray(customBanners) && customBanners.length > 0)
+    ? customBanners.map((img, idx) => ({
+        image: typeof img === 'string' ? getAssetUrl(img) : getAssetUrl(img.url || img.image || img),
+        field: `Banner ${idx + 1}`,
+        position: "object-right"
+      }))
+    : defaultSlides;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -91,9 +90,9 @@ const CasualHero = ({ content }) => {
             className="absolute inset-0 w-full h-full"
           >
             <img 
-              src={slides[currentIndex].image} 
-              alt={slides[currentIndex].field} 
-              className={`w-full h-full object-cover ${slides[currentIndex].position || 'object-right'}`}
+              src={slides[currentIndex]?.image || slides[0]?.image} 
+              alt={slides[currentIndex]?.field || 'Hero Banner'} 
+              className={`w-full h-full object-cover ${slides[currentIndex]?.position || 'object-right'}`}
             />
             {/* Soft gradient overlay to blend left side with white background for maximum text contrast */}
             <div className="absolute inset-0 bg-gradient-to-r from-white/70 via-white/30 to-transparent" />

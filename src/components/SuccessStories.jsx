@@ -66,9 +66,9 @@ const SuccessStories = ({ data }) => {
   const starDescription = starData.description || "Driven by a passion for higher education, Udit placed his trust in FETC to guide his journey abroad. With our dedicated mentorship and strategic support, he earned a fully funded scholarship to pursue Data Science at the University of Pisa, Italy.";
   const starImage = starData.image ? getAssetUrl(starData.image) : UditImg;
 
-  // Dynamic Top Students Array (limit to max 9)
+  // Dynamic Top Students Array (unlimited)
   const dynamicStudentsList = (data?.topStudents && Array.isArray(data.topStudents) && data.topStudents.length > 0)
-    ? data.topStudents.slice(0, 9)
+    ? data.topStudents
     : defaultSuccessStudents;
 
   const updateScrollButtons = () => {
@@ -225,7 +225,10 @@ const SuccessStories = ({ data }) => {
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {dynamicStudentsList.map((student, idx) => {
-              const studentImg = student.image ? getAssetUrl(student.image) : MansiImg;
+              const fallbackImages = [MansiImg, NaitikImg, PrajalImg, PrathanaImg, RutvikImg, SamarthImg];
+              const studentImg = student.image 
+                ? getAssetUrl(student.image) 
+                : (student.fallbackImage || (idx < 6 ? fallbackImages[idx] : null));
               return (
                 <motion.div
                   key={student.name + idx}
@@ -235,16 +238,24 @@ const SuccessStories = ({ data }) => {
                   className="group flex-shrink-0 snap-start w-[260px] md:w-[280px]"
                 >
                   <div className="relative bg-white rounded-[1.8rem] overflow-hidden border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_25px_60px_rgba(0,0,0,0.1)] hover:-translate-y-2" style={{ transform: 'translate3d(0, 0, 0)' }}>
-                    {/* Image */}
-                    <div className="relative h-72 overflow-hidden bg-slate-100">
-                      <img
-                        src={studentImg}
-                        alt={`${student.name} — ${student.achievement}`}
-                        className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                        style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'translate3d(0, 0, 0)' }}
-                      />
+                    {/* Image or Sleek Placeholder for New Cards */}
+                    <div className="relative h-72 overflow-hidden bg-slate-800 flex items-center justify-center">
+                      {studentImg ? (
+                        <img
+                          src={studentImg}
+                          alt={`${student.name || 'FETC Student'} — ${student.achievement || ''}`}
+                          className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                          style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'translate3d(0, 0, 0)' }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-brand-600 via-blue-600 to-teal-500 flex flex-col items-center justify-center text-white p-4 text-center">
+                          <GraduationCap className="w-14 h-14 mb-2 opacity-85" />
+                          <span className="text-sm font-extrabold">{student.name || "FETC Student"}</span>
+                          {student.achievement && <span className="text-[10px] opacity-80 mt-0.5">{student.achievement}</span>}
+                        </div>
+                      )}
                       {/* Gradient overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
 
                       {/* Country flag floating */}
                       {student.country && (

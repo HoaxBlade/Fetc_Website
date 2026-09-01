@@ -5,8 +5,76 @@ import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, E
 import { getAssetUrl, getApiUrl } from '../../apiConfig';
 import SafeImage from '../../components/SafeImage';
 
+import UditImg from '../../assets/reviews/Udit Gangnami.png';
+import MansiImg from '../../assets/reviews/Mansi Savani USA F1 Visa.png';
+import NaitikImg from '../../assets/reviews/Naitik Patel Ireland Student Visa.png';
+import PrajalImg from '../../assets/reviews/Prajal Sonariya USA F1 Visa.png';
+import PrathanaImg from '../../assets/reviews/Prathana Dankhara USA F1 visa.png';
+import RutvikImg from '../../assets/reviews/Rutvik Tejani USA F1 Visa.png';
+import SamarthImg from '../../assets/reviews/Samarth Pachchigar Spain Student Visa.png';
+import HeroBanner1 from '../../assets/logo/banner 1.png';
+import HeroBanner2 from '../../assets/logo/banner 2.png';
+import HeroBanner3 from '../../assets/logo/banner 3.png';
+
+const defaultTopStudents = [
+  { name: "Mansi Savani", achievement: "USA F1 Visa", country: "🇺🇸", image: "", fallbackImage: MansiImg },
+  { name: "Naitik Patel", achievement: "Ireland Student Visa", country: "🇮🇪", image: "", fallbackImage: NaitikImg },
+  { name: "Prajal Sonariya", achievement: "USA F1 Visa", country: "🇺🇸", image: "", fallbackImage: PrajalImg },
+  { name: "Prathana Dankhara", achievement: "USA F1 Visa", country: "🇺🇸", image: "", fallbackImage: PrathanaImg },
+  { name: "Rutvik Tejani", achievement: "USA F1 Visa", country: "🇺🇸", image: "", fallbackImage: RutvikImg },
+  { name: "Samarth Pachchigar", achievement: "Spain Student Visa", country: "🇪🇸", image: "", fallbackImage: SamarthImg }
+];
+
 const AdminPages = () => {
-  const handleFileUpload = async (section, field, file, customSectionId = null, arrayIndex = null) => {
+  const uploadHeroBannerImage = async (file, replaceIndex = null) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch(getApiUrl('/api/admin/upload'), {
+        method: 'POST',
+        headers: { 'ngrok-skip-browser-warning': 'true' },
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setSelectedPage(prev => {
+          if (!prev) return null;
+          const newContent = { ...(prev.content || {}) };
+          const hero = { ...(newContent.hero || {}) };
+          let currentBanners = [...(hero.banners || [HeroBanner1, HeroBanner2, HeroBanner3])];
+
+          if (replaceIndex !== null && currentBanners[replaceIndex] !== undefined) {
+            currentBanners[replaceIndex] = data.url;
+          } else {
+            currentBanners.push(data.url);
+          }
+          hero.banners = currentBanners;
+          newContent.hero = hero;
+          return { ...prev, content: newContent };
+        });
+      }
+    } catch (err) {
+      console.error('Hero banner upload failed:', err);
+      alert('Failed to upload hero banner image.');
+    }
+  };
+
+  const removeHeroBanner = (index) => {
+    setSelectedPage(prev => {
+      if (!prev) return null;
+      const newContent = { ...(prev.content || {}) };
+      const hero = { ...(newContent.hero || {}) };
+      let currentBanners = [...(hero.banners || [HeroBanner1, HeroBanner2, HeroBanner3])];
+      currentBanners.splice(index, 1);
+      hero.banners = currentBanners;
+      newContent.hero = hero;
+      return { ...prev, content: newContent };
+    });
+  };
+
+  const handleFileUpload = async (section, field, file, customSectionId = null, arrayIndex = null, subSection = null) => {
     const formData = new FormData();
     formData.append('image', file);
 
@@ -28,6 +96,8 @@ const AdminPages = () => {
             currentArray[arrayIndex] = { ...currentArray[arrayIndex], image: data.url };
             handleContentChange(null, field, currentArray);
           }
+        } else if (subSection) {
+          handleNestedContentChange(section, subSection, field, data.url);
         } else {
           // Check if the field should be an array (like office showcase images or gallery)
           const currentVal = selectedPage.content?.[section]?.[field] || selectedPage.content?.[field];
@@ -237,16 +307,13 @@ const AdminPages = () => {
       if (!prev) return null;
       const newContent = { ...(prev.content || {}) };
       const bsp = { ...(newContent.bestStudentProfile || {}) };
-      const topStudents = [...(bsp.topStudents || [])];
-      if (topStudents.length >= 9) {
-        alert("Maximum 9 student slots allowed! Please remove an existing student to add a new one.");
-        return prev;
-      }
+      const topStudents = [...(bsp.topStudents || defaultTopStudents)];
       topStudents.push({
-        name: "New FETC Student",
-        achievement: "Student Visa",
-        country: "🇺🇸",
-        image: ""
+        name: "",
+        achievement: "",
+        country: "",
+        image: "",
+        isDefault: false
       });
       bsp.topStudents = topStudents;
       newContent.bestStudentProfile = bsp;
@@ -259,7 +326,7 @@ const AdminPages = () => {
       if (!prev) return null;
       const newContent = { ...(prev.content || {}) };
       const bsp = { ...(newContent.bestStudentProfile || {}) };
-      const topStudents = [...(bsp.topStudents || [])];
+      const topStudents = [...(bsp.topStudents || defaultTopStudents)];
       topStudents.splice(index, 1);
       bsp.topStudents = topStudents;
       newContent.bestStudentProfile = bsp;
@@ -272,7 +339,7 @@ const AdminPages = () => {
       if (!prev) return null;
       const newContent = { ...(prev.content || {}) };
       const bsp = { ...(newContent.bestStudentProfile || {}) };
-      const topStudents = [...(bsp.topStudents || [])];
+      const topStudents = [...(bsp.topStudents || defaultTopStudents)];
       if (topStudents[index]) {
         topStudents[index] = { ...topStudents[index], [field]: value };
       }
@@ -550,36 +617,43 @@ const AdminPages = () => {
   );
 
 
-  const ImageUploader = ({ section, field, value, label, customSectionId = null }) => (
-    <div className="space-y-2">
-      <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">{label}</label>
-      <div className="relative group aspect-video bg-white border border-slate-200 rounded-2xl overflow-hidden flex items-center justify-center">
-        {value ? (
-          <>
-            <SafeImage src={getAssetUrl(value)} className="w-full h-full object-cover" alt="Banner" />
-            <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-3">
-              <label className="p-3 bg-white text-slate-900 rounded-full cursor-pointer hover:bg-brand-50 transition-colors">
-                <Edit size={18} />
-                <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(section, field, e.target.files[0], customSectionId)} />
-              </label>
-              <button
-                onClick={() => handleContentChange(section, field, "")}
-                className="p-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-              >
-                <X size={18} />
-              </button>
-            </div>
-          </>
-        ) : (
-          <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-all gap-2">
-            <ImageIcon className="text-slate-200" size={32} />
-            <span className="text-[10px] font-semibold text-slate-300 uppercase tracking-widest">Upload Image</span>
-            <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(section, field, e.target.files[0], customSectionId)} />
-          </label>
-        )}
+  const ImageUploader = ({ section, field, value, label, customSectionId = null, subSection = null, fallbackImage = null }) => {
+    const displaySrc = value ? getAssetUrl(value) : fallbackImage;
+    return (
+      <div className="space-y-2">
+        <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">{label}</label>
+        <div className="relative group aspect-video bg-white border border-slate-200 rounded-2xl overflow-hidden flex items-center justify-center">
+          {displaySrc ? (
+            <>
+              <SafeImage src={displaySrc} className="w-full h-full object-cover" alt="Banner" />
+              <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-3">
+                <label className="p-3 bg-white text-slate-900 rounded-full cursor-pointer hover:bg-brand-50 transition-colors" title="Upload / Edit Image">
+                  <Edit size={18} />
+                  <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(section, field, e.target.files[0], customSectionId, null, subSection)} />
+                </label>
+                {value && (
+                  <button
+                    type="button"
+                    onClick={() => subSection ? handleNestedContentChange(section, subSection, field, "") : handleContentChange(section, field, "")}
+                    className="p-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    title="Remove custom image"
+                  >
+                    <X size={18} />
+                  </button>
+                )}
+              </div>
+            </>
+          ) : (
+            <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-all gap-2">
+              <ImageIcon className="text-slate-200" size={32} />
+              <span className="text-[10px] font-semibold text-slate-300 uppercase tracking-widest">Upload Image</span>
+              <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(section, field, e.target.files[0], customSectionId, null, subSection)} />
+            </label>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-[1600px] mx-auto">
@@ -746,22 +820,84 @@ const AdminPages = () => {
                       {selectedPage.slug === '/' && (
                         <div className="space-y-6 pb-20">
                           {/* 1. Hero Section */}
-                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
-                              <Globe size={18} className="text-brand-600" /> 1. Hero Section
-                            </h3>
-                            <div className="space-y-4">
-                              <ImageUploader
-                                section="hero"
-                                field="bgImage"
-                                value={selectedPage.content?.hero?.bgImage}
-                                label="Hero Background Image"
-                              />
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-6">
+                            <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
+                              <div>
+                                <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest flex items-center gap-3">
+                                  <Globe size={18} className="text-brand-600" /> 1. Hero Section & Background Banners
+                                </h3>
+                                <p className="text-xs text-slate-500 font-medium mt-1">
+                                  Manage rotating hero background images. Previews are compact so you can easily edit or add new slides.
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Hero Slider Banners Grid (Compact Thumbnails) */}
+                            <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                              <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                                <span className="text-xs font-extrabold uppercase tracking-widest text-brand-600 flex items-center gap-2">
+                                  <ImageIcon size={14} /> Hero Slider Banners ({(selectedPage.content?.hero?.banners || [HeroBanner1, HeroBanner2, HeroBanner3]).length} Active)
+                                </span>
+                                <label className="px-3.5 py-1.5 bg-brand-50 text-brand-600 hover:bg-brand-100 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5">
+                                  <Plus size={14} /> Add New Banner
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      if (e.target.files && e.target.files[0]) {
+                                        uploadHeroBannerImage(e.target.files[0]);
+                                      }
+                                    }}
+                                  />
+                                </label>
+                              </div>
+
+                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                {(selectedPage.content?.hero?.banners || [HeroBanner1, HeroBanner2, HeroBanner3]).map((banner, idx) => {
+                                  const imgSrc = typeof banner === 'string'
+                                    ? getAssetUrl(banner)
+                                    : (banner?.url ? getAssetUrl(banner.url) : getAssetUrl(banner));
+
+                                  return (
+                                    <div key={idx} className="relative group h-24 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 shadow-xs">
+                                      <SafeImage src={imgSrc} className="w-full h-full object-cover" alt={`Hero Banner ${idx + 1}`} />
+                                      <div className="absolute inset-0 bg-slate-900/65 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
+                                        <label className="p-2 bg-white text-slate-900 rounded-full cursor-pointer hover:bg-brand-50 transition-colors" title="Change Banner">
+                                          <Edit size={14} />
+                                          <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) => {
+                                              if (e.target.files && e.target.files[0]) {
+                                                uploadHeroBannerImage(e.target.files[0], idx);
+                                              }
+                                            }}
+                                          />
+                                        </label>
+                                        <button
+                                          type="button"
+                                          onClick={() => removeHeroBanner(idx)}
+                                          className="p-2 bg-rose-500 text-white rounded-full hover:bg-rose-600 transition-colors"
+                                          title="Remove Banner"
+                                        >
+                                          <Trash2 size={14} />
+                                        </button>
+                                      </div>
+                                      <div className="absolute bottom-1 left-1 bg-slate-900/75 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded backdrop-blur-xs">
+                                        Banner #{idx + 1}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
                               <div>
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Floating Badge</label>
                                 <input
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.hero?.badge || ""}
+                                  value={selectedPage.content?.hero?.badge ?? "Foreign English Test Capital"}
                                   onChange={(e) => handleContentChange('hero', 'badge', e.target.value)}
                                 />
                               </div>
@@ -770,7 +906,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Headline (Main)</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.hero?.titleMain || ""}
+                                    value={selectedPage.content?.hero?.titleMain ?? "Empowering Your"}
                                     onChange={(e) => handleContentChange('hero', 'titleMain', e.target.value)}
                                   />
                                 </div>
@@ -778,7 +914,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Headline (Highlight)</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.hero?.titleHighlight || ""}
+                                    value={selectedPage.content?.hero?.titleHighlight ?? "Global Dreams"}
                                     onChange={(e) => handleContentChange('hero', 'titleHighlight', e.target.value)}
                                   />
                                 </div>
@@ -787,7 +923,7 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Subtitle Description</label>
                                 <textarea
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.hero?.subtitle || ""}
+                                  value={selectedPage.content?.hero?.subtitle ?? "Authorized examination space & test preparation for IELTS, TOEFL, GRE, GMAT, and international admissions."}
                                   onChange={(e) => handleContentChange('hero', 'subtitle', e.target.value)}
                                 />
                               </div>
@@ -795,12 +931,11 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Primary Button Text</label>
                                 <input
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.hero?.buttonText || ""}
+                                  value={selectedPage.content?.hero?.buttonText ?? "Explore Courses"}
                                   onChange={(e) => handleContentChange('hero', 'buttonText', e.target.value)}
                                 />
                               </div>
                             </div>
-                          </div>
 
                           {/* 2. Trust Bar */}
                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
@@ -811,7 +946,7 @@ const AdminPages = () => {
                               <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Trust Message</label>
                               <input
                                 className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                value={selectedPage.content?.trustBar?.message || ""}
+                                value={selectedPage.content?.trustBar?.message ?? "Trusted by 100+ Global Universities & Thousands of Successful Students"}
                                 onChange={(e) => handleContentChange('trustBar', 'message', e.target.value)}
                                 placeholder="Trusted by 100+ Global Universities..."
                               />
@@ -829,7 +964,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Section Title</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.studyAbroad?.title || ""}
+                                    value={selectedPage.content?.studyAbroad?.title ?? "Explore the World"}
                                     onChange={(e) => handleContentChange('studyAbroad', 'title', e.target.value)}
                                   />
                                 </div>
@@ -837,7 +972,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.studyAbroad?.badgeText || ""}
+                                    value={selectedPage.content?.studyAbroad?.badgeText ?? "Global Vibes"}
                                     onChange={(e) => handleContentChange('studyAbroad', 'badgeText', e.target.value)}
                                   />
                                 </div>
@@ -846,7 +981,7 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
                                 <textarea
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.studyAbroad?.description || ""}
+                                  value={selectedPage.content?.studyAbroad?.description ?? "Pick your dream destination and let us handle the boring stuff. We've helped thousands of students settle in over 10+ countries."}
                                   onChange={(e) => handleContentChange('studyAbroad', 'description', e.target.value)}
                                 />
                               </div>
@@ -864,7 +999,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Section Title</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.examTraining?.title || ""}
+                                    value={selectedPage.content?.examTraining?.title ?? "Ace Your Exams"}
                                     onChange={(e) => handleContentChange('examTraining', 'title', e.target.value)}
                                   />
                                 </div>
@@ -872,7 +1007,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.examTraining?.badgeText || ""}
+                                    value={selectedPage.content?.examTraining?.badgeText ?? "Top Coaching"}
                                     onChange={(e) => handleContentChange('examTraining', 'badgeText', e.target.value)}
                                   />
                                 </div>
@@ -881,7 +1016,7 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Description</label>
                                 <textarea
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.examTraining?.description || ""}
+                                  value={selectedPage.content?.examTraining?.description ?? "We make exam prep feel like a breeze with expert coaching and real mock tests."}
                                   onChange={(e) => handleContentChange('examTraining', 'description', e.target.value)}
                                 />
                               </div>
@@ -898,7 +1033,7 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Section Title</label>
                                 <input
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.features?.sectionTitle || ""}
+                                  value={selectedPage.content?.features?.sectionTitle ?? "Why Students Love Us"}
                                   onChange={(e) => handleContentChange('features', 'sectionTitle', e.target.value)}
                                 />
                               </div>
@@ -906,7 +1041,7 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Subtitle</label>
                                 <textarea
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.features?.sectionSubtitle || ""}
+                                  value={selectedPage.content?.features?.sectionSubtitle ?? "We're not your typical consultants. We care about your journey as much as you do."}
                                   onChange={(e) => handleContentChange('features', 'sectionSubtitle', e.target.value)}
                                 />
                               </div>
@@ -924,7 +1059,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Section Title</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.howItWorks?.title || ""}
+                                    value={selectedPage.content?.howItWorks?.title ?? "How It Works"}
                                     onChange={(e) => handleContentChange('howItWorks', 'title', e.target.value)}
                                   />
                                 </div>
@@ -932,7 +1067,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.howItWorks?.badgeText || ""}
+                                    value={selectedPage.content?.howItWorks?.badgeText ?? "Simple 4-Step Journey"}
                                     onChange={(e) => handleContentChange('howItWorks', 'badgeText', e.target.value)}
                                   />
                                 </div>
@@ -941,7 +1076,7 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Subtitle</label>
                                 <textarea
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.howItWorks?.subtitle || ""}
+                                  value={selectedPage.content?.howItWorks?.subtitle ?? "From your first counseling session to boarding your flight, we guide you at every step."}
                                   onChange={(e) => handleContentChange('howItWorks', 'subtitle', e.target.value)}
                                 />
                               </div>
@@ -971,8 +1106,10 @@ const AdminPages = () => {
 
                               <ImageUploader
                                 section="bestStudentProfile"
-                                field="starStudentImage"
+                                subSection="starStudent"
+                                field="image"
                                 value={selectedPage.content?.bestStudentProfile?.starStudent?.image}
+                                fallbackImage={UditImg}
                                 label="Star Student Photo"
                               />
 
@@ -981,7 +1118,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Student Name</label>
                                   <input
                                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 outline-none focus:border-brand-300"
-                                    value={selectedPage.content?.bestStudentProfile?.starStudent?.name || ""}
+                                    value={selectedPage.content?.bestStudentProfile?.starStudent?.name ?? "Udit Gangnani"}
                                     onChange={(e) => handleNestedContentChange('bestStudentProfile', 'starStudent', 'name', e.target.value)}
                                     placeholder="e.g. Udit Gangnani"
                                   />
@@ -991,7 +1128,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Floating Badge</label>
                                   <input
                                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 outline-none focus:border-brand-300"
-                                    value={selectedPage.content?.bestStudentProfile?.starStudent?.badge || ""}
+                                    value={selectedPage.content?.bestStudentProfile?.starStudent?.badge ?? "Full Scholarship"}
                                     onChange={(e) => handleNestedContentChange('bestStudentProfile', 'starStudent', 'badge', e.target.value)}
                                     placeholder="e.g. Full Scholarship"
                                   />
@@ -1002,7 +1139,7 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">University / Achievement Details</label>
                                 <input
                                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 outline-none focus:border-brand-300"
-                                  value={selectedPage.content?.bestStudentProfile?.starStudent?.university || ""}
+                                  value={selectedPage.content?.bestStudentProfile?.starStudent?.university ?? "University of Pisa, Italy"}
                                   onChange={(e) => handleNestedContentChange('bestStudentProfile', 'starStudent', 'university', e.target.value)}
                                   placeholder="e.g. University of Pisa, Italy"
                                 />
@@ -1012,41 +1149,39 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Success Story Description</label>
                                 <textarea
                                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-20 resize-none outline-none focus:border-brand-300"
-                                  value={selectedPage.content?.bestStudentProfile?.starStudent?.description || ""}
+                                  value={selectedPage.content?.bestStudentProfile?.starStudent?.description ?? "Driven by a passion for higher education, Udit placed his trust in FETC to guide his journey abroad. With our dedicated mentorship and strategic support, he earned a fully funded scholarship to pursue Data Science at the University of Pisa, Italy."}
                                   onChange={(e) => handleNestedContentChange('bestStudentProfile', 'starStudent', 'description', e.target.value)}
                                   placeholder="Driven by a passion for higher education, Udit placed his trust in FETC..."
                                 />
                               </div>
                             </div>
 
-                            {/* B. TOP 9 FETC STUDENTS (Up to 9 Slots) */}
+                            {/* B. TOP FETC STUDENTS */}
                             <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-4">
                               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                                 <div>
                                   <span className="text-xs font-extrabold uppercase tracking-widest text-slate-800 flex items-center gap-2">
-                                    <Users size={14} className="text-brand-600" /> Top 9 FETC Students ({selectedPage.content?.bestStudentProfile?.topStudents?.length || 0}/9 Slots Used)
+                                    <Users size={14} className="text-brand-600" /> Top FETC Students ({(selectedPage.content?.bestStudentProfile?.topStudents || defaultTopStudents).length} Students)
                                   </span>
                                   <p className="text-[10px] text-slate-400 font-medium mt-0.5">
-                                    Only uploaded student cards will show on the home page slider. Unused slots are automatically hidden.
+                                    Add as many student profiles as you like. All uploaded student cards will show on the home page slider.
                                   </p>
                                 </div>
-                                {(selectedPage.content?.bestStudentProfile?.topStudents?.length || 0) < 9 && (
-                                  <button
-                                    type="button"
-                                    onClick={addTopStudent}
-                                    className="px-3.5 py-1.5 bg-brand-50 text-brand-600 hover:bg-brand-100 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
-                                  >
-                                    <Plus size={14} /> Add Student
-                                  </button>
-                                )}
+                                <button
+                                  type="button"
+                                  onClick={addTopStudent}
+                                  className="px-3.5 py-1.5 bg-brand-50 text-brand-600 hover:bg-brand-100 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                                >
+                                  <Plus size={14} /> Add Student
+                                </button>
                               </div>
 
                               <div className="space-y-4">
-                                {(selectedPage.content?.bestStudentProfile?.topStudents || []).map((student, idx) => (
+                                {(selectedPage.content?.bestStudentProfile?.topStudents || defaultTopStudents).map((student, idx) => (
                                   <div key={idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200/70 space-y-3 relative group">
                                     <div className="flex items-center justify-between border-b border-slate-200/50 pb-2">
                                       <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                                        Student Slot #{idx + 1}
+                                        Student #{idx + 1}
                                       </span>
                                       <button
                                         type="button"
@@ -1105,11 +1240,17 @@ const AdminPages = () => {
                                             className="text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100 cursor-pointer"
                                           />
                                         </div>
-                                        {student.image && (
-                                          <div className="mt-2 w-12 h-12 rounded-lg overflow-hidden border border-slate-200">
-                                            <img src={getAssetUrl(student.image)} alt={student.name} className="w-full h-full object-cover" />
-                                          </div>
-                                        )}
+                                        {(() => {
+                                          const thumbSrc = student.image 
+                                            ? getAssetUrl(student.image) 
+                                            : (student.fallbackImage || (idx < 6 ? defaultTopStudents[idx]?.fallbackImage : null));
+
+                                          return thumbSrc ? (
+                                            <div className="mt-2 w-12 h-12 rounded-lg overflow-hidden border border-slate-200">
+                                              <SafeImage src={thumbSrc} alt={student.name || "Student"} className="w-full h-full object-cover" />
+                                            </div>
+                                          ) : null;
+                                        })()}
                                       </div>
                                     </div>
                                   </div>
@@ -1123,7 +1264,7 @@ const AdminPages = () => {
                                       onClick={addTopStudent}
                                       className="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-bold hover:bg-brand-700 transition-all inline-flex items-center gap-1.5"
                                     >
-                                      <Plus size={14} /> Add First Student (Max 9)
+                                      <Plus size={14} /> Add First Student
                                     </button>
                                   </div>
                                 )}
@@ -1142,7 +1283,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Section Title</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.welcomeSection?.title || ""}
+                                    value={selectedPage.content?.welcomeSection?.title ?? "Welcome to FETC"}
                                     onChange={(e) => handleContentChange('welcomeSection', 'title', e.target.value)}
                                   />
                                 </div>
@@ -1150,7 +1291,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.welcomeSection?.badge || ""}
+                                    value={selectedPage.content?.welcomeSection?.badge ?? "About FETC"}
                                     onChange={(e) => handleContentChange('welcomeSection', 'badge', e.target.value)}
                                   />
                                 </div>
@@ -1159,7 +1300,7 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Subtitle</label>
                                 <textarea
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.welcomeSection?.subtitle || ""}
+                                  value={selectedPage.content?.welcomeSection?.subtitle ?? "Foreign English Test Capital powered by Gina Abroad Pvt. Ltd."}
                                   onChange={(e) => handleContentChange('welcomeSection', 'subtitle', e.target.value)}
                                 />
                               </div>
@@ -1177,7 +1318,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">CTA Title</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.contactCTA?.title || ""}
+                                    value={selectedPage.content?.contactCTA?.title ?? "Ready to Start Your Journey?"}
                                     onChange={(e) => handleContentChange('contactCTA', 'title', e.target.value)}
                                   />
                                 </div>
@@ -1185,7 +1326,7 @@ const AdminPages = () => {
                                   <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Badge Text</label>
                                   <input
                                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                    value={selectedPage.content?.contactCTA?.badge || ""}
+                                    value={selectedPage.content?.contactCTA?.badge ?? "Get In Touch"}
                                     onChange={(e) => handleContentChange('contactCTA', 'badge', e.target.value)}
                                   />
                                 </div>
@@ -1194,7 +1335,7 @@ const AdminPages = () => {
                                 <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Subtitle</label>
                                 <textarea
                                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-20 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.contactCTA?.subtitle || ""}
+                                  value={selectedPage.content?.contactCTA?.subtitle ?? "Book a free 1-on-1 counseling session with our senior foreign education experts today."}
                                   onChange={(e) => handleContentChange('contactCTA', 'subtitle', e.target.value)}
                                 />
                               </div>
