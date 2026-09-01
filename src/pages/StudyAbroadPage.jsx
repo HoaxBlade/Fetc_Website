@@ -16,13 +16,16 @@ function StudyAbroadPage() {
   const fetchCountryData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch((window.API_BASE || "") + `/api/pages/study-abroad/${country}`, {
+      const fallbackKey = country === 'united-kingdom' ? 'uk' : country;
+      const fallback = STATIC_FALLBACKS[fallbackKey] || STATIC_FALLBACKS[country] || {};
+
+      const apiUrl = getApiUrl(`/api/pages/study-abroad/${country}`);
+      const response = await fetch(apiUrl, {
         headers: { 'ngrok-skip-browser-warning': 'true' }
       });
       const data = await response.json();
       if (data.success && data.page && data.page.content) {
         const dbContent = data.page.content;
-        const fallback = STATIC_FALLBACKS[country] || {};
         const mergedUniversities = (Array.isArray(dbContent.universities) && dbContent.universities.length > 0)
           ? dbContent.universities
           : (fallback.universities || []);
@@ -38,11 +41,12 @@ function StudyAbroadPage() {
           sopLinks: mergedSopLinks
         });
       } else {
-        setPageData(STATIC_FALLBACKS[country] || null);
+        setPageData(fallback && Object.keys(fallback).length > 0 ? fallback : null);
       }
     } catch (err) {
       console.error('Failed to fetch study abroad data:', err);
-      setPageData(STATIC_FALLBACKS[country] || null);
+      const fallbackKey = country === 'united-kingdom' ? 'uk' : country;
+      setPageData(STATIC_FALLBACKS[fallbackKey] || STATIC_FALLBACKS[country] || null);
     } finally {
       setIsLoading(false);
     }
