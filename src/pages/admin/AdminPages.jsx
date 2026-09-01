@@ -2009,36 +2009,8 @@ const AdminPages = () => {
                                           <Trash2 size={14} />
                                         </button>
                                       </div>
-                                    </div>
-                                  </div>
-                                ));
-                              })()}
-                            </div>
+                                             </div>
                           </div>
-                                                if (data.success && data.url) {
-                                                  const current = [...(selectedPage.content?.programDownloads || [])];
-                                                  current[idx].fileUrl = data.url;
-                                                  handleContentChange(null, 'programDownloads', current);
-                                                }
-                                              } catch (err) {
-                                                console.error('PDF upload failed:', err);
-                                              }
-                                            }
-                                          }}
-                                        />
-                                      </label>
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const current = (selectedPage.content?.programDownloads || []).filter((_, i) => i !== idx);
-                                          handleContentChange(null, 'programDownloads', current);
-                                        }}
-                                        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all mt-4"
-                                      >
-                                        <Trash2 size={16} />
-                                      </button>
-                                    </div>
-                                  </div>
                                 </div>
                               ))}
                             </div>
