@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Loader2, Search, MapPin, Sparkles, Download, ChevronDown } from "lucide-react";
 import { countryData as STATIC_FALLBACKS } from "../data/siteData";
-import { getAssetUrl } from "../apiConfig";
+import { getAssetUrl, getApiUrl } from "../apiConfig";
 import { allUniversities } from "../data/allUniversitiesData";
 import SafeImage from "../components/SafeImage";
 
