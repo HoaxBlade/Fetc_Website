@@ -2009,12 +2009,12 @@ const AdminPages = () => {
                                           <Trash2 size={14} />
                                         </button>
                                       </div>
-                                             </div>
-                          </div>
-                              ))}
+                                    </div>
+                                  </div>
+                                ));
+                              })()}
                             </div>
                           </div>
-
                           {/* 6. TEAM PILLARS BANNER & IMAGE */}
                           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-4">
                             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-3 border-b border-slate-200/80 pb-3">
@@ -2442,44 +2442,6 @@ const AdminPages = () => {
                               })()}
                             </div>
                           </div>
-                                        >
-                                          <option value="Labs">Labs</option>
-                                          <option value="Spaces">Spaces</option>
-                                          <option value="Events & News">Events & News</option>
-                                          <option value="Exterior">Exterior</option>
-                                          <option value="Workspace">Workspace</option>
-                                        </select>
-                                      </div>
-                                      <div>
-                                        <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Location</label>
-                                        <input
-                                          className="w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600"
-                                          value={item.location || ""}
-                                          onChange={(e) => {
-                                            const current = [...(selectedPage.content?.galleryItems || [])];
-                                            current[idx].location = e.target.value;
-                                            handleContentChange(null, 'galleryItems', current);
-                                          }}
-                                          placeholder="Surat..."
-                                        />
-                                      </div>
-                                    </div>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const current = (selectedPage.content?.galleryItems || []).filter((_, i) => i !== idx);
-                                        handleContentChange(null, 'galleryItems', current);
-                                      }}
-                                      className="w-full py-1.5 text-red-500 hover:bg-red-50 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1"
-                                    >
-                                      <Trash2 size={12} /> Remove
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
                         </div>
                       )}
 
