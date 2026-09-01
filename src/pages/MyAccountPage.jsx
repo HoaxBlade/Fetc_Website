@@ -81,7 +81,7 @@ export default function MyAccountPage() {
             window.location.href = data.user.role === "ADMIN"
               ? "/admin/dashboard"
               : data.user.role === "INSTRUCTOR"
-                ? "/admin/news-flash"
+                ? "/"
                 : "/dashboard/profile";
           }, 1000);
         } else {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Plus, Search, Filter, Download, Edit2, Trash2, Loader2, X, Check } from 'lucide-react';
+import { BookOpen, Plus, Search, Filter, Download, Edit2, Trash2, Loader2, X, Check, Upload, Image, Video, Award } from 'lucide-react';
 import { getApiUrl } from '../../apiConfig';
 
 const AdminCourses = () => {
@@ -15,12 +16,91 @@ const AdminCourses = () => {
     courseId: '',
     title: '',
     description: '',
+    learningOutcomes: '',
+    instructorName: '',
+    instructorBio: '',
+    featuredImage: '',
+    introVideo: '',
+    slug: '',
+    metaDescription: '',
     category: 'Language Exam',
     price: '',
     duration: '4 Weeks',
-    level: 'Intermediate',
-    status: 'ACTIVE'
+    level: 'Beginner',
+    status: 'DRAFT',
+    language: 'English',
+    subtitles: 'English',
+    certificateEnabled: false
   });
+
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setIsUploadingImage(true);
+
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+
+    try {
+      const res = await fetch(getApiUrl('/api/admin/upload-media'), {
+        method: 'POST',
+        body: uploadData
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFormData(prev => ({ ...prev, featuredImage: data.url }));
+      } else {
+        alert(data.message || 'Image upload failed.');
+      }
+    } catch (err) {
+      console.error('Image upload error:', err);
+      alert('Error uploading image file.');
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  const handleVideoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setIsUploadingVideo(true);
+
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+
+    try {
+      const res = await fetch(getApiUrl('/api/admin/upload-media'), {
+        method: 'POST',
+        body: uploadData
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFormData(prev => ({ ...prev, introVideo: data.url }));
+      } else {
+        alert(data.message || 'Video upload failed.');
+      }
+    } catch (err) {
+      console.error('Video upload error:', err);
+      alert('Error uploading video file.');
+    } finally {
+      setIsUploadingVideo(false);
+    }
+  };
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isModalOpen]);
 
   useEffect(() => {
     fetchCourses();
@@ -47,11 +127,21 @@ const AdminCourses = () => {
       courseId: '',
       title: '',
       description: '',
+      learningOutcomes: '',
+      instructorName: '',
+      instructorBio: '',
+      featuredImage: '',
+      introVideo: '',
+      slug: '',
+      metaDescription: '',
       category: 'Language Exam',
       price: '',
       duration: '4 Weeks',
-      level: 'Intermediate',
-      status: 'ACTIVE'
+      level: 'Beginner',
+      status: 'DRAFT',
+      language: 'English',
+      subtitles: 'English',
+      certificateEnabled: false
     });
     setIsModalOpen(true);
   };
@@ -62,11 +152,21 @@ const AdminCourses = () => {
       courseId: course.courseId || '',
       title: course.title || '',
       description: course.description || '',
+      learningOutcomes: course.learningOutcomes || '',
+      instructorName: course.instructorName || '',
+      instructorBio: course.instructorBio || '',
+      featuredImage: course.featuredImage || '',
+      introVideo: course.introVideo || '',
+      slug: course.slug || '',
+      metaDescription: course.metaDescription || '',
       category: course.category || 'General',
       price: course.price || '',
       duration: course.duration || '4 Weeks',
-      level: course.level || 'Intermediate',
-      status: course.status || 'ACTIVE'
+      level: course.level || 'Beginner',
+      status: course.status || 'DRAFT',
+      language: course.language || 'English',
+      subtitles: course.subtitles || 'English',
+      certificateEnabled: course.certificateEnabled || false
     });
     setIsModalOpen(true);
   };
@@ -258,135 +358,378 @@ const AdminCourses = () => {
         )}
       </div>
 
-      {/* Add / Edit Course Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 w-screen h-screen z-[50] flex items-center justify-center p-4 overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => setIsModalOpen(false)}
-              className="fixed inset-0 w-screen h-screen bg-slate-900/40 backdrop-blur-sm transform-gpu"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="relative bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 z-50 my-auto transform-gpu"
-            >
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 className="text-lg font-bold text-slate-900">
-                  {editingCourse ? 'Edit Course' : 'Add New Course'}
-                </h3>
-                <button 
-                  onClick={() => setIsModalOpen(false)}
-                  className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-50 transition-colors"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-3 text-xs">
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Course Title *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. IELTS Academic Masterclass"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-medium"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
+      {/* Add / Edit Course Full Modal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {isModalOpen && (
+            <div className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsModalOpen(false)}
+                className="fixed inset-0 bg-slate-950/75 backdrop-blur-md"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98, y: 15 }}
+                className="relative bg-slate-50/50 rounded-3xl max-w-6xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200/80 overflow-hidden z-10"
+              >
+                {/* Modal Top Header */}
+                <div className="p-6 border-b border-slate-200/80 bg-white flex items-center justify-between shrink-0 shadow-2xs">
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">Category</label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-medium bg-slate-50"
-                    >
-                      <option value="Language Exam">Language Exam</option>
-                      <option value="Graduate Exam">Graduate Exam</option>
-                      <option value="Undergrad Exam">Undergrad Exam</option>
-                      <option value="General">General</option>
-                    </select>
+                    <h2 className="text-xl font-bold text-slate-900">
+                      {editingCourse ? 'Edit Course' : 'Add New Course'}
+                    </h2>
+                    <p className="text-xs text-slate-500 font-medium mt-0.5">Fill in the details below to create or update your course syllabus.</p>
                   </div>
-
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">Price (₹)</label>
-                    <input
-                      type="number"
-                      placeholder="14999"
-                      value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-medium"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">Duration</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 8 Weeks"
-                      value={formData.duration}
-                      onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-medium"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">Status</label>
-                    <select
-                      value={formData.status}
-                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-medium bg-slate-50"
-                    >
-                      <option value="ACTIVE">ACTIVE</option>
-                      <option value="DRAFT">DRAFT</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Description</label>
-                  <textarea
-                    rows="3"
-                    placeholder="Brief course overview..."
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-medium resize-none"
-                  ></textarea>
-                </div>
-
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                  <button
-                    type="button"
+                  <button 
                     onClick={() => setIsModalOpen(false)}
-                    className="px-4 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-xl transition-all"
+                    className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
                   >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="px-5 py-2.5 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-50"
-                  >
-                    {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-                    Save Course
+                    <X size={20} />
                   </button>
                 </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+
+                {/* Form Body - 2 Columns Scrollable */}
+                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 lg:p-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+                    
+                    {/* Left Column (2 Cols wide) */}
+                    <div className="lg:col-span-2 space-y-6">
+                      
+                      {/* 1. Course Information Card */}
+                      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900">Course Information</h3>
+                          <p className="text-[11px] text-slate-500 font-medium">Core details about your course.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Course Title *</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. IELTS Academic Masterclass"
+                            value={formData.title}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const autoSlug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                              setFormData(prev => ({
+                                ...prev,
+                                title: val,
+                                slug: prev.slug === '' || prev.slug === autoSlug.slice(0, -1) ? autoSlug : prev.slug
+                              }));
+                            }}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-xs font-semibold text-slate-900 placeholder-slate-400 transition-all"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Description</label>
+                          <textarea
+                            rows="4"
+                            placeholder="Detailed description of what the course offers..."
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-xs font-medium text-slate-900 placeholder-slate-400 transition-all resize-none"
+                          ></textarea>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Learning Outcomes</label>
+                          <textarea
+                            rows="3"
+                            placeholder="What will students learn in this course? (e.g. Band 8+ strategies, mock feedback...)"
+                            value={formData.learningOutcomes}
+                            onChange={(e) => setFormData({ ...formData, learningOutcomes: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-xs font-medium text-slate-900 placeholder-slate-400 transition-all resize-none"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      {/* 2. Instructor Details Card */}
+                      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900">Instructor Details</h3>
+                          <p className="text-[11px] text-slate-500 font-medium">Add details about the lead instructor.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Instructor Name</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Dr. Kingshuk Chatterjee"
+                            value={formData.instructorName}
+                            onChange={(e) => setFormData({ ...formData, instructorName: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-xs font-semibold text-slate-900 placeholder-slate-400 transition-all"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Instructor Bio</label>
+                          <textarea
+                            rows="3"
+                            placeholder="Brief profile, experience, and achievements of the instructor..."
+                            value={formData.instructorBio}
+                            onChange={(e) => setFormData({ ...formData, instructorBio: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-xs font-medium text-slate-900 placeholder-slate-400 transition-all resize-none"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      {/* 3. Media Upload Card */}
+                      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-6">
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                            <Image size={16} className="text-blue-600" /> Media Upload
+                          </h3>
+                          <p className="text-[11px] text-slate-500 font-medium">Upload course banner thumbnail and intro preview video.</p>
+                        </div>
+
+                        {/* Featured Image Picker */}
+                        <div className="space-y-2">
+                          <label className="block text-xs font-bold text-slate-700">Featured Image</label>
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                            <label className="cursor-pointer bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 transition-all shrink-0 active:scale-95 shadow-2xs">
+                              {isUploadingImage ? (
+                                <Loader2 size={16} className="animate-spin text-blue-600" />
+                              ) : (
+                                <Upload size={16} className="text-blue-600" />
+                              )}
+                              <span>{isUploadingImage ? 'Uploading...' : 'Choose Image File'}</span>
+                              <input 
+                                type="file" 
+                                accept="image/*" 
+                                onChange={handleImageUpload} 
+                                className="hidden" 
+                                disabled={isUploadingImage}
+                              />
+                            </label>
+                            <span className="text-[10px] text-slate-400 font-semibold self-center hidden sm:inline">OR</span>
+                            <input
+                              type="text"
+                              placeholder="Or paste image URL (e.g. https://...)"
+                              value={formData.featuredImage}
+                              onChange={(e) => setFormData({ ...formData, featuredImage: e.target.value })}
+                              className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none text-xs font-medium text-slate-900 placeholder-slate-400 transition-all"
+                            />
+                          </div>
+                          {formData.featuredImage && (
+                            <div className="mt-2.5 relative w-40 h-24 rounded-xl overflow-hidden border border-slate-200 shadow-2xs group bg-slate-100">
+                              <img src={formData.featuredImage} alt="Featured Preview" className="w-full h-full object-cover" />
+                              <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, featuredImage: '' })}
+                                className="absolute top-1.5 right-1.5 p-1 bg-slate-900/70 text-white rounded-full hover:bg-red-600 transition-colors"
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Intro Video Picker */}
+                        <div className="space-y-2 pt-3 border-t border-slate-100">
+                          <label className="block text-xs font-bold text-slate-700">Intro Video</label>
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                            <label className="cursor-pointer bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 transition-all shrink-0 active:scale-95 shadow-2xs">
+                              {isUploadingVideo ? (
+                                <Loader2 size={16} className="animate-spin text-blue-600" />
+                              ) : (
+                                <Video size={16} className="text-blue-600" />
+                              )}
+                              <span>{isUploadingVideo ? 'Uploading...' : 'Choose Video File'}</span>
+                              <input 
+                                type="file" 
+                                accept="video/*" 
+                                onChange={handleVideoUpload} 
+                                className="hidden" 
+                                disabled={isUploadingVideo}
+                              />
+                            </label>
+                            <span className="text-[10px] text-slate-400 font-semibold self-center hidden sm:inline">OR</span>
+                            <input
+                              type="text"
+                              placeholder="Or paste video URL (e.g. https://...)"
+                              value={formData.introVideo}
+                              onChange={(e) => setFormData({ ...formData, introVideo: e.target.value })}
+                              className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none text-xs font-medium text-slate-900 placeholder-slate-400 transition-all"
+                            />
+                          </div>
+                          {formData.introVideo && (
+                            <div className="mt-2.5 relative max-w-sm rounded-xl overflow-hidden border border-slate-200 bg-black">
+                              <video src={formData.introVideo} controls className="w-full max-h-40" />
+                              <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, introVideo: '' })}
+                                className="absolute top-1.5 right-1.5 p-1 bg-slate-900/80 text-white rounded-full hover:bg-red-600 transition-colors z-10"
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 4. SEO & Metadata Card */}
+                      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900">SEO & Metadata</h3>
+                          <p className="text-[11px] text-slate-500 font-medium">Customize search engine URL slug and metadata.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Slug</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. ielts-academic-masterclass"
+                            value={formData.slug}
+                            onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-xs font-medium text-slate-900 placeholder-slate-400 transition-all"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Meta Description</label>
+                          <textarea
+                            rows="2"
+                            placeholder="Short search result snippet for Google..."
+                            value={formData.metaDescription}
+                            onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-xs font-medium text-slate-900 placeholder-slate-400 transition-all resize-none"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Right Column (1 Col wide) */}
+                    <div className="space-y-6">
+                      
+                      {/* Course Settings Card */}
+                      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+                        <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Course Settings</h3>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Status</label>
+                          <select
+                            value={formData.status}
+                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none text-xs font-semibold text-slate-900 transition-all"
+                          >
+                            <option value="DRAFT">Draft</option>
+                            <option value="ACTIVE">Published / Active</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Price (₹)</label>
+                          <input
+                            type="number"
+                            placeholder="14999"
+                            value={formData.price}
+                            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none text-xs font-semibold text-slate-900 placeholder-slate-400 transition-all"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Level</label>
+                          <select
+                            value={formData.level}
+                            onChange={(e) => setFormData({ ...formData, level: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none text-xs font-semibold text-slate-900 transition-all"
+                          >
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                            <option value="All Levels">All Levels</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Language</label>
+                          <input
+                            type="text"
+                            placeholder="English"
+                            value={formData.language}
+                            onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none text-xs font-medium text-slate-900 transition-all"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Subtitles</label>
+                          <input
+                            type="text"
+                            placeholder="English"
+                            value={formData.subtitles}
+                            onChange={(e) => setFormData({ ...formData, subtitles: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none text-xs font-medium text-slate-900 transition-all"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">Duration</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. 8 Weeks"
+                            value={formData.duration}
+                            onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none text-xs font-medium text-slate-900 placeholder-slate-400 transition-all"
+                          />
+                        </div>
+
+                        {/* Certificate Toggle */}
+                        <div className="pt-2 border-t border-slate-100">
+                          <div className="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+                            <div>
+                              <p className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                <Award size={14} className="text-amber-500" /> Certificate
+                              </p>
+                              <p className="text-[10px] text-slate-500 font-medium">Enable certificate for this course</p>
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={formData.certificateEnabled}
+                              onChange={(e) => setFormData({ ...formData, certificateEnabled: e.target.checked })}
+                              className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center justify-end gap-3 pt-2">
+                        <button
+                          type="button"
+                          onClick={() => setIsModalOpen(false)}
+                          className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all active:scale-95"
+                        >
+                          Back
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="px-8 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 active:scale-95 disabled:opacity-50"
+                        >
+                          {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                          {editingCourse ? 'Save Changes' : 'Create Course'}
+                        </button>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </motion.div>
   );
 };

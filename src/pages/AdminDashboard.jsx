@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   ShoppingBag, 
   UserPlus, Search, RotateCcw, Download, 
   Users, Ticket, HelpCircle, FileText, Zap,
   TrendingUp, Clock, CheckCircle2, AlertCircle,
-  ExternalLink, Plus
+  ExternalLink, Plus, MessageSquare, Send, X, Mail,
+  User, MessageCircle, Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid 
@@ -30,6 +33,27 @@ const AdminDashboard = () => {
   });
   const [tab, setTab] = useState('tickets');
   const [isLoading, setIsLoading] = useState(true);
+
+  // Chat Box Modal State
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [replyText, setReplyText] = useState("");
+  const [isSendingReply, setIsSendingReply] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const messagesEndRef = useRef(null);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (selectedTicket) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedTicket]);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -93,6 +117,88 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
+  const fetchChatMessages = async (ticketId, silent = false) => {
+    if (!silent) setIsChatLoading(true);
+    try {
+      const response = await fetch((window.API_BASE || '') + `/api/tickets/${ticketId}/messages`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setChatMessages(data.messages || []);
+        if (data.ticket) {
+          setSelectedTicket(data.ticket);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch ticket chat:', err);
+    } finally {
+      if (!silent) setIsChatLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!selectedTicket?.id) return;
+    fetchChatMessages(selectedTicket.id, false);
+
+    const interval = setInterval(() => {
+      fetchChatMessages(selectedTicket.id, true);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [selectedTicket?.id]);
+
+  useEffect(() => {
+    if (selectedTicket) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages, selectedTicket]);
+
+  const handleSendReply = async (newStatus = 'RESOLVED') => {
+    if (!replyText.trim() || !selectedTicket) {
+      setNotification({ type: 'error', text: 'Please enter a reply message before sending.' });
+      return;
+    }
+
+    setIsSendingReply(true);
+    setNotification(null);
+    const messageText = replyText.trim();
+    setReplyText("");
+
+    try {
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const response = await fetch((window.API_BASE || "") + `/api/tickets/${selectedTicket.id}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify({
+          sender_type: currentUser.role || 'ADMIN',
+          sender_name: currentUser.name || 'Support Staff',
+          sender_id: currentUser.id,
+          message: messageText,
+          status: newStatus
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        fetchChatMessages(selectedTicket.id, true);
+        fetchData();
+        setNotification({ type: 'success', text: `Message posted to chat thread & emailed to ${selectedTicket.email}!` });
+      } else {
+        setNotification({ type: 'error', text: data.message || 'Failed to send message.' });
+      }
+    } catch (err) {
+      console.error('Reply send error:', err);
+      setNotification({ type: 'error', text: 'Network error while sending reply.' });
+    } finally {
+      setIsSendingReply(false);
+    }
+  };
+
   const handleExportData = async () => {
     try {
       const response = await fetch((window.API_BASE||'') + '/api/admin/users');
@@ -123,7 +229,6 @@ const AdminDashboard = () => {
   const ticketStatusData = [
     { name: 'Tickets', value: stats.openTickets, color: '#f59e0b' },
     { name: 'Leads', value: stats.newLeads, color: '#6366f1' },
-    { name: 'Doubts', value: stats.pendingDoubts, color: '#8b5cf6' },
   ];
 
   return (
@@ -246,18 +351,29 @@ const AdminDashboard = () => {
                       <p className="text-[10px] text-slate-400 font-medium">By {item.name} • {new Date(item.created_at).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <span className={`text-[9px] font-medium uppercase tracking-wider px-2.5 py-1 rounded-lg border ${
                       item.status === 'OPEN' || item.status === 'NEW' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'
                     }`}>
                       {item.status}
                     </span>
-                    <button 
-                      onClick={() => navigate(tab === 'tickets' ? '/admin/support-tickets' : '/admin/users')}
-                      className="opacity-0 group-hover:opacity-100 p-2 text-brand-600 hover:bg-brand-50 rounded-lg transition-all"
-                    >
-                      <Plus size={14} className="stroke-[2.2px]" />
-                    </button>
+                    {tab === 'tickets' ? (
+                      <button 
+                        onClick={() => setSelectedTicket(item)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-bold transition-all active:scale-95 shrink-0"
+                        title="Open Live Chat Box"
+                      >
+                        <MessageCircle size={14} />
+                        <span>Chat & Solve</span>
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => navigate('/admin/leads')}
+                        className="opacity-0 group-hover:opacity-100 p-2 text-brand-600 hover:bg-brand-50 rounded-lg transition-all"
+                      >
+                        <Plus size={14} className="stroke-[2.2px]" />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))
@@ -367,7 +483,7 @@ const AdminDashboard = () => {
             {[
               { label: "Invite Staff", icon: UserPlus, color: "bg-blue-500", path: "/admin/users" },
               { label: "Post News", icon: Zap, color: "bg-amber-500", path: "/admin/news-flash" },
-              { label: "Doubts & Verification", icon: HelpCircle, color: "bg-purple-500", path: "/admin/doubts" },
+              { label: "Support Tickets", icon: HelpCircle, color: "bg-purple-500", path: "/admin/support-tickets" },
               { label: "Web Editor", icon: FileText, color: "bg-emerald-500", path: "/admin/pages" },
               { label: "Student Hub", icon: Users, color: "bg-indigo-500", path: "/admin/users" },
               { label: "Export Logs", icon: Download, color: "bg-slate-700", action: handleExportData }
@@ -387,6 +503,154 @@ const AdminDashboard = () => {
         </div>
 
       </div>
+      {/* Live Chat Box Modal for Solving Support Tickets directly from Dashboard */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {selectedTicket && (
+            <div className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6">
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedTicket(null)}
+                className="absolute inset-0 bg-slate-950/75 backdrop-blur-md"
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 20 }} 
+                animate={{ opacity: 1, scale: 1, y: 0 }} 
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col h-[85vh] z-10"
+              >
+                {/* Modal Header */}
+                <div className="p-5 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between shrink-0">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ticket #{selectedTicket.id}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
+                        selectedTicket.status === 'OPEN' ? 'bg-amber-100 text-amber-700' :
+                        selectedTicket.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' :
+                        'bg-emerald-100 text-emerald-700'
+                      }`}>
+                        {selectedTicket.status}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-slate-900 text-base leading-snug line-clamp-1">{selectedTicket.subject}</h3>
+                  </div>
+
+                  <button 
+                    onClick={() => setSelectedTicket(null)}
+                    className="p-2 hover:bg-slate-200/60 rounded-xl text-slate-400 transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Chat Thread */}
+                <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50/30">
+                  {/* User Info Bar */}
+                  <div className="flex items-center p-3 bg-white rounded-xl border border-slate-200/80 text-xs font-medium">
+                    <div className="flex items-center gap-2 text-slate-700">
+                      <User size={14} className="text-blue-600" />
+                      <span>Student: <strong>{selectedTicket.name || 'Anonymous'}</strong></span>
+                    </div>
+                  </div>
+
+                  {isChatLoading && chatMessages.length === 0 ? (
+                    <div className="flex justify-center items-center h-40">
+                      <Loader2 className="animate-spin text-brand-600 w-6 h-6" />
+                    </div>
+                  ) : chatMessages.length === 0 ? (
+                    <div className="text-center py-10 text-slate-400 text-xs font-medium">
+                      "{selectedTicket.message}"
+                    </div>
+                  ) : (
+                    chatMessages.map((msg, index) => {
+                      const isStudent = msg.sender_type === 'USER';
+                      return (
+                        <div 
+                          key={msg.id || index} 
+                          className={`flex flex-col ${isStudent ? 'items-start' : 'items-end'}`}
+                        >
+                          <div className="flex items-center gap-2 mb-1 px-1">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                              {isStudent ? (msg.sender_name || 'Student') : (msg.sender_name || 'Support / Instructor')}
+                            </span>
+                            <span className="text-[9px] text-slate-400">
+                              {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <div 
+                            className={`min-w-[70px] max-w-[82%] px-4 py-2.5 rounded-2xl text-xs font-medium leading-relaxed whitespace-pre-wrap ${
+                              isStudent 
+                                ? 'bg-slate-100 text-slate-800 rounded-tl-xs border border-slate-200/60 text-left' 
+                                : 'bg-blue-600 text-white rounded-tr-xs shadow-xs text-right'
+                            }`}
+                          >
+                            {msg.message}
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+
+                {/* Chat Input & Reply Footer / Closed Banner */}
+                {selectedTicket && (selectedTicket.status?.toUpperCase() === 'RESOLVED' || selectedTicket.status?.toUpperCase() === 'CLOSED') ? (
+                  <div className="p-4 border-t border-slate-100 bg-white shrink-0">
+                    <div className="p-3.5 bg-emerald-50 border border-emerald-200/80 rounded-2xl flex items-center justify-center gap-2.5 text-emerald-800 text-xs font-bold shadow-2xs">
+                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                      <span>This support ticket is resolved & closed. Conversation ended.</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 border-t border-slate-100 bg-white shrink-0 space-y-3">
+                    <textarea 
+                      rows="2"
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      placeholder="Type your response here to send into the chat box..."
+                      className="w-full p-3 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none font-medium text-slate-800"
+                    />
+
+                    {notification && (
+                      <div className={`p-2 text-xs rounded-xl font-medium flex items-center gap-2 ${
+                        notification.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'
+                      }`}>
+                        {notification.type === 'success' ? <CheckCircle2 size={14} /> : <X size={14} />}
+                        {notification.text}
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[10px] text-slate-400 italic">Live response directly from Dashboard</span>
+                      <div className="flex gap-2">
+                        <button
+                          disabled={isSendingReply || !replyText.trim()}
+                          onClick={() => handleSendReply('IN_PROGRESS')}
+                          className="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold rounded-xl transition-all disabled:opacity-40 flex items-center gap-1.5 active:scale-95"
+                        >
+                          {isSendingReply ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
+                          Post & In Progress
+                        </button>
+                        <button
+                          disabled={isSendingReply || !replyText.trim()}
+                          onClick={() => handleSendReply('RESOLVED')}
+                          className="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-40 flex items-center gap-1.5 active:scale-95"
+                        >
+                          {isSendingReply ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
+                          Post & Resolve
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };

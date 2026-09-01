@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Ticket, Search, Loader2, Mail, Clock, CheckCircle, User, X, MessageSquare, Send, ExternalLink } from 'lucide-react';
 
@@ -11,6 +12,24 @@ const AdminSupportTickets = () => {
   const [replyText, setReplyText] = useState("");
   const [isSendingReply, setIsSendingReply] = useState(false);
   const [notification, setNotification] = useState(null);
+
+  // Live Chat Box state
+  const [chatMessages, setChatMessages] = useState([]);
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const messagesEndRef = React.useRef(null);
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (selectedTicket) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedTicket]);
 
   const fetchTickets = async () => {
     setIsLoading(true);
@@ -28,6 +47,43 @@ const AdminSupportTickets = () => {
       setIsLoading(false);
     }
   };
+
+  const fetchChatMessages = async (ticketId, silent = false) => {
+    if (!silent) setIsChatLoading(true);
+    try {
+      const response = await fetch((window.API_BASE || '') + `/api/tickets/${ticketId}/messages`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setChatMessages(data.messages || []);
+        if (data.ticket) {
+          setSelectedTicket(data.ticket);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch ticket chat:', err);
+    } finally {
+      if (!silent) setIsChatLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!selectedTicket?.id) return;
+    fetchChatMessages(selectedTicket.id, false);
+
+    const interval = setInterval(() => {
+      fetchChatMessages(selectedTicket.id, true);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [selectedTicket?.id]);
+
+  useEffect(() => {
+    if (selectedTicket) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages, selectedTicket]);
 
   const updateStatus = async (id, newStatus) => {
     try {
@@ -52,23 +108,28 @@ const AdminSupportTickets = () => {
   };
 
   const handleSendReply = async (newStatus = 'RESOLVED') => {
-    if (!replyText.trim()) {
-      setNotification({ type: 'error', text: 'Please enter a reply message before sending email.' });
+    if (!replyText.trim() || !selectedTicket) {
+      setNotification({ type: 'error', text: 'Please enter a reply message before sending.' });
       return;
     }
 
     setIsSendingReply(true);
     setNotification(null);
+    const messageText = replyText.trim();
+    setReplyText("");
 
     try {
-      const response = await fetch((window.API_BASE || "") + `/api/admin/tickets/${selectedTicket.id}/reply`, {
+      const response = await fetch((window.API_BASE || "") + `/api/tickets/${selectedTicket.id}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true'
         },
         body: JSON.stringify({
-          replyMessage: replyText,
+          sender_type: currentUser.role || 'ADMIN',
+          sender_name: currentUser.name || 'Support Staff',
+          sender_id: currentUser.id,
+          message: messageText,
           status: newStatus
         })
       });
@@ -76,16 +137,15 @@ const AdminSupportTickets = () => {
       const data = await response.json();
 
       if (data.success) {
-        setTickets(tickets.map(t => t.id === selectedTicket.id ? data.ticket : t));
-        setSelectedTicket(data.ticket);
-        setReplyText("");
-        setNotification({ type: 'success', text: `Email sent to ${selectedTicket.email} successfully!` });
+        fetchChatMessages(selectedTicket.id, true);
+        fetchTickets();
+        setNotification({ type: 'success', text: 'Message posted to Chat Box!' });
       } else {
-        setNotification({ type: 'error', text: data.message || 'Failed to send email.' });
+        setNotification({ type: 'error', text: data.message || 'Failed to send message.' });
       }
     } catch (err) {
       console.error('Reply send error:', err);
-      setNotification({ type: 'error', text: 'Network error while sending email reply.' });
+      setNotification({ type: 'error', text: 'Network error while sending reply.' });
     } finally {
       setIsSendingReply(false);
     }
@@ -125,180 +185,160 @@ const AdminSupportTickets = () => {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-[1600px] mx-auto">
       {/* Ticket Detail & Email Reply Modal */}
-      <AnimatePresence>
-        {selectedTicket && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setSelectedTicket(null)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.98, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 10 }}
-              className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200/60 max-h-[90vh] flex flex-col"
-            >
-              {/* Modal Header */}
-              <div className="p-8 pb-4 border-b border-slate-100 flex justify-between items-start shrink-0 bg-slate-50/50">
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className={`w-fit px-3 py-1 rounded-full text-[9px] font-medium tracking-widest uppercase ${getPriorityColor(selectedTicket.priority)}`}>
-                      {selectedTicket.priority} Priority
-                    </span>
-                    <span className={`px-3 py-1 rounded-full text-[9px] font-medium tracking-widest uppercase ${
-                      selectedTicket.status === 'OPEN' ? 'bg-blue-100 text-blue-600' : 
-                      selectedTicket.status === 'IN_PROGRESS' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'
-                    }`}>
-                      {selectedTicket.status}
-                    </span>
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {selectedTicket && (
+            <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4">
+              <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => setSelectedTicket(null)}
+                className="absolute inset-0 bg-slate-950/75 backdrop-blur-md"
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.98, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 10 }}
+                className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200/60 max-h-[90vh] flex flex-col z-10"
+              >
+                {/* Modal Header */}
+                <div className="p-8 pb-4 border-b border-slate-100 flex justify-between items-start shrink-0 bg-slate-50/50">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`w-fit px-3 py-1 rounded-full text-[9px] font-medium tracking-widest uppercase ${getPriorityColor(selectedTicket.priority)}`}>
+                        {selectedTicket.priority} Priority
+                      </span>
+                      <span className={`px-3 py-1 rounded-full text-[9px] font-medium tracking-widest uppercase ${
+                        selectedTicket.status === 'OPEN' ? 'bg-blue-100 text-blue-600' : 
+                        selectedTicket.status === 'IN_PROGRESS' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'
+                      }`}>
+                        {selectedTicket.status}
+                      </span>
+                    </div>
+                    <h2 className="text-xl font-semibold text-slate-900 leading-snug">{selectedTicket.subject}</h2>
                   </div>
-                  <h2 className="text-xl font-semibold text-slate-900 leading-snug">{selectedTicket.subject}</h2>
-                </div>
-                <button onClick={() => setSelectedTicket(null)} className="p-2 hover:bg-slate-200/50 rounded-full text-slate-400 transition-colors">
-                  <X size={22} />
-                </button>
-              </div>
-
-              {/* Scrollable Content */}
-              <div className="p-8 overflow-y-auto space-y-6 flex-1">
-                {/* Student Query Box */}
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6">
-                  <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <MessageSquare size={14} className="text-brand-600" /> Student's Query
-                  </h4>
-                  <p className="text-slate-700 leading-relaxed text-sm font-medium break-words">"{selectedTicket.message}"</p>
+                  <button onClick={() => setSelectedTicket(null)} className="p-2 hover:bg-slate-200/50 rounded-full text-slate-400 transition-colors">
+                    <X size={22} />
+                  </button>
                 </div>
 
-                {/* User Contact Info */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 p-4 bg-slate-50/60 rounded-xl border border-slate-100">
-                    <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
-                      <User size={18} />
+                {/* Scrollable Content */}
+                <div className="p-6 overflow-y-auto space-y-6 flex-1 bg-slate-50/40">
+                  {/* User Info Bar */}
+                  <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
+                    <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0 font-bold text-xs">
+                      <User size={16} />
                     </div>
                     <div className="overflow-hidden">
-                      <p className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">Student Name</p>
-                      <p className="text-sm font-semibold text-slate-900 truncate">{selectedTicket.name || 'Anonymous'}</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Student Name</p>
+                      <p className="text-xs font-bold text-slate-900 truncate">{selectedTicket.name || 'Anonymous'}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-indigo-50/50 rounded-xl border border-indigo-100/60">
-                    <div className="flex items-center gap-3 overflow-hidden">
-                      <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 shrink-0">
-                        <Mail size={18} />
-                      </div>
-                      <div className="overflow-hidden">
-                        <p className="text-[10px] font-medium text-indigo-400 uppercase tracking-tight">Contact Email</p>
-                        <p className="text-sm font-semibold text-slate-900 truncate">{selectedTicket.email}</p>
-                      </div>
+                  {/* Live Chat Box Thread */}
+                  <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
+                    <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <MessageSquare size={14} className="text-brand-600" /> Live Chat Thread
+                    </h4>
+
+                    <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1">
+                      {isChatLoading && chatMessages.length === 0 ? (
+                        <div className="flex justify-center p-6"><Loader2 className="animate-spin text-brand-600" size={20} /></div>
+                      ) : chatMessages.length === 0 ? (
+                        <div className="text-xs text-slate-400 italic text-center py-4 font-medium">"{selectedTicket.message}"</div>
+                      ) : (
+                        chatMessages.map((msg, index) => {
+                          const isStudent = msg.sender_type === 'USER';
+                          return (
+                            <div key={msg.id || index} className={`flex flex-col ${isStudent ? 'items-start' : 'items-end'}`}>
+                              <div className="flex items-center gap-2 mb-1 px-1">
+                                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                                  {isStudent ? (msg.sender_name || 'Student') : (msg.sender_name || 'Support / Instructor')}
+                                </span>
+                                <span className="text-[9px] text-slate-400">
+                                  {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                              <div 
+                                className={`min-w-[70px] max-w-[85%] px-4 py-2.5 rounded-2xl text-xs font-medium leading-relaxed whitespace-pre-wrap ${
+                                  isStudent 
+                                    ? 'bg-slate-100 text-slate-800 rounded-tl-xs border border-slate-200/60 text-left' 
+                                    : 'bg-blue-600 text-white rounded-tr-xs shadow-xs text-right'
+                                }`}
+                              >
+                                {msg.message}
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                      <div ref={messagesEndRef} />
                     </div>
-                    <a 
-                      href={`mailto:${selectedTicket.email}?subject=${encodeURIComponent("Re: " + selectedTicket.subject)}`}
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="p-2 text-indigo-600 hover:bg-indigo-100/80 rounded-lg transition-colors shrink-0 ml-2"
-                      title="Open Mail Client"
-                    >
-                      <ExternalLink size={16} />
-                    </a>
-                  </div>
-                </div>
-
-                {/* Previously Sent Email Reply */}
-                {selectedTicket.admin_reply && (
-                  <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-6">
-                    <h4 className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest mb-2 flex items-center gap-2">
-                      <CheckCircle size={14} /> Previously Sent Email Response
-                    </h4>
-                    <p className="text-slate-800 text-sm font-medium leading-relaxed whitespace-pre-wrap">{selectedTicket.admin_reply}</p>
-                    {selectedTicket.replied_at && (
-                      <span className="text-[10px] text-slate-400 mt-3 block font-medium">
-                        Sent on {new Date(selectedTicket.replied_at).toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* Email Reply Form */}
-                <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-xl">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                      <Mail size={16} className="text-blue-400" /> Send Email Answer
-                    </h4>
-                    <span className="text-[10px] font-medium text-slate-400">To: {selectedTicket.email}</span>
                   </div>
 
-                  <textarea 
-                    rows="4"
-                    value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
-                    placeholder="Type your official answer here... It will be emailed directly to the student's email address."
-                    className="w-full p-4 text-sm bg-slate-800 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none font-medium text-slate-100 placeholder-slate-400"
-                  />
+                  {/* Reply Form / Closed Banner */}
+                  {selectedTicket && (selectedTicket.status?.toUpperCase() === 'RESOLVED' || selectedTicket.status?.toUpperCase() === 'CLOSED') ? (
+                    <div className="p-3.5 bg-emerald-50 border border-emerald-200/80 rounded-2xl flex items-center justify-center gap-2.5 text-emerald-800 text-xs font-bold shadow-2xs">
+                      <CheckCircle size={16} className="text-emerald-600 shrink-0" />
+                      <span>This support ticket is resolved & closed. Conversation ended.</span>
+                    </div>
+                  ) : (
+                    <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-xl">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                          <Send size={14} className="text-blue-400" /> Send Response in Chat Box
+                        </h4>
+                        <span className="text-[10px] font-medium text-slate-400">Live Chat</span>
+                      </div>
 
-                  {/* Notification Feedback */}
-                  {notification && (
-                    <div className={`mt-3 p-3 text-xs rounded-xl font-medium flex items-center gap-2 ${
-                      notification.type === 'success' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                    }`}>
-                      {notification.type === 'success' ? <CheckCircle size={14} /> : <X size={14} />}
-                      {notification.text}
+                      <textarea 
+                        rows="3"
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        placeholder="Type your response here to send into the chat box..."
+                        className="w-full p-3.5 text-xs bg-slate-800 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none font-medium text-slate-100 placeholder-slate-400"
+                      />
+
+                      {/* Notification Feedback */}
+                      {notification && (
+                        <div className={`mt-3 p-2.5 text-xs rounded-xl font-medium flex items-center gap-2 ${
+                          notification.type === 'success' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                        }`}>
+                          {notification.type === 'success' ? <CheckCircle size={14} /> : <X size={14} />}
+                          {notification.text}
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap items-center justify-between gap-3 mt-3 pt-3 border-t border-slate-800">
+                        <span className="text-[10px] text-slate-400 italic">
+                          Live Chat Conversation
+                        </span>
+                        <div className="flex gap-2">
+                          <button 
+                            disabled={isSendingReply || !replyText.trim()}
+                            onClick={() => handleSendReply('IN_PROGRESS')}
+                            className="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold rounded-xl transition-all disabled:opacity-40 flex items-center gap-1.5 active:scale-95"
+                          >
+                            {isSendingReply ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
+                            Post & In Progress
+                          </button>
+
+                          <button 
+                            disabled={isSendingReply || !replyText.trim()}
+                            onClick={() => handleSendReply('RESOLVED')}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-40 flex items-center gap-1.5 active:scale-95"
+                          >
+                            {isSendingReply ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
+                            Post & Resolve
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   )}
-
-                  <div className="flex flex-wrap items-center justify-between gap-3 mt-4 pt-3 border-t border-slate-800">
-                    <span className="text-[11px] text-slate-400 italic">
-                      Direct email notification via FETC Mail Service
-                    </span>
-                    <div className="flex gap-2">
-                      <button 
-                        disabled={isSendingReply || !replyText.trim()}
-                        onClick={() => handleSendReply('IN_PROGRESS')}
-                        className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold rounded-xl transition-all disabled:opacity-40 flex items-center gap-1.5"
-                      >
-                        {isSendingReply ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
-                        Send & Keep In Progress
-                      </button>
-
-                      <button 
-                        disabled={isSendingReply || !replyText.trim()}
-                        onClick={() => handleSendReply('RESOLVED')}
-                        className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-40 flex items-center gap-1.5"
-                      >
-                        {isSendingReply ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
-                        Send Email & Resolve
-                      </button>
-                    </div>
-                  </div>
                 </div>
-
-                {/* Status Actions Bar */}
-                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-slate-500">Manual Status Change:</span>
-                  </div>
-                  <div className="flex gap-3">
-                    {selectedTicket.status !== 'IN_PROGRESS' && selectedTicket.status !== 'RESOLVED' && (
-                      <button 
-                        onClick={() => updateStatus(selectedTicket.id, 'IN_PROGRESS')}
-                        className="px-5 py-2.5 bg-amber-500 text-white text-xs font-bold rounded-xl hover:shadow-md transition-all"
-                      >
-                        Mark In Progress
-                      </button>
-                    )}
-                    {selectedTicket.status !== 'RESOLVED' && (
-                      <button 
-                        onClick={() => updateStatus(selectedTicket.id, 'RESOLVED')}
-                        className="px-5 py-2.5 bg-emerald-500 text-white text-xs font-bold rounded-xl hover:shadow-md transition-all"
-                      >
-                        Resolve Ticket
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>

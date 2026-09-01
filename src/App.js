@@ -107,7 +107,7 @@ function AppContent() {
             <Route path="news-flash" element={<AdminNewsFlash />} />
             <Route path="support-tickets" element={<AdminSupportTickets />} />
             <Route path="invoice" element={<AdminInvoice />} />
-            <Route path="doubts" element={<AdminDoubts />} />
+            <Route path="doubts" element={<Navigate to="/admin/support-tickets" replace />} />
             <Route path="leads" element={<AdminLeads />} />
             <Route path="leads/edit/:id" element={<EditLead />} />
 
@@ -123,7 +123,7 @@ function AppContent() {
             <Route path="orders" element={<UserOrders />} />
             <Route path="payments" element={<Navigate to="/dashboard/orders" replace />} />
             <Route path="support" element={<UserSupport />} />
-            <Route path="doubts" element={<UserDoubts />} />
+            <Route path="doubts" element={<Navigate to="/dashboard/support" replace />} />
             <Route path="verification" element={<UserVerification />} />
             <Route path="mock-tests" element={<div className="p-8 text-slate-400 italic text-sm font-medium tracking-wide">Mock Test dashboard coming soon...</div>} />
           </Route>

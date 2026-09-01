@@ -71,7 +71,6 @@ const AdminLayout = () => {
     { icon: Receipt, label: "Invoice", path: "/admin/invoice", roles: ["ADMIN", "INSTRUCTOR"] },
     { icon: ClipboardList, label: "Leads Dashboard", path: "/admin/leads", roles: ["ADMIN", "INSTRUCTOR"] },
     { icon: Handshake, label: "Partner List", path: "/admin/partner-list", roles: ["ADMIN", "INSTRUCTOR"] },
-    { icon: HelpCircle, label: "Doubts", path: "/admin/doubts", roles: ["ADMIN"] },
   ];
 
   const sidebarItems = isInstructor

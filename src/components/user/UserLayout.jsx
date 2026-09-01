@@ -32,7 +32,6 @@ const UserLayout = () => {
     { icon: BookOpen, label: "My Courses", path: "/dashboard/courses" },
     { icon: ShoppingBag, label: "My Orders & Payments", path: "/dashboard/orders" },
     { icon: HelpCircle, label: "Support", path: "/dashboard/support" },
-    { icon: MessageCircle, label: "Doubts", path: "/dashboard/doubts" },
     { icon: FileCheck, label: "Document Verification Portal", path: "/dashboard/verification" },
     { icon: ClipboardCheck, label: "Mock Test Remaining", path: "/dashboard/mock-tests" },
   ];
@@ -65,7 +64,7 @@ const UserLayout = () => {
       </div>
 
       <nav className="p-4 space-y-1 overflow-y-auto">
-        {sidebarItems.filter(item => !((item.path === "/dashboard/doubts" || item.path === "/dashboard/verification") && userData?.role === "ADMIN")).map((item, idx) => (
+        {sidebarItems.filter(item => !(item.path === "/dashboard/verification" && userData?.role === "ADMIN")).map((item, idx) => (
           <NavLink
             key={idx}
             to={item.path}

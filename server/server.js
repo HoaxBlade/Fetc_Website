@@ -182,6 +182,19 @@ const runMigrations = async () => {
       ALTER TABLE tickets ADD COLUMN IF NOT EXISTS replied_at TIMESTAMP;
     `);
 
+    // Ticket Messages table for chat box
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS ticket_messages (
+        id SERIAL PRIMARY KEY,
+        ticket_id INTEGER REFERENCES tickets(id) ON DELETE CASCADE,
+        sender_type VARCHAR(20) NOT NULL,
+        sender_name VARCHAR(255),
+        sender_id INTEGER,
+        message TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     // News Flash table
     await db.query(`
       CREATE TABLE IF NOT EXISTS news_flash (
@@ -639,6 +652,29 @@ app.post('/api/upload', (req, res) => {
     const fileUrl = `/uploads/${req.file.filename}`;
     res.json({ success: true, url: fileUrl });
   });
+});
+
+const mediaStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'fetc-media-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const mediaUpload = multer({ 
+  storage: mediaStorage,
+  limits: { fileSize: 100 * 1024 * 1024 } // 100MB limit for images & videos
+});
+
+app.post('/api/admin/upload-media', mediaUpload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'No media file uploaded' });
+  }
+  const fileUrl = `/uploads/${req.file.filename}`;
+  res.json({ success: true, url: fileUrl });
 });
 
 // Health Check
@@ -2041,10 +2077,99 @@ app.post(['/api/tickets', '/api/v1/tickets'], async (req, res) => {
       'INSERT INTO tickets (user_id, name, email, subject, message, priority) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
       [userId, name, email, subject, message, priority]
     );
-    res.status(201).json({ success: true, ticket: result.rows[0] });
+
+    const ticket = result.rows[0];
+    // Seed initial ticket_messages entry
+    await db.query(
+      'INSERT INTO ticket_messages (ticket_id, sender_type, sender_name, sender_id, message, created_at) VALUES ($1, $2, $3, $4, $5, $6)',
+      [ticket.id, 'USER', name, userId, message, ticket.created_at]
+    );
+
+    res.status(201).json({ success: true, ticket });
   } catch (err) {
     console.error('Create ticket error:', err);
     res.status(500).json({ success: false, message: 'Server error creating support ticket: ' + err.message });
+  }
+});
+
+// GET /api/tickets/:ticketId/messages - Fetch chat history for a ticket
+app.get('/api/tickets/:ticketId/messages', async (req, res) => {
+  const { ticketId } = req.params;
+  try {
+    const ticketRes = await db.query('SELECT * FROM tickets WHERE id = $1', [ticketId]);
+    if (ticketRes.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Ticket not found' });
+    }
+    const ticket = ticketRes.rows[0];
+
+    const messagesRes = await db.query(
+      'SELECT * FROM ticket_messages WHERE ticket_id = $1 ORDER BY created_at ASC',
+      [ticketId]
+    );
+
+    let messages = messagesRes.rows;
+    if (messages.length === 0) {
+      // Seed initial ticket message from user if not seeded yet
+      const initialMsg = await db.query(
+        'INSERT INTO ticket_messages (ticket_id, sender_type, sender_name, sender_id, message, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [ticketId, 'USER', ticket.name, ticket.user_id, ticket.message, ticket.created_at]
+      );
+      messages = [initialMsg.rows[0]];
+
+      if (ticket.admin_reply) {
+        const replyMsg = await db.query(
+          'INSERT INTO ticket_messages (ticket_id, sender_type, sender_name, message, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+          [ticketId, 'ADMIN', 'Support Admin', ticket.admin_reply, ticket.replied_at || ticket.created_at]
+        );
+        messages.push(replyMsg.rows[0]);
+      }
+    }
+
+    res.json({ success: true, messages, ticket });
+  } catch (err) {
+    console.error('Fetch ticket messages error:', err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+// POST /api/tickets/:ticketId/messages - Send a chat message in a ticket
+app.post('/api/tickets/:ticketId/messages', async (req, res) => {
+  const { ticketId } = req.params;
+  const { sender_type, sender_name, sender_id, message, status } = req.body;
+
+  if (!message || !message.trim()) {
+    return res.status(400).json({ success: false, message: 'Message content is required' });
+  }
+
+  try {
+    const ticketRes = await db.query('SELECT * FROM tickets WHERE id = $1', [ticketId]);
+    if (ticketRes.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Ticket not found' });
+    }
+    const ticket = ticketRes.rows[0];
+
+    if (ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') {
+      return res.status(400).json({ success: false, message: 'This ticket has been resolved and closed. Conversation has ended.' });
+    }
+
+    const senderType = sender_type || 'USER';
+    const senderName = sender_name || (senderType === 'USER' ? ticket.name : 'Support Team');
+
+    const msgRes = await db.query(
+      'INSERT INTO ticket_messages (ticket_id, sender_type, sender_name, sender_id, message) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [ticketId, senderType, senderName, sender_id || null, message.trim()]
+    );
+
+    const newStatus = status || (senderType === 'USER' ? 'OPEN' : 'IN_PROGRESS');
+    await db.query(
+      'UPDATE tickets SET status = $1, admin_reply = COALESCE($2, admin_reply) WHERE id = $3',
+      [newStatus, senderType !== 'USER' ? message.trim() : null, ticketId]
+    );
+
+    res.json({ success: true, message: msgRes.rows[0] });
+  } catch (err) {
+    console.error('Post ticket message error:', err);
+    res.status(500).json({ success: false, message: 'Failed to post message' });
   }
 });
 
@@ -3182,6 +3307,19 @@ const ensureCoursesTable = async () => {
     )
   `);
 
+  await db.query(`
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS learning_outcomes TEXT;
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS instructor_name VARCHAR(255);
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS instructor_bio TEXT;
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS featured_image TEXT;
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS intro_video TEXT;
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS slug VARCHAR(255);
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS meta_description TEXT;
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS language VARCHAR(100) DEFAULT 'English';
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS subtitles VARCHAR(100) DEFAULT 'English';
+    ALTER TABLE courses ADD COLUMN IF NOT EXISTS certificate_enabled BOOLEAN DEFAULT false;
+  `).catch(() => {});
+
   const countResult = await db.query(`SELECT COUNT(*) FROM courses`);
   if (parseInt(countResult.rows[0].count) === 0) {
     const initialCourses = [
@@ -3228,7 +3366,17 @@ app.get(['/api/v1/course/all', '/api/admin/courses'], async (req, res) => {
       level: row.level,
       status: row.status,
       studentsCount: row.students_count,
-      createdAt: row.created_at
+      createdAt: row.created_at,
+      learningOutcomes: row.learning_outcomes || '',
+      instructorName: row.instructor_name || '',
+      instructorBio: row.instructor_bio || '',
+      featuredImage: row.featured_image || row.thumbnail || '',
+      introVideo: row.intro_video || '',
+      slug: row.slug || '',
+      metaDescription: row.meta_description || '',
+      language: row.language || 'English',
+      subtitles: row.subtitles || 'English',
+      certificateEnabled: row.certificate_enabled || false
     }));
 
     res.json({ success: true, courses, total: courses.length });
@@ -3242,17 +3390,25 @@ app.get(['/api/v1/course/all', '/api/admin/courses'], async (req, res) => {
 app.post(['/api/v1/course/create', '/api/admin/courses'], async (req, res) => {
   try {
     await ensureCoursesTable();
-    const { courseId, title, description, category, price, duration, level, status } = req.body;
+    const { 
+      courseId, title, description, category, price, duration, level, status,
+      learningOutcomes, instructorName, instructorBio, featuredImage, introVideo,
+      slug, metaDescription, language, subtitles, certificateEnabled
+    } = req.body;
 
     if (!title) {
       return res.status(400).json({ success: false, message: 'Title is required' });
     }
 
-    const slugId = courseId || title.toUpperCase().replace(/[^A_Z0-9]/g, '_');
+    const slugId = courseId || title.toUpperCase().replace(/[^A-Z0-9]/g, '_');
 
     const query = `
-      INSERT INTO courses (course_id, title, description, category, price, duration, level, status)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO courses (
+        course_id, title, description, category, price, duration, level, status,
+        learning_outcomes, instructor_name, instructor_bio, featured_image, intro_video,
+        slug, meta_description, language, subtitles, certificate_enabled
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
       ON CONFLICT (course_id) DO UPDATE SET
         title = EXCLUDED.title,
         description = EXCLUDED.description,
@@ -3260,7 +3416,17 @@ app.post(['/api/v1/course/create', '/api/admin/courses'], async (req, res) => {
         price = EXCLUDED.price,
         duration = EXCLUDED.duration,
         level = EXCLUDED.level,
-        status = EXCLUDED.status
+        status = EXCLUDED.status,
+        learning_outcomes = EXCLUDED.learning_outcomes,
+        instructor_name = EXCLUDED.instructor_name,
+        instructor_bio = EXCLUDED.instructor_bio,
+        featured_image = EXCLUDED.featured_image,
+        intro_video = EXCLUDED.intro_video,
+        slug = EXCLUDED.slug,
+        meta_description = EXCLUDED.meta_description,
+        language = EXCLUDED.language,
+        subtitles = EXCLUDED.subtitles,
+        certificate_enabled = EXCLUDED.certificate_enabled
       RETURNING *
     `;
 
@@ -3271,8 +3437,18 @@ app.post(['/api/v1/course/create', '/api/admin/courses'], async (req, res) => {
       category || 'General',
       parseFloat(price || 0),
       duration || '4 Weeks',
-      level || 'All Levels',
-      status || 'ACTIVE'
+      level || 'Intermediate',
+      status || 'DRAFT',
+      learningOutcomes || '',
+      instructorName || '',
+      instructorBio || '',
+      featuredImage || '',
+      introVideo || '',
+      slug || '',
+      metaDescription || '',
+      language || 'English',
+      subtitles || 'English',
+      certificateEnabled ? true : false
     ];
 
     const result = await db.query(query, values);
