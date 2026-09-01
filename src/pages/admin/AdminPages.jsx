@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle, Award, CreditCard, Upload, Video, Play, FileDown, Folder, Calendar } from 'lucide-react';
+import { FileText, Plus, Search, Loader2, Globe, Clock, ChevronRight, X, Save, Edit, Info, Building, GraduationCap, BookOpen, Users, ImageIcon, MapPin, Target, Tag, Sparkles, CheckCircle2, Compass, Send, Trash2, AlertCircle, Award, CreditCard, Upload, Video, Play, FileDown, Folder, Calendar, Download } from 'lucide-react';
 import { getAssetUrl, getApiUrl } from '../../apiConfig';
 import SafeImage from '../../components/SafeImage';
 
@@ -1413,6 +1413,291 @@ const AdminPages = () => {
                         </div>
                       )}
 
+                      {/* 2.5 STUDY ABROAD PAGE EDITOR */}
+                      {(selectedPage.slug?.toLowerCase().startsWith('/study-abroad') || selectedPage.slug?.toLowerCase().includes('study-abroad')) && (
+                        <div className="space-y-6 pb-20">
+                          {/* 1. Destination Overview */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-6">
+                            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-3 border-b border-slate-200/80 pb-3">
+                              <Globe size={18} className="text-brand-600" /> Destination Overview
+                            </h3>
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Country Name</label>
+                                  <input
+                                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:border-brand-400 outline-none transition-all"
+                                    value={selectedPage.content?.name ?? selectedPage.title.replace('Study in ', '')}
+                                    onChange={(e) => handleContentChange(null, 'name', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Flag Image URL / Code</label>
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      className="flex-1 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:border-brand-400 outline-none transition-all"
+                                      value={selectedPage.content?.flag ?? ""}
+                                      onChange={(e) => handleContentChange(null, 'flag', e.target.value)}
+                                      placeholder="https://flagcdn.com/w80/gb.png"
+                                    />
+                                    {selectedPage.content?.flag && (
+                                      <img src={selectedPage.content.flag} alt="Flag" className="h-8 w-auto rounded border border-slate-200" />
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Destination Banner / Hero Image</label>
+                                <div className="flex items-center gap-4">
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={async (e) => {
+                                      if (e.target.files && e.target.files[0]) {
+                                        const formData = new FormData();
+                                        formData.append('image', e.target.files[0]);
+                                        try {
+                                          const res = await fetch(getApiUrl('/api/admin/upload'), { method: 'POST', body: formData });
+                                          const data = await res.json();
+                                          if (data.success) {
+                                            handleContentChange(null, 'image', data.url);
+                                          }
+                                        } catch (err) {
+                                          alert('Upload failed');
+                                        }
+                                      }
+                                    }}
+                                    className="text-xs text-slate-500 file:mr-2 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100 cursor-pointer"
+                                  />
+                                  {selectedPage.content?.image && (
+                                    <div className="w-16 h-12 rounded-lg overflow-hidden border border-slate-200">
+                                      <SafeImage src={getAssetUrl(selectedPage.content.image)} className="w-full h-full object-cover" />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 block">Overview Description</label>
+                                <textarea
+                                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 h-24 resize-none focus:border-brand-400 outline-none transition-all"
+                                  value={selectedPage.content?.description ?? ""}
+                                  onChange={(e) => handleContentChange(null, 'description', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 2. SOP PDF Downloads */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-4">
+                            <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
+                              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-3">
+                                <Download size={18} className="text-brand-600" /> SOP Guides & PDF Downloads
+                              </h3>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = selectedPage.content?.sopLinks || [];
+                                  handleContentChange(null, 'sopLinks', [...current, { label: "New SOP Guide", url: "" }]);
+                                }}
+                                className="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-600 text-xs font-bold rounded-xl border border-brand-200 flex items-center gap-1 transition-all"
+                              >
+                                <Plus size={14} /> Add SOP Link
+                              </button>
+                            </div>
+
+                            <div className="space-y-3">
+                              {(selectedPage.content?.sopLinks || []).map((sop, sIdx) => (
+                                <div key={sIdx} className="p-3 bg-white rounded-xl border border-slate-200 flex flex-col md:flex-row items-center gap-3">
+                                  <input
+                                    className="w-full md:w-1/3 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-800"
+                                    value={sop.label || ""}
+                                    onChange={(e) => {
+                                      const current = [...(selectedPage.content?.sopLinks || [])];
+                                      current[sIdx] = { ...current[sIdx], label: e.target.value };
+                                      handleContentChange(null, 'sopLinks', current);
+                                    }}
+                                    placeholder="e.g. Download UK SOP"
+                                  />
+                                  <input
+                                    className="flex-1 w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-600"
+                                    value={sop.url || ""}
+                                    onChange={(e) => {
+                                      const current = [...(selectedPage.content?.sopLinks || [])];
+                                      current[sIdx] = { ...current[sIdx], url: e.target.value };
+                                      handleContentChange(null, 'sopLinks', current);
+                                    }}
+                                    placeholder="PDF URL or Google Drive Link..."
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const current = (selectedPage.content?.sopLinks || []).filter((_, i) => i !== sIdx);
+                                      handleContentChange(null, 'sopLinks', current);
+                                    }}
+                                    className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 3. Elite Universities Manager */}
+                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-4">
+                            <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
+                              <div>
+                                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-3">
+                                  <Building size={18} className="text-brand-600" /> Universities & Partner Institutions ({selectedPage.content?.universities?.length || 0})
+                                </h3>
+                                <p className="text-xs text-slate-400 font-medium">Add, edit, or upload logos for universities in {selectedPage.content?.name || selectedPage.title}</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = selectedPage.content?.universities || [];
+                                  handleContentChange(null, 'universities', [
+                                    ...current,
+                                    { name: "New University", ranking: "Top Ranked", location: selectedPage.content?.name || "Global", image: "", exclusive: false }
+                                  ]);
+                                }}
+                                className="px-4 py-2 bg-brand-600 text-white hover:bg-brand-700 text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
+                              >
+                                <Plus size={14} /> Add University
+                              </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {(selectedPage.content?.universities || []).map((uni, uIdx) => (
+                                <div key={uIdx} className="p-4 bg-white rounded-2xl border border-slate-200 space-y-3 relative group">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const current = (selectedPage.content?.universities || []).filter((_, i) => i !== uIdx);
+                                      handleContentChange(null, 'universities', current);
+                                    }}
+                                    className="absolute top-3 right-3 p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+
+                                  <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">University Name</label>
+                                    <input
+                                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-800"
+                                      value={uni.name || ""}
+                                      onChange={(e) => {
+                                        const current = [...(selectedPage.content?.universities || [])];
+                                        current[uIdx] = { ...current[uIdx], name: e.target.value };
+                                        handleContentChange(null, 'universities', current);
+                                      }}
+                                      placeholder="University Name..."
+                                    />
+                                  </div>
+
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ranking Badge</label>
+                                      <input
+                                        className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-700"
+                                        value={uni.ranking || ""}
+                                        onChange={(e) => {
+                                          const current = [...(selectedPage.content?.universities || [])];
+                                          current[uIdx] = { ...current[uIdx], ranking: e.target.value };
+                                          handleContentChange(null, 'universities', current);
+                                        }}
+                                        placeholder="#1 Global"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Location</label>
+                                      <input
+                                        className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-700"
+                                        value={uni.location || ""}
+                                        onChange={(e) => {
+                                          const current = [...(selectedPage.content?.universities || [])];
+                                          current[uIdx] = { ...current[uIdx], location: e.target.value };
+                                          handleContentChange(null, 'universities', current);
+                                        }}
+                                        placeholder="City, Country"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">University Logo / Image</label>
+                                    <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                      <div className="w-12 h-12 rounded-lg overflow-hidden border border-slate-200 shrink-0 bg-white flex items-center justify-center p-1 shadow-xs">
+                                        {uni.image ? (
+                                          <SafeImage src={getAssetUrl(uni.image)} alt={uni.name} className="w-full h-full object-contain" />
+                                        ) : (
+                                          <div className="text-sm font-black text-brand-600">
+                                            {uni.name ? uni.name.charAt(0) : "U"}
+                                          </div>
+                                        )}
+                                      </div>
+
+                                      <div className="flex-1 min-w-0 space-y-1.5">
+                                        <input
+                                          className="w-full px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 outline-none focus:border-brand-400"
+                                          value={uni.image || ""}
+                                          onChange={(e) => {
+                                            const current = [...(selectedPage.content?.universities || [])];
+                                            current[uIdx] = { ...current[uIdx], image: e.target.value };
+                                            handleContentChange(null, 'universities', current);
+                                          }}
+                                          placeholder="Image URL or Asset Path..."
+                                        />
+                                        <input
+                                          type="file"
+                                          accept="image/*"
+                                          onChange={async (e) => {
+                                            if (e.target.files && e.target.files[0]) {
+                                              const formData = new FormData();
+                                              formData.append('image', e.target.files[0]);
+                                              try {
+                                                const res = await fetch(getApiUrl('/api/admin/upload'), { method: 'POST', body: formData });
+                                                const data = await res.json();
+                                                if (data.success) {
+                                                  const current = [...(selectedPage.content?.universities || [])];
+                                                  current[uIdx] = { ...current[uIdx], image: data.url };
+                                                  handleContentChange(null, 'universities', current);
+                                                }
+                                              } catch (err) {
+                                                alert('Upload failed');
+                                              }
+                                            }
+                                          }}
+                                          className="block w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100 cursor-pointer"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="pt-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const current = [...(selectedPage.content?.universities || [])];
+                                        current[uIdx] = { ...current[uIdx], exclusive: !current[uIdx].exclusive };
+                                        handleContentChange(null, 'universities', current);
+                                      }}
+                                      className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border ${
+                                        uni.exclusive ? 'bg-amber-500 text-white border-amber-600' : 'bg-slate-50 text-slate-500 border-slate-200'
+                                      }`}
+                                    >
+                                      {uni.exclusive ? '⭐ Exclusive Partner' : 'Standard University'}
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       {/* 2. COMPANY PROFILE EDITOR */}
                       {(selectedPage.slug?.toLowerCase() === '/about/company-profile' || selectedPage.slug?.toLowerCase() === '/about' || selectedPage.slug?.toLowerCase() === '/about/') && (
                         <div className="space-y-6 pb-20">
@@ -2706,155 +2991,6 @@ const AdminPages = () => {
                                   placeholder="Paste the src URL from the Google Maps iframe..."
                                 />
                               </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 4. STUDY ABROAD / COUNTRY EDITOR */}
-                      {(selectedPage.slug?.toLowerCase() === '/study-abroad' || selectedPage.slug?.toLowerCase().startsWith('/study-abroad/')) && (
-                        <div className="space-y-6 pb-20">
-                          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
-                              <Globe size={18} className="text-brand-600" /> 1. Country Identity
-                            </h3>
-                            <div className="space-y-4">
-                              <ImageUploader
-                                section="content"
-                                field="image"
-                                value={selectedPage.content?.image || selectedPage.content?.hero?.image}
-                                label="Hero Banner Image"
-                              />
-                              <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Country Name</label>
-                                <input
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-600 focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.name || selectedPage.content?.hero?.title || ""}
-                                  onChange={(e) => {
-                                    handleContentChange(null, 'name', e.target.value);
-                                    handleContentChange('hero', 'title', e.target.value);
-                                  }}
-                                />
-                              </div>
-                              <div>
-                                <label className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mb-1 block">Short Description</label>
-                                <textarea
-                                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-500 h-24 resize-none focus:border-brand-300 outline-none transition-all"
-                                  value={selectedPage.content?.description || selectedPage.content?.hero?.description || ""}
-                                  onChange={(e) => {
-                                    handleContentChange(null, 'description', e.target.value);
-                                    handleContentChange('hero', 'description', e.target.value);
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="pt-8 border-t border-slate-100">
-                            <div className="flex items-center justify-between mb-8">
-                              <div>
-                                <h3 className="text-lg font-semibold text-slate-900 tracking-tight">University Partnerships</h3>
-                                <p className="text-xs text-slate-400 font-medium italic">Manage the institutions students can apply to in this country.</p>
-                              </div>
-                              <button
-                                onClick={() => {
-                                  const current = selectedPage.content.universities || [];
-                                  // Prepend new university to show it first in the editor
-                                  handleContentChange(null, 'universities', [{ name: "New University", link: "", ranking: "Top Ranked", exclusive: false, location: selectedPage.content.name }, ...current]);
-                                }}
-                                className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-brand-600 transition-all shadow-lg active:scale-95"
-                              >
-                                <Plus size={14} /> Add University
-                              </button>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {(selectedPage.content?.universities || []).map((uni, idx) => (
-                                <div key={idx} className="p-5 bg-white border border-slate-100 rounded-2xl shadow-sm relative group">
-                                  <button
-                                    onClick={() => {
-                                      const current = selectedPage.content.universities.filter((_, i) => i !== idx);
-                                      handleContentChange(null, 'universities', current);
-                                    }}
-                                    className="absolute -top-2 -right-2 w-7 h-7 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-300 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 shadow-sm"
-                                  >
-                                    <X size={14} />
-                                  </button>
-
-                                  <div className="space-y-4">
-                                    <div className="flex items-center gap-3">
-                                      <div className="relative group w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
-                                        {uni.image ? (
-                                          <>
-                                            <SafeImage src={getAssetUrl(uni.image)} className="w-full h-full object-contain" alt="Logo" />
-                                            <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
-                                              <label className="p-1.5 bg-white text-slate-900 rounded-xl cursor-pointer shadow-xl">
-                                                <Plus size={12} />
-                                                <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(null, 'universities', e.target.files[0], null, idx)} />
-                                              </label>
-                                            </div>
-                                          </>
-                                        ) : (
-                                          <label className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-all">
-                                            <Building size={20} className="text-slate-200" />
-                                            <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(null, 'universities', e.target.files[0], null, idx)} />
-                                          </label>
-                                        )}
-                                      </div>
-                                      <div className="flex-1">
-                                        <input
-                                          className="w-full bg-transparent border-none p-0 text-sm font-semibold text-slate-800 focus:ring-0"
-                                          value={uni.name}
-                                          onChange={(e) => {
-                                            const current = [...selectedPage.content.universities];
-                                            current[idx].name = e.target.value;
-                                            handleContentChange(null, 'universities', current);
-                                          }}
-                                          placeholder="University Name"
-                                        />
-                                        <div className="flex items-center gap-2 mt-1">
-                                          <input
-                                            className="text-[10px] font-medium text-slate-300 bg-transparent border-none p-0 focus:ring-0 italic"
-                                            value={uni.ranking}
-                                            onChange={(e) => {
-                                              const current = [...selectedPage.content.universities];
-                                              current[idx].ranking = e.target.value;
-                                              handleContentChange(null, 'universities', current);
-                                            }}
-                                            placeholder="Ranking (e.g. Top 100)"
-                                          />
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-4 pt-2">
-                                      <div className="flex-1 space-y-1">
-                                        <label className="text-[9px] font-semibold text-slate-300 uppercase tracking-widest pl-1">Website URL</label>
-                                        <input
-                                          className="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-medium"
-                                          value={uni.link}
-                                          onChange={(e) => {
-                                            const current = [...selectedPage.content.universities];
-                                            current[idx].link = e.target.value;
-                                            handleContentChange(null, 'universities', current);
-                                          }}
-                                          placeholder="https://..."
-                                        />
-                                      </div>
-                                      <button
-                                        onClick={() => {
-                                          const current = [...selectedPage.content.universities];
-                                          current[idx].exclusive = !current[idx].exclusive;
-                                          handleContentChange(null, 'universities', current);
-                                        }}
-                                        className={`px-3 py-2 rounded-xl text-[9px] font-medium uppercase tracking-widest transition-all mt-4 border ${uni.exclusive ? 'bg-amber-500 text-white border-amber-600' : 'bg-slate-50 text-slate-400 border-slate-100'}`}
-                                      >
-                                        {uni.exclusive ? 'Exclusive Partner' : 'Standard Partner'}
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
                             </div>
                           </div>
                         </div>

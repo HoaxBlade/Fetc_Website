@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { Loader2, Search, MapPin, Sparkles, Download, ChevronDown } from "lucide-react";
 import { countryData as STATIC_FALLBACKS } from "../data/siteData";
 import { getAssetUrl } from "../apiConfig";
+import { allUniversities } from "../data/allUniversitiesData";
 import SafeImage from "../components/SafeImage";
 
 function StudyAbroadPage() {
@@ -19,10 +20,24 @@ function StudyAbroadPage() {
         headers: { 'ngrok-skip-browser-warning': 'true' }
       });
       const data = await response.json();
-      if (data.success && data.page) {
-        setPageData(data.page.content);
+      if (data.success && data.page && data.page.content) {
+        const dbContent = data.page.content;
+        const fallback = STATIC_FALLBACKS[country] || {};
+        const mergedUniversities = (Array.isArray(dbContent.universities) && dbContent.universities.length > 0)
+          ? dbContent.universities
+          : (fallback.universities || []);
+
+        const mergedSopLinks = (Array.isArray(dbContent.sopLinks) && dbContent.sopLinks.length > 0)
+          ? dbContent.sopLinks
+          : (dbContent.sopLink ? [{ label: "Download SOP", url: dbContent.sopLink }] : (fallback.sopLinks || (fallback.sopLink ? [{ label: "Download SOP", url: fallback.sopLink }] : [])));
+
+        setPageData({
+          ...fallback,
+          ...dbContent,
+          universities: mergedUniversities,
+          sopLinks: mergedSopLinks
+        });
       } else {
-        // Use siteData fallback if DB is missing data
         setPageData(STATIC_FALLBACKS[country] || null);
       }
     } catch (err) {
@@ -109,7 +124,7 @@ function StudyAbroadPage() {
             >
               Start Your Journey
             </Link>
-            {pageData.sopLinks && pageData.sopLinks.length > 1 ? (
+            {Array.isArray(pageData.sopLinks) && pageData.sopLinks.filter(s => s && (typeof s === 'string' || s.url)).length > 1 ? (
               <div className="relative">
                 <button
                   onClick={() => setIsSopDropdownOpen(!isSopDropdownOpen)}
@@ -122,34 +137,49 @@ function StudyAbroadPage() {
                 </button>
                 {isSopDropdownOpen && (
                   <div className="absolute top-full left-0 mt-2 w-full min-w-[240px] rounded-2xl bg-white p-2 shadow-xl shadow-slate-200/50 ring-1 ring-slate-100 z-50">
-                    {pageData.sopLinks.map((sop, idx) => (
-                      <a
-                        key={idx}
-                        href={sop.url}
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-600"
-                      >
-                        <Download size={16} />
-                        {sop.label}
-                      </a>
-                    ))}
+                    {pageData.sopLinks.filter(s => s && (typeof s === 'string' || s.url)).map((sop, idx) => {
+                      const href = typeof sop === 'string' ? sop : sop?.url;
+                      const label = typeof sop === 'string' ? `SOP ${idx + 1}` : sop?.label || `SOP ${idx + 1}`;
+                      return (
+                        <a
+                          key={idx}
+                          href={href}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-600"
+                        >
+                          <Download size={16} />
+                          {label}
+                        </a>
+                      );
+                    })}
                   </div>
                 )}
               </div>
-            ) : (pageData.sopLinks || pageData.sopLink) && (
-              <a
-                href={pageData.sopLinks ? pageData.sopLinks[0].url : pageData.sopLink}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-8 py-4 text-base font-bold text-slate-900 shadow-xl shadow-slate-200 ring-1 ring-slate-200/50 transition-all duration-300 hover:-translate-y-1 hover:text-brand-600 hover:shadow-brand-100/50 active:scale-95"
-              >
-                <Download size={20} />
-                Download SOP
-              </a>
-            )}
+            ) : (() => {
+              const validSopLinks = Array.isArray(pageData.sopLinks)
+                ? pageData.sopLinks.filter(s => s && (typeof s === 'string' || s.url))
+                : [];
+              const singleSopUrl = validSopLinks.length > 0
+                ? (typeof validSopLinks[0] === 'string' ? validSopLinks[0] : validSopLinks[0].url)
+                : (typeof pageData.sopLink === 'string' ? pageData.sopLink : pageData.sopLink?.url);
+
+              if (!singleSopUrl) return null;
+
+              return (
+                <a
+                  href={singleSopUrl}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-8 py-4 text-base font-bold text-slate-900 shadow-xl shadow-slate-200 ring-1 ring-slate-200/50 transition-all duration-300 hover:-translate-y-1 hover:text-brand-600 hover:shadow-brand-100/50 active:scale-95"
+                >
+                  <Download size={20} />
+                  Download SOP
+                </a>
+              );
+            })()}
           </div>
         </div>
       </div>
@@ -196,17 +226,35 @@ function StudyAbroadPage() {
                 
                 <div className="mb-10 flex h-32 w-full items-center justify-center relative p-4">
                    <div className="absolute inset-0 bg-slate-50/50 rounded-3xl -z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  {uni.image ? (
-                    <SafeImage
-                      src={getAssetUrl(uni.image)}
-                      alt={uni.name}
-                      className="h-full w-full object-contain relative z-10 transition-transform duration-700 group-hover:scale-110"
-                    />
-                  ) : (
-                    <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-50 text-2xl font-black text-brand-600 relative z-10">
-                      {uni.name.charAt(0)}
-                    </div>
-                  )}
+                  {(() => {
+                    const findLocalLogo = (name) => {
+                      if (!name) return null;
+                      const lower = name.toLowerCase().trim();
+                      for (const list of Object.values(allUniversities)) {
+                        if (!Array.isArray(list)) continue;
+                        const found = list.find(u => u.name && (u.name.toLowerCase().includes(lower) || lower.includes(u.name.toLowerCase())));
+                        if (found && found.image) return found.image;
+                      }
+                      return null;
+                    };
+
+                    const localLogo = findLocalLogo(uni.name);
+                    const resolvedImg = localLogo 
+                      ? localLogo 
+                      : (uni.image && typeof uni.image === 'string' && !uni.image.includes('wikimedia') ? getAssetUrl(uni.image) : null);
+
+                    return resolvedImg ? (
+                      <SafeImage
+                        src={resolvedImg}
+                        alt={uni.name}
+                        className="h-full w-full object-contain relative z-10 transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-50 text-2xl font-black text-brand-600 relative z-10 shadow-inner">
+                        {uni.name ? uni.name.charAt(0) : "U"}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 <div className="mt-auto">

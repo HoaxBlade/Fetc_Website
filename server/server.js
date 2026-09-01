@@ -2413,7 +2413,7 @@ app.patch('/api/admin/doubts/:id', async (req, res) => {
 // GET /api/admin/pages - List all pages
 app.get('/api/admin/pages', async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM pages ORDER BY title ASC');
+    const result = await db.query('SELECT * FROM pages ORDER BY updated_at DESC, id DESC');
     res.json({ success: true, pages: result.rows });
   } catch (err) {
     console.error(err);

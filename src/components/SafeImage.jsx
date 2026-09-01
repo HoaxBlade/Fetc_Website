@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const DEFAULT_FALLBACK = "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60";
-
-const SafeImage = ({ src, alt, className, fallback = DEFAULT_FALLBACK, ...props }) => {
-  const activeFallback = fallback || DEFAULT_FALLBACK;
-  const [imgSrc, setImgSrc] = useState(src || activeFallback);
+const SafeImage = ({ src, alt, className, fallback = null, ...props }) => {
+  const [imgSrc, setImgSrc] = useState(src || fallback);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     setHasError(false);
     if (!src) {
-      setImgSrc(activeFallback);
+      setImgSrc(fallback);
       return;
     }
 
@@ -52,18 +49,28 @@ const SafeImage = ({ src, alt, className, fallback = DEFAULT_FALLBACK, ...props 
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [src, activeFallback]);
+  }, [src, fallback]);
 
   const handleError = () => {
     if (!hasError) {
       setHasError(true);
-      setImgSrc(activeFallback);
+      if (fallback) {
+        setImgSrc(fallback);
+      }
     }
   };
 
+  if (hasError && !fallback) {
+    return (
+      <div className={`flex items-center justify-center bg-brand-50 text-brand-600 font-extrabold text-2xl rounded-2xl ${className || 'w-full h-full'}`}>
+        {alt ? alt.charAt(0).toUpperCase() : "U"}
+      </div>
+    );
+  }
+
   return (
     <img 
-      src={imgSrc || activeFallback} 
+      src={imgSrc || fallback} 
       alt={alt || 'Image'} 
       className={className} 
       onError={handleError}
