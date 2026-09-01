@@ -148,7 +148,7 @@ const AdminPages = () => {
     }
   };
 
-  const categories = ["Home", "About Us", "Study Abroad", "Career Assessment", "Mock Test", "Exam & Training", "Other"];
+  const categories = ["Home", "About Us", "Study Abroad", "Career Assessment", "Exam & Training", "Other"];
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [groupSelectedPageIds, setGroupSelectedPageIds] = useState({});
 
@@ -158,7 +158,7 @@ const AdminPages = () => {
     if (s.startsWith('/about') || s === '/gallery') return 'About Us';
     if (s.startsWith('/study-abroad')) return 'Study Abroad';
     if (s.includes('career-assessment')) return 'Career Assessment';
-    if (s.startsWith('/mock')) return 'Mock Test';
+    if (s.startsWith('/mock')) return 'Exam & Training';
     if (s.startsWith('/exam-training')) return 'Exam & Training';
     return 'Other';
   };
