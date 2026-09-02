@@ -1175,12 +1175,12 @@ const EditLead = () => {
             </button>
           )}
 
-          {activeTab === tabs.length - 1 ? (
+          <div className="flex items-center gap-3">
             <button 
               type="button" 
               onClick={handleSubmit}
               disabled={isSaving}
-              className="px-7 py-3 bg-brand-600 text-white rounded-xl hover:bg-brand-700 font-semibold text-sm shadow-lg shadow-brand-100 flex items-center gap-2 transition-all disabled:opacity-50"
+              className="px-6 py-3 bg-brand-600 text-white rounded-xl hover:bg-brand-700 font-semibold text-sm shadow-md shadow-brand-100 flex items-center gap-2 transition-all disabled:opacity-50"
             >
               {isSaving ? (
                 <>
@@ -1192,15 +1192,17 @@ const EditLead = () => {
                 </>
               )}
             </button>
-          ) : (
-            <button 
-              type="button" 
-              onClick={handleNext}
-              className="px-7 py-3 bg-slate-900 text-white rounded-xl hover:bg-slate-800 font-semibold text-sm shadow-md flex items-center gap-2 transition-all"
-            >
-              Next <ArrowRight size={16} />
-            </button>
-          )}
+
+            {activeTab < tabs.length - 1 && (
+              <button 
+                type="button" 
+                onClick={handleNext}
+                className="px-6 py-3 bg-slate-900 text-white rounded-xl hover:bg-slate-800 font-semibold text-sm shadow-md flex items-center gap-2 transition-all"
+              >
+                Next <ArrowRight size={16} />
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>

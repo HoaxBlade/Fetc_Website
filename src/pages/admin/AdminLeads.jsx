@@ -1192,7 +1192,7 @@ const AdminLeads = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-xs font-medium text-slate-600">{lead.subject || "General Inquiry"}</span>
+                    <span className="text-xs font-medium text-slate-600">{formatAreaOfInterest(lead)}</span>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 text-[9px] font-medium rounded-full uppercase tracking-tighter ${
@@ -1267,6 +1267,22 @@ const AdminLeads = () => {
       </motion.div>
     </>
   );
+};
+
+const serviceMap = {
+  studyAbroad: "Study Abroad",
+  workpermit: "Work Permit",
+  touristVisa: "Tourist Visa",
+  examBooking: "Exam Booking",
+  training: "Training Courses"
+};
+
+const formatAreaOfInterest = (lead) => {
+  if (!lead) return "General Inquiry";
+  if (lead.service && serviceMap[lead.service]) return serviceMap[lead.service];
+  if (lead.service) return lead.service;
+  if (lead.program) return lead.program;
+  return lead.subject || "General Inquiry";
 };
 
 export default AdminLeads;

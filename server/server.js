@@ -1347,36 +1347,66 @@ app.post('/api/v1/lead/create', async (req, res) => {
     if (!legacyName) legacyName = 'Unnamed Lead';
     body.name = legacyName;
 
-    const columns = [
-      'name', 'email', 'phone', 'first_name', 'middle_name', 'last_name', 
-      'dob', 'gender', 'location', 'address', 'emergency_contact_name', 
-      'emergency_contact_phone', 'emergency_contact_relation', 'service', 
-      'country', 'program', 'visa_rejection', 'travel_history', 'exam_type', 
-      'ebd', 'anyspecificlocation', 'payment', 'status'
-    ];
+    let newLead;
+    let existingLead = null;
+    if (body.email) {
+      const existingRes = await db.query('SELECT * FROM leads WHERE LOWER(email) = LOWER($1) ORDER BY id DESC LIMIT 1', [body.email.trim()]);
+      if (existingRes.rows.length > 0) {
+        existingLead = existingRes.rows[0];
+      }
+    }
 
-    const vals = [];
-    const placeholders = [];
-    let idx = 1;
+    if (existingLead) {
+      const updateCols = [];
+      const vals = [];
+      let idx = 1;
 
-    columns.forEach(col => {
-      let val = body[col];
-      // Normalize empty strings to null or defaults
-      if (val === '') val = null;
-      if (col === 'status' && !val) val = 'NEW';
-      vals.push(val);
-      placeholders.push(`$${idx}`);
-      idx++;
-    });
+      columns.forEach(col => {
+        let val = body[col];
+        if (val === '') val = null;
+        if (col === 'name' && !val) val = legacyName;
+        if (val !== undefined && val !== null) {
+          updateCols.push(`${col} = $${idx}`);
+          vals.push(val);
+          idx++;
+        }
+      });
+      // Always update created_at to bump timestamp
+      updateCols.push(`created_at = CURRENT_TIMESTAMP`);
+      vals.push(existingLead.id);
 
-    const query = `
-      INSERT INTO leads (${columns.join(', ')})
-      VALUES (${placeholders.join(', ')})
-      RETURNING *
-    `;
+      const updateQuery = `
+        UPDATE leads 
+        SET ${updateCols.join(', ')}
+        WHERE id = $${idx}
+        RETURNING *
+      `;
+      const result = await db.query(updateQuery, vals);
+      newLead = result.rows[0];
+    } else {
+      const vals = [];
+      const placeholders = [];
+      let idx = 1;
 
-    const result = await db.query(query, vals);
-    const newLead = result.rows[0];
+      columns.forEach(col => {
+        let val = body[col];
+        // Normalize empty strings to null or defaults
+        if (val === '') val = null;
+        if (col === 'status' && !val) val = 'NEW';
+        vals.push(val);
+        placeholders.push(`$${idx}`);
+        idx++;
+      });
+
+      const query = `
+        INSERT INTO leads (${columns.join(', ')})
+        VALUES (${placeholders.join(', ')})
+        RETURNING *
+      `;
+
+      const result = await db.query(query, vals);
+      newLead = result.rows[0];
+    }
 
     // If documents are included in the body, insert them
     const docKeys = Object.keys(rawBody).filter(k => 
@@ -1527,11 +1557,25 @@ app.put('/api/v1/lead/:id', async (req, res) => {
     const vals = [leadId];
     let idx = 2;
 
+    const serviceMap = {
+      studyAbroad: "Study Abroad",
+      workpermit: "Work Permit",
+      touristVisa: "Tourist Visa",
+      examBooking: "Exam Booking",
+      training: "Training Courses"
+    };
+
+    if (body.service && serviceMap[body.service]) {
+      body.subject = serviceMap[body.service];
+    } else if (body.service && !body.subject) {
+      body.subject = body.service;
+    }
+
     const allowedColumns = [
       'name', 'email', 'phone', 'first_name', 'middle_name', 'last_name', 
       'dob', 'gender', 'location', 'address', 'emergency_contact_name', 
       'emergency_contact_phone', 'emergency_contact_relation', 'service', 
-      'country', 'program', 'visa_rejection', 'travel_history', 'exam_type', 
+      'subject', 'country', 'program', 'visa_rejection', 'travel_history', 'exam_type', 
       'ebd', 'anyspecificlocation', 'payment', 'status'
     ];
 
@@ -1763,16 +1807,41 @@ app.post('/api/v1/lead/:leadId/documents/:documentType/upload', leadMulterUpload
 
 // Lead Capture Route (Public)
 app.post('/api/leads', async (req, res) => {
-  const { name, email, phone, subject, message, userId, gender, location } = req.body;
+  const { name, email, phone, subject, message, userId, gender, location, service } = req.body;
   try {
     const safeSubject = subject || 'Lead Inquiry';
     const safeMessage = message || subject || 'New Lead Form Submission';
+    const inputService = service || (subject === 'Career Assessment Inquiry' ? 'training' : null);
 
-    // 1. Create Lead
-    const leadResult = await db.query(
-      'INSERT INTO leads (name, email, phone, subject, message, gender, location) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [name, email, phone, safeSubject, safeMessage, gender || null, location || null]
-    );
+    let leadRow;
+    if (email) {
+      const existing = await db.query('SELECT * FROM leads WHERE LOWER(email) = LOWER($1) ORDER BY id DESC LIMIT 1', [email.trim()]);
+      if (existing.rows.length > 0) {
+        const existingId = existing.rows[0].id;
+        const updateRes = await db.query(
+          `UPDATE leads 
+           SET name = COALESCE($1, name), 
+               phone = COALESCE($2, phone), 
+               subject = COALESCE($3, subject), 
+               message = COALESCE($4, message), 
+               gender = COALESCE($5, gender), 
+               location = COALESCE($6, location),
+               service = COALESCE($7, service),
+               created_at = CURRENT_TIMESTAMP
+           WHERE id = $8 RETURNING *`,
+          [name || null, phone || null, safeSubject, safeMessage, gender || null, location || null, inputService, existingId]
+        );
+        leadRow = updateRes.rows[0];
+      }
+    }
+
+    if (!leadRow) {
+      const insertRes = await db.query(
+        'INSERT INTO leads (name, email, phone, subject, message, gender, location, service) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+        [name, email, phone, safeSubject, safeMessage, gender || null, location || null, inputService]
+      );
+      leadRow = insertRes.rows[0];
+    }
 
     // 2. Create Ticket (Dual entry as requested)
     await db.query(
@@ -1782,10 +1851,10 @@ app.post('/api/leads', async (req, res) => {
 
     // 3. Trigger Cheerio AI Workflow (except for Career Assessment)
     if (subject !== 'Career Assessment Inquiry') {
-      await triggerCheerioWorkflow(leadResult.rows[0]);
+      await triggerCheerioWorkflow(leadRow);
     }
 
-    res.json({ success: true, lead: leadResult.rows[0] });
+    res.json({ success: true, lead: leadRow });
   } catch (err) {
     console.error('Inquiry error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
