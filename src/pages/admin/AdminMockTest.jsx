@@ -22,6 +22,12 @@ const AdminMockTest = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingTest, setEditingTest] = useState(null);
 
+  // Tab & Registration state
+  const [activeTab, setActiveTab] = useState('tests'); // 'tests' | 'registrations'
+  const [registrations, setRegistrations] = useState([]);
+  const [isRegLoading, setIsRegLoading] = useState(false);
+  const [regSearch, setRegSearch] = useState('');
+
   // Form states for Add / Edit
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('₹49');
@@ -50,9 +56,75 @@ const AdminMockTest = () => {
     }
   };
 
+  const fetchRegistrations = async () => {
+    try {
+      setIsRegLoading(true);
+      const res = await fetch(getAssetUrl ? (window.API_BASE || '') + '/api/v1/mock-test/admin/registrations' : '/api/v1/mock-test/admin/registrations', {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setRegistrations(data.registrations || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch mock test registrations:', err);
+    } finally {
+      setIsRegLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchMockTests();
+    fetchRegistrations();
   }, []);
+
+  const handleUpdateRegStatus = async (id, newStatus) => {
+    try {
+      const res = await fetch((window.API_BASE || '') + `/api/v1/mock-test/admin/registrations/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setRegistrations(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r));
+      }
+    } catch (err) {
+      console.error('Error updating status:', err);
+    }
+  };
+
+  const handleUpdateRegDate = async (id, newDate, currentStatus) => {
+    try {
+      const targetStatus = currentStatus === 'Form Submitted' ? 'Scheduled' : currentStatus;
+      const res = await fetch((window.API_BASE || '') + `/api/v1/mock-test/admin/registrations/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestedDate: newDate, status: targetStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setRegistrations(prev => prev.map(r => r.id === id ? { ...r, requested_date: newDate, status: data.registration.status } : r));
+      }
+    } catch (err) {
+      console.error('Error updating registration date:', err);
+    }
+  };
+
+  const handleDeleteReg = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this registration?')) return;
+    try {
+      const res = await fetch((window.API_BASE || '') + `/api/v1/mock-test/admin/registrations/${id}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (data.success) {
+        setRegistrations(prev => prev.filter(r => r.id !== id));
+      }
+    } catch (err) {
+      console.error('Error deleting registration:', err);
+    }
+  };
 
   const handleOpenAdd = () => {
     setTitle('');
@@ -169,15 +241,26 @@ const AdminMockTest = () => {
     }
   };
 
+  const filteredRegistrations = registrations.filter(r => {
+    const q = regSearch.toLowerCase();
+    return (
+      (r.name && r.name.toLowerCase().includes(q)) ||
+      (r.email && r.email.toLowerCase().includes(q)) ||
+      (r.phone && r.phone.toLowerCase().includes(q)) ||
+      (r.test_title && r.test_title.toLowerCase().includes(q))
+    );
+  });
+
   return (
-    <div className="max-w-[1600px] mx-auto">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+    <div className="max-w-[1600px] mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-700">
             <CheckSquare size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">All Mock Tests</h1>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Mock Tests Portal</h1>
+            <p className="text-xs text-slate-500 font-medium">Manage available mock tests & student registrations</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -189,16 +272,145 @@ const AdminMockTest = () => {
           >
             <Eye size={14} /> View Page
           </Link>
-          <button
-            onClick={handleOpenAdd}
-            className="flex items-center gap-1.5 bg-slate-900 text-white px-4 py-2.5 rounded-xl font-medium text-xs hover:bg-slate-800 transition-all shadow-sm"
-          >
-            <Plus size={14} /> Create Mock Test
-          </button>
+          {activeTab === 'tests' && (
+            <button
+              onClick={handleOpenAdd}
+              className="flex items-center gap-1.5 bg-slate-900 text-white px-4 py-2.5 rounded-xl font-medium text-xs hover:bg-slate-800 transition-all shadow-sm"
+            >
+              <Plus size={14} /> Create Mock Test
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      {/* Category Tab Bar */}
+      <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-fit border border-slate-200/70">
+        <button
+          onClick={() => setActiveTab('tests')}
+          className={`px-5 py-2.5 rounded-xl text-xs font-extrabold transition-all ${
+            activeTab === 'tests'
+              ? 'bg-white text-slate-900 shadow-sm'
+              : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          All Mock Tests ({mockTests.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('registrations')}
+          className={`px-5 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 ${
+            activeTab === 'registrations'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          Mock Test Registrations
+          {registrations.length > 0 && (
+            <span className="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full font-black">
+              {registrations.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {activeTab === 'registrations' ? (
+        /* Category Tab 2: Registrations / Filled Forms Table */
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-base font-bold text-slate-900">Student Exam Registrations</h3>
+              <p className="text-xs text-slate-500 font-medium">Filled form data submitted by students for mock tests.</p>
+            </div>
+            <input
+              type="text"
+              placeholder="Search student, email, exam..."
+              value={regSearch}
+              onChange={(e) => setRegSearch(e.target.value)}
+              className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-blue-500 w-full sm:w-64"
+            />
+          </div>
+
+          {isRegLoading ? (
+            <div className="p-12 text-center text-slate-400 flex items-center justify-center gap-2">
+              <Loader2 className="animate-spin" size={20} /> Loading registrations...
+            </div>
+          ) : filteredRegistrations.length === 0 ? (
+            <div className="p-12 text-center text-slate-500 text-sm font-medium">
+              No mock test registrations found.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-separate border-spacing-y-2">
+                <thead>
+                  <tr className="text-slate-400 text-[10px] font-bold uppercase tracking-widest px-4">
+                    <th className="px-6 pb-2">Student Info</th>
+                    <th className="px-6 pb-2">Exam Title</th>
+                    <th className="px-6 pb-2">Requested Date</th>
+                    <th className="px-6 pb-2">Submitted On</th>
+                    <th className="px-6 pb-2">Status</th>
+                    <th className="px-6 pb-2 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredRegistrations.map((reg) => {
+                    const formattedReqDate = reg.requested_date
+                      ? new Date(reg.requested_date).toLocaleDateString('en-GB')
+                      : 'Not specified';
+                    const formattedCreated = reg.created_at
+                      ? new Date(reg.created_at).toLocaleDateString('en-GB')
+                      : 'N/A';
+
+                    return (
+                      <tr key={reg.id} className="bg-slate-50 rounded-xl hover:bg-slate-100/80 transition-colors">
+                        <td className="px-6 py-4 rounded-l-xl">
+                          <div className="font-bold text-xs text-slate-900">{reg.name}</div>
+                          <div className="text-[11px] text-slate-500 font-medium">{reg.email} • {reg.phone}</div>
+                        </td>
+                        <td className="px-6 py-4 text-xs font-bold text-blue-700">
+                          {reg.test_title}
+                        </td>
+                        <td className="px-6 py-4 text-xs font-medium">
+                          <input
+                            type="date"
+                            value={reg.requested_date ? reg.requested_date.split('T')[0] : ''}
+                            onChange={(e) => handleUpdateRegDate(reg.id, e.target.value, reg.status)}
+                            className="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-blue-700 focus:outline-none focus:border-blue-500 shadow-sm"
+                          />
+                        </td>
+                        <td className="px-6 py-4 text-xs text-slate-500">
+                          {formattedCreated}
+                        </td>
+                        <td className="px-6 py-4 text-xs">
+                          <select
+                            value={reg.status || 'Form Submitted'}
+                            onChange={(e) => handleUpdateRegStatus(reg.id, e.target.value)}
+                            className="text-xs font-bold py-1.5 px-3 rounded-lg bg-white border border-slate-200 focus:outline-none text-slate-800 shadow-sm"
+                          >
+                            <option value="Form Submitted">Form Submitted</option>
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                          </select>
+                        </td>
+                        <td className="px-6 py-4 text-right rounded-r-xl">
+                          <button
+                            onClick={() => handleDeleteReg(reg.id)}
+                            className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                            title="Delete Registration"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Category Tab 1: All Mock Tests Table */
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="p-12 text-center text-slate-400 flex items-center justify-center gap-2">
             <Loader2 className="animate-spin" size={20} /> Loading mock tests...
@@ -281,6 +493,7 @@ const AdminMockTest = () => {
           List of all mock tests ({mockTests.length} items)
         </div>
       </div>
+      )}
 
       {/* CREATE MODAL */}
       <AnimatePresence>

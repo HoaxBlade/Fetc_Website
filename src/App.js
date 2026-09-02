@@ -38,6 +38,7 @@ import UserSupport from "./pages/user/UserSupport";
 import UserDoubts from "./pages/user/UserDoubts";
 import UserVerification from "./pages/user/UserVerification";
 import UserPayments from "./pages/user/UserPayments";
+import UserMockTests from "./pages/user/UserMockTests";
 import UserOrders from "./pages/user/UserOrders";
 
 // Admin Imports
@@ -125,7 +126,7 @@ function AppContent() {
             <Route path="support" element={<UserSupport />} />
             <Route path="doubts" element={<Navigate to="/dashboard/support" replace />} />
             <Route path="verification" element={<UserVerification />} />
-            <Route path="mock-tests" element={<div className="p-8 text-slate-400 italic text-sm font-medium tracking-wide">Mock Test dashboard coming soon...</div>} />
+            <Route path="mock-tests" element={<UserMockTests />} />
           </Route>
 
           <Route path="/about" element={<Navigate to="/about/company-profile" replace />} />

@@ -417,6 +417,20 @@ const runMigrations = async () => {
       console.warn('Mock tests seeding warning:', seedErr.message);
     }
 
+    // Mock Test Registrations table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS mock_test_registrations (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(50) NOT NULL,
+        test_title VARCHAR(255) NOT NULL,
+        requested_date DATE,
+        status VARCHAR(50) DEFAULT 'Form Submitted',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `).catch(() => {});
+
     // Student Profiles table (General Details, Test Scores, Academics)
     await db.query(`
       CREATE TABLE IF NOT EXISTS student_profiles (
@@ -2942,6 +2956,190 @@ async function getPhonePeAccessToken() {
   }
   throw new Error(data.message || data.error || 'Failed to authenticate with PhonePe');
 }
+
+// ── Mock Test Registrations API Routes ──────────────────────────────────────────
+
+// Public POST: Register for a mock test
+app.post('/api/v1/mock-test/register', async (req, res) => {
+  try {
+    const { name, email, phone, testTitle, requestedDate } = req.body;
+    if (!name || !email || !phone || !testTitle) {
+      return res.status(400).json({ success: false, message: 'Name, email, phone, and test title are required.' });
+    }
+
+    const query = `
+      INSERT INTO mock_test_registrations (name, email, phone, test_title, requested_date, status)
+      VALUES ($1, $2, $3, $4, $5, 'Form Submitted')
+      RETURNING *
+    `;
+    const values = [name.trim(), email.trim().toLowerCase(), phone.trim(), testTitle.trim(), requestedDate || null];
+    const result = await db.query(query, values);
+
+    // Send confirmation email to user via Nodemailer
+    try {
+      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        const mailOptions = {
+          from: `"Foreign English Tests Capital" <${process.env.EMAIL_USER}>`,
+          to: email.trim(),
+          subject: `Mock Test Registration Confirmation - ${testTitle.trim()}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
+              <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Exam Form Submission Confirmation</h2>
+              <p style="color: #475569; font-size: 14px; line-height: 1.6;">Dear <strong>${name.trim()}</strong>,</p>
+              <p style="color: #475569; font-size: 14px; line-height: 1.6;">Aapka <strong>${testTitle.trim()}</strong> exam form successfully fill ho gaya hai. Below are your registration details:</p>
+              
+              <div style="background-color: #f8fafc; padding: 18px; border-radius: 12px; margin: 20px 0; border: 1px solid #e2e8f0;">
+                <p style="margin: 6px 0; color: #334155; font-size: 13px;"><strong>Student Name:</strong> ${name.trim()}</p>
+                <p style="margin: 6px 0; color: #334155; font-size: 13px;"><strong>Registered Email:</strong> ${email.trim()}</p>
+                <p style="margin: 6px 0; color: #334155; font-size: 13px;"><strong>Phone Number:</strong> ${phone.trim()}</p>
+                <p style="margin: 6px 0; color: #1e40af; font-size: 13px;"><strong>Registered Exam:</strong> ${testTitle.trim()}</p>
+                <p style="margin: 6px 0; color: #166534; font-size: 13px;"><strong>Status:</strong> Form Submitted</p>
+              </div>
+
+              <p style="color: #475569; font-size: 14px; line-height: 1.6;">Hamari exam team aapke profile ko review karke jald hi aapse contact karegi.</p>
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+              <p style="color: #94a3b8; font-size: 11px; margin-bottom: 0; text-align: center;">Foreign English Tests Capital • Powered by Gina Abroad Pvt. Ltd.</p>
+            </div>
+          `
+        };
+        await transporter.sendMail(mailOptions);
+        console.log(`Confirmation email sent to ${email.trim()} for exam: ${testTitle}`);
+      }
+    } catch (emailErr) {
+      console.warn('Could not send mock test confirmation email:', emailErr.message);
+    }
+
+    return res.json({ success: true, registration: result.rows[0], message: 'Mock test registered successfully.' });
+  } catch (err) {
+    console.error('Error registering mock test:', err);
+    return res.status(500).json({ success: false, message: 'Server error registering mock test.' });
+  }
+});
+
+// Admin GET: Fetch all mock test registrations
+app.get('/api/v1/mock-test/admin/registrations', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM mock_test_registrations ORDER BY created_at DESC');
+    return res.json({ success: true, registrations: result.rows });
+  } catch (err) {
+    console.error('Error fetching admin mock test registrations:', err);
+    return res.status(500).json({ success: false, message: 'Server error.' });
+  }
+});
+
+// Admin PUT: Update registration date and/or status
+app.put('/api/v1/mock-test/admin/registrations/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, requestedDate } = req.body;
+
+    let query = '';
+    let vals = [];
+
+    if (requestedDate !== undefined && status !== undefined) {
+      query = 'UPDATE mock_test_registrations SET requested_date = $1, status = $2 WHERE id = $3 RETURNING *';
+      vals = [requestedDate || null, status, id];
+    } else if (requestedDate !== undefined) {
+      query = 'UPDATE mock_test_registrations SET requested_date = $1, status = COALESCE($2, status) WHERE id = $3 RETURNING *';
+      vals = [requestedDate || null, status || 'Scheduled', id];
+    } else {
+      query = 'UPDATE mock_test_registrations SET status = $1 WHERE id = $2 RETURNING *';
+      vals = [status || 'Form Submitted', id];
+    }
+
+    const result = await db.query(query, vals);
+    const reg = result.rows[0];
+
+    if (!reg) {
+      return res.status(404).json({ success: false, message: 'Registration not found.' });
+    }
+
+    // If requestedDate or status was updated to Scheduled, send an email to the user!
+    if (requestedDate || status === 'Scheduled') {
+      try {
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASS && reg.email) {
+          const formattedDate = reg.requested_date
+            ? new Date(reg.requested_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+            : 'Date set by Admin';
+
+          const mailOptions = {
+            from: `"Foreign English Tests Capital" <${process.env.EMAIL_USER}>`,
+            to: reg.email,
+            subject: `Mock Test Date Scheduled - ${reg.test_title}`,
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
+                <h2 style="color: #1e40af; margin-top: 0; font-size: 20px;">📅 Mock Test Date Scheduled!</h2>
+                <p style="color: #475569; font-size: 14px; line-height: 1.6;">Dear <strong>${reg.name}</strong>,</p>
+                <p style="color: #475569; font-size: 14px; line-height: 1.6;">Aapke <strong>${reg.test_title}</strong> mock test ki date Admin dwara schedule kar di gayi hai. Test details niche di gayi hain:</p>
+                
+                <div style="background-color: #eff6ff; padding: 18px; border-radius: 12px; margin: 20px 0; border: 1px solid #bfdbfe;">
+                  <p style="margin: 6px 0; color: #1e3a8a; font-size: 14px;"><strong>Exam Title:</strong> ${reg.test_title}</p>
+                  <p style="margin: 6px 0; color: #1e3a8a; font-size: 15px;"><strong>Scheduled Test Date:</strong> <span style="color: #2563eb; font-weight: bold;">${formattedDate}</span></p>
+                  <p style="margin: 6px 0; color: #166534; font-size: 13px;"><strong>Status:</strong> ${reg.status || 'Scheduled'}</p>
+                </div>
+
+                <p style="color: #475569; font-size: 14px; line-height: 1.6;">Kripya apne dashboard me <strong>"Mock Test Remaining"</strong> section check karein.</p>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+                <p style="color: #94a3b8; font-size: 11px; margin-bottom: 0; text-align: center;">Foreign English Tests Capital • Powered by Gina Abroad Pvt. Ltd.</p>
+              </div>
+            `
+          };
+          await transporter.sendMail(mailOptions);
+          console.log(`Schedule email sent to ${reg.email} for exam date: ${formattedDate}`);
+        }
+      } catch (emailErr) {
+        console.warn('Could not send scheduled date email:', emailErr.message);
+      }
+    }
+
+    return res.json({ success: true, registration: reg });
+  } catch (err) {
+    console.error('Error updating mock test registration:', err);
+    return res.status(500).json({ success: false, message: 'Server error.' });
+  }
+});
+
+// Admin DELETE: Delete registration
+app.delete('/api/v1/mock-test/admin/registrations/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.query('DELETE FROM mock_test_registrations WHERE id = $1', [id]);
+    return res.json({ success: true, message: 'Registration deleted.' });
+  } catch (err) {
+    console.error('Error deleting mock test registration:', err);
+    return res.status(500).json({ success: false, message: 'Server error.' });
+  }
+});
+
+// User GET: Fetch registrations for logged-in user (by email / phone, fallback to all for admin/preview)
+app.get('/api/v1/mock-test/user/registrations', async (req, res) => {
+  try {
+    const { email, phone } = req.query;
+    let query = 'SELECT * FROM mock_test_registrations ORDER BY created_at DESC';
+    let vals = [];
+
+    if (email || phone) {
+      const conditions = [];
+      if (email && email.trim()) {
+        vals.push(email.trim().toLowerCase());
+        conditions.push(`LOWER(email) = $${vals.length}`);
+      }
+      if (phone && phone.trim()) {
+        vals.push(phone.trim());
+        conditions.push(`phone = $${vals.length}`);
+      }
+      if (conditions.length > 0) {
+        query = `SELECT * FROM mock_test_registrations WHERE ${conditions.join(' OR ')} ORDER BY created_at DESC`;
+      }
+    }
+
+    const result = await db.query(query, vals);
+    return res.json({ success: true, registrations: result.rows });
+  } catch (err) {
+    console.error('Error fetching user mock test registrations:', err);
+    return res.status(500).json({ success: false, message: 'Server error.' });
+  }
+});
 
 // POST /api/v1/order/initiate-payment - PhonePe Payment Gateway Initiation
 app.post('/api/v1/order/initiate-payment', async (req, res) => {
