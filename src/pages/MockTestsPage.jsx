@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, ShieldCheck, Award, Users, Loader2, X, User, Mail, Phone, Calendar } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Award, Users, Loader2, X, User, Mail, Phone, Calendar, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAssetUrl, getApiUrl } from '../apiConfig';
 import SafeImage from '../components/SafeImage';
@@ -69,7 +69,6 @@ export default function MockTestsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTest, setSelectedTest] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -133,7 +132,6 @@ export default function MockTestsPage() {
 
   const handleEnroll = (test) => {
     setSelectedTest(test);
-    setIsSuccessModal(false);
     setFormData({
       name: '',
       email: '',
@@ -142,47 +140,53 @@ export default function MockTestsPage() {
     });
   };
 
-  const handleFormSubmit = async (e) => {
+  const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     if (!selectedTest) return;
 
     try {
       setIsSubmitting(true);
-      const testTitle = selectedTest.title || selectedTest.name || 'Mock Test';
+      const priceVal = parseInt((selectedTest.price || '₹49').replace(/\D/g, '')) || 49;
+      const testTitle = selectedTest.title || selectedTest.name || 'MOCK_TEST';
 
       const payload = {
         name: formData.name.trim(),
         email: formData.email.trim(),
         phone: formData.phone.replace(/\D/g, ''),
-        subject: `Mock Test Booking - ${testTitle}`,
-        message: `Mock Test Inquiry for ${testTitle}. Date requested: ${formData.date}`,
-        service: 'examBooking',
-        examType: testTitle
+        date: formData.date,
+        courseId: selectedTest.id ? String(selectedTest.id) : testTitle,
+        productType: 'MOCK_TEST',
+        amount: priceVal,
+        returnUrl: window.location.href
       };
 
-      const response = await fetch(getApiUrl('/api/leads'), {
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(getApiUrl('/api/v1/order/initiate-payment'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(payload)
       });
 
       const res = await response.json();
-      if (res.success) {
-        setIsSuccessModal(true);
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          date: new Date().toISOString().split('T')[0]
-        });
-      } else {
-        alert(res.message || 'Submission failed. Please try again.');
+      const redirectUrl = res?.redirectUrl || res?.data?.redirectUrl;
+
+      if (!redirectUrl) {
+        setIsSubmitting(false);
+        const errorMsg = res?.message || res?.error || 'Gateway URL not returned by server.';
+        alert(`Payment Error: ${errorMsg}`);
+        return;
       }
+
+      window.location.href = redirectUrl;
     } catch (err) {
-      console.error('Mock test lead submission error:', err);
-      alert(`Submission Error: ${err.message || 'Failed to submit inquiry.'}`);
-    } finally {
+      console.error('Mock test payment initiation error:', err);
       setIsSubmitting(false);
+      alert(`Payment Error: ${err.message || 'Failed to initiate payment gateway.'}`);
     }
   };
 
@@ -214,6 +218,7 @@ export default function MockTestsPage() {
             {tests.map((test, index) => {
               const testTitle = test.title || test.name || "Mock Test";
               const testDesc = test.content || test.description || "Official practice module.";
+              const testPrice = test.price || "₹49";
               const rawImage = test.image_url || test.image;
               const testImage = rawImage ? getAssetUrl(rawImage) : "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60";
 
@@ -228,6 +233,9 @@ export default function MockTestsPage() {
                       alt={testTitle} 
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                    <span className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-slate-200/50 text-blue-700 font-extrabold text-sm shadow-sm">
+                      {testPrice}
+                    </span>
                   </div>
                   <div className="p-6 flex-grow flex flex-col justify-between">
                     <div>
@@ -312,7 +320,7 @@ export default function MockTestsPage() {
                       {selectedTest.title || selectedTest.name}
                     </h3>
                     <p className="text-xs text-slate-500 font-medium mt-1">
-                      Fill out the form below to register for your test.
+                      Fill out the form below to begin your career evaluation.
                     </p>
                   </div>
                   <button
@@ -323,113 +331,103 @@ export default function MockTestsPage() {
                   </button>
                 </div>
 
-                {isSuccessModal ? (
-                  <div className="py-8 text-center flex flex-col items-center justify-center">
-                    <div className="w-16 h-16 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center mb-4">
-                      <ShieldCheck className="w-8 h-8 text-emerald-500" />
+                {/* Price Banner */}
+                <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200/80 mb-6">
+                  <span className="text-xs font-semibold text-slate-600">Total Payable Amount</span>
+                  <span className="text-2xl font-extrabold text-blue-600 font-mono">
+                    {selectedTest.price || '₹49'}
+                  </span>
+                </div>
+
+                {/* Form Fields matching User Design */}
+                <form onSubmit={handlePaymentSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Full Name */}
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">
+                        Full Name <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="text"
+                          required
+                          placeholder="John Doe"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                        />
+                      </div>
                     </div>
-                    <h4 className="text-xl font-bold text-slate-800 mb-2">Request Submitted!</h4>
-                    <p className="text-xs text-slate-500 font-medium max-w-xs mb-6 leading-relaxed">
-                      Thank you for registering for <strong>{selectedTest.title || selectedTest.name}</strong>. Our counselors will contact you shortly to guide you.
-                    </p>
-                    <button
-                      onClick={() => { setSelectedTest(null); setIsSuccessModal(false); }}
-                      className="px-6 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition-colors"
-                    >
-                      Close Window
-                    </button>
+
+                    {/* Email Address */}
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">
+                        Email Address <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="email"
+                          required
+                          placeholder="john@example.com"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                        />
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  /* Form Fields */
-                  <form onSubmit={handleFormSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* Full Name */}
-                      <div>
-                        <label className="text-xs font-bold text-slate-700 mb-1.5 block">
-                          Full Name <span className="text-rose-500">*</span>
-                        </label>
-                        <div className="relative">
-                          <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                          <input
-                            type="text"
-                            required
-                            placeholder="John Doe"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
-                          />
-                        </div>
-                      </div>
 
-                      {/* Email Address */}
-                      <div>
-                        <label className="text-xs font-bold text-slate-700 mb-1.5 block">
-                          Email Address <span className="text-rose-500">*</span>
-                        </label>
-                        <div className="relative">
-                          <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                          <input
-                            type="email"
-                            required
-                            placeholder="john@example.com"
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
-                          />
-                        </div>
-                      </div>
+                  {/* Phone Number */}
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 mb-1.5 block">
+                      Phone Number <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type="tel"
+                        required
+                        placeholder="Enter phone number"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                      />
                     </div>
+                  </div>
 
-                    {/* Phone Number */}
-                    <div>
-                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">
-                        Phone Number <span className="text-rose-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                        <input
-                          type="tel"
-                          required
-                          placeholder="Enter phone number"
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
-                        />
-                      </div>
+                  {/* Select Date */}
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 mb-1.5 block">
+                      Select Date <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Calendar size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type="date"
+                        required
+                        value={formData.date}
+                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                      />
                     </div>
+                  </div>
 
-                    {/* Select Date */}
-                    <div>
-                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">
-                        Select Date <span className="text-rose-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <Calendar size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                        <input
-                          type="date"
-                          required
-                          value={formData.date}
-                          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-200 flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
-                    >
-                      {isSubmitting ? (
-                        <Loader2 size={16} className="animate-spin" />
-                      ) : (
-                        <ArrowRight size={16} />
-                      )}
-                      {isSubmitting ? "Submitting Registration..." : "Submit Registration"}
-                    </button>
-                  </form>
-                )}
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-200 flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <Lock size={16} />
+                    )}
+                    {isSubmitting ? "Initiating Payment Gateway..." : `Proceed to Pay ${selectedTest.price || '₹49'}`}
+                  </button>
+                </form>
               </motion.div>
             </div>
           )}
